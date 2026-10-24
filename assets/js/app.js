@@ -747,6 +747,108 @@ themeSheet.textContent += `
 @media(prefers-reduced-motion:reduce){.es-mobile-folder-expand .svg-icon{transition:none}}
 `;
 
+// Mobile information priority (2026-10-24): show usable tools/content before promotional copy.
+// The hero text/actions remain real DOM controls below the content. Desktop is unchanged.
+themeSheet.textContent += `
+@media(max-width:720px){
+  .es-dashboard-layout,.es-restored-landing{
+    display:flex!important;flex-direction:column!important;align-items:stretch;
+    min-height:0!important;height:auto!important;gap:13px!important;
+  }
+  .es-dashboard-layout>.es-directory,.es-restored-landing>.es-landing-info{
+    min-width:0;min-height:0!important;flex:0 0 auto;
+  }
+  .es-dashboard-layout>.es-directory{
+    margin:1px 0 0!important;overflow:visible!important;
+  }
+  .es-dashboard-layout .es-directory-grid{
+    overflow:visible!important;max-height:none!important;min-height:0!important;
+  }
+  /* The large visual banner is replaced by a compact information/installation card. */
+  .es-dashboard-layout>.hero,.es-restored-landing>.hero{
+    display:flex!important;flex-direction:column!important;grid-template-columns:none!important;
+    height:auto!important;min-height:0!important;
+    border:1px solid #dce2fa!important;border-radius:16px!important;
+    overflow:hidden!important;
+    background:linear-gradient(117deg,#f4f1ff,#f0f5ff 70%,#e5eaff)!important;
+    background-image:none!important;
+    box-shadow:0 4px 14px rgba(38,44,111,.05);
+    margin:2px 0 0!important;
+  }
+  .es-dashboard-layout>.hero .hero-art,.es-restored-landing>.hero .hero-art{
+    display:none!important;height:0!important;min-height:0!important;flex:0 0 0!important;
+    background:none!important;
+  }
+  .es-dashboard-layout>.hero .hero-copy,.es-restored-landing>.hero .hero-copy{
+    display:block!important;flex:0 0 auto!important;
+    padding:15px 16px 12px!important;min-width:0;
+  }
+  .es-dashboard-layout>.hero .eyebrow,.es-restored-landing>.hero .eyebrow{
+    display:block!important;margin:0 0 3px!important;
+    font-size:12px!important;line-height:1.25!important;letter-spacing:.65px!important;
+  }
+  .es-dashboard-layout>.hero .hero-title,.es-restored-landing>.hero .hero-title{
+    display:block!important;font-size:26px!important;line-height:1.08!important;
+    letter-spacing:-.9px!important;margin:0!important;
+  }
+  .es-dashboard-layout>.hero .hero-subtitle,.es-restored-landing>.hero .hero-subtitle{
+    display:block!important;font-size:14.5px!important;font-weight:700!important;
+    line-height:1.4!important;white-space:normal!important;
+    margin:5px 0 0!important;
+  }
+  .es-dashboard-layout>.hero .hero-description,.es-restored-landing>.hero .hero-description{
+    display:none!important;
+  }
+  .es-dashboard-layout>.hero .hero-perks,.es-restored-landing>.hero .hero-perks{
+    display:flex!important;flex-wrap:wrap!important;align-items:center;
+    gap:7px 12px!important;margin:10px 0 0!important;
+  }
+  .es-dashboard-layout>.hero .hero-perks span,.es-restored-landing>.hero .hero-perks span{
+    display:inline-flex!important;align-items:center;gap:5px!important;
+    white-space:normal!important;font-size:13.5px!important;font-weight:700!important;
+    line-height:1.2!important;
+  }
+  .es-dashboard-layout>.hero .check-dot,.es-restored-landing>.hero .check-dot{
+    display:inline-flex!important;align-items:center;justify-content:center;
+    width:18px!important;height:18px!important;flex:0 0 18px!important;
+  }
+  .es-dashboard-layout>.hero .check-dot svg,.es-restored-landing>.hero .check-dot svg{
+    width:13px!important;height:13px!important;
+  }
+  .es-dashboard-layout>.hero .hero-cta,.es-restored-landing>.hero .hero-cta{
+    display:block!important;min-width:0!important;flex:0 0 auto!important;
+    padding:11px 14px 14px!important;border-top:1px solid #dce3ff;
+    border-radius:0!important;background:rgba(229,236,255,.55)!important;
+    box-shadow:none!important;
+  }
+  .es-dashboard-layout>.hero .hero-cta::before,.es-restored-landing>.hero .hero-cta::before{
+    display:none!important;
+  }
+  /* Benefits remain in the compact summary above; avoid a repeated 3-line marketing panel. */
+  .es-dashboard-layout>.hero .es-hero-info,.es-restored-landing>.hero .es-hero-info{
+    display:none!important;
+  }
+  .es-dashboard-layout>.hero .es-hero-actions,.es-restored-landing>.hero .es-hero-actions{
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;width:100%!important;flex:none!important;
+    margin:0!important;
+  }
+  .es-dashboard-layout>.hero .es-hero-actions .button,.es-restored-landing>.hero .es-hero-actions .button{
+    min-height:43px!important;margin:0!important;padding:9px 12px!important;
+    width:100%!important;font-size:15px!important;
+    border-radius:13px!important;box-shadow:0 2px 7px rgba(46,44,111,.08)!important;
+  }
+  /* Decorative two-image footer stays under the information card. */
+  .es-dashboard-layout>.portable-strip,.es-restored-landing>.portable-strip{
+    flex:0 0 auto!important;min-width:0;width:100%;margin:8px 0 14px!important;
+  }
+}
+@media(max-width:355px){
+  .es-dashboard-layout>.hero .hero-copy,.es-restored-landing>.hero .hero-copy{padding:13px!important}
+  .es-dashboard-layout>.hero .hero-perks span,.es-restored-landing>.hero .hero-perks span{font-size:13px!important}
+}
+`;
+
 // Former assets/js/lib/ui.js (bundled, not reimplemented)
 /** Small, dependency-free UI toolkit. Icon IDs are fixed and never sourced from user input. */
 const path = {
@@ -1683,6 +1785,20 @@ const BANNER_CONTENT = Object.freeze({
  })
 });
 
+// Keep visual order and keyboard navigation order aligned at the mobile breakpoint.
+function syncMobileInformationOrder(){
+ const panel=main.querySelector('.es-dashboard-layout,.es-restored-landing');
+ if(!panel)return;
+ const hero=panel.querySelector(':scope > .es-main-banner');
+ const content=panel.querySelector(':scope > .es-directory,:scope > .es-landing-info');
+ if(!hero||!content)return;
+ if(window.matchMedia('(max-width:720px)').matches){
+  if(content.nextElementSibling!==hero)content.after(hero);
+ }else if(panel.firstElementChild!==hero){
+  panel.insertBefore(hero,content);
+ }
+}
+
 function catalogHtml(){return `<div class="page-home es-dashboard-layout">${heroBannerHtml()}<section class="es-directory" id="directory" aria-labelledby="catalog-title"><div class="es-directory-header"><div class="es-directory-title-row"><span class="es-directory-emblem" id="catalog-icon">${icon('grid',23)}</span><div><h1 class="es-directory-title" id="catalog-title">Tất cả công cụ</h1><p class="es-directory-sub" id="catalog-sub">Chọn công cụ phù hợp hoặc tìm kiếm nhanh</p></div><span class="es-directory-total" id="catalog-count">${DEFINITIONS.length}</span></div><div class="es-catalog-toolbar"><label class="search-box" for="tool-search">${icon('search',20)}<input id="tool-search" type="search" maxlength="100" autocomplete="off" placeholder="Tìm công cụ..." aria-label="Tìm kiếm công cụ"></label><div class="view-toggle" aria-label="Chế độ hiển thị"><button class="toggle-button ${displayMode==='grid'?'active':''}" type="button" aria-label="Dạng lưới" data-view="grid" title="Dạng lưới">${icon('grid',21)}</button><button class="toggle-button ${displayMode==='list'?'active':''}" type="button" aria-label="Dạng danh sách" data-view="list" title="Dạng danh sách">${icon('list',21)}</button></div></div></div><div class="es-directory-grid" id="tool-columns" tabindex="0" role="region" aria-label="Danh sách công cụ, dùng chuột hoặc phím mũi tên để cuộn"></div></section>${portableBannerHtml()}</div>`;}
 function heroBannerHtml(){
  const m=BANNER_CONTENT.main;
@@ -1766,13 +1882,13 @@ async function navigate(){
   return;
  }
  if(route==='#/help'){
-  navActive('help');main.innerHTML=landingInfoHtml(helpHtml());window.scrollTo({top:0,behavior:'auto'});return;
+  navActive('help');main.innerHTML=landingInfoHtml(helpHtml());syncMobileInformationOrder();window.scrollTo({top:0,behavior:'auto'});return;
  }
  if(route==='#/portable'){
-  navActive('portable');main.innerHTML=landingInfoHtml(portableHtml());window.scrollTo({top:0,behavior:'auto'});return;
+  navActive('portable');main.innerHTML=landingInfoHtml(portableHtml());syncMobileInformationOrder();window.scrollTo({top:0,behavior:'auto'});return;
  }
  if(route==='#/ecosystem'){
-  navActive('hub');main.innerHTML=landingInfoHtml(ecosystemLoadingHtml());renderSidebar();window.scrollTo({top:0,behavior:'auto'});
+  navActive('hub');main.innerHTML=landingInfoHtml(ecosystemLoadingHtml());syncMobileInformationOrder();renderSidebar();window.scrollTo({top:0,behavior:'auto'});
   void populateEcosystem(token);return;
  }
  if(route==='#/mytools')activeCatalog='mytools';
@@ -1781,6 +1897,7 @@ async function navigate(){
  }else activeCatalog='all';
  navActive(route==='#/home'?'home':'explore');
  main.innerHTML=catalogHtml();
+ syncMobileInformationOrder();
  renderGroupCards();
  window.scrollTo({top:0,behavior:'auto'});
 }
@@ -1792,6 +1909,12 @@ async function safeNavigate(){
  }
 }
 readPreferences();hydrateIcons();enhanceHeaderNavigation();esBuildLanguagePicker();buildSidebarShell();buildAppDialog();esUpdateLanguageButtons();esTranslateRegion(document.body);
+const esMobileInfoMedia=window.matchMedia('(max-width:720px)');
+if(typeof esMobileInfoMedia.addEventListener==='function'){
+ esMobileInfoMedia.addEventListener('change',syncMobileInformationOrder);
+}else if(typeof esMobileInfoMedia.addListener==='function'){
+ esMobileInfoMedia.addListener(syncMobileInformationOrder);
+}
 window.addEventListener('hashchange',safeNavigate);
 document.getElementById('menu-toggle')?.addEventListener('click',()=>{
  if(document.getElementById('es-sidebar')?.classList.contains('es-mobile-open'))closeMobileSidebar();
