@@ -1,0 +1,9 @@
+const {paintCalc} = globalThis.EpsilonSoftShared || {};
+
+const {field, number, numeric, icon, setText} = globalThis.EpsilonSoftShared || {};
+
+export function mount(root,ctx){
+ root.innerHTML=`<div class="tool-grid-2"><section class="tool-box"><h2 class="tool-box-heading">${icon('paint')} Ước tính lượng sơn</h2><div class="form-grid">${field({name:'area',label:'Diện tích cần sơn',value:50,unit:'m²',min:0})}${field({name:'layers',label:'Số lớp sơn',value:2,unit:'lớp',min:1,max:100,step:1})}${field({name:'coverage',label:'Định mức phủ mỗi lớp',value:10,unit:'m²/L',min:0})}${field({name:'loss',label:'Hao hụt ước tính',value:10,unit:'%',min:0,max:99})}${field({name:'density',label:'Khối lượng riêng sơn',value:1.2,unit:'kg/L',min:0})}</div><p class="tool-error" id="paint-error" role="alert"></p></section><section class="tool-box"><h2 class="tool-box-heading">${icon('chart')} Kết quả</h2><div class="stack"><div class="result-tile green"><strong>Thể tích sơn cần chuẩn bị</strong><output id="paint-liters">—</output><span class="mini-kpi">Lít</span></div><div class="result-tile purple"><strong>Khối lượng sơn ước tính</strong><output id="paint-kg">—</output><span class="mini-kpi">kg</span></div></div><div class="callout" style="margin-top:14px">${icon('info',20)} Định mức phải lấy từ hướng dẫn thực tế của sơn, tính cả lớp phủ, điều kiện bề mặt và hao hụt thiết bị.</div></section></div>`;
+ function calc(){try{const p={};root.querySelectorAll('input').forEach(i=>p[i.name]=numeric(i.value,i.name,{nonNegative:i.name==='loss'}));const result=paintCalc(p);setText(root,'#paint-liters',number(result.liters,3));setText(root,'#paint-kg',number(result.kg,3));setText(root,'#paint-error','');}catch(e){['#paint-liters','#paint-kg'].forEach(s=>setText(root,s,'—'));setText(root,'#paint-error',e.message);}}
+ root.addEventListener('input',calc,{signal:ctx.signal});calc();
+}

@@ -1,0 +1,1886 @@
+/**
+ * EPSILON SOFT - flat distribution (2026-10-23)
+ *  - All shared UI/engineering helpers live in app.js.
+ *  - Layout CSS is injected from this app.js; no assets/css/ is needed.
+ *  - Each tool remains its own assets/js/tools/*.js.
+ *  - The code below preserves the approved UI and tested engineering algorithms.
+ */
+const EPSILON_STYLES = ":root{color-scheme:light;--purple:#5a20db;--purple2:#7c31ff;--deep:#0a1b62;--navy:#07185e;--blue:#0637e9;--yellow:#ffdc08;--green:#09b37e;--muted:#51648e;--line:#dce5fa;--paper:#fff;--page:#f8faff;--shadow:0 8px 24px rgba(43,58,129,.075);font-family:Inter,\"Segoe UI\",Arial,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased}\n*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--navy);background:radial-gradient(ellipse at 80% 10%,#f4f1ff,transparent 55%),var(--page);min-width:320px;font-size:16px;line-height:1.48}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}a{text-decoration:none;color:inherit}img{max-width:100%;height:auto}svg{flex-shrink:0}[hidden]{display:none!important}:focus-visible{outline:3px solid #ffb900;outline-offset:3px}.shell{max-width:1620px;width:calc(100% - 48px);margin-inline:auto}.skip-link{position:absolute;top:-60px;left:12px;background:white;padding:12px;z-index:1000}.skip-link:focus{top:8px}\n.site-header{background:linear-gradient(103deg,#4c16dc 0%,#5322c8 48%,#5e19cf 100%);color:white;box-shadow:0 3px 14px #29039f1a}.header-inner{display:flex;align-items:center;min-height:76px;gap:18px}.brand{display:flex;align-items:center;flex-shrink:0;white-space:nowrap;gap:8px}.brand-mark{width:59px;height:59px;object-fit:contain;filter:none}.brand-wordmark{font-weight:900;font-size:35px;letter-spacing:-1.7px;line-height:1;display:flex;align-items:baseline}.brand-wordmark strong{font-size:inherit;color:var(--yellow);font-weight:900;letter-spacing:-1.6px}.brand-divider{height:32px;width:1px;background:#ffffff80;margin-left:14px}.header-tagline{font-weight:700;font-size:17px;white-space:nowrap;letter-spacing:.4px}.main-nav{display:flex;gap:12px;margin-left:auto;align-items:center}.nav-link{display:inline-flex;align-items:center;gap:10px;border-radius:12px;padding:11px 17px;color:white;background:#3b0fa472;font-size:16px;font-weight:700;white-space:nowrap;transition:background .18s,transform .18s}.nav-link .svg-icon{width:20px;height:20px}.nav-link:hover{background:#9156fa}.nav-link.is-active{background:#fff;color:#521bd6;box-shadow:0 4px 12px #270e7d22}.mobile-menu{display:none}.icon-button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#ffffff1d;color:white;border:1px solid #ffffff55}\nmain{min-height:calc(100vh - 250px)}.page-home{padding-top:18px}.hero{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(280px,1fr) minmax(275px,.78fr);min-height:264px;border:1px solid #d9e1f9;border-radius:18px;overflow:hidden;background:linear-gradient(112deg,#f3f6ff 0%,#ecf4ff 42%,#c2b4ff 76%,#855afa 100%);position:relative}.hero-copy{padding:26px 8px 26px 34px;position:relative;z-index:2}.eyebrow{font-size:17px;letter-spacing:1.8px;font-weight:900;color:#1432bd;margin:0 0 8px}.hero-title{font-size:clamp(42px,3.55vw,58px);letter-spacing:-2.6px;line-height:1.01;font-weight:900;color:#041bb0;margin:0}.hero-title strong{color:var(--yellow)}.hero-subtitle{font-size:clamp(19px,1.35vw,24px);font-weight:800;margin:9px 0 8px;white-space:nowrap;color:#0d22a4}.hero-description{font-size:16px;color:#364d84;margin:0}.hero-perks{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:22px;font-weight:750}.hero-perks span{display:inline-flex;gap:10px;align-items:center;white-space:nowrap}.check-dot{border-radius:100%;display:inline-flex;align-items:center;justify-content:center;background:#10b981;width:24px;height:24px;color:white}.hero-art{position:relative;min-height:255px;align-self:stretch;background:linear-gradient(120deg,#e0faff12,transparent 80%);overflow:hidden}.hero-art img{position:absolute;left:50%;top:50%;width:110%;max-width:none;height:100%;object-fit:cover;transform:translate(-50%,-50%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 93%,transparent 100%)}.hero-cta{background:linear-gradient(128deg,#092ec4 0%,#2f39ee 95%);color:white;padding:21px 22px;display:flex;flex-direction:column;justify-content:space-between;position:relative}.hero-cta::before{content:\"\";position:absolute;inset:0;opacity:.22;background:radial-gradient(circle at 100% 30%,#8f9cff,transparent 55%);pointer-events:none}.hero-cta h2{position:relative;margin:0 0 10px;font-size:23px;line-height:1.2;letter-spacing:-.4px;color:white}.hero-cta p{position:relative;display:flex;align-items:flex-start;gap:8px;margin:5px 0;font-size:16px}.hero-cta p svg{color:#89fdd3}.button{display:inline-flex;justify-content:center;align-items:center;gap:10px;min-height:49px;border:0;border-radius:12px;padding:10px 20px;font-weight:800;font-size:16px;transition:transform .16s,filter .16s}.button:hover:not(:disabled){filter:brightness(1.045);transform:translateY(-1px)}.button-yellow{background:var(--yellow);color:#07167f;position:relative;margin-top:9px;box-shadow:0 8px 20px #121e904a}.button-purple{background:linear-gradient(120deg,#722cff,#4928ef);color:white}.button-outline{background:white;color:#5326dc;border:1px solid #9f86fd}.button-soft{background:#f0edff;color:#5127cf}.button-sm{min-height:40px;padding:6px 13px;font-size:16px}.button-plain{background:white;color:#1d37a4;border:1px solid var(--line)}\n.directory{scroll-margin-top:20px;margin-top:21px}.section-toolbar{display:flex;align-items:center;gap:14px;justify-content:space-between;margin-bottom:12px}.section-heading{margin:0;font-size:18px;font-weight:900;letter-spacing:.3px;white-space:nowrap}.section-heading::before{content:\"\";display:inline-block;height:16px;width:4px;background:#7034ee;margin-right:10px;border-radius:4px;vertical-align:-2px}.toolbar-right{display:flex;gap:12px;align-items:center}.search-box{width:320px;background:white;border:1px solid #d2def8;box-shadow:0 4px 12px #293e890b;border-radius:22px;display:flex;align-items:center;gap:8px;padding:0 13px;min-height:43px;color:#7790b6}.search-box:focus-within{border-color:#8f6cfa;box-shadow:0 0 0 4px #8f6cfa24}.search-box input{border:0;background:transparent;width:100%;outline:none;color:var(--navy);font-size:16px;min-width:0}.search-box input::placeholder{color:#8c9cba}.view-toggle{display:flex;gap:2px;border:1px solid #dae2fb;padding:3px;background:white;border-radius:12px}.toggle-button{border:0;background:transparent;color:#6d86ad;padding:5px;border-radius:8px;display:grid;place-items:center}.toggle-button.active{background:#6d2de3;color:white}.columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}.group-panel{border:1px solid #dbe5f9;border-radius:19px;padding:13px;background:#fff;box-shadow:var(--shadow);min-width:0;display:flex;flex-direction:column;min-height:365px}.group-panel.mytools{background:linear-gradient(145deg,#f3eaff,#f9f7ff);border-color:#dfd4ff}.group-panel.category-calc{background:linear-gradient(145deg,#eaf6ff,#f4f9ff);border-color:#d1e6ff}.group-panel.category-engineering{background:linear-gradient(155deg,#fff6eb,#fffbf4);border-color:#ffe8d3}.group-panel.category-utility{background:linear-gradient(145deg,#e6fbf4,#f6fffc);border-color:#d1f0e8}.group-heading{display:flex;align-items:center;gap:13px;padding:1px 0 12px}.category-emblem{width:50px;height:50px;display:grid;place-items:center;color:white;background:linear-gradient(138deg,#9661ff,#6022df);border-radius:13px;box-shadow:0 5px 12px #5e28d22b;flex-shrink:0}.category-calc .category-emblem{background:linear-gradient(138deg,#64caff,#167ae6)}.category-engineering .category-emblem{background:linear-gradient(138deg,#ffc15b,#ff711e)}.category-utility .category-emblem{background:linear-gradient(138deg,#8ee89b,#05ab83)}.group-heading-text{min-width:0}.group-heading-text h3{margin:0;font-size:19px;line-height:1.17;color:#182aa8;font-weight:900}.group-heading-text p{margin:4px 0 0;font-size:16px;color:#566d99;line-height:1.25}.group-count{margin-left:auto;border:4px solid white;background:#dfe9fd;min-width:39px;height:39px;display:grid;place-items:center;font-weight:900;border-radius:100%;color:#1a32b5;font-size:17px;flex-shrink:0}.group-items{display:grid;gap:7px}.tool-card{background:#fff;border:1px solid #e1e8f5;border-radius:13px;padding:8px 10px;display:flex;align-items:center;gap:10px;min-height:69px;box-shadow:0 2px 6px #091e4a07;transition:transform .17s,border-color .17s,box-shadow .17s;position:relative}.tool-card.is-ready:hover{transform:translateY(-2px);border-color:#b8c8ff;box-shadow:0 6px 15px #30166d1a}.tool-link{display:flex;min-width:0;flex:1;align-items:center;gap:10px}.tool-tile{height:45px;width:45px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;color:#1166df;background:linear-gradient(140deg,#edf6ff,#a7dafa)}.tone-blue{color:#0054e6;background:linear-gradient(145deg,#d7eeff,#9bd4ff)}.tone-mint{color:#009f78;background:linear-gradient(145deg,#e2fff4,#b0e9db)}.tone-orange{color:#f36d00;background:linear-gradient(145deg,#fff0db,#ffce9b)}.tone-violet{color:#7631ec;background:linear-gradient(145deg,#f1eaff,#dbc0ff)}.tone-red{color:#e8294a;background:linear-gradient(145deg,#ffebee,#ffc9d0)}.tone-teal{color:#009c9a;background:linear-gradient(145deg,#e2fff7,#a4e9d8)}.tool-names{min-width:0;display:flex;flex-direction:column;gap:1px}.tool-names b{font-size:16px;line-height:1.2;font-weight:800;display:block}.tool-names small{font-size:16px;color:#607297;line-height:1.25;display:block}.star-btn{width:33px;height:42px;display:grid;place-items:center;border:0;color:#98a9c8;background:transparent;padding:0;flex-shrink:0}.star-btn:hover,.star-btn[aria-pressed=\"true\"]{color:#f5a900}.star-btn[aria-pressed=\"true\"] svg{fill:#ffe951;stroke:#a86e03}.star-btn svg{width:24px;height:24px}.tool-card.is-planned{opacity:.72;background:#fdfdff}.tool-card.is-planned .tool-link{cursor:default}.soon-label{font-size:16px;color:#7643dd;background:#eee8ff;border-radius:8px;padding:2px 8px;align-self:flex-start}.mytools-empty{border:1px dashed #b7bafa;border-radius:14px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:235px;padding:20px;background:#ffffff51}.empty-icon{color:#4829ca;background:#eeeaff;border:1px solid #d1c8ff;border-radius:13px;padding:12px;display:grid;place-items:center}.mytools-empty strong{font-size:17px}.mytools-empty p{margin:0;font-size:16px;color:#5c6d9e}.mytools-hint{background:#ffffff80;border:1px solid #e0ddff;border-radius:12px;margin-top:12px;padding:11px;display:flex;gap:9px;align-items:center;color:#3854a3;font-size:16px}.mytools-hint svg{color:#e8aa00}.empty-search{text-align:center;padding:28px;background:white;border:1px dashed #bdc9e8;border-radius:13px;color:#3c5396;margin-top:14px}.columns.list-view{display:block}.list-view .group-panel{min-height:0;margin-bottom:16px}.list-view .group-items{grid-template-columns:repeat(2,minmax(0,1fr))}.list-view .mytools-empty{min-height:95px}\n.portable-strip{position:relative;margin:15px 0 24px;min-height:132px;border-radius:19px;color:white;padding:22px 25px;display:flex;gap:28px;align-items:center;overflow:hidden;background:linear-gradient(113deg,#6120e7,#2145f2 46%,#761bf0);box-shadow:0 8px 20px #4435df22}.portable-strip::before{content:\"\";position:absolute;inset:0;background:radial-gradient(ellipse at 60% -20%,#56e7ff88,transparent 53%),repeating-linear-gradient(130deg,transparent 0 120px,#ffffff08 122px 129px);pointer-events:none}.portable-stripe{position:relative;display:flex;align-items:center;gap:15px;flex:0 0 27%}.win-badge{display:grid;place-items:center;border-radius:16px;width:79px;height:79px;transform:rotate(-3deg);background:linear-gradient(130deg,#083ad6,#14baf3);box-shadow:0 0 0 2px #ffcc19,0 5px 14px #0003;flex-shrink:0}.win-badge .svg-icon{width:48px;height:48px}.portable-stripe h3{font-size:28px;line-height:1.2;margin:0;font-weight:900}.portable-stripe p{margin:0;font-size:16px}.portable-strip small.status{display:inline-block;font-size:16px;font-weight:850;color:#102bb9;background:#ffdf0a;border-radius:999px;padding:2px 9px;margin-top:5px}.portable-text{position:relative;flex:1;max-width:550px}.portable-text h3{font-size:20px;line-height:1.25;margin:0 0 8px;color:white}.portable-text p{margin:0;font-size:16px;line-height:1.4}.portable-laptop{height:130px;width:205px;object-fit:cover;object-position:center;align-self:stretch;mix-blend-mode:screen;opacity:.93;position:relative}.portable-actions{position:relative;display:grid;gap:6px;min-width:185px}.portable-actions .button{width:100%}.portable-actions span{font-size:16px;text-align:center}.portable-details{margin:0 0 24px;padding:20px 24px;background:#fff;border:1px solid var(--line);border-radius:16px;scroll-margin-top:16px}.portable-details h3{font-size:21px;margin:0 0 8px}.portable-details p{margin:8px 0}.portable-details .button{margin-top:8px}.callout{border:1px solid #d8e2ff;border-radius:14px;padding:15px 18px;background:#f0f5ff;font-size:16px;line-height:1.6}.callout.warning{background:#fffaed;border-color:#f5dfaa;color:#684b10}.callout.success{background:#eefcf5;border-color:#b4ebd3;color:#145e44}.callout strong{font-weight:850}\n.site-footer{border-top:1px solid var(--line);padding-top:22px;padding-bottom:26px;color:#67799b}.footer-main{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.footer-brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;color:#1d32b3}.footer-brand img{width:38px;height:38px}.footer-brand img.footer-logo{width:220px;height:auto}.footer-main p{font-size:16px;margin:6px 0}.footer-links{display:flex;gap:20px;font-size:16px;font-weight:700}.footer-links a:hover{color:#6b2cda}.footer-bottom{font-size:16px;border-top:1px solid #e5ebfa;margin-top:18px;padding-top:13px}.toast-region{position:fixed;z-index:9999;right:22px;bottom:22px;pointer-events:none;max-width:calc(100vw - 44px)}.toast{padding:14px 18px;background:#3817ad;color:white;border:1px solid #ffffff44;border-radius:13px;box-shadow:0 15px 38px #19125155;min-width:230px;font-size:16px;animation:slidein .2s ease}.toast.error{background:#a02349}.toast.success{background:#087b65}@keyframes slidein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}\n/* Tools */\n.tool-page{padding:20px 10px 30px}.breadcrumbs{display:flex;align-items:center;flex-wrap:wrap;gap:10px;color:#485a8b;font-size:16px;margin-bottom:16px}.breadcrumbs a{color:#3434c5;font-weight:700}.breadcrumbs a:hover{text-decoration:underline}.tool-heading{display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap}.tool-heading-icon{height:72px;width:72px;border-radius:19px;display:grid;place-items:center;flex-shrink:0}.tool-heading-icon .svg-icon{width:40px;height:40px}.tool-heading h1{font-size:clamp(29px,2.4vw,42px);line-height:1.12;letter-spacing:-1.15px;margin:0 0 5px;color:#0d178e}.tool-heading p{margin:0;color:#607198;font-size:19px}.tool-heading .button{margin-left:auto}.tool-surface{display:grid;grid-template-columns:1fr;gap:15px}.tool-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px;min-width:0}.tool-box{background:#fff;border:1px solid #d9e5fb;border-radius:16px;padding:16px;box-shadow:0 3px 12px #2b5a9c0a;min-width:0}.tool-box-heading{font-size:20px;color:#0c268f;font-weight:900;margin:0 0 13px;display:flex;align-items:center;gap:9px}.tool-box-heading .svg-icon{color:#4b55e9}.box-lead{font-size:16px;color:var(--muted);margin:-8px 0 15px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.form-field{display:flex;flex-direction:column;gap:5px;min-width:0;font-weight:750;color:#122766;font-size:16px}.form-field>span:first-child{font-size:16px}.form-field select,.form-field>input,.form-field textarea{background:white;color:#13266d;min-width:0;width:100%;min-height:48px;border:1px solid #c7d5fa;border-radius:10px;padding:10px 12px;outline:0}.form-field select:focus,.form-field>input:focus,.form-field textarea:focus,.input-wrap:focus-within{border-color:#8255f8;box-shadow:0 0 0 3px #8556ee27}.input-wrap{display:flex;align-items:center;min-height:47px;border:1px solid #c7d5fa;border-radius:10px;overflow:hidden;background:white}.input-wrap input{border:0;min-width:0;flex:1;width:100%;height:45px;padding:7px 11px;outline:0;color:#13266d}.input-wrap small{color:#563bd3;background:#f2f1ff;font-size:16px;font-weight:700;padding:9px;min-width:45px;text-align:center;white-space:nowrap}.form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.results-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.results-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.result-tile{border:1px solid #dae4ff;border-radius:14px;padding:16px;background:linear-gradient(125deg,#f1faff,#e1f3ff);min-width:0}.result-tile.green{background:linear-gradient(125deg,#ecfff7,#dcf9e9);border-color:#bcebd9}.result-tile.purple{background:linear-gradient(125deg,#fbf3ff,#efe5ff);border-color:#dfcfff}.result-tile.yellow{background:linear-gradient(125deg,#fff9df,#fff3b8);border-color:#ffdf7f}.result-tile strong{display:block;font-size:16px;color:#264caa;font-weight:850;margin-bottom:5px}.result-tile output{display:block;font-size:clamp(23px,2.2vw,32px);font-weight:900;color:#03279b;line-height:1.08;overflow-wrap:anywhere}.result-tile output small{font-size:16px;color:#33579c}.result-tile.yellow output{color:#4d18b0}.preview-canvas{display:grid;place-items:center;min-height:285px;border:1px solid #e1e5fc;border-radius:14px;background:linear-gradient(145deg,#f7f8ff,#fcfaff);padding:12px;overflow:hidden}.preview-canvas svg{width:100%;max-height:320px}.shape-note{text-align:center;margin:10px 0 0;color:#65749a}.tool-error{color:#aa2645;font-weight:750;margin-top:12px;min-height:22px}.tool-hint{font-size:16px;line-height:1.55;color:#65749a;margin:13px 0 0}.tool-hint strong{color:#1a2f8f}.separator{height:1px;background:#e3e8f9;margin:14px 0}.tool-detail-card{background:linear-gradient(120deg,#f7f9ff,#f0edff);border-radius:14px;padding:15px;color:#3f4b87}.tool-detail-card p{margin:7px 0}.related-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.related-tools a{display:grid;grid-template-columns:44px minmax(0,1fr) 16px;align-items:center;column-gap:10px;min-height:64px;min-width:0;background:#fff;border:1px solid #dfe8fa;border-radius:11px;padding:9px 12px;font-size:16px;font-weight:750}.related-tools a:hover{border-color:#9b8cf3}.related-tools a>.tool-tile{width:44px;height:44px;display:grid;place-items:center;flex:none}.related-tools a>.tool-tile>.svg-icon{display:block;margin:0;justify-self:center;align-self:center}.related-tools a>.related-tool-name{min-width:0;line-height:1.3;overflow-wrap:break-word}.related-tools a>.svg-icon:last-child{width:16px;height:16px;margin:0;justify-self:end;align-self:center;flex:none}.demo-table{border-collapse:collapse;width:100%;background:#fff}.demo-table th,.demo-table td{text-align:left;border-bottom:1px solid #e5edfc;padding:10px;vertical-align:middle;font-size:16px}.demo-table th{font-weight:850;color:#2a369d;background:#f3f5ff}.data-table-scroll{overflow:auto;max-height:470px;border:1px solid #e1e8fa;border-radius:10px}.badge-pale{font-size:16px;font-weight:750;color:#6030c6;border-radius:999px;background:#ede8ff;padding:5px 12px;display:inline-flex;gap:6px;align-items:center}.symbol-math{font-size:23px;color:#6138c7;font-weight:800}.key-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.calc-key{border-radius:10px;min-height:58px;background:#f5f7ff;border:1px solid #dce4fb;color:#162873;font-size:21px;font-weight:750}.calc-key:hover{background:#e7edff}.calc-key.operator{color:#662adc;background:#f1ecff}.calc-key.equals{background:#6725e4;color:white}.calc-display{background:#f3f6fe;border:1px solid #c9d7fa;padding:18px;border-radius:14px;margin:12px 0 20px;font-size:32px;min-height:90px;width:100%;text-align:right;color:#10217f;font-weight:800}.calc-history{max-height:300px;overflow-y:auto}.history-item{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e1e7f5;padding:9px;font-size:16px}.calendar-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between}.cal-month{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-top:12px}.cal-dow{text-align:center;font-weight:850;color:#485eb5;font-size:16px;padding:6px}.cal-cell{border:1px solid #e1e9f7;border-radius:9px;min-height:64px;text-align:left;padding:6px;display:flex;flex-direction:column;align-items:flex-start;background:#fff;font-weight:800;color:#263c8b}.cal-cell:hover{border-color:#8657f8}.cal-cell.is-selected{border:2px solid #6521dd;background:#f3ecff}.cal-cell.is-other{opacity:.35}.cal-cell.is-today .day-solar{background:#0a44de;color:white}.day-solar{border-radius:5px;padding:0 5px}.day-lunar{font-size:16px;color:#9b59bb;margin-top:auto}.note-area{width:100%;min-height:270px;resize:vertical;border:1px solid #ccd8f8;border-radius:12px;padding:15px;font-size:17px;line-height:1.6}.qr-output{background:#fff;border:1px solid #d9e3f8;border-radius:13px;min-height:280px;padding:15px;display:grid;place-items:center;overflow:auto}.qr-output canvas{max-width:100%;height:auto}.stack{display:grid;gap:15px}.mini-kpi{font-size:16px;color:#536d9b}.intro-card{border-radius:17px;padding:24px;border:1px solid #dbe4fb;background:white;margin:20px 0}.intro-card h1{font-size:34px;color:#142dab;margin:0 0 10px}.intro-card p{font-size:17px}.help-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.help-grid .tool-box{min-height:155px}.status-pill{background:#ffedbd;color:#6e5000;font-weight:850;border-radius:999px;padding:5px 10px;font-size:16px}.spin{display:inline-block;border:3px solid #ffffff60;border-top-color:currentColor;border-radius:50%;width:18px;height:18px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}\n@media(max-width:1360px){.header-tagline{display:none}.brand-divider{display:none}.nav-link{padding:10px 12px}.hero{grid-template-columns:1.15fr .85fr}.hero-art{min-height:242px}.hero-cta{grid-column:1/-1;display:none}.group-heading-text h3{font-size:17px}.group-heading-text p{font-size:16px}.tool-card{gap:7px;padding:8px}.tool-tile{height:42px;width:42px}.tool-names b{font-size:16px}.tool-names small{font-size:16px}.portable-laptop{display:none}}\n@media(max-width:1070px){.brand-wordmark{font-size:29px}.main-nav{gap:5px}.nav-link{font-size:16px;padding:9px 10px}.columns{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr 1fr}.hero-copy{padding:25px}.hero-title{font-size:46px}.hero-subtitle{white-space:normal}.hero-art{max-height:270px}.portable-text{max-width:none}.portable-stripe{flex-basis:40%}.tool-grid-2{grid-template-columns:1fr}.tool-box{padding:17px}}\n@media(max-width:750px){.shell{width:calc(100% - 28px)}.header-inner{min-height:67px;gap:5px}.brand-mark{height:48px;width:48px}.brand-wordmark{font-size:26px;letter-spacing:-1.2px}.mobile-menu{display:flex;margin-left:auto}.main-nav{display:none;position:absolute;top:65px;right:14px;left:14px;z-index:50;flex-direction:column;align-items:stretch;background:#5121ce;border-radius:13px;padding:10px;box-shadow:0 15px 25px #1f158946}.main-nav.open{display:flex}.nav-link{padding:14px 15px}.hero{display:block}.hero-copy{padding:23px}.hero-title{font-size:clamp(39px,8.7vw,54px)}.hero-subtitle{font-size:20px;white-space:normal}.hero-art{height:200px;min-height:200px}.hero-art img{height:240px;object-fit:cover}.hero-cta{display:none}.section-toolbar{align-items:stretch;flex-direction:column;gap:10px}.toolbar-right{width:100%}.search-box{flex:1;width:auto;max-width:none}.columns{grid-template-columns:1fr;gap:12px}.group-panel{min-height:unset}.mytools-empty{min-height:160px}.group-heading-text h3{font-size:20px}.group-heading-text p{font-size:16px}.group-items{gap:9px}.tool-card{min-height:74px;padding:10px 12px}.tool-tile{width:49px;height:49px}.tool-names b{font-size:17px}.tool-names small{font-size:16px}.list-view .group-items{grid-template-columns:1fr}.portable-strip{flex-wrap:wrap;gap:15px;padding:18px}.portable-stripe{flex-basis:100%}.portable-text{flex-basis:100%}.portable-actions{width:100%}.footer-main{flex-direction:column}.footer-links{flex-wrap:wrap;gap:10px 20px}.tool-page{padding-inline:0}.tool-heading-icon{width:57px;height:57px}.tool-heading h1{font-size:29px}.tool-heading p{font-size:16px}.tool-heading .button{margin-left:0}.form-grid,.form-grid.three{grid-template-columns:1fr}.results-grid,.results-grid.three,.related-tools,.help-grid{grid-template-columns:1fr 1fr}.result-tile output{font-size:24px}.tool-heading{gap:13px}.tool-box-heading{font-size:19px}}\n@media(max-width:420px){.brand-wordmark{font-size:22px}.brand-mark{width:42px;height:42px}.hero-title{font-size:38px}.hero-subtitle{font-size:19px}.hero-copy{padding:20px 15px}.hero-perks{gap:9px}.hero-perks span{white-space:normal}.results-grid,.results-grid.three,.related-tools,.help-grid{grid-template-columns:1fr}.tool-heading h1{font-size:27px}.cal-cell{min-height:59px;padding:4px}.day-lunar{font-size:16px}.tool-page{padding-top:14px}}\n@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}\n\n/* Startup fallback, replaced by app.js after successful module import. */\n.startup-panel{max-width:820px;margin:clamp(32px,8vh,100px) auto;background:#fff;border:1px solid #dfd7ff;border-radius:20px;box-shadow:0 14px 36px rgba(51,34,122,.09);padding:30px;color:#182b79;font-size:16px;line-height:1.65}.startup-panel h1{font-size:25px;color:#5221c9;margin:0 0 16px}.startup-panel p{font-size:16px}.startup-panel code{color:#3e19b5;background:#f2efff;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}\n\n/* Epsilon Soft PDF Studio - shared document workspace. All UI text >=16px. */\n.pdf-studio{--pdf-purple:#6429e3;--pdf-blue:#1733a5;--pdf-border:#d9dffd;--pdf-ink:#132565;color:var(--pdf-ink);font-size:16px;display:grid;gap:14px}\n.pdf-studio *{box-sizing:border-box}\n.pdf-studio button,.pdf-studio input,.pdf-studio select,.pdf-studio textarea{font:inherit}\n.pdf-intro{display:flex;align-items:center;justify-content:space-between;gap:24px;border-radius:18px;background:linear-gradient(115deg,#f3eeff 0%,#ecf4ff 54%,#fff9e3 100%);border:1px solid #e3d9ff;padding:20px 24px}\n.pdf-intro h2{font-size:clamp(23px,2vw,30px);margin:0 0 8px;font-weight:900;color:#171781}\n.pdf-intro p{font-size:16px;line-height:1.5;margin:0}\n.pdf-eyebrow{font-size:16px!important;letter-spacing:.06em;font-weight:850;color:#7633dc;margin-bottom:7px!important}\n.pdf-privacy{min-width:245px;background:#fff8;border:1px solid #ddd4ff;padding:12px;border-radius:13px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}\n.pdf-privacy small{display:block;flex-basis:100%;color:#5a6e9f;font-size:16px;font-weight:450}\n.pdf-topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:13px 16px;background:white;border:1px solid var(--pdf-border);border-radius:16px;flex-wrap:wrap}\n.pdf-fileline{display:flex;align-items:center;gap:10px;min-width:0;flex:1}\n.pdf-fileline b{font-size:18px;display:block;max-width:380px;overflow-wrap:anywhere}\n.pdf-fileline small{color:#6275a2;font-size:16px;display:block}\n.pdf-fileicon{background:#f0e9ff;border-radius:12px;padding:9px;color:#7533e8;display:grid;place-items:center}\n.pdf-topactions{display:flex;gap:8px;flex-wrap:wrap}\n.pdf-topactions .button{padding:10px 13px;font-size:16px;min-height:42px}\n.pdf-studio .button:disabled{opacity:.45;cursor:not-allowed}\n.pdf-dropzone{display:grid;justify-items:center;gap:13px;padding:55px 20px;border:2px dashed #b9a4ff;border-radius:20px;background:linear-gradient(135deg,#fbfaff,#f4f6ff);text-align:center;transition:background .2s,border-color .2s}\n.pdf-dropzone.dragging{border-color:#6f2be3;background:#e9dffe}\n.pdf-dropzone h3{font-size:26px;margin:0;color:#21259a}\n.pdf-dropzone p{max-width:570px;margin:0;color:#5571a4;font-size:17px;line-height:1.65}\n.pdf-dropzone small{font-size:16px;color:#667ba3}\n.pdf-drop-icon{width:84px;height:84px;color:#662bdb;background:linear-gradient(135deg,#eadbff,#c6e6ff);display:grid;place-items:center;border-radius:23px}\n.pdf-drop-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}\n.pdf-tabs{display:flex;flex-wrap:wrap;gap:7px;align-items:center;border:1px solid #d5dcf8;border-radius:16px;background:#f5f5ff;padding:8px}\n.pdf-tab{display:flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:11px;padding:12px 15px;background:transparent;color:#344a91;font-size:16px;font-weight:850;cursor:pointer}\n.pdf-tab:hover{background:#e8e8fc}\n.pdf-tab.is-active{color:#fff;background:linear-gradient(115deg,#5825d9,#6b34ee);box-shadow:0 6px 14px #5121bc31}\n.pdf-studio .tool-box{padding:19px}\n.pdf-operations{border:1px solid #d6dffe;border-radius:15px;background:white}\n.pdf-operations [data-panel][hidden]{display:none!important}\n.pdf-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;margin-bottom:13px}\n.pdf-panel-head h3{font-size:21px;display:flex;gap:9px;align-items:center;color:#19278c;margin:0}\n.pdf-panel-head p{font-size:16px;margin:0;color:#5a6eaa;flex:1;min-width:260px;line-height:1.5}\n.pdf-action-row{display:flex;flex-wrap:wrap;gap:8px}\n.pdf-action-row .button{font-size:16px;min-height:42px;padding:9px 13px}\n.pdf-inline-form,.pdf-edit-settings,.pdf-compress{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-top:15px;padding:13px;background:#f6f8ff;border:1px solid #e1e6ff;border-radius:12px}\n.pdf-inline-form label,.pdf-edit-settings label,.pdf-compress label{display:flex;flex-direction:column;gap:6px;font-size:16px;font-weight:800;color:#182a88;flex:1;min-width:145px}\n.pdf-inline-form input,.pdf-edit-settings input,.pdf-edit-settings select,.pdf-compress select{width:100%;height:43px;background:white;padding:7px 11px;border:1px solid #cbd5f9;border-radius:9px;font-size:16px;color:#243d84}\n.pdf-edit-settings input[type=\"color\"]{padding:3px;max-width:90px;cursor:pointer}\n.pdf-panel-tip{color:#647aa9;font-size:16px;margin:10px 0 0;line-height:1.5}\n.pdf-danger-tip{font-size:16px;line-height:1.55;background:#fff8e4;color:#8c5711;border:1px solid #f3d99a;border-radius:10px;margin:14px 0 0;padding:12px}\n.pdf-editor-grid{display:grid;grid-template-columns:minmax(205px,260px) minmax(0,1fr);gap:14px;align-items:stretch}\n.pdf-page-sidebar,.pdf-viewer{background:#fff;border:1px solid #dce4fa;border-radius:16px;min-height:420px;overflow:hidden}\n.pdf-page-sidebar{padding:12px}\n.pdf-sidebar-title{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:18px;font-weight:900;color:#1b2f93}\n.pdf-sidebar-title span{background:#f3ecff;color:#6028d7;border-radius:30px;padding:5px 10px;font-size:16px}\n.pdf-page-hint{font-size:16px;color:#6378a5;line-height:1.4;margin:10px 0}\n.pdf-thumbnails{height:min(73vh,730px);overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;padding:5px;scrollbar-color:#a8b6e5 transparent}\n.pdf-thumb{position:relative;min-width:0;background:#f7f9ff;border:2px solid #e4eafc;border-radius:10px;padding:7px;cursor:grab}\n.pdf-thumb:hover{border-color:#a688ef}.pdf-thumb.active{border-color:#6930df;background:#efe9ff}\n.pdf-thumb-check{position:absolute;top:5px;right:5px;width:20px;height:20px;accent-color:#622cdc;z-index:2;cursor:pointer}\n.pdf-thumb-button{padding:0;border:0;background:transparent;display:flex;flex-direction:column;gap:5px;align-items:center;cursor:pointer;width:100%;min-height:111px;font-size:16px;color:#273c8b;font-weight:800}\n.pdf-thumb-button canvas{width:auto;max-width:100%;max-height:104px;height:auto;background:white;box-shadow:0 3px 9px #20326b1c;border:1px solid #e0e5f5}\n.pdf-viewer{display:flex;flex-direction:column;background:#f5f7ff}\n.pdf-viewer-toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:10px 17px;background:#fff;border-bottom:1px solid #dde5fa;font-weight:900;color:#223995;min-height:49px}\n.pdf-viewer-toolbar>div{display:flex;gap:8px}\n.pdf-icon-btn{display:grid;place-items:center;border:1px solid #cdd7f5;border-radius:9px;background:#f8faff;color:#5a2dd0;width:36px;height:32px;cursor:pointer}\n.pdf-icon-btn:first-child svg{transform:rotate(180deg)}\n.pdf-preview-area{background:radial-gradient(circle at 50% 30%,#f0edff 0%,#e7eeff 80%);min-height:520px;padding:18px;display:flex;justify-content:center;align-items:flex-start;overflow:auto;position:relative}\n#pdf-canvas{display:block;background:white;box-shadow:0 5px 28px #1c316131;max-width:100%;height:auto;cursor:crosshair}\n.pdf-preview-message{color:#5c6f99;font-size:16px;position:absolute;top:25%;padding:15px;border-radius:12px;background:#fff;max-width:90%;text-align:center}\n.pdf-preview-message[hidden]{display:none}\n.pdf-preview-caption{font-size:16px;color:#6076a8;padding:10px;margin:0;text-align:center;background:#fff}\n.pdf-signbox{display:flex;align-items:flex-start;gap:13px;flex-wrap:wrap;margin-top:15px;padding:13px;background:#fbfaff;border-radius:12px;border:1px solid #ded6ff}\n.pdf-signbox>div{max-width:240px}\n.pdf-signbox strong{display:block;font-size:17px;color:#222890}\n.pdf-signbox p{font-size:16px;color:#6680ac;line-height:1.4;margin:4px 0}\n.pdf-signbox canvas{background:white;width:min(480px,100%);max-width:100%;height:150px;border:1px dashed #9ea7f2;border-radius:11px;touch-action:none;cursor:crosshair}\n.pdf-advanced{display:grid;gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}\n.pdf-advanced article{background:#f5f6ff;border:1px solid #e3dfff;border-radius:11px;padding:15px}\n.pdf-advanced article b{display:block;font-size:18px;color:#30238d;margin-bottom:10px}\n.pdf-advanced article p{color:#576ca0;font-size:16px;line-height:1.6;margin:0}\n.pdf-busy{position:fixed;z-index:200;bottom:25px;right:25px;max-width:min(440px,90vw);border-radius:13px;background:#5624cb;color:white;display:flex;align-items:center;gap:10px;padding:14px 18px;font-size:16px;font-weight:800;box-shadow:0 14px 40px #3d258257}\n.pdf-busy[hidden],.pdf-message[hidden]{display:none!important}\n.pdf-message{background:#fff1ed;border:1px solid #f0a09d;color:#922d2d;font-size:16px;padding:12px 16px;border-radius:12px;line-height:1.5;overflow-wrap:anywhere}\n.pdf-legal{color:#6176a4;font-size:16px;line-height:1.55;margin:6px 0 0}\n@media(max-width:1050px){.pdf-intro{flex-direction:column;align-items:flex-start}.pdf-privacy{width:100%}.pdf-editor-grid{grid-template-columns:210px minmax(0,1fr)}.pdf-advanced{grid-template-columns:1fr 1fr}}\n@media(max-width:740px){.pdf-editor-grid{grid-template-columns:1fr}.pdf-page-sidebar{min-height:0}.pdf-thumbnails{height:auto;max-height:240px;grid-template-columns:repeat(4,minmax(0,1fr))}.pdf-thumb-check{width:18px;height:18px}.pdf-thumb-button{min-height:90px}.pdf-dropzone{padding:28px 13px}.pdf-topactions{width:100%;justify-content:flex-start}.pdf-tab{flex:1;justify-content:center;padding:10px}.pdf-panel-head{display:block}.pdf-panel-head p{margin-top:10px}.pdf-action-row .button{flex:1}.pdf-preview-area{min-height:340px}.pdf-advanced{grid-template-columns:1fr}}\n@media(max-width:430px){.pdf-thumbnails{grid-template-columns:repeat(3,minmax(0,1fr))}.pdf-tabs{gap:4px}.pdf-tab{font-size:16px}.pdf-intro{padding:17px}.pdf-intro h2{font-size:24px}}\n";
+const themeSheet = document.createElement('style');
+themeSheet.id = 'epsilon-soft-theme';
+themeSheet.textContent = EPSILON_STYLES + "\n/* ES TOOLKIT desktop-density: size/spacing parity with the approved Portable app.\n * Does not scale text below 16px, does not touch home cards, math or tool logic.\n * Compact only for laptop/desktop browser windows; mobile remains unchanged. */\n@media (min-width: 1024px) and (max-height: 900px) {\n  .tool-page{padding:8px 4px 18px}\n  .tool-page .breadcrumbs{margin-bottom:8px;gap:8px;line-height:1.25}\n  .tool-page .tool-heading{gap:11px;margin-bottom:9px;flex-wrap:nowrap}\n  .tool-page .tool-heading-icon{width:50px;height:50px;border-radius:13px}\n  .tool-page .tool-heading-icon .svg-icon{width:29px;height:29px}\n  .tool-page .tool-heading h1{font-size:28px;line-height:1.12;letter-spacing:-.55px;margin-bottom:2px}\n  .tool-page .tool-heading p{font-size:16px;line-height:1.26}\n  .tool-page .tool-heading .button{min-height:42px;padding:7px 12px;margin-left:auto}\n  .tool-page .tool-surface{gap:10px}\n  .tool-page .tool-grid-2{gap:10px}\n  .tool-page .tool-box{padding:12px;border-radius:14px}\n  .tool-page .tool-box-heading{font-size:19px;margin-bottom:9px}\n  .tool-page .form-grid{gap:10px}\n  .tool-page .form-field select,.tool-page .form-field>input,.tool-page .form-field textarea{min-height:43px;padding:7px 10px}\n  .tool-page .input-wrap{min-height:43px}\n}\n";
+document.head.appendChild(themeSheet);
+// Dynamic layout styling, bundled in app.js.
+themeSheet.textContent += "\n/* Epsilon Soft navigation: web-first sidebar. The base theme remains unchanged. */\nbody.es-has-sidebar{background:radial-gradient(ellipse at 85% 12%,#f1ecff,transparent 48%),#f8faff}\n.es-app-layout.shell{max-width:1620px;width:calc(100% - 42px);display:grid;grid-template-columns:232px minmax(0,1fr);gap:17px;align-items:start;margin:0 auto;padding-top:15px;transition:grid-template-columns .17s ease}\n.es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n.es-app-layout .es-main-pane{min-width:0;width:100%;margin:0;max-width:none;min-height:calc(100vh - 235px)}\n.es-sidebar{background:linear-gradient(153deg,#f7f2ff 0%,#fff 47%,#f6f9ff 100%);border:1px solid #ddd9f7;box-shadow:0 7px 27px #29126c0d;border-radius:17px;position:sticky;top:13px;height:calc(100dvh - 26px);min-height:400px;max-height:940px;display:flex;flex-direction:column;gap:6px;padding:12px 10px;z-index:45;min-width:0}\n.es-sidebar-top{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 4px 10px}\n.es-sidebar-title{font-size:16px;font-weight:900;letter-spacing:.55px;color:#5131b5;white-space:nowrap}\n.es-side-toggle{display:grid;place-items:center;background:#f0eaff;border:1px solid #d8cbff;color:#5e27d8;border-radius:10px;min-height:39px;min-width:39px;padding:6px;flex-shrink:0}\n.es-side-toggle:hover{background:#e8dfff}\n.es-side-nav{display:flex;flex-direction:column;gap:5px;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#ddd5f5 transparent;padding:2px 2px 8px}\n.es-side-link{min-height:50px;border:1px solid transparent;border-radius:12px;padding:7px 8px;display:flex;align-items:center;gap:10px;color:#283a88;background:transparent;position:relative;font-size:16px;font-weight:750;text-align:left}\n.es-side-link:hover{background:white;border-color:#e6e2f6}\n.es-side-link[aria-current=\"page\"]{background:#eee8ff;color:#5124c2;border-color:#dacdff;box-shadow:0 2px 9px #5a26ba12}\n.es-side-link[aria-current=\"page\"]:before{content:\"\";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:4px;background:#7434ec}\n.es-side-icon{height:38px;width:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:11px;background:#eee5ff;color:#6b30e0}\n.es-side-link[data-side=\"all\"] .es-side-icon{background:#e3ecff;color:#2562dc}\n.es-side-link[data-side=\"calc\"] .es-side-icon{background:#dff3ff;color:#0081ea}\n.es-side-link[data-side=\"engineering\"] .es-side-icon{background:#fff0dd;color:#ed781f}\n.es-side-link[data-side=\"utility\"] .es-side-icon{background:#dcf8ee;color:#039d7c}\n.es-side-link[data-side=\"mytools\"] .es-side-icon{background:linear-gradient(135deg,#985dff,#6924e3);color:#fff}\n.es-side-link[data-side=\"ecosystem\"] .es-side-icon{background:linear-gradient(145deg,#e6e1ff,#d9e9ff);color:#6044db}\n.es-side-link[data-side=\"portable\"] .es-side-icon{background:#e3edff;color:#2156c8}\n.es-side-name{flex:1;min-width:0;line-height:1.25;overflow-wrap:anywhere}\n.es-side-count{display:grid;place-items:center;min-width:29px;min-height:29px;padding:1px 5px;font-size:16px;font-weight:850;border-radius:50%;background:#e7ecff;color:#344da3;flex-shrink:0}\n.es-side-divider{height:1px;background:#e4e4f4;margin:8px 5px}\n.es-sidebar-bottom{display:grid;gap:4px;border-top:1px solid #e0e4f6;padding:10px 2px 0;margin-top:auto}\n.es-sidebar-bottom .es-side-link{min-height:47px}\n.es-is-collapsed .es-sidebar{padding-inline:7px}\n.es-is-collapsed .es-sidebar-top{padding:0 0 10px;justify-content:center}\n.es-is-collapsed .es-sidebar-title,.es-is-collapsed .es-side-name,.es-is-collapsed .es-side-count{display:none}\n.es-is-collapsed .es-side-link{justify-content:center;padding:5px 2px;min-height:49px}\n.es-is-collapsed .es-side-icon{height:40px;width:40px;flex-basis:40px}\n.es-is-collapsed .es-side-nav{padding-inline:0}\n.es-is-collapsed .es-sidebar-bottom{padding:10px 0 0}\n.es-is-collapsed .es-side-link:hover:after,.es-is-collapsed .es-side-link:focus-visible:after{content:attr(data-label);position:absolute;z-index:100;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:#25145c;color:#fff;white-space:nowrap;min-width:max-content;padding:9px 12px;border-radius:9px;box-shadow:0 7px 18px #240b6540;font-size:16px;font-weight:650;pointer-events:none}\n.es-app-layout .page-home{padding-top:0}\n.es-feature{height:157px;min-height:157px;display:grid;grid-template-columns:minmax(0,1fr) 34%;overflow:hidden;border:1px solid #d6def6;border-radius:17px;background:linear-gradient(110deg,#f3f7ff 0%,#e8f3ff 55%,#c4bcff 100%);position:relative;margin:0 0 16px}\n.es-feature-copy{padding:16px 12px 12px 22px;position:relative;z-index:2;min-width:0}\n.es-feature-eyebrow{font-size:16px;color:#1835b6;font-weight:850;letter-spacing:.75px;margin:0 0 4px}\n.es-feature h1{font-size:34px;line-height:1.08;margin:0 0 4px;color:#071faa;font-weight:950;letter-spacing:-1px}\n.es-feature h1 strong{color:#ffcc00}\n.es-feature .es-feature-tag{margin:0;color:#172e84;font-size:16px;line-height:1.27;font-weight:800}\n.es-feature .es-feature-meta{margin:5px 0 0;color:#4b6092;font-size:16px;line-height:1.3}\n.es-feature-art{position:relative;overflow:hidden;background:linear-gradient(120deg,#d4eaff,#8065ed)}\n.es-feature-art img{height:100%;width:100%;object-fit:cover;object-position:center}\n.es-feature-link{display:inline-flex;align-items:center;gap:7px;margin-top:6px;color:#5123bd;font-size:16px;font-weight:850;text-decoration:underline;text-underline-offset:3px}\n.es-directory{margin:0 0 15px;scroll-margin-top:12px}\n.es-directory-header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:0 0 12px;flex-wrap:wrap}\n.es-directory-title-row{display:flex;align-items:center;gap:10px;min-width:0}\n.es-directory-title-row .es-directory-emblem{width:45px;height:45px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(140deg,#9260ff,#5925d9);color:white;flex:0 0 45px}\n.es-directory-title{margin:0;color:#172d99;font-size:21px;line-height:1.22;font-weight:900}\n.es-directory-sub{margin:2px 0 0;font-size:16px;color:#61749a;line-height:1.23}\n.es-directory-total{font-size:16px;font-weight:850;color:#5128ca;background:#efeaff;border-radius:11px;padding:6px 10px;flex-shrink:0}\n.es-catalog-toolbar{display:flex;align-items:center;gap:8px;margin-left:auto}\n.es-catalog-toolbar .search-box{width:min(280px,31vw);min-height:43px}\n.es-catalog-toolbar .view-toggle{flex-shrink:0}\n.es-directory-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;align-items:stretch}\n.es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}\n.es-directory-grid .tool-card{min-width:0;min-height:82px;padding:9px 9px;border-radius:13px}\n.es-directory-grid .tool-link{gap:9px}\n.es-directory-grid .tool-tile{height:42px;width:42px;border-radius:11px;flex-shrink:0}\n.es-directory-grid .tool-names b{font-size:16px;line-height:1.2}\n.es-directory-grid .tool-names small{font-size:16px;line-height:1.22}\n.es-directory-grid .star-btn{width:27px;min-width:27px;height:36px}\n.es-directory-grid .mytools-empty{grid-column:1/-1;min-height:188px;padding:26px 18px}\n.es-directory-grid .es-no-matches{grid-column:1/-1;border:1px dashed #d6c9ff;background:#faf8ff;color:#586a98;border-radius:13px;padding:32px;text-align:center}\n.es-mini-promo{border:1px solid #ded9ff;background:linear-gradient(105deg,#f7f1ff,#f3f8ff);border-radius:14px;padding:11px 16px;display:flex;align-items:center;gap:12px;margin-bottom:17px;color:#4e3997}\n.es-mini-promo .svg-icon{color:#7936e9}\n.es-mini-promo strong{color:#261d92}\n.es-mini-promo a{color:#5729c7;font-weight:800;white-space:nowrap;margin-left:auto}\n.es-static-page{padding:3px 0 20px;display:grid;gap:14px}\n.es-static-intro{display:flex;align-items:center;gap:14px;padding:19px 22px;border:1px solid #dedffa;border-radius:16px;background:linear-gradient(112deg,#f3f1ff,#f1f7ff)}\n.es-static-intro-icon{display:grid;place-items:center;flex-shrink:0;width:55px;height:55px;border-radius:14px;background:linear-gradient(135deg,#8650ee,#4838cb);color:white}\n.es-static-intro h1{margin:0;color:#18299c;font-weight:900;font-size:28px}\n.es-static-intro p{margin:3px 0 0;color:#566b9d;font-size:16px}\n.es-system-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}\n.es-system-card{border:1px solid #dde3f8;border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:12px;padding:19px;min-width:0;box-shadow:0 4px 17px #1b23820b}\n.es-system-head{display:flex;align-items:center;gap:12px}\n.es-system-logo{height:56px;width:56px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(125deg,#e3ecff,#e8dfff);color:#5225d7;flex:0 0 56px;overflow:hidden}\n.es-system-logo img{height:100%;width:100%;object-fit:contain}\n.es-system-card h2{font-size:21px;line-height:1.2;color:#142a99;margin:0}\n.es-system-card p{color:#566b95;font-size:16px;line-height:1.5;margin:0}\n.es-system-link{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:#f1ecff;border:1px solid #e2d5ff;color:#5127ca;padding:9px 13px;border-radius:10px;font-size:16px;font-weight:800}\n.es-system-link:hover{background:#e5dcff}\n.es-system-pending{font-size:16px;color:#697ca1}\n.es-portable-guide{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}\n.es-portable-guide .tool-box{min-height:0}\n.es-portable-guide h2{font-size:19px}\n.es-portable-guide p,.es-portable-guide li{font-size:16px;line-height:1.55}\n.es-portable-guide ul{padding-left:21px;margin:8px 0}\n.es-tool-actions{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}\n.es-tool-actions .button{min-height:43px;padding:8px 13px;margin-left:0!important}\n.es-tool-actions .es-portable-button{background:#edf2ff;color:#194ab2;border:1px solid #cddaff}\n.es-tool-actions .es-portable-button:hover{background:#e5ebff}\n.es-tool-actions .es-portable-button.is-loading{opacity:.75}\n.es-modal-layer{position:fixed;inset:0;background:#0c123677;display:grid;place-items:center;padding:20px;z-index:2100}\n.es-modal{width:min(470px,100%);background:#fff;border:1px solid #d8caff;box-shadow:0 24px 70px #15104b55;border-radius:19px;padding:23px;display:grid;gap:14px}\n.es-modal-icon{display:grid;place-items:center;height:48px;width:48px;border-radius:13px;background:#e9e1ff;color:#6331de}\n.es-modal h2{font-size:21px;margin:0;color:#1c268f}\n.es-modal p{font-size:16px;margin:0;color:#50628b;line-height:1.55}\n.es-modal-actions{display:flex;justify-content:flex-end}\n.es-mobile-backdrop{display:none}\n.site-header .main-nav [data-nav=\"explore\"],.site-header .main-nav [data-nav=\"portable\"]{display:none}\n.site-header .mobile-menu{display:none!important}\n@media(min-width:1450px){.es-directory-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}\n@media(max-width:1220px) and (min-width:951px){.es-app-layout.shell{grid-template-columns:206px minmax(0,1fr);gap:12px}.es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}.es-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:1080px){\n .es-app-layout.shell,.es-app-layout.es-is-collapsed{display:block;width:calc(100% - 28px);padding-top:12px}\n .es-app-layout .es-main-pane{width:100%}\n .es-sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;min-height:0;max-height:none;width:min(325px,calc(100vw - 52px));padding:15px 12px;border-radius:0 18px 18px 0;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 0 1px #ddd9f7,10px 0 40px #0e0c3540;z-index:1300}\n .es-sidebar.es-mobile-open{transform:translateX(0)}\n .es-is-collapsed .es-sidebar{padding:15px 12px}\n .es-is-collapsed .es-sidebar-title,.es-is-collapsed .es-side-name,.es-is-collapsed .es-side-count{display:block}\n .es-is-collapsed .es-sidebar-top{justify-content:space-between;padding:0 4px 10px}\n .es-is-collapsed .es-side-link{justify-content:flex-start;padding:7px 8px}\n .es-is-collapsed .es-sidebar-bottom{padding:10px 2px 0}\n .es-mobile-backdrop.es-show{position:fixed;inset:0;z-index:1250;background:#100b3e88;display:block}\n .site-header .main-nav{display:none!important}\n .site-header .mobile-menu{display:grid!important;margin-left:auto;place-items:center;order:10}\n .es-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}\n .es-feature{grid-template-columns:minmax(0,1fr) 40%}\n .es-system-grid{grid-template-columns:repeat(2,minmax(0,1fr))}\n}\n@media(max-width:690px){\n .es-directory-grid,.es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}\n .es-feature{height:auto;min-height:145px;grid-template-columns:1fr}\n .es-feature-copy{padding:14px 17px}\n .es-feature h1{font-size:31px}\n .es-feature-art{display:none}\n .es-directory-header{align-items:stretch}\n .es-catalog-toolbar{width:100%;margin-left:0}\n .es-catalog-toolbar .search-box{flex:1;width:auto;min-width:0}\n .es-system-grid,.es-portable-guide{grid-template-columns:1fr}\n .es-mini-promo{flex-wrap:wrap}\n .es-mini-promo a{margin-left:0}\n .tool-heading .es-tool-actions{margin-left:0;width:100%;justify-content:flex-start}\n}\n@media(max-width:480px){\n .es-directory-grid,.es-directory-grid.es-view-list{grid-template-columns:1fr}\n .es-feature-eyebrow,.es-feature .es-feature-tag,.es-feature .es-feature-meta{font-size:16px}\n .es-feature-link{font-size:16px}\n .es-directory-title{font-size:19px}\n .es-directory-sub{font-size:16px}\n .es-static-intro{padding:15px}\n .es-static-intro h1{font-size:24px}\n .es-tool-actions .button{font-size:16px}\n}\n@media(prefers-reduced-motion:reduce){.es-app-layout.shell,.es-sidebar{transition:none}}\n";
+
+// Homepage is a desktop three-region dashboard: prominent hero / scrollable tool catalog / original Portable banner.
+// No changes to the 16 tool modules, app state, mathematical engines, or the normal collapsed tool sidebar.
+themeSheet.textContent += `
+/* Sidebar stays visible on homepage and category screens, as in the user's current screenshot. */
+body.es-catalog-mode .es-app-layout.shell{display:grid;grid-template-columns:232px minmax(0,1fr);gap:17px;max-width:1620px;width:calc(100% - 42px);padding-top:12px;margin:0 auto}
+body.es-catalog-mode .es-sidebar{display:flex}
+body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}
+body.es-catalog-mode .es-app-layout .es-main-pane{min-width:0;width:100%;margin:0;max-width:none}
+body.es-catalog-mode .site-header .main-nav [data-nav="explore"],
+body.es-catalog-mode .site-header .main-nav [data-nav="portable"]{display:none}
+body.es-catalog-mode .site-header .mobile-menu{display:none!important}
+/* All three dashboard regions remain visible inside a laptop viewport. Only tool cards scroll. */
+.es-dashboard-layout{height:clamp(575px,calc(100dvh - 145px),830px);display:grid;grid-template-rows:clamp(210px,28vh,258px) minmax(0,1fr) clamp(120px,16.5vh,150px);gap:12px;min-width:0;min-height:0}
+.es-dashboard-layout .hero{height:100%;min-height:0;margin:0;grid-template-columns:minmax(0,1.29fr) minmax(0,.98fr) minmax(235px,.9fr);border-radius:17px}
+.es-dashboard-layout .hero-copy{padding:16px 6px 13px 22px;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.es-dashboard-layout .eyebrow{font-size:16px;letter-spacing:1px;line-height:1.2;margin:0 0 5px}
+.es-dashboard-layout .hero-title{font-size:clamp(36px,2.95vw,47px);line-height:1;letter-spacing:-1.8px;white-space:nowrap}
+.es-dashboard-layout .hero-subtitle{font-size:clamp(16px,1.3vw,19px);line-height:1.25;margin:7px 0 5px;white-space:normal}
+.es-dashboard-layout .hero-description{font-size:16px;line-height:1.25}
+.es-dashboard-layout .hero-perks{margin-top:10px;gap:5px 11px;font-size:16px;line-height:1.2}
+.es-dashboard-layout .hero-perks span{gap:6px;white-space:normal}
+.es-dashboard-layout .check-dot{width:20px;height:20px;flex:0 0 20px}
+.es-dashboard-layout .hero-art{min-height:0;height:100%}
+.es-dashboard-layout .hero-art img{width:114%;height:100%;object-fit:cover}
+.es-dashboard-layout .hero-cta{display:flex;grid-column:auto;padding:15px 15px 13px;min-width:0;gap:3px;justify-content:space-between}
+.es-dashboard-layout .hero-cta h2{font-size:19px;line-height:1.18;margin:0 0 8px}
+.es-dashboard-layout .hero-cta p{font-size:16px;line-height:1.23;margin:4px 0;gap:7px}
+.es-dashboard-layout .hero-cta p svg{width:17px;height:17px}
+.es-dashboard-layout .hero-cta .button{min-height:40px;padding:8px 12px;font-size:16px;margin-top:6px;white-space:nowrap}
+/* Toolbar does NOT scroll; rows scroll below it without moving either banner. */
+.es-dashboard-layout .es-directory{display:flex;flex-direction:column;min-height:0;min-width:0;margin:0;overflow:hidden}
+.es-dashboard-layout .es-directory-header{flex:0 0 auto;min-height:49px;margin:0 0 7px;gap:8px}
+.es-dashboard-layout .es-directory-title-row{gap:9px}
+.es-dashboard-layout .es-directory-title-row .es-directory-emblem{height:40px;width:40px;flex-basis:40px;border-radius:11px}
+.es-dashboard-layout .es-directory-title{font-size:19px;line-height:1.15}
+.es-dashboard-layout .es-directory-sub{font-size:16px;line-height:1.2;margin-top:2px}
+.es-dashboard-layout .es-directory-total{font-size:16px;padding:4px 7px}
+.es-dashboard-layout .es-catalog-toolbar{gap:7px}
+.es-dashboard-layout .es-catalog-toolbar .search-box{min-height:39px;width:min(260px,26vw)}
+.es-dashboard-layout .es-directory-grid{grid-auto-rows:max-content;flex:1 1 auto;min-height:0;min-width:0;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#ab95df #edf1ff;align-content:start;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:1px 6px 5px 0}
+.es-dashboard-layout .es-directory-grid::-webkit-scrollbar{width:9px}
+.es-dashboard-layout .es-directory-grid::-webkit-scrollbar-track{background:#edf1ff;border-radius:9px}
+.es-dashboard-layout .es-directory-grid::-webkit-scrollbar-thumb{background:#af9be4;border:2px solid #edf1ff;border-radius:9px}
+.es-dashboard-layout .es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+.es-dashboard-layout .es-directory-grid .tool-card{min-height:77px;height:auto;padding:7px 8px;align-self:stretch}
+.es-dashboard-layout .es-directory-grid .tool-tile{height:39px;width:39px;flex-basis:39px}
+.es-dashboard-layout .es-directory-grid .tool-tile .svg-icon{width:23px;height:23px}
+.es-dashboard-layout .es-directory-grid .tool-names b{font-size:16px}
+.es-dashboard-layout .es-directory-grid .tool-names small{font-size:16px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.es-dashboard-layout .es-directory-grid .mytools-empty{min-height:160px}
+/* Original gradient Portable promotional artwork stays in the lower fixed region. */
+.es-dashboard-layout .portable-strip{height:100%;min-height:0;margin:0;display:grid;grid-template-columns:minmax(172px,.85fr) minmax(230px,1.25fr) minmax(110px,.58fr) minmax(170px,.72fr);align-items:center;gap:12px;padding:12px 17px;border-radius:17px;overflow:hidden}
+.es-dashboard-layout .portable-stripe{flex:none;min-width:0;gap:9px}
+.es-dashboard-layout .win-badge{width:65px;height:65px;flex:0 0 65px}
+.es-dashboard-layout .win-badge svg{width:36px;height:36px}
+.es-dashboard-layout .portable-stripe h3{font-size:22px;margin:0}
+.es-dashboard-layout .portable-stripe p{font-size:16px;margin:0}
+.es-dashboard-layout .portable-strip .status{font-size:14px;white-space:nowrap}
+.es-dashboard-layout .portable-text{min-width:0;max-width:none}
+.es-dashboard-layout .portable-text h3{font-size:17px;line-height:1.25;margin:0 0 6px}
+.es-dashboard-layout .portable-text p{font-size:16px;line-height:1.3;margin:0}
+.es-dashboard-layout .portable-laptop{display:block;max-width:100%;height:100%;max-height:124px;width:100%;object-fit:contain;opacity:.97;mix-blend-mode:screen}
+.es-dashboard-layout .portable-actions{min-width:0;width:100%;gap:4px}
+.es-dashboard-layout .portable-actions .button{min-height:40px;padding:7px 11px;white-space:nowrap;font-size:16px}
+.es-dashboard-layout .portable-actions span{font-size:15px;line-height:1.2}
+/* There is no unnecessary scrolling for small categories; the overflow scrollbar appears only when cards exceed the available height. */
+@media(min-width:951px) and (max-width:1220px){
+ body.es-catalog-mode .es-app-layout.shell{grid-template-columns:206px minmax(0,1fr);gap:12px}
+ body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}
+ .es-dashboard-layout .hero{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+ .es-dashboard-layout .hero-cta{display:none}
+ .es-dashboard-layout .hero-perks{display:flex}
+ .es-dashboard-layout .es-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .es-dashboard-layout .portable-strip{grid-template-columns:minmax(155px,.95fr) minmax(220px,1.3fr) minmax(160px,.75fr)}
+ .es-dashboard-layout .portable-laptop{display:none}
+ .es-dashboard-layout .portable-actions .button{white-space:normal}
+}
+@media(min-width:951px) and (max-height:790px){
+ .es-dashboard-layout{grid-template-rows:clamp(205px,28vh,218px) minmax(0,1fr) clamp(119px,17vh,135px);gap:9px}
+ .es-dashboard-layout .hero-copy{padding-block:10px}
+ .es-dashboard-layout .hero-description{display:none}
+ .es-dashboard-layout .hero-perks{margin-top:6px}
+ .es-dashboard-layout .hero-cta{padding:11px 13px 10px}
+ .es-dashboard-layout .hero-cta h2{font-size:18px;margin-bottom:4px}
+ .es-dashboard-layout .hero-cta p{margin:2px 0}
+ .es-dashboard-layout .hero-cta .button{min-height:37px;padding:7px}
+ .es-dashboard-layout .portable-strip{padding:9px 14px}
+ .es-dashboard-layout .portable-laptop{max-height:110px}
+}
+@media(max-width:1080px){
+ body.es-catalog-mode .es-app-layout.shell,body.es-catalog-mode .es-app-layout.es-is-collapsed{display:block;width:calc(100% - 28px);padding-top:12px}
+ body.es-catalog-mode .es-sidebar{display:flex}
+ body.es-catalog-mode .site-header .main-nav{display:none!important}
+ body.es-catalog-mode .site-header .mobile-menu{display:grid!important;margin-left:auto}
+ .es-dashboard-layout{height:auto;min-height:0;display:flex;flex-direction:column;gap:14px}
+ .es-dashboard-layout .hero{min-height:180px;height:auto;grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr)}
+ .es-dashboard-layout .hero-copy{padding:17px}
+ .es-dashboard-layout .hero-title{font-size:36px}
+ .es-dashboard-layout .hero-cta{display:none}
+ .es-dashboard-layout .hero-art{min-height:180px}
+ .es-dashboard-layout .es-directory{display:block;overflow:visible}
+ .es-dashboard-layout .es-directory-grid{overflow:visible;max-height:none;scrollbar-gutter:auto;grid-template-columns:repeat(3,minmax(0,1fr));padding-right:0}
+ .es-dashboard-layout .portable-strip{height:auto;min-height:143px;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,.7fr);padding:15px}
+ .es-dashboard-layout .portable-laptop{display:none}
+}
+@media(max-width:690px){
+ .es-dashboard-layout .hero{display:block}
+ .es-dashboard-layout .hero-art{display:none}
+ .es-dashboard-layout .hero-title{font-size:34px}
+ .es-dashboard-layout .hero-copy{padding:20px}
+ .es-dashboard-layout .hero-perks{gap:9px}
+ .es-dashboard-layout .es-directory-header{flex-wrap:wrap}
+ .es-dashboard-layout .es-catalog-toolbar{width:100%;margin-left:0}
+ .es-dashboard-layout .es-catalog-toolbar .search-box{flex:1 1 auto;width:auto}
+ .es-dashboard-layout .es-directory-grid,.es-dashboard-layout .es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .es-dashboard-layout .portable-strip{grid-template-columns:1fr;gap:11px}
+ .es-dashboard-layout .portable-stripe{gap:13px}
+ .es-dashboard-layout .portable-actions{max-width:350px}
+}
+@media(max-width:480px){
+ .es-dashboard-layout .es-directory-grid,.es-dashboard-layout .es-directory-grid.es-view-list{grid-template-columns:1fr}
+ .es-dashboard-layout .hero-subtitle{font-size:18px}
+}
+`;
+
+
+// Approved responsive and bilingual controls, visual-only styles.
+themeSheet.textContent += '\n/* Approved 2026-10-24 improvements: responsive width, viewport-fit, text-brand Hub and language picker. */\n@media(min-width:1081px){\n .shell,.header-inner.shell,.site-footer.shell{max-width:1880px;width:calc(100% - 36px)}\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell{max-width:1880px;width:calc(100% - 36px);grid-template-columns:clamp(280px,18vw,304px) minmax(0,1fr);gap:14px}\n .es-app-layout.es-is-collapsed,body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n .es-sidebar{height:calc(100dvh - 105px);min-height:0;max-height:none;top:12px}\n .es-dashboard-layout{height:calc(100dvh - 102px);min-height:515px;max-height:none;grid-template-rows:clamp(202px,27vh,258px) minmax(0,1fr) clamp(122px,16.8vh,151px);gap:10px}\n .es-dashboard-layout .es-directory{min-height:0;overflow:hidden}\n .es-dashboard-layout .es-directory-grid{min-height:0;overflow-y:auto;overscroll-behavior:contain}\n .es-dashboard-layout .hero{min-width:0}\n .es-dashboard-layout .hero-cta{min-width:0}\n}\n@media(min-width:1081px) and (max-width:1180px){\n .es-dashboard-layout .hero{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}\n .es-dashboard-layout .hero-cta{display:none}\n .es-dashboard-layout .es-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}\n .es-dashboard-layout .portable-strip{grid-template-columns:minmax(155px,.95fr) minmax(210px,1.25fr) minmax(154px,.75fr)}\n .es-dashboard-layout .portable-laptop{display:none}\n}\n@media(min-width:1081px) and (max-height:790px){\n .es-dashboard-layout{grid-template-rows:clamp(193px,26.5vh,217px) minmax(0,1fr) clamp(118px,16.3vh,132px);gap:9px}\n}\n@media(max-width:1080px){\n .shell,.header-inner.shell,.site-footer.shell{max-width:none;width:calc(100% - 28px)}\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell,body.es-catalog-mode .es-app-layout.es-is-collapsed{display:block;width:calc(100% - 28px);max-width:none}\n .es-sidebar{height:100dvh;min-height:0;max-height:none;top:0}\n .es-dashboard-layout{height:auto;min-height:0}\n .es-language-picker{order:9;margin-left:auto}\n .site-header .mobile-menu{order:10;margin-left:0}\n}\n.es-language-picker{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid #ffffff69;background:#250c9a4d;border-radius:11px;flex-shrink:0}\n.es-language-btn{border:0;border-radius:8px;min-width:38px;min-height:34px;padding:4px 7px;background:transparent;color:#fff;font-size:15px;font-weight:850;line-height:1.2;letter-spacing:.2px}\n.es-language-btn[aria-pressed="true"]{background:#fff;color:#4d21c7;box-shadow:0 2px 7px #2907603a}\n.es-language-btn:hover:not([aria-pressed="true"]){background:#ffffff28}\n.es-language-btn:focus-visible{outline:3px solid #ffdc08;outline-offset:2px}\n.es-hub-intro .es-hub-logo{height:61px;width:61px;flex:0 0 61px;border-radius:13px;background:transparent;overflow:hidden;box-shadow:none;padding:0}\n.es-hub-intro .es-hub-logo img{width:100%;height:100%;object-fit:contain}\n.es-hub-intro h1.es-hub-wordmark{display:flex;align-items:baseline;gap:0;margin:0;color:#071faf;font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:clamp(30px,2.9vw,43px);font-weight:950;letter-spacing:-1.7px;line-height:1.05;white-space:nowrap}\n.es-hub-intro h1.es-hub-wordmark strong{color:#ffd300;font:inherit;letter-spacing:-1.5px}\n .es-restored-landing .hero-subtitle{white-space:normal}\n .es-restored-landing .hero-copy{min-width:0}\n@media(max-width:390px){.brand-wordmark{font-size:20px}.brand-mark{width:38px;height:38px}.header-inner{gap:4px}.es-language-btn{min-width:32px;padding:4px}}\n';
+
+// Brand banner shells: artworks are text-free; all copy, buttons and badges are app-rendered.
+// The approved illustration is integrated into a single seamless background, rather than three disconnected panels.
+themeSheet.textContent += `
+/* Epsilon Soft banner shell v2: decorative image assets ONLY, editable app text. */
+.es-dashboard-layout .hero,.es-restored-landing .hero{
+ background-color:#eff6ff;
+ background-image:url('./assets/images/banner-main-visual.webp');
+ background-repeat:no-repeat;
+ background-position:center center;
+ background-size:cover;
+ isolation:isolate;
+}
+.es-dashboard-layout .hero .hero-art,.es-restored-landing .hero .hero-art{
+ background:transparent!important;
+ overflow:visible;
+ min-width:0;
+}
+.es-dashboard-layout .hero .hero-copy,.es-restored-landing .hero .hero-copy{z-index:2}
+.es-dashboard-layout .hero .hero-cta,.es-restored-landing .hero .hero-cta{
+ background:linear-gradient(132deg,rgba(6,42,196,.98),rgba(37,39,237,.97))!important;
+ border-radius:18px 0 0 18px;
+ box-shadow:-8px 0 19px rgba(37,43,173,.09);
+ z-index:2;
+}
+.es-dashboard-layout .hero .hero-cta::before,.es-restored-landing .hero .hero-cta::before{
+ background:radial-gradient(ellipse at 95% 3%,rgba(118,182,255,.38),transparent 68%);opacity:1;
+}
+.es-dashboard-layout .hero .button-yellow,.es-restored-landing .hero .button-yellow{
+ border-radius:999px;
+ box-shadow:0 4px 15px rgba(11,27,99,.22);
+}
+.es-dashboard-layout .portable-strip,.es-restored-landing .portable-strip{
+ background-color:#4e1fe9;
+ background-image:url('./assets/images/footer.png');
+ background-repeat:no-repeat;
+ background-position:center center;
+ background-size:cover;
+ isolation:isolate;
+}
+.es-dashboard-layout .portable-strip::before,.es-restored-landing .portable-strip::before{display:none}
+.es-dashboard-layout .portable-strip .button-yellow,.es-restored-landing .portable-strip .button-yellow{
+ border-radius:999px;box-shadow:0 5px 15px rgba(6,18,89,.25);
+}
+.es-dashboard-layout .portable-strip .portable-laptop,.es-restored-landing .portable-strip .portable-laptop{
+ object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 9px 14px rgba(5,10,73,.40));
+}
+/* HUB wordmark deliberately follows the existing EPSILON SOFT CSS typography and palette. */
+.es-hub-intro h1.es-hub-wordmark{
+ color:#0619a9;font-family:Inter,"Segoe UI",Arial,sans-serif;font-weight:900;
+ letter-spacing:-1.7px;gap:0;
+}
+.es-hub-intro h1.es-hub-wordmark strong{color:#ffdc08;letter-spacing:-1.6px;font-weight:900}
+.es-hub-intro .es-hub-logo img{object-fit:contain}
+/* Keep both text and the blue action card inside the approved banner at every laptop height. */
+@media(min-width:1081px){
+ .es-dashboard-layout{grid-template-rows:clamp(231px,29.5vh,267px) minmax(0,1fr) clamp(124px,16.8vh,151px)}
+ .es-dashboard-layout .hero-subtitle{font-size:16px;letter-spacing:-.22px;line-height:1.25}
+ .es-dashboard-layout .hero-cta h2{font-size:19px}
+ .es-restored-landing .hero{height:clamp(231px,29.5vh,267px);min-height:0;grid-template-columns:minmax(0,1.29fr) minmax(0,.98fr) minmax(260px,.9fr)}
+ .es-restored-landing .hero-copy{padding:14px 8px 12px 22px;display:flex;flex-direction:column;justify-content:center}
+ .es-restored-landing .hero .hero-art{min-height:0;height:100%}
+ .es-restored-landing .hero .hero-cta{display:flex;grid-column:auto;padding:15px}
+ .es-restored-landing .hero .hero-title{font-size:clamp(36px,2.95vw,47px)}
+ .es-restored-landing .hero .hero-subtitle{font-size:16px;line-height:1.22;margin:5px 0}
+ .es-restored-landing .hero .hero-description{font-size:16px;line-height:1.25}
+ .es-restored-landing .hero .hero-perks{margin-top:8px;gap:6px 11px;font-size:16px}
+ .es-restored-landing .hero .check-dot{width:20px;height:20px;flex-basis:20px}
+ .es-restored-landing .hero .hero-cta h2{font-size:19px}
+ .es-restored-landing .hero .hero-cta p{font-size:16px;line-height:1.26;margin:3px 0}
+ .es-restored-landing .hero .hero-cta .button{min-height:40px;margin-top:5px;padding:8px 10px}
+}
+@media(min-width:1081px) and (max-height:790px){
+ .es-restored-landing .hero-description{display:none}
+ .es-restored-landing .hero .hero-copy{padding-block:9px}
+ .es-restored-landing .hero .hero-perks{margin-top:6px}
+ .es-restored-landing .hero .hero-cta{padding:10px 12px}
+ .es-restored-landing .hero .hero-cta h2{font-size:18px;margin-bottom:4px}
+ .es-restored-landing .hero .hero-cta p{margin:2px 0}
+ .es-restored-landing .hero .hero-cta .button{min-height:37px;padding:7px}
+}
+@media(min-width:1081px) and (max-width:1380px){
+ .es-restored-landing .hero{grid-template-columns:minmax(0,1.29fr) minmax(0,.98fr) minmax(275px,.9fr)}
+}
+/* On narrower viewports the illustration stays decorative and copy never overlaps it. */
+@media(min-width:1081px) and (max-width:1380px){
+ .es-dashboard-layout .hero .hero-copy{padding-left:16px;padding-right:2px}
+ .es-dashboard-layout .hero .hero-title{font-size:clamp(34px,2.9vw,41px)}
+ .es-dashboard-layout .hero .hero-subtitle{font-size:16px}
+ .es-dashboard-layout .hero .hero-description{font-size:16px;line-height:1.19}
+ .es-dashboard-layout .hero .hero-perks{gap:5px 9px}
+}
+@media(max-width:1080px){
+ .es-dashboard-layout .hero,.es-restored-landing .hero{background-position:52% center}
+}
+@media(max-width:690px){
+ .es-dashboard-layout .hero,.es-restored-landing .hero{
+  background-image:linear-gradient(125deg,#f1f8ff 0%,#e8ecff 100%);
+ }
+}
+`;
+
+// 2026-10-24: Approved Epsilon Soft header: purple is dominant; a restrained royal-blue transition.
+// Inactive navigation uses soft purple; the current route is white like the approved Home tab.
+// Main dashboard, tool cards, banner artwork and tool modules are unchanged.
+themeSheet.textContent += `
+.site-header{
+  background:linear-gradient(103deg,#5103df 0%,#5f1af0 30%,#522ced 58%,#3740eb 76%,#105bf0 100%);
+  box-shadow:0 3px 14px rgba(44,23,149,.22);
+}
+.site-header .header-inner{gap:13px}
+.site-header .main-nav{gap:8px}
+.site-header .main-nav .nav-link{
+  color:#fff;
+  background:rgba(156,118,253,.33);
+  border:1px solid rgba(240,225,255,.14);
+  border-radius:11px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+  transition:background .18s ease,box-shadow .18s ease,color .18s ease;
+}
+.site-header .main-nav .nav-link:hover:not(.is-active){
+  background:rgba(192,158,255,.47);
+  box-shadow:0 4px 12px rgba(34,12,120,.11);
+}
+.site-header .main-nav .nav-link.is-active{
+  background:#fff;
+  color:#5522cd;
+  border-color:#fff;
+  box-shadow:0 4px 14px rgba(22,14,101,.18);
+}
+.site-header .main-nav .nav-link:focus-visible{outline:3px solid #ffdc08;outline-offset:3px}
+/* Match the approved four header tabs; Epsilon Hub is still available in the sidebar. */
+.site-header .main-nav a[data-nav="explore"],
+.site-header .main-nav a[data-nav="portable"]{display:inline-flex!important}
+.site-header .main-nav .es-hub-nav{display:none!important}
+@media(min-width:1081px) and (max-width:1550px){
+ .site-header .brand-wordmark{font-size:clamp(27px,2.15vw,33px)}
+ .site-header .brand-mark{width:clamp(48px,3.7vw,57px);height:clamp(48px,3.7vw,57px)}
+ .site-header .header-inner{gap:10px}
+ .site-header .brand-divider{margin-left:6px}
+ .site-header .header-tagline{font-size:clamp(14px,1.06vw,17px)}
+ .site-header .main-nav{gap:6px}
+ .site-header .main-nav .nav-link{gap:7px;padding:10px 12px;font-size:15px}
+}
+@media(min-width:1081px) and (max-width:1370px){
+ .site-header .brand-divider,.site-header .header-tagline{display:none}
+}
+@media(min-width:1081px) and (max-width:1175px){
+ .site-header .main-nav .nav-link{padding:9px 9px;font-size:14px;gap:5px}
+ .site-header .main-nav .nav-link .svg-icon{width:18px;height:18px}
+ .site-header .header-inner{gap:8px}
+}
+@media(max-width:1080px){
+ /* Existing mobile menu and language picker remain unchanged. */
+ .site-header .main-nav{display:none!important}
+}
+`;
+
+// 2026-10-24 mobile-only layout repair (visuals and spacing; no module logic changes).
+// Keeps both decorative artwork and live HTML text; prevents blank hero-art space on info routes.
+themeSheet.textContent += `
+@media (max-width:690px) {
+  .es-dashboard-layout .hero,.es-restored-landing .hero {
+    display:flex!important;flex-direction:column!important;
+    height:auto!important;min-height:0!important;
+    background-image:linear-gradient(125deg,#f5f8ff 0%,#eff2ff 100%)!important;
+    overflow:hidden;
+  }
+  .es-dashboard-layout .hero .hero-copy,.es-restored-landing .hero .hero-copy {
+    padding:17px 17px 13px!important;display:block;flex:0 0 auto;
+  }
+  .es-dashboard-layout .hero .hero-art,.es-restored-landing .hero .hero-art {
+    display:block!important;flex:0 0 154px;
+    height:154px!important;min-height:154px!important;
+    background:#e8eeff url('./assets/images/hero-laptop.webp') center center/cover no-repeat!important;
+    overflow:hidden;
+  }
+  .es-dashboard-layout .hero .hero-cta,.es-restored-landing .hero .hero-cta {
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    gap:8px;align-items:center;padding:12px 16px!important;
+    border-radius:0!important;box-shadow:none!important;
+  }
+  .es-dashboard-layout .hero .hero-cta h2,.es-restored-landing .hero .hero-cta h2 {
+    font-size:17px;line-height:1.22;margin:0;text-align:center;
+  }
+  .es-dashboard-layout .hero .hero-cta p,.es-restored-landing .hero .hero-cta p {display:none}
+  .es-dashboard-layout .hero .hero-cta .button,.es-restored-landing .hero .hero-cta .button {
+    min-height:40px!important;margin:0!important;padding:8px 12px!important;
+    font-size:16px!important;white-space:normal;text-align:center;
+  }
+  .es-hub-intro {gap:10px;padding:14px 12px;align-items:center;min-width:0}
+  .es-hub-intro .es-hub-logo {width:45px;height:45px;flex:0 0 45px;border-radius:9px}
+  .es-hub-intro h1.es-hub-wordmark {font-size:clamp(23px,6vw,30px);letter-spacing:-1.1px}
+  .es-hub-intro h1.es-hub-wordmark strong {letter-spacing:-1.1px}
+  .es-hub-intro>div {min-width:0}
+}
+@media (max-width:360px) {
+  .site-header .header-inner {gap:4px}
+  .site-header .brand {gap:5px}
+  .site-header .brand-mark {width:34px;height:34px}
+  .site-header .brand-wordmark {font-size:19px;letter-spacing:-.95px}
+  .site-header .brand-wordmark strong {letter-spacing:-.95px}
+  .site-header .es-language-picker {padding:2px;gap:0}
+  .site-header .es-language-btn {min-width:30px;min-height:32px;padding:3px}
+  .site-header .mobile-menu {width:38px;min-width:38px;height:40px;min-height:40px;flex-shrink:0}
+}
+`;
+
+// EPSILON SOFT decorative footer: ONLY TWO IMAGES, no text, badge, link or button.
+// Asset locations: assets/images/footer.png + assets/images/es-laptop.png.
+// Layer separation preserves an angled laptop that projects above the footer's top edge.
+themeSheet.textContent += `
+.es-dashboard-layout .portable-strip,
+.es-restored-landing .portable-strip {
+  position:relative;
+  display:block;
+  padding:0;
+  border:0;
+  background:none;
+  border-radius:17px;
+  overflow:visible;
+  isolation:isolate;
+  z-index:2;
+}
+.es-dashboard-layout .portable-strip { height:100%; min-height:0; margin:0; }
+.es-restored-landing .portable-strip { height:140px; min-height:0; margin:20px 0 24px; }
+.es-dashboard-layout .portable-strip::before,
+.es-restored-landing .portable-strip::before { display:none; }
+/* First image: the complete decorative base, no masks or artificial white space. */
+.es-dashboard-layout .portable-strip > img.es-footer-background,
+.es-restored-landing .portable-strip > img.es-footer-background {
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:fill;
+  border-radius:inherit;
+  z-index:0;
+  pointer-events:none;
+}
+/* Second image: original transparent laptop, lifted and subtly rotated in perspective. */
+.es-dashboard-layout .portable-strip > img.portable-laptop,
+.es-restored-landing .portable-strip > img.portable-laptop {
+  position:absolute;
+  z-index:1;
+  display:block;
+  box-sizing:border-box;
+  width:auto;
+  height:calc(100% + 32px);
+  min-height:0;
+  max-height:none;
+  min-width:0;
+  max-width:none;
+  right:clamp(65px,17.5%,275px);
+  bottom:0;
+  opacity:1;
+  object-fit:contain;
+  mix-blend-mode:normal;
+  transform-origin:50% 82%;
+  transform:rotate(2.2deg);
+  filter:drop-shadow(0 7px 9px rgba(7,14,63,.22));
+  pointer-events:none;
+}
+@media(max-width:1080px){
+  .es-dashboard-layout .portable-strip { height:clamp(120px,14vw,148px); min-height:0; padding:0; }
+  .es-dashboard-layout .portable-strip > img.portable-laptop,
+  .es-restored-landing .portable-strip > img.portable-laptop { right:clamp(15px,12%,130px); }
+}
+@media(max-width:690px){
+  .es-dashboard-layout .portable-strip,
+  .es-restored-landing .portable-strip { height:120px; min-height:0; padding:0; }
+  .es-dashboard-layout .portable-strip > img.portable-laptop,
+  .es-restored-landing .portable-strip > img.portable-laptop {
+    height:calc(100% + 22px);
+    right:-2px;
+    bottom:0;
+    transform:rotate(2.2deg);
+  }
+}
+`;
+
+// Two approved hero actions (Cai APP + About/Contact), independent from the two-image footer.
+themeSheet.textContent += `
+/* Hero action panel: slightly narrower than the previous blue card; no desktop-only controls. */
+@media(min-width:1420px){
+ .es-dashboard-layout .hero{grid-template-columns:minmax(0,1.30fr) minmax(0,1.03fr) minmax(230px,.8fr)}
+ .es-restored-landing .hero{grid-template-columns:minmax(0,1.30fr) minmax(0,1.03fr) minmax(230px,.8fr)}
+ .es-dashboard-layout{grid-template-rows:clamp(252px,31vh,284px) minmax(0,1fr) clamp(122px,16.8vh,151px)}
+ .es-restored-landing .hero{height:auto;min-height:252px}
+}
+.es-dashboard-layout .hero .hero-cta,.es-restored-landing .hero .hero-cta{
+ display:flex;flex-direction:column;justify-content:space-between;gap:7px;
+ padding:13px 15px!important;min-width:0;
+}
+.es-hero-info{position:relative;z-index:1;min-height:0}
+.es-dashboard-layout .hero .hero-cta .es-hero-info h2,.es-restored-landing .hero .hero-cta .es-hero-info h2{font-size:19px;line-height:1.14;margin:0 0 7px}
+.es-dashboard-layout .hero .hero-cta .es-hero-info p,.es-restored-landing .hero .hero-cta .es-hero-info p{font-size:16px;line-height:1.2;margin:4px 0;align-items:flex-start;gap:7px}
+.es-dashboard-layout .hero .hero-cta .es-hero-info p svg,.es-restored-landing .hero .hero-cta .es-hero-info p svg{height:17px;width:17px;flex:0 0 17px}
+.es-hero-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;flex:0 0 auto;position:relative;z-index:1;width:100%;margin-top:auto}
+.es-dashboard-layout .hero .hero-cta .es-hero-actions .button,.es-restored-landing .hero .hero-cta .es-hero-actions .button{
+ display:flex;align-items:center;justify-content:center;gap:9px;
+ margin:0!important;min-height:39px;padding:7px 10px!important;
+ border-radius:999px;font-size:16px;line-height:1.2;font-weight:800;white-space:normal;
+ text-align:center;box-shadow:0 4px 12px rgba(4,22,91,.22);
+}
+.es-hero-actions .button svg{width:19px;height:19px;flex:0 0 19px}
+.es-dashboard-layout .hero .es-hero-install,.es-restored-landing .hero .es-hero-install{background:#ffda08!important;color:#081a78!important;border:1px solid #ffe879!important}
+.es-dashboard-layout .hero .es-hero-about,.es-restored-landing .hero .es-hero-about{background:#fff!important;color:#203bb6!important;border:1px solid #e0e8ff!important}
+.es-hero-actions .button:focus-visible{outline:3px solid #ffe25d;outline-offset:3px}
+/* Under 1181px: keep both actions visible; the panel becomes a full-width compact row. */
+@media (min-width:691px) and (max-width:1419px){
+ .es-dashboard-layout{height:auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:12px}
+ .es-dashboard-layout .hero,.es-restored-landing .hero{
+  display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)!important;
+  min-height:0!important;height:auto!important;overflow:hidden;
+ }
+ .es-dashboard-layout .hero .hero-cta,.es-restored-landing .hero .hero-cta{
+  display:flex!important;grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;
+  padding:12px 16px!important;gap:18px;border-radius:0 0 16px 16px!important;
+ }
+ .es-dashboard-layout .hero .hero-cta .es-hero-info,.es-restored-landing .hero .hero-cta .es-hero-info{flex:1;min-width:0}
+ .es-dashboard-layout .hero .hero-cta .es-hero-actions,.es-restored-landing .hero .hero-cta .es-hero-actions{flex:0 0 min(42%,320px);margin:0}
+ .es-dashboard-layout .es-directory{min-height:350px}
+ .es-dashboard-layout .hero .hero-copy{padding:15px 18px}
+ .es-restored-landing .hero .hero-copy{padding:15px 18px}
+}
+@media (max-width:690px){
+ .es-dashboard-layout .hero .hero-cta,.es-restored-landing .hero .hero-cta{display:flex!important;flex-direction:column;gap:9px;padding:12px 16px!important}
+ .es-dashboard-layout .hero .hero-cta .es-hero-info h2,.es-restored-landing .hero .hero-cta .es-hero-info h2{font-size:17px;text-align:center;margin:0}
+ .es-hero-info p{display:none!important}
+ .es-hero-actions{gap:8px}
+ .es-dashboard-layout .hero .hero-cta .es-hero-actions .button,.es-restored-landing .hero .hero-cta .es-hero-actions .button{min-height:43px!important;padding:10px!important}
+}
+/* Informational modal and PWA installation help. All links are fixed safe destinations. */
+.es-hero-dialog-layer[hidden]{display:none!important}
+.es-hero-dialog-layer{position:fixed;inset:0;z-index:2600;display:grid;place-items:center;padding:14px;background:rgba(10,17,62,.64);backdrop-filter:blur(4px)}
+.es-hero-dialog{width:min(760px,100%);max-height:calc(100dvh - 28px);overflow-y:auto;overscroll-behavior:contain;border-radius:21px;border:1px solid #d8dfff;background:#fff;box-shadow:0 25px 75px #0713487a;padding:22px;color:#152c86}
+.es-hero-dialog-head{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.es-hero-dialog-emblem{display:grid;place-items:center;flex:0 0 47px;width:47px;height:47px;background:linear-gradient(140deg,#e6e5ff,#d4edff);color:#5224cc;border-radius:13px}
+.es-hero-dialog-logo{padding:0;background:transparent!important;border:0;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px #102ca221}
+.es-hero-dialog-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.es-hero-dialog-title{flex:1;min-width:0;font-size:23px;line-height:1.18;margin:0;color:#11249d;font-weight:850}
+.es-hero-dialog-close{display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;border:1px solid #dfE5ff;border-radius:11px;background:#f4f6ff;color:#3444ae}
+.es-hero-dialog-close:hover{background:#eceaff}
+.es-hero-intro{margin:0 0 14px;color:#4b5e89;font-size:16px;line-height:1.5}
+.es-hero-about-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+.es-hero-product{min-width:0;display:flex;flex-direction:column;gap:6px;padding:15px;border-radius:15px;background:linear-gradient(125deg,#f8f9ff,#eef3ff);border:1px solid #e1e7ff}
+.es-hero-product strong{display:flex;align-items:center;gap:8px;color:#132aa5;font-size:17px}
+.es-hero-product strong .svg-icon{color:#6934de}
+.es-hero-product p{margin:0;font-size:15px;line-height:1.45;color:#51648e}
+.es-hero-hub-link{display:inline-flex;align-items:center;gap:9px;padding:11px 15px;border-radius:12px;color:#fff!important;background:linear-gradient(110deg,#6624e6,#2943e5);font-size:16px;font-weight:800;max-width:100%}
+.es-hero-hub-link:hover{filter:brightness(1.07)}
+.es-hero-contact-title{margin:20px 0 9px;color:#11249d;font-size:19px}
+.es-hero-contact-links{display:flex;align-items:stretch;gap:9px;flex-wrap:wrap}
+.es-hero-contact-links a,.es-hero-contact-links button{display:inline-flex;align-items:center;gap:9px;min-width:0;flex:1 1 205px;overflow-wrap:anywhere;padding:12px 13px;border:1px solid #d8e3ff;background:#f8faff;color:#1c3baa;border-radius:12px;font-size:16px;font-weight:750}
+.es-hero-contact-links a:first-child{flex:1.35 1 250px}
+.es-hero-contact-links a:hover,.es-hero-contact-links button:hover{background:#eaf0ff}
+.es-hero-contact-links a svg,.es-hero-contact-links button svg{color:#6032d7;flex-shrink:0}
+.es-hero-contact-links button{appearance:none;text-align:left;cursor:copy;white-space:nowrap}
+.es-hero-contact-copy svg:last-child{margin-left:auto;color:#4961b5;opacity:.85}
+.es-hero-contact-copy:focus-visible{outline:3px solid #ffcd27;outline-offset:3px}
+@media (min-width:1181px) and (max-width:1550px){.es-dashboard-layout .hero .hero-cta .es-hero-info p,.es-restored-landing .hero .hero-cta .es-hero-info p{font-size:15px}}
+.es-hero-install-devices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:16px 0}
+.es-hero-install-device{background:#f7f9ff;border:1px solid #dee7ff;border-radius:13px;padding:14px}
+.es-hero-install-device h3{margin:0 0 7px;color:#102b9b;display:flex;align-items:center;gap:7px;font-size:17px}
+.es-hero-install-device p{font-size:15px;line-height:1.48;color:#50628c;margin:0}
+.es-hero-install-note{margin:13px 0 0;font-size:14px;color:#637199;line-height:1.45}
+@media(max-width:640px){
+ .es-hero-dialog{padding:16px;border-radius:16px}
+ .es-hero-dialog-title{font-size:20px}
+ .es-hero-about-products,.es-hero-install-devices{grid-template-columns:1fr}
+ .es-hero-contact-links a,.es-hero-contact-links button{flex-basis:100%}
+}
+`;
+
+themeSheet.textContent += `
+/* Sidebar quick-navigation: the main category link and the disclosure button are independent. */
+.es-side-section{min-width:0}
+.es-side-parent{position:relative;display:flex;align-items:center;min-width:0;min-height:51px;border:1px solid transparent;border-radius:12px;transition:background .15s,border-color .15s}
+.es-side-parent:hover{background:#fff;border-color:#e6e2f6}
+.es-side-parent.is-active{background:#eee8ff;border-color:#dacdff;box-shadow:0 2px 9px #5a26ba12;color:#5124c2}
+.es-side-parent.is-active:before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:4px;background:#7434ec}
+.es-side-parent>.es-side-link{flex:1;min-width:0;min-height:49px;border:none!important;box-shadow:none!important;background:transparent!important;padding:5px 0 5px 8px;gap:9px;outline-offset:1px}
+.es-side-parent>.es-side-link:before{display:none!important}
+.es-side-parent>.es-side-link .es-side-name{min-width:0;font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.es-side-parent>.es-side-link .es-side-icon{flex:0 0 38px}
+.es-side-parent .es-side-expand{width:28px;height:32px;flex:0 0 28px;margin:0 1px;display:grid;place-items:center;border:none;border-radius:9px;background:transparent;color:#6e59bd;transition:color .18s,background .18s}
+.es-side-parent .es-side-expand .svg-icon{transition:transform .19s ease;stroke-width:2.6}
+.es-side-parent .es-side-expand[aria-expanded="true"]{background:#e6ddff;color:#5b23db}
+.es-side-parent .es-side-expand[aria-expanded="true"] .svg-icon{transform:rotate(180deg)}
+.es-side-parent .es-side-expand:hover{background:#e9e1ff;color:#5b23db}
+.es-side-parent>.es-side-count{display:grid;place-items:center;margin:0 7px 0 2px;flex:0 0 29px;min-width:29px;min-height:29px;padding:2px;font-size:15px;line-height:1;background:#e7ecff;color:#344da3;text-decoration:none}
+.es-side-parent>.es-side-count:hover{background:#d9e1ff}
+.es-side-parent [data-side="ecosystem"] .es-side-icon{height:44px;width:44px;flex-basis:44px;background:linear-gradient(145deg,#f0ecff,#e9e6ff);border:1px solid #ddd5ff;border-radius:12px;box-shadow:0 2px 9px #4222c31c;overflow:hidden}
+.es-side-parent [data-side="ecosystem"] .es-side-icon img{display:block;width:42px;height:42px;object-fit:contain}
+.es-side-children{display:grid;gap:3px;padding:4px 1px 6px 10px;margin:2px 0 7px 25px;border-left:2px solid #ded7ff;animation:es-side-reveal .16s ease-out}
+.es-side-children[hidden]{display:none!important}
+.es-side-child{display:flex;align-items:flex-start;gap:8px;padding:9px 7px;min-height:36px;border-radius:9px;color:#3c5092;background:transparent;line-height:1.25;font-size:14px;font-weight:650;min-width:0}
+.es-side-child .svg-icon{width:17px;height:17px;flex-shrink:0;margin-top:1px;opacity:.9}
+.es-side-child span:last-child{min-width:0;overflow-wrap:anywhere}
+.es-side-child:hover,.es-side-child:focus-visible{background:#f0ecff;color:#5224c7}
+.es-side-child[aria-current="page"]{background:#e9e4ff;color:#4d19c1;font-weight:850}
+.es-side-empty{margin:5px 4px 5px 7px;font-size:13px;color:#6c7a9a;line-height:1.45}
+@keyframes es-side-reveal{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:1081px){
+ .es-is-collapsed .es-side-parent .es-side-link{justify-content:center;padding:5px 2px}
+ .es-is-collapsed .es-side-parent .es-side-expand,.es-is-collapsed .es-side-parent .es-side-count,.es-is-collapsed .es-side-children{display:none!important}
+ .es-is-collapsed .es-side-parent>.es-side-link .es-side-icon{height:40px;width:40px;flex-basis:40px}
+ .es-is-collapsed .es-side-parent [data-side="ecosystem"] .es-side-icon img{width:39px;height:39px}
+}
+@media(max-width:1080px){
+ .es-is-collapsed .es-side-parent>.es-side-link{justify-content:flex-start;padding:5px 0 5px 8px}
+ .es-side-children{margin-left:27px}
+}
+@media(prefers-reduced-motion:reduce){.es-side-children{animation:none}.es-side-parent .es-side-expand .svg-icon{transition:none}}
+`;
+
+// Responsive image/layout repair (2026-10-24): no changes to asset names or business logic.
+// At 1081-1419px the main dashboard switches to flex; a percentage height on an
+// absolutely-positioned two-image footer resolves to zero. Give it an explicit height.
+themeSheet.textContent += `
+@media (min-width:1081px) and (max-width:1419px) {
+  .es-dashboard-layout .portable-strip.es-footer-banner {
+    height:clamp(132px,11.8vw,154px)!important;
+    min-height:132px!important;
+    flex:0 0 auto;
+    width:100%;
+  }
+  /* No artificial 350px block beneath a single row of favourite tools. */
+  .es-dashboard-layout .es-directory {
+    min-height:0!important;
+    flex:0 1 auto;
+  }
+  .es-dashboard-layout .es-directory-grid {
+    flex:0 1 auto;
+    min-height:0;
+    max-height:min(430px,47dvh);
+    overflow-y:auto;
+  }
+}
+@media (min-width:691px) and (max-width:1080px) {
+  .es-dashboard-layout .es-directory {min-height:0!important}
+}
+/* 1260-1419px: enough room for the proper three-column banner.
+   Keep the illustration between copy and CTA instead of moving the CTA on top
+   of the whole illustration.  Smaller tablet widths retain the stacked layout. */
+@media (min-width:1260px) and (max-width:1419px) {
+  .es-dashboard-layout .hero,.es-restored-landing .hero {
+    display:grid!important;
+    height:clamp(254px,31vh,282px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(0,1.24fr) minmax(0,.84fr) minmax(278px,.90fr)!important;
+    align-items:stretch;
+  }
+  .es-dashboard-layout .hero .hero-copy,
+  .es-restored-landing .hero .hero-copy {
+    grid-column:1;
+    grid-row:1;
+    padding:12px 5px 12px 18px;
+    min-width:0;
+  }
+  .es-dashboard-layout .hero .hero-art,
+  .es-restored-landing .hero .hero-art {
+    display:block!important;
+    grid-column:2;
+    grid-row:1;
+    height:auto;
+    min-height:0;
+  }
+  .es-dashboard-layout .hero .hero-cta,
+  .es-restored-landing .hero .hero-cta {
+    grid-column:3!important;
+    grid-row:1!important;
+    align-items:stretch!important;
+    flex-direction:column!important;
+    justify-content:space-between!important;
+    gap:5px!important;
+    border-radius:16px 0 0 16px!important;
+    padding:11px 12px!important;
+    min-width:0;
+  }
+  .es-dashboard-layout .hero .hero-cta .es-hero-info,
+  .es-restored-landing .hero .hero-cta .es-hero-info {flex:0 1 auto!important;min-width:0}
+  .es-dashboard-layout .hero .hero-cta .es-hero-actions,
+  .es-restored-landing .hero .hero-cta .es-hero-actions {
+    flex:0 0 auto!important;
+    width:100%;
+    margin-top:auto;
+  }
+  .es-dashboard-layout .hero .hero-cta .es-hero-info p,
+  .es-restored-landing .hero .hero-cta .es-hero-info p {
+    line-height:1.14;
+    font-size:15px;
+    margin:3px 0;
+  }
+  .es-dashboard-layout .hero .hero-perks {gap:6px 9px}
+}
+`;
+
+
+// Mobile-only category rail: pinned MY TOOLS + horizontally swipeable app folders.
+// Desktop sidebar, tool modules, data and footer remain unchanged.
+themeSheet.textContent += `
+.es-mobile-rail{display:none}
+@media(max-width:720px){
+ .site-header .mobile-menu,body.es-catalog-mode .site-header .mobile-menu{display:none!important}
+ .es-sidebar,body.es-catalog-mode .es-sidebar,.es-mobile-backdrop{display:none!important}
+ .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell,
+ body.es-catalog-mode .es-app-layout.es-is-collapsed{padding-top:7px}
+ .es-mobile-rail{
+   display:block;position:sticky;top:0;z-index:110;
+   margin:0 0 11px;padding:7px 6px;
+   border:1px solid #d9defb;border-radius:17px;
+   background:linear-gradient(125deg,rgba(250,247,255,.97),rgba(246,249,255,.98));
+   box-shadow:0 4px 16px rgba(43,34,140,.10);
+   backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);
+ }
+ .es-mobile-rail-main{display:flex;align-items:stretch;gap:6px;min-width:0}
+ .es-mobile-rail-fixed{flex:0 0 100px;min-width:100px;z-index:2;position:relative}
+ .es-mobile-rail-scroll{
+   flex:1 1 auto;min-width:0;display:flex;align-items:stretch;gap:5px;
+   overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+   scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+   scrollbar-width:none;padding:0 1px 2px 0;
+ }
+ .es-mobile-rail-scroll::-webkit-scrollbar{display:none}
+ .es-mobile-folder{
+   min-width:0;position:relative;flex:0 0 92px;height:77px;
+   background:#fff;border:1px solid #e2e7f8;border-radius:12px;
+   box-shadow:0 1px 3px rgba(28,42,114,.035);scroll-snap-align:start;
+   transition:background .15s,border-color .15s;
+ }
+ .es-mobile-rail-fixed .es-mobile-folder{
+   width:100%;height:77px;border-color:#d4c6ff;
+   background:linear-gradient(150deg,#efe6ff,#f7f3ff)
+ }
+ .es-mobile-folder.is-active{background:#eae5ff;border-color:#9f7bfc;box-shadow:inset 0 0 0 1px #b9a0ff}
+ .es-mobile-folder-link{
+   display:flex;flex-direction:column;align-items:center;justify-content:center;
+   width:100%;height:100%;gap:4px;
+   padding:6px 3px 4px;color:#1a2986;
+   text-align:center;min-width:0;
+ }
+ .es-mobile-folder-icon{
+   display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;
+   border-radius:10px;background:#e8efff;color:#405deb;
+ }
+ .es-mobile-folder[data-mobile-section="mytools"] .es-mobile-folder-icon{background:linear-gradient(145deg,#955aff,#6529da);color:#fff}
+ .es-mobile-folder[data-mobile-section="calc"] .es-mobile-folder-icon{background:#dceeff;color:#0968d3}
+ .es-mobile-folder[data-mobile-section="engineering"] .es-mobile-folder-icon{background:#fff0de;color:#ed7216}
+ .es-mobile-folder[data-mobile-section="utility"] .es-mobile-folder-icon{background:#dbf8ec;color:#069c7d}
+ .es-mobile-folder[data-mobile-section="ecosystem"] .es-mobile-folder-icon{background:transparent}
+ .es-mobile-folder-icon img{width:32px;height:32px;object-fit:contain}
+ .es-mobile-folder-icon .svg-icon{width:22px;height:22px}
+ .es-mobile-folder-label{
+   width:100%;display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+   white-space:normal;overflow-wrap:anywhere;font-weight:750;font-size:12.7px;line-height:1.15;
+ }
+ .es-mobile-folder-count{
+   position:absolute;left:7px;top:5px;background:#fff;color:#6024d6;
+   font-size:10px;line-height:1.2;min-width:16px;padding:2px 3px;border-radius:8px;
+   box-shadow:0 1px 4px #4726c31b;font-weight:850;
+ }
+ .es-mobile-folder-expand{
+   position:absolute;right:2px;top:4px;display:grid;place-items:center;
+   width:26px;height:27px;padding:0;color:#6731cb;
+   background:transparent;border:0;border-radius:9px;
+ }
+ .es-mobile-folder-expand:hover,.es-mobile-folder-expand[aria-expanded="true"]{background:#e8dcff}
+ .es-mobile-folder-expand[aria-expanded="true"] .svg-icon{transform:rotate(180deg)}
+ .es-mobile-folder-expand .svg-icon{width:17px;height:17px;transition:transform .15s}
+ .es-mobile-rail-drawer{
+   margin:8px 1px 1px;border-radius:12px;border:1px solid #d9dff8;
+   background:#fff;box-shadow:0 3px 12px rgba(31,36,120,.07);
+   padding:9px;
+ }
+ .es-mobile-rail-drawer[hidden]{display:none!important}
+ .es-mobile-rail-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 1px 9px;
+   font-size:14px;font-weight:850;color:#241a94}
+ .es-mobile-rail-drawer-head .svg-icon{width:17px;height:17px;vertical-align:-3px;margin-right:5px}
+ .es-mobile-rail-drawer-close{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;
+   border:0;border-radius:9px;background:#f3f0ff;color:#6239d2}
+ .es-mobile-rail-drawer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+   max-height:min(35dvh,250px);overflow-y:auto;overscroll-behavior:contain}
+ .es-mobile-rail-drawer-grid .es-side-child{min-width:0;min-height:42px;padding:7px 8px;display:flex;
+   align-items:center;gap:7px;border:1px solid #e5eafd;border-radius:10px;background:#fafbff;
+   font-size:13px;font-weight:650;color:#253889;line-height:1.25}
+ .es-mobile-rail-drawer-grid .es-side-child .svg-icon{width:18px;height:18px;flex:0 0 18px;color:#5b3cde}
+ .es-mobile-rail-drawer-grid .es-side-child span{min-width:0;overflow-wrap:anywhere}
+ .es-mobile-rail-drawer-grid .es-side-child[aria-current="page"]{background:#ece7ff;border-color:#c6b3ff}
+ .es-mobile-rail-drawer-grid .es-side-empty{grid-column:1/-1;margin:4px 2px 6px;font-size:13px;color:#53668e}
+}
+@media(max-width:360px){
+ .es-mobile-rail{padding:6px 5px}
+ .es-mobile-rail-main{gap:5px}
+ .es-mobile-rail-fixed{flex-basis:91px;min-width:91px}
+ .es-mobile-folder{flex-basis:88px;height:73px}
+ .es-mobile-rail-fixed .es-mobile-folder{height:73px}
+ .es-mobile-folder-label{font-size:12.5px}
+ .es-mobile-rail-scroll{gap:4px}
+}
+@media(prefers-reduced-motion:reduce){.es-mobile-folder-expand .svg-icon{transition:none}}
+`;
+
+// Former assets/js/lib/ui.js (bundled, not reimplemented)
+/** Small, dependency-free UI toolkit. Icon IDs are fixed and never sourced from user input. */
+const path = {
+ home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+ grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+ download:'<path d="M12 3v12m-5-5 5 5 5-5M3 17v4h18v-4"/>',
+ book:'<path d="M12 6c-3-2-6-2-10-2v15c4 0 7 0 10 2 3-2 6-2 10-2V4c-4 0-7 0-10 2zm0 0v15"/>',
+ star:'<path d="m12 2.6 3 6 6.6 1-4.8 4.7 1.2 6.7L12 17.8l-6 3.2 1.2-6.7L2.4 9.6l6.6-1z"/>',
+ calculator:'<rect x="4" y="2" width="16" height="20" rx="3"/><rect x="7" y="5" width="10" height="4" rx="1"/><path d="M8 13h1m3 0h1m3 0h1M8 17h1m3 0h1m3 0h1"/>',
+ area:'<path d="M4 20 20 4v16zM8 16h5v-5"/>',
+ box:'<path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5m-9 5v10"/>',
+ swap:'<path d="M4 7h16m-5-5 5 5-5 5M20 17H4m5-5-5 5 5 5"/>',
+ percent:'<path d="M19 5 5 19"/><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/>',
+ nesting:'<rect x="3" y="4" width="18" height="16" rx="2"/><rect x="6" y="7" width="7" height="5" rx=".4"/><rect x="14" y="7" width="4" height="5" rx=".4"/><rect x="6" y="13" width="12" height="4" rx=".4"/>',
+ database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 4 18 4 18 0V5M3 12c0 4 18 4 18 0"/>',
+ beam:'<path d="M2 20h20M5 6h14M7 6v11m10-11v11M4 17h6l-3 3zM14 17h6l-3 3z"/>',
+ paint:'<rect x="3" y="4" width="15" height="8" rx="2"/><path d="M18 8h3v5h-9v4m0 0v5"/>',
+ pdf:'<path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm9 0v5h5M8 12h8M8 16h8"/>',
+ calendar:'<rect x="3" y="5" width="18" height="17" rx="2"/><path d="M7 2v6m10-6v6M3 10h18m-13 5h3m3 0h3m-9 4h3"/>',
+ qr:'<path d="M3 3h7v7H3zM5 5h3v3H5zM14 3h7v7h-7zM16 5h3v3h-3zM3 14h7v7H3zM5 16h3v3H5zM14 14h3v3h-3zm5 0h2m-7 6h2m3-2v3m2-3v3"/>',
+ barcode:'<path d="M3 4v16m3-16v16m4-16v16m2-16v16m4-16v16m2-16v16m3-16v16"/>',
+ notes:'<path d="M5 3h11l4 4v14H5zM16 3v5h4M8 12h9M8 16h9"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',
+ arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',
+ windows:'<path d="M3 5 11 4v7H3zm10-1 8-1v8h-8zM3 13h8v7l-8-1zm10 0h8v8l-8-1z"/>',
+ check:'<path d="m4 12 5 5L20 6"/>',
+ info:'<circle cx="12" cy="12" r="10"/><path d="M12 11v5m0-9v.2"/>',
+ menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.2M3 12h.2M3 18h.2"/>',
+ close:'<path d="M5 5 19 19M19 5 5 19"/>',
+ refresh:'<path d="M20 10a8 8 0 1 0 1 4M20 3v7h-7"/>',
+ copy:'<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H5a2 2 0 0 0-2 2v11h5"/>',
+ trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7m4-7v7"/>',
+ ruler:'<path d="m3 16 13-13 5 5L8 21zM9 10l2 2m2-6 2 2M6 13l2 2"/>',
+ weight:'<path d="M6 9h12l2 12H4zm3 0a3 3 0 0 1 6 0"/>',
+ chart:'<path d="M3 21h18M6 18V9m6 9V4m6 14v-7"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
+ shield:'<path d="m12 2 9 4v6c0 6-4 9-9 10-5-1-9-4-9-10V6z"/>',
+ lightbulb:'<path d="M9 18h6M10 21h4M8 14a7 7 0 1 1 8 0l-1 3H9z"/>',
+ heart:'<path d="M20 5c-3-3-7-1-8 1-1-2-5-4-8-1-5 5 3 12 8 16 5-4 13-11 8-16z"/>',
+ pen:'<path d="M12 20h9M16 3l5 5L8 21l-5 1 1-5zM14 5l5 5"/>',
+ file:'<path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm9 0v5h5"/>',
+ files:'<rect x="7" y="7" width="14" height="14" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/>',
+ rotate:'<path d="M20 6v6h-6M4 18v-6h6M5 10a8 8 0 0 1 13-4l2 6M4 12l2 6a8 8 0 0 0 13-3"/>',
+ image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5-11 11"/>',
+ settings:'<path d="M4 7h16m-10-4v8M4 17h16m-6-4v8"/>',
+ scissors:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m8.1 8.1 13 13M14 10l7-7M8 15.9l5-5"/>',
+ stamp:'<path d="M4 18h16v4H4zM12 2a4 4 0 0 1 4 4l-1 4 4 5H5l4-5-1-4a4 4 0 0 1 4-4z"/>',
+ upload:'<path d="M12 17V3m-5 5 5-5 5 5M3 17v4h18v-4"/>'
+};
+Object.assign(path, {
+ 'chevron-down':'<path d="m6 9 6 6 6-6"/>',
+ gear:'<path d="M10.1 2h3.8l.6 2.3c.6.2 1.2.4 1.7.7l2.1-1.2 2.7 2.7-1.2 2.1c.3.5.5 1.1.7 1.7l2.3.6v3.8l-2.3.6c-.2.6-.4 1.2-.7 1.7l1.2 2.1-2.7 2.7-2.1-1.2c-.5.3-1.1.5-1.7.7l-.6 2.3h-3.8l-.6-2.3c-.6-.2-1.2-.4-1.7-.7l-2.1 1.2-2.7-2.7 1.2-2.1c-.3-.5-.5-1.1-.7-1.7L2 13.9v-3.8l2.3-.6c.2-.6.4-1.2.7-1.7L3.8 5.7l2.7-2.7 2.1 1.2c.5-.3 1.1-.5 1.7-.7Z"/><circle cx="12" cy="12" r="3.2"/>',
+ 'panel-left-open':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-11 3 3-3 3"/>',
+ 'panel-left-close':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m9-11-3 3 3 3"/>',
+ orbit:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M4 16c3-9 11-13 17-8M3 9c6 6 11 8 18 7"/>',
+ 'external-link':'<path d="M13 5h6v6M11 13l8-8M19 13v6H5V5h6"/>',
+ mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 6 9 7 9-7"/>',
+ phone:'<path d="M6 2h4l2 5-3 2c1 3 4 6 7 7l2-3 5 2v4c0 2-2 3-4 3C9 21 3 15 2 6c0-2 2-4 4-4Z"/>',
+ 'message-circle':'<path d="M20 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l1.8-4.7A8.5 8.5 0 1 1 20 11.5Z"/>',
+ 'app-plus':'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 8h18M12 11v7m-3.5-3.5h7"/>',
+ 'contact-card':'<rect x="2.5" y="4" width="19" height="16" rx="3"/><circle cx="8" cy="10" r="2"/><path d="M5.5 16c.7-2.5 4.3-2.5 5 0M14 10h5M14 14h4"/>',
+ monitor:'<rect x="2" y="3" width="20" height="15" rx="2"/><path d="M8 22h8m-4-4v4"/>',
+ smartphone:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+ tablet:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/>'
+});
+function icon(key,size=22){
+ return `<svg class="svg-icon" width="${Math.min(40,Math.max(12,size))}" height="${Math.min(40,Math.max(12,size))}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path[key]||path.grid}</svg>`;
+}
+function hydrateIcons(node=document){node.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon,20);});}
+function number(value,maxFractionDigits=4){return Number.isFinite(value)?new Intl.NumberFormat('en-US',{maximumFractionDigits:maxFractionDigits}).format(value):'—';}
+function numeric(raw,name='Giá trị',{positive=false,nonNegative=false,max=1e15,integer=false}={}){
+ const s=String(raw??'').trim().replace(/\s/g,'');
+ if(!s)throw new Error(`${name}: vui lòng nhập giá trị.`);
+ let cleaned=s;
+ // Vietnamese decimal comma accepted; English thousands separators not auto guessed.
+ if(s.includes(',')&&!s.includes('.'))cleaned=s.replace(',','.');
+ const n=Number(cleaned);
+ if(!Number.isFinite(n)||Math.abs(n)>max||(positive&&n<=0)||(nonNegative&&n<0)||(integer&&!Number.isInteger(n))){throw new Error(`${name}: giá trị không hợp lệ.`);}
+ return n;
+}
+function field({name,label,value='',unit='',min=null,max=null,step='any',placeholder=''}){
+ const esc=(x)=>String(x).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+ return `<label class="form-field"><span>${esc(label)}</span><span class="input-wrap"><input type="number" inputmode="decimal" name="${esc(name)}" value="${esc(value)}" ${min!==null?`min="${esc(min)}"`:''} ${max!==null?`max="${esc(max)}"`:''} step="${esc(step)}" placeholder="${esc(placeholder)}"><small>${esc(unit)}</small></span></label>`;
+}
+function setText(parent,selector,text){const el=parent.querySelector(selector);if(el)el.textContent=String(text);}
+function downloadBlob(blob,filename){const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+function debounce(fn,delay=120){let handle;return (...args)=>{clearTimeout(handle);handle=setTimeout(()=>fn(...args),delay);};}
+function normalize(s){return String(s).toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').trim();}
+
+
+// Former assets/js/lib/engineering.js (bundled, not reimplemented)
+/** Epsilon Soft calculations. Core equations ported with test cases from ES TOOLKIT V1.0 Go source (geometry.go/converter.go). */
+const MASS_SHAPES=[
+ {name:'Tấm chữ nhật',fields:[['a','Chiều dài a','200'],['b','Chiều rộng b','100'],['t','Chiều dày t','10']],formula:'S = a × b; V = S × t'},
+ {name:'Tấm vuông',fields:[['a','Cạnh a','100'],['t','Chiều dày t','10']],formula:'S = a²; V = S × t'},
+ {name:'Tấm tròn',fields:[['d','Đường kính D','100'],['t','Chiều dày t','10']],formula:'S = πD²/4; V = S × t'},
+ {name:'Tấm tam giác',fields:[['a','Cạnh a','100'],['b','Cạnh b','80'],['c','Cạnh c','70'],['t','Chiều dày t','10']],formula:'S = √[p(p−a)(p−b)(p−c)]'},
+ {name:'Tấm lục giác đều',fields:[['f','Khoảng cách hai cạnh đối F','100'],['t','Chiều dày t','10']],formula:'S = √3 × F² / 2'},
+ {name:'Trụ tròn đặc',fields:[['d','Đường kính D','60'],['l','Chiều dài L','300']],formula:'S = πD²/4; V = S × L'},
+ {name:'Ống tròn',fields:[['d','Đường kính ngoài D','100'],['t','Chiều dày thành t','5'],['l','Chiều dài L','300']],formula:'S = π[D²−(D−2t)²]/4'},
+ {name:'Hộp rỗng',fields:[['a','Chiều rộng ngoài a','100'],['b','Chiều cao ngoài b','60'],['t','Chiều dày thành t','4'],['l','Chiều dài L','300'],['r','Bán kính góc ngoài R (có thể 0)','0']],formula:'S = S ngoài − S trong (có thể bo góc)'},
+ {name:'Tấm tam giác vuông',fields:[['a','Cạnh góc vuông a','100'],['b','Cạnh góc vuông b','80'],['t','Chiều dày t','10']],formula:'S = a × b / 2'}
+];
+const AREA_SHAPES=[
+ {name:'Hình vuông',fields:[['a','Cạnh a','100'],['r','Bán kính bo góc r (có thể 0)','0']],formula:'S = a² − (4−π)r²'},
+ {name:'Hình chữ nhật',fields:[['a','Chiều dài a','150'],['b','Chiều rộng b','80'],['r','Bán kính bo góc r (có thể 0)','0']],formula:'S = ab − (4−π)r²'},
+ {name:'Hình tam giác',fields:[['a','Đáy a','120'],['h','Chiều cao h','70']],formula:'S = ah/2'},
+ {name:'Hình bình hành',fields:[['a','Đáy a','120'],['h','Chiều cao h','70']],formula:'S = ah'},
+ {name:'Hình thang',fields:[['a','Đáy lớn a','150'],['b','Đáy nhỏ b','90'],['h','Chiều cao h','70']],formula:'S = (a+b)h/2'},
+ {name:'Hình tròn',fields:[['d','Đường kính D','60']],formula:'S = πD²/4'},
+ {name:'Hình bán nguyệt',fields:[['d','Đường kính D','60']],formula:'S = πD²/8'},
+ {name:'Hình elip',fields:[['a','Đường kính lớn a','150'],['b','Đường kính nhỏ b','80']],formula:'S = πab/4'},
+ {name:'Hình quạt tròn',fields:[['r','Bán kính r','100'],['theta','Góc ở tâm α (độ)','90']],formula:'S = πr²α/360'},
+ {name:'Ống thép tròn',fields:[['d','Đường kính ngoài D','100'],['t','Chiều dày t','5']],formula:'S = π[D²−(D−2t)²]/4'},
+ {name:'Ống thép hộp',fields:[['a','Chiều rộng ngoài a','100'],['b','Chiều cao ngoài b','60'],['t','Chiều dày thành t','4'],['r','Bán kính góc ngoài R (có thể 0)','0']],formula:'S = S ngoài − S trong'}
+];
+function requireN(p,key,label=key,optional=false){
+ const n=Number(p[key]??(optional?0:NaN));
+ if(!Number.isFinite(n)||Math.abs(n)>1e12||n<0||(!optional&&n===0))throw Error(`${label} phải ${optional?'≥ 0':'> 0'} và nằm trong giới hạn cho phép.`);
+ return n;
+}
+function rect(a,b,r=0){
+ if(r>Math.min(a,b)/2)throw Error('Bán kính bo góc R không được lớn hơn nửa cạnh nhỏ nhất.');
+ return a*b-(4-Math.PI)*r*r;
+}
+function tube(d,t){if(2*t>=d)throw Error('Chiều dày thành ống phải nhỏ hơn D/2.');return Math.PI*(d*d-(d-2*t)**2)/4;}
+function hollowBox(a,b,t,r){
+ if(2*t>=Math.min(a,b))throw Error('Chiều dày phải nhỏ hơn nửa cạnh nhỏ nhất.');
+ if(r>0&&r<t)throw Error('Bán kính góc R phải ≥ t hoặc bằng 0.');
+ return rect(a,b,r)-rect(a-2*t,b-2*t,r===0?0:r-t);
+}
+function triangle(a,b,c){
+ if(a+b<=c||a+c<=b||b+c<=a)throw Error('Ba cạnh không tạo thành tam giác.');
+ const s=(a+b+c)/2;return Math.sqrt(s*(s-a)*(s-b)*(s-c));
+}
+function massCalc(shape,p,density,qty){
+ if(!Number.isInteger(shape)||shape<0||shape>=MASS_SHAPES.length)throw Error('Hình dạng không hợp lệ.');
+ if(!Number.isFinite(density)||density<=0||density>1000000)throw Error('Khối lượng riêng cần > 0 và ≤ 1.000.000 kg/m³.');
+ if(!Number.isSafeInteger(qty)||qty<=0||qty>10000000)throw Error('Số lượng phải là số nguyên 1–10.000.000.');
+ const get=(k)=>requireN(p,k);let s;
+ switch(shape){
+ case 0:s=get('a')*get('b');break;
+ case 1:s=get('a')**2;break;
+ case 2:case 5:s=Math.PI*get('d')**2/4;break;
+ case 3:s=triangle(get('a'),get('b'),get('c'));break;
+ case 4:{const f=get('f');s=Math.sqrt(3)*f*f/2;break;}
+ case 6:s=tube(get('d'),get('t'));break;
+ case 7:s=hollowBox(get('a'),get('b'),get('t'),requireN(p,'r','r',true));break;
+ case 8:s=get('a')*get('b')/2;break;
+ }
+ const length=shape<=4||shape===8?get('t'):get('l');
+ const volumeMM3=s*length,unitKG=volumeMM3*density/1e9,totalKG=unitKG*qty;
+ if(![s,volumeMM3,unitKG,totalKG].every(v=>Number.isFinite(v)&&v>0))throw Error('Kết quả không hợp lệ hoặc vượt giới hạn.');
+ return {areaMM2:s,volumeMM3,unitKG,totalKG};
+}
+function areaCalc(shape,p){
+ if(!Number.isInteger(shape)||shape<0||shape>=AREA_SHAPES.length)throw Error('Hình dạng không hợp lệ.');
+ const get=(k)=>requireN(p,k),optional=(k)=>requireN(p,k,k,true);let s;
+ switch(shape){
+ case 0:s=rect(get('a'),get('a'),optional('r'));break;
+ case 1:s=rect(get('a'),get('b'),optional('r'));break;
+ case 2:s=get('a')*get('h')/2;break;
+ case 3:s=get('a')*get('h');break;
+ case 4:s=(get('a')+get('b'))*get('h')/2;break;
+ case 5:s=Math.PI*get('d')**2/4;break;
+ case 6:s=Math.PI*get('d')**2/8;break;
+ case 7:s=Math.PI*get('a')*get('b')/4;break;
+ case 8:{const theta=get('theta');if(theta>360)throw Error('Góc ở tâm không vượt 360°.');s=Math.PI*get('r')**2*theta/360;break;}
+ case 9:s=tube(get('d'),get('t'));break;
+ case 10:s=hollowBox(get('a'),get('b'),get('t'),optional('r'));break;
+ }
+ if(!Number.isFinite(s)||s<=0)throw Error('Kết quả diện tích không hợp lệ.');return s;
+}
+const UNIT_GROUPS=[
+ {name:'Chiều dài',units:[['mm',.001],['cm',.01],['m',1],['km',1000],['µm',1e-6],['in',.0254],['ft',.3048],['yd',.9144],['mi',1609.344]]},
+ {name:'Diện tích',units:[['mm²',1e-6],['cm²',1e-4],['m²',1],['km²',1e6],['in²',.00064516],['ft²',.09290304],['ha',1e4],['acre',4046.8564224]]},
+ {name:'Thể tích',units:[['mm³',1e-9],['cm³',1e-6],['m³',1],['L',1e-3],['mL',1e-6],['in³',.000016387064],['ft³',.028316846592],['gal Mỹ',.003785411784]]},
+ {name:'Khối lượng',units:[['mg',1e-6],['g',.001],['kg',1],['t',1000],['lb',.45359237],['oz',.028349523125]]},
+ {name:'Nhiệt độ',units:[['°C',1],['°F',1],['K',1]]},
+ {name:'Tốc độ',units:[['m/s',1],['km/h',1/3.6],['mph',.44704],['kn',1852/3600],['ft/s',.3048]]},
+ {name:'Thời gian',units:[['ms',.001],['s',1],['min',60],['h',3600],['ngày',86400],['tuần',604800]]},
+ {name:'Áp suất',units:[['Pa',1],['kPa',1000],['MPa',1e6],['bar',1e5],['psi',6894.757293168],['atm',101325],['mmHg',133.322387415]]}
+];
+function convertUnit(group,from,to,x){
+ const g=UNIT_GROUPS[group];if(!g||!g.units[from]||!g.units[to]||!Number.isFinite(x))throw Error('Giá trị hoặc đơn vị không hợp lệ.');
+ if(group===4){
+  const k=from===0?x+273.15:from===1?(x+459.67)*5/9:x;
+  if(k < -1e-9)throw Error('Nhiệt độ thấp hơn độ không tuyệt đối.');
+  const kelvin=Math.max(0,k);
+  return to===0?kelvin-273.15:to===1?kelvin*9/5-459.67:kelvin;
+ }
+ const value=x*g.units[from][1]/g.units[to][1];if(!Number.isFinite(value))throw Error('Giá trị vượt giới hạn.');return value;
+}
+function nestRect({sheetW,sheetH,partW,partH,gap=0,margin=0,rotate=true}){
+ const nums=[sheetW,sheetH,partW,partH,gap,margin];
+ if(nums.some(x=>!Number.isFinite(x)||x<0||x>1000000)||[sheetW,sheetH,partW,partH].some(x=>x===0))throw Error('Kích thước tấm hoặc chi tiết không hợp lệ.');
+ const w=sheetW-2*margin,h=sheetH-2*margin;if(w<=0||h<=0)throw Error('Lề lớn hơn kích thước tấm.');
+ const options=[[partW,partH,false]];if(rotate&&partW!==partH)options.push([partH,partW,true]);
+ const cases=options.map(([pw,ph,rotated])=>({pw,ph,rotated,cols:Math.max(0,Math.floor((w+gap)/(pw+gap))),rows:Math.max(0,Math.floor((h+gap)/(ph+gap)))}));
+ const best=cases.sort((a,b)=>b.cols*b.rows-a.cols*a.rows)[0];
+ const count=best.cols*best.rows;
+ if(count>250000)throw Error('Số lượng quá lớn để lập sơ đồ. Hãy tăng kích thước chi tiết hoặc giảm tấm.');
+ const used=count*partW*partH/(sheetW*sheetH)*100;
+ return {...best,count,efficiency:used,sheetW,sheetH,margin,gap};
+}
+function loanCalc({principal,rateAnnual,months,mode='amortizing'}){
+ if(!Number.isFinite(principal)||principal<=0||principal>1e15||!Number.isFinite(rateAnnual)||rateAnnual<0||rateAnnual>200||!Number.isInteger(months)||months<1||months>600)throw Error('Tiền gốc, lãi suất hoặc kỳ hạn không hợp lệ.');
+ const r=rateAnnual/1200;
+ if(mode==='savings'){const total=principal*(1+r)**months;return {payment:null,total,interest:total-principal};}
+ const payment=r===0?principal/months:principal*r/(1-(1+r)**-months);
+ return {payment,total:payment*months,interest:payment*months-principal};
+}
+function beamCalc({span,E,I,loadType,w=0,P=0}){
+ // Simply supported beam, elementary linear-elastic Euler-Bernoulli approximation.
+ if(![span,E,I,w,P].every(Number.isFinite)||span<=0||E<=0||I<=0||span>1e7||E>1e9||I>1e25)throw Error('Thông số dầm không hợp lệ.');
+ if(loadType==='udl'){
+  if(w<=0||w>1e7)throw Error('Tải phân bố phải > 0 và hợp lệ.');
+  return {moment:w*span**2/8/1e6,shear:w*span/2/1000,deflection:5*w*span**4/(384*E*I),unitMoment:'kN·m'};
+ }
+ if(loadType==='point'){
+  if(P<=0||P>1e10)throw Error('Tải tập trung phải > 0.');const force=P*1000;
+  return {moment:force*span/4/1e6,shear:force/2/1000,deflection:force*span**3/(48*E*I),unitMoment:'kN·m'};
+ }
+ throw Error('Loại tải không được hỗ trợ.');
+}
+function paintCalc({area,layers,coverage,loss,density}){
+ if(![area,layers,coverage,loss,density].every(Number.isFinite)||area<=0||coverage<=0||density<=0||layers<1||!Number.isInteger(layers)||layers>100||loss<0||loss>=100||area>1e9||coverage>1e5||density>100)throw Error('Thông số sơn không hợp lệ.');
+ const liters=area*layers/coverage/(1-loss/100);return {liters,kg:liters*density};
+}
+
+
+// One canonical source of reference density values shared by Mass, Nesting and Density Lookup.
+// Store public catalog only in memory for the current tab. Never store user files or inputs.
+let materialCatalogPromise = null;
+function loadMaterialsCatalog(){
+ if(!materialCatalogPromise){
+  materialCatalogPromise=fetch(new URL('./assets/data/materials.json', document.baseURI),{cache:'no-cache'})
+   .then(response=>{if(!response.ok)throw Error('Không đọc được assets/data/materials.json (HTTP '+response.status+').');return response.json();})
+   .then(rows=>{
+    if(!Array.isArray(rows)||rows.length<4||rows.length>2000)throw Error('Danh mục vật liệu không hợp lệ.');
+    const seen=new Set();
+    const validated=rows.map((row,index)=>{
+     if(!row||typeof row.name!=='string'||!row.name.trim()||row.name.length>150||
+        typeof row.en!=='string'||row.en.length>200||typeof row.density!=='number'||
+        !Number.isFinite(row.density)||row.density<=0||row.density>1_000_000)
+       throw Error('Dữ liệu vật liệu không hợp lệ tại dòng '+(index+1)+'.');
+     const key=row.name.trim().toLocaleLowerCase('vi');
+     if(seen.has(key))throw Error('Vật liệu bị trùng tên: '+row.name);
+     seen.add(key);
+     return Object.freeze({name:row.name.trim(),en:row.en,density:row.density});
+    });
+    return Object.freeze(validated);
+   })
+   .catch(error=>{materialCatalogPromise=null;throw error;}); // Allow a real retry.
+ }
+ return materialCatalogPromise;
+}
+// The tools use shared functions without importing another file.
+globalThis.EpsilonSoftShared = Object.freeze({icon, hydrateIcons, number, numeric, field, setText, downloadBlob, debounce, normalize, MASS_SHAPES, AREA_SHAPES, massCalc, areaCalc, UNIT_GROUPS, convertUnit, nestRect, loanCalc, beamCalc, paintCalc, loadMaterialsCatalog});
+
+// Main application coordinator
+/**
+ * Epsilon Soft Web App — application coordinator.
+ * No backend, no login. Persistent data here is ONLY pins and open counts.
+ * Modules in assets/js/tools are loaded on demand; tool inputs are not tracked.
+ */
+
+
+const DEFINITIONS = Object.freeze([
+ {id:'calculator',name:'Máy tính khoa học',sub:'Phép tính và hàm toán học',group:'calc',icon:'calculator',tone:'tone-blue',file:'calculator.js'},
+ {id:'area',name:'Diện tích hình học',sub:'Tính diện tích nhiều hình',group:'calc',icon:'area',tone:'tone-mint',file:'area.js'},
+ {id:'mass',name:'Khối lượng vật liệu',sub:'Tính nhanh theo kích thước',group:'calc',icon:'box',tone:'tone-orange',file:'mass.js'},
+ {id:'converter',name:'Đổi đơn vị',sub:'Chuyển đổi đơn vị đa dạng',group:'calc',icon:'swap',tone:'tone-violet',file:'converter.js'},
+ {id:'interest',name:'Tính lãi suất',sub:'Tiền gửi, vay vốn, đầu tư',group:'calc',icon:'percent',tone:'tone-blue',file:'interest.js'},
+ {id:'nesting',name:'Trải phôi 2D',sub:'Trải phôi 2D theo ES TOOLKIT Portable',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting.js'},
+ {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'engineering',icon:'database',tone:'tone-violet',file:'density.js'},
+ {id:'beam',name:'Tính kết cấu đơn giản',sub:'Dầm đơn giản: M, V, độ võng',group:'engineering',icon:'beam',tone:'tone-blue',file:'beam.js'},
+ {id:'paint',name:'Tính khối lượng sơn',sub:'Ước tính sơn theo bề mặt',group:'engineering',icon:'paint',tone:'tone-mint',file:'paint.js'},
+ {id:'pdf',name:'PDF Studio',sub:'Gộp, tách, chỉnh sửa, ký tên và chuyển đổi PDF',group:'utility',icon:'pdf',tone:'tone-red',file:'pdf-studio.js'},
+ {id:'calendar',name:'Âm lịch – Dương lịch',sub:'Tra cứu ngày tháng, lịch vạn niên',group:'utility',icon:'calendar',tone:'tone-mint',file:'calendar.js'},
+ {id:'vietqr',name:'VietQR',sub:'Tạo mã QR chuyển khoản ngân hàng',group:'utility',icon:'qr',tone:'tone-violet',file:'vietqr.js'},
+ {id:'barcode',name:'Tạo và đọc mã vạch',sub:'Tạo Code 39 và quét nếu hỗ trợ',group:'utility',icon:'barcode',tone:'tone-blue',file:'barcode.js'},
+ {id:'image-studio',name:'Image Studio',sub:'Nén, cắt, xoay ảnh và tách nền chữ ký',group:'utility',icon:'image',tone:'tone-mint',file:'image-studio.js'},
+ {id:'money-words',name:'Đọc số tiền bằng chữ',sub:'Đọc số tiền Việt – Anh, sao chép nhanh',group:'utility',icon:'file',tone:'tone-blue',file:'money-words.js'},
+ {id:'notes',name:'Ghi chú nhanh',sub:'Viết, lưu và tải ghi chú',group:'utility',icon:'notes',tone:'tone-orange',file:'notes.js'}
+]);
+const GROUPS=Object.freeze([
+ {id:'calc',name:'TÍNH TOÁN',description:'Tính toán nhanh, chính xác, tiện lợi',icon:'calculator',cls:'category-calc'},
+ {id:'engineering',name:'KỸ THUẬT',description:'Hỗ trợ công việc chuyên môn',icon:'gear',cls:'category-engineering'},
+ {id:'utility',name:'TÀI LIỆU & TIỆN ÍCH',description:'Xử lý tài liệu, lịch và tiện ích khác',icon:'pdf',cls:'category-utility'}
+]);
+const map=new Map(DEFINITIONS.map(t=>[t.id,t]));
+const STORAGE_KEY='epsilon-soft.my-tools.v1';
+let favorites={pinned:[],opens:{}};
+let displayMode='grid';
+let currentModuleCleanup=null;
+let currentRoute=0;
+let toastHandle=null;
+const main=document.getElementById('app-main');
+// Bilingual navigation/content shell; user data and individual tool modules are never translated in place.
+const ES_LANGUAGE_KEY='epsilon-soft.language.v1';
+let esLanguage='vi';
+try { if(localStorage.getItem(ES_LANGUAGE_KEY)==='en') esLanguage='en'; } catch {/* Storage disabled: VI remains available. */}
+const ES_EN_TEXT=Object.freeze({
+ 'trang chu':'Home','huong dan':'Help','kham pha cong cu':'Explore tools',
+ 'danh muc':'CATEGORIES','tat ca cong cu':'All tools','cong cu':'Tools',
+ 'tinh toan':'Calculations','ky thuat':'Engineering','tai lieu & tien ich':'Documents & Utilities',
+ 'tai lieu va tien ich':'Documents & Utilities','tai lieu, lich va cac tien ich khac':'Documents, calendars & utilities',
+ 'my tools':'MY TOOLS','epsilon hub':'EPSILON HUB',
+ 'cong cu va he sinh thai':'Tools and ecosystem','danh muc epsilon soft':'Epsilon Soft categories',
+ 'mo danh muc':'Open categories','thu gon thanh danh muc':'Collapse categories',
+ 'mo rong thanh danh muc':'Expand categories','mo menu':'Open menu',
+ 'cong cu truc tuyen mien phi':'FREE ONLINE TOOLS',
+ 'ho tro cong viec hang ngay. nhanh gon va de dung.':'Everyday tools. Fast, practical and easy to use.',
+ 'tinh toan · ky thuat · xu ly tai lieu · tien ich · va nhieu cong cu huu ich khac':'Calculations · Engineering · Documents · Utilities · And more',
+ 'mien phi':'Free','khong can tai khoan':'No account required',
+ 'su dung ngay tren trinh duyet':'Use instantly in your browser',
+ 'nhieu cong cu huu ich':'Useful tools','trong mot nen tang':'on one platform',
+ 'giao dien hien dai, de su dung':'Modern, easy-to-use interface',
+ 'hoat dong ngay tren trinh duyet':'Works directly in your browser',
+ 'phu hop cong viec, hoc tap va ky thuat':'For work, study and engineering',
+ 'kham pha cong cu':'Explore tools',
+ 'cai app':'Install App','gioi thieu va lien he':'About & Contact',
+ 'cai app epsilon soft len thiet bi':'Install Epsilon Soft on this device',
+ 'gioi thieu va lien he epsilon soft':'About and contact Epsilon Soft',
+ 'chon cong cu phu hop hoac tim kiem nhanh':'Choose a tool or search quickly',
+ 'chon cong cu phu hop':'Choose a suitable tool',
+ 'cac cong cu anh/chi da ghim bang ngoi sao':'Your starred tools',
+ 'tinh toan nhanh, chinh xac, tien loi':'Quick, accurate and convenient calculations',
+ 'ho tro cong viec chuyen mon':'Professional engineering tools',
+ 'xu ly tai lieu, lich va tien ich khac':'Documents, calendars and everyday utilities',
+ 'tim cong cu...':'Search tools...','tim kiem cong cu':'Search tools',
+ 'dang luoi':'Grid view','dang danh sach':'List view',
+ 'danh sach cong cu, dung chuot hoac phim mui ten de cuon':'Scrollable tools list; use mouse or arrow keys',
+ 'khong tim thay cong cu phu hop. hay thu tu khoa khac.':'No matching tools. Try another keyword.',
+ 'chua co cong cu nao':'No pinned tools yet',
+ 'nhan ⭐ tai mot cong cu de them vao my tools.':'Star a tool to add it to MY TOOLS.',
+ 'dang phat trien':'In development',
+ 'them vao my tools':'Add to MY TOOLS','da them vao my tools':'Added to MY TOOLS',
+ 'ghim':'Pin','bo ghim':'Unpin','cong cu lien quan':'Related tools',
+ 'dang mo cong cu...':'Opening tool...','dang kiem tra...':'Checking...',
+ 'xu ly tai trinh duyet':'Processed in your browser',
+ 'khong the tai cong cu. vui long kiem tra tep javascript tuong ung roi tai lai trang.':'Unable to load this tool. Check its JavaScript file, then reload.',
+ 'dang test noi bo':'INTERNAL TESTING',
+ 'bo cong cu 7 trong 1 - 1 file exe, khong can cai dat':'Seven tools in one EXE. No installation required',
+ 'bo cong cu 7 trong 1 – 1 file exe, khong can cai dat':'Seven tools in one EXE. No installation required',
+ 'may tinh · dien tich · khoi luong vat lieu · doi don vi · trai phoi 2d · am/duong lich · pdf studio':'Calculator · Area · Mass · Converter · Nesting · Calendar · PDF Studio',
+ 'tim hieu es toolkit':'About ES TOOLKIT',
+ 'chua phat hanh ban tai cong khai':'Not publicly available yet',
+ 'gioi thieu epsilon soft':'About Epsilon Soft',
+ 'ket noi cac san pham va ung dung thuoc he sinh thai epsilon.':'Connecting products and apps across the Epsilon ecosystem.',
+ 'dang tai danh sach san pham...':'Loading products...',
+ 'chua co san pham nao trong danh muc.':'No products are listed yet.',
+ 'truy cap san pham':'Visit product',
+ 'lien ket dang duoc cap nhat':'Link coming soon',
+ 'thu tai lai':'Try again',
+ 'khong tai duoc danh sach san pham tu':'Unable to load the product list from',
+ 'lop 1 – epsilon edu':'Grade 1 – Epsilon Edu',
+ 'hoc toan, tieng viet va tieng anh theo chuong trinh epsilon edu.':'Study Math, Vietnamese and English with Epsilon Edu.',
+ 'cac phan mem, tien ich va giai phap ky thuat trong he sinh thai epsilon.':'Software, utilities and engineering solutions in the Epsilon ecosystem.',
+ 'huong dan su dung':'User guide',
+ 'epsilon soft mien phi, khong yeu cau tai khoan.':'Epsilon Soft is free and requires no account.',
+ 'nhan ngoi sao ⭐ tren cong cu de ghim. chi cong cu da ghim moi xuat hien trong my tools. du lieu nay duoc luu tren trinh duyet hien tai.':'Star a tool to pin it. Only pinned tools appear in MY TOOLS. Preferences are stored in this browser.',
+ 'danh muc va tim kiem':'Categories and search',
+ 'chon chu de tren trang chu hoac trong sidebar khi dang dung cong cu. go ten cong cu trong o tim kiem; phim / giup mo o tim kiem nhanh.':'Choose a category from the sidebar. Search by tool name, or press / to focus the search field.',
+ 'du lieu va quyen rieng tu':'Data and privacy',
+ 'cac cong cu uu tien xu ly du lieu ngay tai trinh duyet. mot so module co the tai thu vien tu nguon ngoai; hay xem gioi han va huong dan ngay trong module.':'Tools prioritize on-device processing. Some modules load external libraries; check their instructions and limitations.',
+ 'ket qua ky thuat':'Engineering results',
+ 'doi chieu don vi do, dau vao va tieu chuan ap dung truoc khi su dung so lieu trong cong viec thuc te.':'Verify units, inputs and applicable standards before using results professionally.',
+ 'thong tin, loi ich va huong dan su dung. lien ket tai nam trong tung cong cu web.':'Information, benefits and usage instructions. Downloads are linked from individual web tools.',
+ 'portable la gi?':'What is Portable?',
+ 'phien ban windows chay truc tiep, thuong khong can trinh cai dat. huu ich khi lam viec offline hoac can mot tien ich chuyen dung tren may tinh.':'A Windows app that usually runs without installation. Useful offline or for dedicated desktop tasks.',
+ 'web app van la nen tang uu tien:':'Web App remains the primary option:',
+ 'su dung ngay khong can tai xuong.':'Use instantly without downloading.',
+ 'cach tai tu tung cong cu':'How to download from a tool',
+ 'mo cong cu web can su dung.':'Open the web tool you need.',
+ 'nhan nut':'Click the',
+ 'canh my tools.':'button next to MY TOOLS.',
+ 'neu co ban cong khai, lien ket google drive se mo trong tab moi.':'If a public release is available, its Google Drive link opens in a new tab.',
+ 'neu chua co, he thong thong bao de ban co the lien he quan tri vien.':'If unavailable, contact the Epsilon Soft administrator.',
+ 'canh bao windows smartscreen':'Windows SmartScreen warnings',
+ 'windows co the canh bao voi file exe it pho bien hoac chua duoc ky so. hay xac minh nguon tai, ten file, phien ban va quet bang windows security truoc khi chay. khong bo qua canh bao neu khong chac chan file dang tin cay.':'Windows may warn about an unsigned or uncommon EXE. Verify the source, name and version, and scan the file with Windows Security before running.',
+ 'su dung va luu y':'Usage and notes',
+ 'tai exe ve thu muc co quyen ghi phu hop, mo truc tiep tren windows tuong thich.':'Download the EXE to a suitable folder and open it on a compatible Windows device.',
+ 'kiem tra huong dan di kem tung ban phat hanh.':'Read the instructions for each release.',
+ 'khong dung ban dang test noi bo nhu ban phat hanh cong khai.':'Do not treat internal test builds as public releases.',
+ 'es toolkit v1.0 hien van trong giai doan thu nghiem noi bo.':'ES TOOLKIT V1.0 is still in internal testing.',
+ 'trang nay chi cung cap huong dan, khong chua nut hoac lien ket tai exe.':'This page offers guidance only; it contains no EXE download links.',
+ 'chua co ban windows portable':'No Windows Portable release yet',
+ 'da hieu':'Got it',
+ 'cong cu huu ich. trai nghiem don gian. mien phi cho moi nguoi.':'Useful tools. Simple experience. Free for everyone.',
+ 'du lieu tinh toan duoc xu ly trong trinh duyet cua ban.':'Your calculations are processed in your browser.',
+ 'bo qua dieu huong':'Skip navigation',
+ 'may tinh khoa hoc':'Scientific Calculator','phep tinh va ham toan hoc':'Arithmetic and mathematical functions',
+ 'dien tich hinh hoc':'Geometry Area','tinh dien tich nhieu hinh':'Area of common geometric shapes',
+ 'khoi luong vat lieu':'Material Mass','tinh nhanh theo kich thuoc':'Mass from dimensions',
+ 'doi don vi':'Unit Converter','chuyen doi don vi da dang':'Convert measurement units',
+ 'tinh lai suat':'Interest Calculator','tien gui, vay von, dau tu':'Savings, loans and investments',
+ 'trai phoi 2d':'2D Nesting','trai phoi 2d theo es toolkit portable':'2D layout from ES TOOLKIT Portable',
+ 'khoi luong rieng':'Material Density','tra cuu khoi luong rieng (kg/m³)':'Density reference (kg/m³)',
+ 'tinh ket cau don gian':'Basic Structural Analysis','dam don gian: m, v, do vong':'Simple beams: bending, shear and deflection',
+ 'tinh khoi luong son':'Paint Quantity','uoc tinh son theo be mat':'Estimate paint for surfaces',
+ 'gop, tach, chinh sua, ky ten va chuyen doi pdf':'Merge, split, edit, sign and convert PDFs',
+ 'am lich – duong lich':'Lunar & Solar Calendar','tra cuu ngay thang, lich van nien':'Explore dates and lunar calendars',
+ 'tao ma qr chuyen khoan ngan hang':'Bank transfer QR code',
+ 'tao va doc ma vach':'Create & Read Barcodes','tao code 39 va quet neu ho tro':'Create Code 39 and scan if supported',
+ 'nen, cat, xoay anh va tach nen chu ky':'Compress, crop, rotate images and remove signature backgrounds',
+ 'doc so tien bang chu':'Amount in Words','doc so tien viet – anh, sao chep nhanh':'Vietnamese & English amount reading',
+ 'ghi chu nhanh':'Quick Notes','viet, luu va tai ghi chu':'Write, save and download notes',
+ 'khong yeu cau tai khoan':'No account required',
+ 'dang mo epsilon soft...':'Opening Epsilon Soft...'
+});
+const esOriginalNodes=new WeakMap();
+const esOriginalAttrs=new WeakMap();
+function esTranslateValue(original){
+ if(esLanguage!=='en')return original;
+ const trimmed=original.trim();if(!trimmed)return original;
+ const normalized=normalize(trimmed).replace(/\s+/g,' ');
+ if(normalized==='epsilon hub')return original;
+ let replacement=ES_EN_TEXT[normalized];
+ // Translate the tool heading suffix without changing the actual tool workspace.
+ const suffix=' · mien phi · xu ly tai trinh duyet';
+ if(!replacement && normalized.endsWith(suffix)){
+  const name=normalized.slice(0,-suffix.length);
+  const before=ES_EN_TEXT[name];
+  if(before)replacement=before+' · Free · In-browser';
+ }
+ if(!replacement)return original;
+ const first=original.indexOf(trimmed);
+ return original.slice(0,first)+replacement+original.slice(first+trimmed.length);
+}
+function esTranslateRegion(root){
+ if(!root)return;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+ let node;
+ while((node=walker.nextNode())){
+  if(node.parentElement?.closest('#tool-workspace'))continue;
+  if(node.parentElement?.closest('.es-language-picker'))continue;
+  if(!esOriginalNodes.has(node))esOriginalNodes.set(node,node.nodeValue);
+  node.nodeValue=esTranslateValue(esOriginalNodes.get(node));
+ }
+ const nodes=[root,...root.querySelectorAll('[aria-label],[title],[placeholder]')];
+ for(const el of nodes){
+  if(!el.hasAttribute||el.closest?.('#tool-workspace'))continue;
+  let saved=esOriginalAttrs.get(el);
+  if(!saved){saved={};esOriginalAttrs.set(el,saved);}
+  for(const attr of ['aria-label','title','placeholder']){
+   if(el.hasAttribute(attr)){
+    if(!Object.hasOwn(saved,attr))saved[attr]=el.getAttribute(attr);
+    el.setAttribute(attr,esTranslateValue(saved[attr]));
+   }
+  }
+ }
+}
+function esUpdateLanguageButtons(){
+ document.documentElement.lang=esLanguage;
+ for(const b of document.querySelectorAll('[data-es-lang]')){
+  const chosen=b.dataset.esLang===esLanguage;
+  b.setAttribute('aria-pressed',String(chosen));
+  b.setAttribute('aria-label',b.dataset.esLang==='vi'?'Vietnamese':'English');
+ }
+}
+function esSetLanguage(next){
+ if(next!=='vi'&&next!=='en')return;
+ esLanguage=next;
+ try{localStorage.setItem(ES_LANGUAGE_KEY,next);}catch{/* Private browsing may forbid storage. */}
+ esUpdateLanguageButtons();
+ // Text nodes only: no re-mount, no resets of calculator/history/document tool state.
+ esTranslateRegion(document.body);
+ renderSidebar();
+ const heroLayer=document.getElementById('es-hero-dialog-layer');
+ if(heroLayer && !heroLayer.hidden){heroLayer.innerHTML=esHeroDialogContent(heroLayer.dataset.mode||'about');heroLayer.querySelector('[data-es-hero-close]')?.focus();}
+}
+function esBuildLanguagePicker(){
+ const header=document.querySelector('.header-inner');
+ if(!header||header.querySelector('.es-language-picker'))return;
+ const picker=document.createElement('div');
+ picker.className='es-language-picker';picker.setAttribute('role','group');picker.setAttribute('aria-label','Language / Ngon ngu');
+ picker.innerHTML='<button type="button" class="es-language-btn" data-es-lang="vi">VI</button><button type="button" class="es-language-btn" data-es-lang="en">EN</button>';
+ header.append(picker);
+ esUpdateLanguageButtons();
+}
+
+function readPreferences(){
+ try{
+  const raw=localStorage.getItem(STORAGE_KEY);if(!raw||raw.length>4096)return;
+  const val=JSON.parse(raw);if(!val||typeof val!=='object')return;
+  const ids=new Set(DEFINITIONS.filter(t=>!t.planned).map(t=>t.id));
+  if(Array.isArray(val.pinned))favorites.pinned=[...new Set(val.pinned.map(x=>x==='qr'?'vietqr':x).filter(x=>typeof x==='string'&&ids.has(x)))].slice(0,30);
+  if(val.opens&&typeof val.opens==='object'&&!Array.isArray(val.opens)){
+   for(const id of ids){const n=val.opens[id] ?? (id==='vietqr'?val.opens.qr:undefined);if(Number.isSafeInteger(n)&&n>0)favorites.opens[id]=Math.min(n,1000000);}
+  }
+ }catch{/* Continue in memory when browser storage is unavailable/corrupt. */}
+}
+function savePreferences(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(favorites));}catch{/* in-memory fallback */}}
+function showToast(message,type='success'){
+ const region=document.getElementById('toast-region');region.replaceChildren();
+ const toast=document.createElement('div');toast.className='toast '+type;toast.textContent=String(message);region.append(toast);
+ clearTimeout(toastHandle);toastHandle=setTimeout(()=>toast.remove(),3100);
+}
+function isPinned(id){return favorites.pinned.includes(id)}
+function togglePin(id){
+ const t=map.get(id);if(!t||t.planned)return;
+ const had=isPinned(id);
+ favorites.pinned=had?favorites.pinned.filter(x=>x!==id):[...favorites.pinned,id];
+ savePreferences();showToast(esLanguage==='en'?(had?`Unpinned ${ES_EN_TEXT[normalize(t.name)]||t.name}`:`Pinned ${ES_EN_TEXT[normalize(t.name)]||t.name} to MY TOOLS`):(had?`Đã bỏ ghim ${t.name}`:`Đã thêm ${t.name} vào MY TOOLS`));
+ const active=document.querySelector('.page-home');if(active)renderGroupCards();
+ const btn=document.querySelector('.tool-heading [data-pin]');if(btn&&btn.dataset.pin===id){btn.innerHTML=`${icon('star')} ${isPinned(id)?'Đã thêm vào MY TOOLS':'Thêm vào MY TOOLS'}`;btn.setAttribute('aria-pressed',String(isPinned(id)));esTranslateRegion(btn);}
+}
+function preferredTools(){
+ // MY TOOLS is opt-in only: visits must never add a tool automatically.
+ // Preserve the order in which users starred their tools.
+ return favorites.pinned.map(id=>map.get(id)).filter(t=>t&&!t.planned);
+}
+function toolCard(t){
+ const action=t.planned?`<div class="tool-link"><div class="tool-tile ${t.tone}">${icon(t.icon,27)}</div><div class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small><span class="soon-label">Đang phát triển</span></div></div>`:
+ `<a class="tool-link" href="#/tool/${t.id}" aria-label="Mở ${t.name}"><span class="tool-tile ${t.tone}">${icon(t.icon,27)}</span><span class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small></span></a>`;
+ return `<article class="tool-card ${t.planned?'is-planned':'is-ready'}" data-card="${t.id}" data-search="${normalize(t.name+' '+t.sub)}">${action}${t.planned?'':`<button class="star-btn" type="button" data-pin="${t.id}" aria-label="${isPinned(t.id)?'Bỏ ghim':'Ghim'} ${t.name}" aria-pressed="${isPinned(t.id)}" title="${isPinned(t.id)?'Bỏ ghim':'Thêm vào MY TOOLS'}">${icon('star')}</button>`}</article>`;
+}
+// Web-first navigation. All tools keep their existing IDs and mount(root, ctx) APIs.
+const SYSTEM_JSON = 'ecosystem.json';
+const PORTABLE_JSON = 'portable-downloads.json';
+let sidebarIsCollapsed = false;
+let activeCatalog = 'all';
+let modalPreviousFocus = null;
+
+function escapeHTML(value) {
+ return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+}
+function safeExternalUrl(value, driveOnly = false) {
+ if (typeof value !== 'string' || value.length > 2048) return '';
+ try {
+  const u = new URL(value);
+  if (u.protocol !== 'https:' || u.username || u.password) return '';
+  if (driveOnly && !['drive.google.com', 'docs.google.com'].includes(u.hostname.toLowerCase())) return '';
+  return u.href;
+ } catch { return ''; }
+}
+async function readStaticJson(filename, maximum = 60000) {
+ const response = await fetch(new URL('./assets/data/' + filename, document.baseURI), { cache: 'no-store', credentials: 'same-origin' });
+ if (!response.ok) throw Error('Không tải được ' + filename + ' (HTTP ' + response.status + ').');
+ const raw = await response.text();
+ if (raw.length > maximum) throw Error(filename + ' vượt dung lượng cho phép.');
+ return JSON.parse(raw);
+}
+function makeSidebarLink(id, href, label, iconName, count) {
+ const selected = (id === 'all' && ['#/home','#/explore',''].includes(location.hash)) ||
+  (id === 'mytools' && location.hash === '#/mytools') ||
+  (id === 'ecosystem' && location.hash === '#/ecosystem') ||
+  (id === 'portable' && location.hash === '#/portable') ||
+  (id === 'help' && location.hash === '#/help') ||
+  location.hash === '#/category/' + id;
+ return `<a class="es-side-link" data-side="${id}" data-label="${escapeHTML(label)}" href="${href}" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}" ${selected?'aria-current="page"':''}><span class="es-side-icon">${icon(iconName,21)}</span><span class="es-side-name">${escapeHTML(label)}</span>${typeof count === 'number'?`<span class="es-side-count">${count}</span>`:''}</a>`;
+}
+// Keep one submenu open at a time. No persistent storage or new backend is required.
+let sidebarOpenSection = null;
+let sidebarHubProducts = null;
+let sidebarHubLoading = false;
+
+function sidebarToolsInSection(id){
+ if(id==='mytools')return preferredTools();
+ if(id==='all')return DEFINITIONS.filter(t=>!t.planned);
+ return DEFINITIONS.filter(t=>t.group===id&&!t.planned);
+}
+function sidebarChildrenHtml(id){
+ if(id==='ecosystem'){
+  const visit=`<a class="es-side-child" href="#/ecosystem">${icon('orbit',17)}<span>${esLanguage==='en'?'Explore Epsilon Hub':'Khám phá Epsilon Hub'}</span></a>`;
+  if(!Array.isArray(sidebarHubProducts)||!sidebarHubProducts.length)return visit;
+  return visit+sidebarHubProducts.map(item=>`<a class="es-side-child" href="${escapeHTML(item.url||'#/ecosystem')}" ${item.url?'target="_blank" rel="noopener noreferrer"':''} title="${escapeHTML(item.name)}">${icon(item.url?'external-link':'orbit',16)}<span>${escapeHTML(item.name)}</span></a>`).join('');
+ }
+ const items=sidebarToolsInSection(id);
+ if(!items.length)return `<p class="es-side-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào.'}</p>`;
+ return items.map(t=>{
+  const selected=location.hash==='#/tool/'+t.id;
+  return `<a class="es-side-child" href="#/tool/${t.id}" ${selected?'aria-current="page"':''} title="${escapeHTML(t.name)}">${icon(t.icon,17)}<span>${escapeHTML(t.name)}</span></a>`;
+ }).join('');
+}
+function makeSidebarExpandable(id,href,label,iconName,count){
+ const route=location.hash;
+ const open=sidebarOpenSection===id;
+ const activeTool=route.startsWith('#/tool/')?map.get(route.slice(7)):null;
+ const selected=(id==='all'&&['#/home','#/explore',''].includes(route))||
+  (id==='mytools'&&route==='#/mytools')||
+  (id==='ecosystem'&&route==='#/ecosystem')||
+  route==='#/category/'+id||Boolean(activeTool && id===activeTool.group);
+ const escapedLabel=escapeHTML(label);
+ const logo=id==='ecosystem'?'<img src="./icon-152.png" alt="" loading="lazy" decoding="async">':icon(iconName,22);
+ const actionLabel=esLanguage==='en'?(open?'Collapse':'Expand'):(open?'Thu gọn':'Mở rộng');
+ return `<section class="es-side-section" data-side-section="${id}">
+  <div class="es-side-parent ${selected?'is-active':''}">
+   <a class="es-side-link" data-side="${id}" data-label="${escapedLabel}" href="${href}" title="${escapedLabel}" aria-label="${escapedLabel}" ${selected?'aria-current="page"':''}><span class="es-side-icon">${logo}</span><span class="es-side-name">${escapedLabel}</span></a>
+   <button type="button" class="es-side-expand" data-side-expand="${id}" aria-expanded="${open}" aria-controls="es-side-children-${id}" aria-label="${actionLabel}: ${escapedLabel}" title="${actionLabel}: ${escapedLabel}">${icon('chevron-down',20)}</button>
+   ${typeof count==='number'?`<a href="${href}" class="es-side-count" aria-label="${escapedLabel} (${count})">${count}</a>`:''}
+  </div>
+  <div class="es-side-children" id="es-side-children-${id}" ${open?'':'hidden'}>${open?sidebarChildrenHtml(id):''}</div>
+ </section>`;
+}
+async function loadSidebarHubProducts(){
+ if(sidebarHubLoading||sidebarHubProducts!==null)return;
+ sidebarHubLoading=true;
+ try{
+  const data=await readStaticJson(SYSTEM_JSON);
+  if(!data||!Array.isArray(data.products)||data.products.length>100)throw Error('Invalid products');
+  sidebarHubProducts=data.products.filter(p=>p&&typeof p.name==='string'&&p.name.trim()&&p.name.length<=100).map(p=>({name:p.name.trim(),url:safeExternalUrl(p.url)}));
+ }catch(error){sidebarHubProducts=[];console.warn('Sidebar Epsilon Hub:',error);}
+ finally{
+  sidebarHubLoading=false;
+  const panel=document.getElementById('es-side-children-ecosystem');
+  if(panel && sidebarOpenSection==='ecosystem'){
+   panel.innerHTML=sidebarChildrenHtml('ecosystem');
+   esTranslateRegion(panel);
+  }
+  if(sidebarOpenSection==='ecosystem')renderMobileRail();
+ }
+}
+
+// All mobile folder links use the exact same routes and published tool definitions as the desktop sidebar.
+function mobileRailEntries(){
+ return [
+  {id:'mytools',href:'#/mytools',label:'MY TOOLS',iconName:'star',count:preferredTools().length,expand:true},
+  {id:'ecosystem',href:'#/ecosystem',label:'Epsilon Hub',iconName:'orbit',expand:true},
+  {id:'all',href:'#/explore',label:esLanguage==='en'?'All tools':'Tất cả',iconName:'grid',count:DEFINITIONS.filter(t=>!t.planned).length,expand:true},
+  ...GROUPS.map(g=>({
+   id:g.id,href:'#/category/'+g.id,
+   label:g.id==='calc'?(esLanguage==='en'?'Calculate':'Tính toán'):
+    g.id==='engineering'?(esLanguage==='en'?'Engineering':'Kỹ thuật'):(esLanguage==='en'?'Utilities':'Tài liệu'),
+   iconName:g.icon,expand:true,count:DEFINITIONS.filter(t=>t.group===g.id&&!t.planned).length
+  })),
+  {id:'portable',href:'#/portable',label:'Portable',iconName:'windows',expand:false},
+  {id:'help',href:'#/help',label:esLanguage==='en'?'Help':'Hướng dẫn',iconName:'book',expand:false}
+ ];
+}
+function mobileRailIsActive(entry){
+ const hash=location.hash;
+ const t=hash.startsWith('#/tool/')?map.get(hash.slice(7)):null;
+ return (entry.id==='mytools'&&hash==='#/mytools')||
+  (entry.id==='all'&&(['','#/home','#/explore'].includes(hash)))||
+  (entry.id==='ecosystem'&&hash==='#/ecosystem')||
+  hash===entry.href||Boolean(t&&entry.id===t.group);
+}
+function mobileRailFolderHtml(entry){
+ const opened=sidebarOpenSection===entry.id;
+ const current=mobileRailIsActive(entry);
+ const label=escapeHTML(entry.label);
+ const graphic=entry.id==='ecosystem'?'<img src="./icon-152.png" alt="" width="32" height="32">':icon(entry.iconName,22);
+ const ariaLabel=entry.id==='all'?(esLanguage==='en'?'All tools':'Tất cả công cụ'):
+  entry.id==='utility'?(esLanguage==='en'?'Documents and utilities':'Tài liệu & Tiện ích'):entry.label;
+ return `<div class="es-mobile-folder ${current?'is-active':''}" data-mobile-section="${entry.id}">
+   <a href="${entry.href}" class="es-mobile-folder-link" title="${escapeHTML(ariaLabel)}" aria-label="${escapeHTML(ariaLabel)}" ${current?'aria-current="page"':''}>
+    <span class="es-mobile-folder-icon">${graphic}</span>
+    <span class="es-mobile-folder-label">${label}</span>
+   </a>
+   ${entry.id==='mytools'?`<span class="es-mobile-folder-count" aria-hidden="true">${entry.count}</span>`:''}
+   ${entry.expand?`<button type="button" class="es-mobile-folder-expand" data-mobile-folder="${entry.id}"
+    aria-expanded="${opened}" aria-controls="es-mobile-rail-drawer"
+    aria-label="${opened?(esLanguage==='en'?'Collapse':'Đóng danh sách'):(esLanguage==='en'?'Show tools in':'Xổ công cụ trong')} ${escapeHTML(ariaLabel)}">${icon('chevron-down',18)}</button>`:''}
+  </div>`;
+}
+function renderMobileRail(){
+ const rail=document.getElementById('es-mobile-rail');if(!rail)return;
+ const existing=document.getElementById('es-mobile-rail-scroll');const left=existing?.scrollLeft||0;
+ const entries=mobileRailEntries();const folder=entries.find(item=>item.id===sidebarOpenSection&&item.expand);
+ const fixed=entries[0];
+ rail.innerHTML=`<div class="es-mobile-rail-main">
+  <div class="es-mobile-rail-fixed">${mobileRailFolderHtml(fixed)}</div>
+  <div class="es-mobile-rail-scroll" id="es-mobile-rail-scroll" role="navigation" tabindex="0"
+   aria-label="${esLanguage==='en'?'Swipe categories horizontally':'Vuốt ngang để xem các danh mục'}">
+   ${entries.slice(1).map(mobileRailFolderHtml).join('')}
+  </div>
+ </div>
+ <div class="es-mobile-rail-drawer" id="es-mobile-rail-drawer" ${folder?'':'hidden'}>
+  ${folder?`<div class="es-mobile-rail-drawer-head"><span>${icon(folder.iconName,18)} ${escapeHTML(folder.label)}</span><button type="button" class="es-mobile-rail-drawer-close" data-mobile-folder-close aria-label="${esLanguage==='en'?'Close':'Đóng'}">${icon('close',18)}</button></div>
+   <div class="es-mobile-rail-drawer-grid">${sidebarChildrenHtml(folder.id)}</div>`:''}
+ </div>`;
+ rail.querySelector('#es-mobile-rail-scroll').scrollLeft=left;
+ esTranslateRegion(rail);
+}
+
+function renderSidebar() {
+ const nav=document.getElementById('es-side-nav');
+ const foot=document.getElementById('es-side-footer');
+ if(!nav||!foot)return;
+ const scroll=nav.scrollTop;
+ nav.innerHTML=[
+  makeSidebarExpandable('mytools','#/mytools','MY TOOLS','star',preferredTools().length),
+  makeSidebarExpandable('ecosystem','#/ecosystem','EPSILON HUB','orbit'),
+  '<div class="es-side-divider" aria-hidden="true"></div>',
+  makeSidebarExpandable('all','#/explore','Tất cả công cụ','grid',DEFINITIONS.filter(t=>!t.planned).length),
+  ...GROUPS.map(g=>makeSidebarExpandable(g.id,'#/category/'+g.id,g.name==='TÀI LIỆU & TIỆN ÍCH'?'Tài liệu & Tiện ích':g.name==='TÍNH TOÁN'?'Tính toán':'Kỹ thuật',g.icon,DEFINITIONS.filter(t=>t.group===g.id&&!t.planned).length))
+ ].join('');
+ foot.innerHTML=makeSidebarLink('portable','#/portable','Windows Portable','windows')+
+  makeSidebarLink('help','#/help','Hướng dẫn','book');
+ esTranslateRegion(nav);esTranslateRegion(foot);
+ nav.scrollTop=scroll;
+ renderMobileRail();
+}
+function buildSidebarShell() {
+ const wrap = document.createElement('div');
+ wrap.className = 'es-app-layout shell';
+ wrap.id = 'es-app-layout';
+ const sidebar = document.createElement('aside');
+ sidebar.id = 'es-sidebar';
+ sidebar.className = 'es-sidebar';
+ sidebar.setAttribute('aria-label','Danh mục Epsilon Soft');
+ sidebar.innerHTML = `<div class="es-sidebar-top"><strong class="es-sidebar-title">DANH MỤC</strong><button type="button" class="es-side-toggle" id="es-side-toggle" aria-label="Thu gọn thanh danh mục" title="Thu gọn thanh danh mục">${icon('panel-left-close',21)}</button></div><nav class="es-side-nav" id="es-side-nav" aria-label="Công cụ và hệ sinh thái"></nav><div class="es-sidebar-bottom" id="es-side-footer"></div>`;
+ main.parentNode.insertBefore(wrap,main);
+ const mobileRail=document.createElement('nav');
+ mobileRail.className='es-mobile-rail';
+ mobileRail.id='es-mobile-rail';
+ mobileRail.setAttribute('aria-label','Danh mục công cụ trên điện thoại');
+ wrap.append(sidebar,mobileRail,main);
+ main.classList.remove('shell');
+ main.classList.add('es-main-pane');
+ document.body.classList.add('es-has-sidebar');
+ const backdrop=document.createElement('div');
+ backdrop.id='es-mobile-backdrop';
+ backdrop.className='es-mobile-backdrop';
+ backdrop.setAttribute('aria-hidden','true');
+ document.body.append(backdrop);
+ const menuButton=document.getElementById('menu-toggle');
+ if(menuButton){menuButton.setAttribute('aria-controls','es-sidebar');menuButton.setAttribute('aria-label','Mở danh mục');}
+ renderSidebar();
+}
+
+function enhanceHeaderNavigation(){
+ const nav=document.getElementById('main-nav');if(!nav||nav.querySelector('[data-nav="hub"]'))return;
+ const hub=document.createElement('a');hub.className='nav-link es-hub-nav';hub.href='#/ecosystem';hub.dataset.nav='hub';
+ hub.innerHTML=icon('orbit',19)+' Epsilon Hub';
+ nav.insertBefore(hub,nav.querySelector('[data-nav="portable"]'));
+}
+function closeMainMenu(){
+ document.getElementById('main-nav')?.classList.remove('open');
+ if(document.body.classList.contains('es-catalog-mode'))document.getElementById('menu-toggle')?.setAttribute('aria-expanded','false');
+}
+function closeMobileSidebar() {
+ document.getElementById('es-sidebar')?.classList.remove('es-mobile-open');
+ document.getElementById('es-mobile-backdrop')?.classList.remove('es-show');
+ const toggle=document.getElementById('menu-toggle');
+ if(toggle) toggle.setAttribute('aria-expanded','false');
+ document.body.style.removeProperty('overflow');
+}
+function openMobileSidebar() {
+ document.getElementById('es-sidebar')?.classList.add('es-mobile-open');
+ document.getElementById('es-mobile-backdrop')?.classList.add('es-show');
+ const toggle=document.getElementById('menu-toggle');
+ if(toggle) toggle.setAttribute('aria-expanded','true');
+ document.body.style.overflow='hidden';
+}
+function setSidebarCollapsed(collapsed) {
+ sidebarIsCollapsed=Boolean(collapsed);
+ document.getElementById('es-app-layout')?.classList.toggle('es-is-collapsed',sidebarIsCollapsed);
+ const btn=document.getElementById('es-side-toggle');
+ if(btn){
+  btn.innerHTML=icon(sidebarIsCollapsed?'panel-left-open':'panel-left-close',21);
+  const label=sidebarIsCollapsed?'Mở rộng thanh danh mục':'Thu gọn thanh danh mục';
+  btn.setAttribute('aria-label',label);btn.title=label;
+ }
+}
+function showAppDialog(title, message) {
+ const layer=document.getElementById('es-modal-layer');
+ if(!layer)return;
+ modalPreviousFocus=document.activeElement;
+ layer.querySelector('.es-modal h2').textContent=title;
+ layer.querySelector('.es-modal p').textContent=message;
+ layer.hidden=false;
+ esTranslateRegion(layer);
+ layer.querySelector('.es-modal-close')?.focus();
+}
+function closeAppDialog() {
+ const layer=document.getElementById('es-modal-layer');
+ if(!layer || layer.hidden)return;
+ layer.hidden=true;
+ if(modalPreviousFocus?.isConnected)modalPreviousFocus.focus();
+ modalPreviousFocus=null;
+}
+function buildAppDialog() {
+ const layer=document.createElement('div');
+ layer.id='es-modal-layer';layer.className='es-modal-layer';layer.hidden=true;
+ layer.innerHTML=`<div class="es-modal" role="dialog" aria-modal="true" aria-labelledby="es-modal-title" aria-describedby="es-modal-text"><span class="es-modal-icon">${icon('info',25)}</span><h2 id="es-modal-title"></h2><p id="es-modal-text"></p><div class="es-modal-actions"><button class="button button-purple es-modal-close" type="button">Đã hiểu</button></div></div>`;
+ document.body.append(layer);
+}
+
+// Install-on-device is a PWA flow, NOT the separate Windows Portable EXE.
+let esDeferredInstallPrompt=null;
+let esHeroDialogPreviousFocus=null;
+window.addEventListener('beforeinstallprompt',event=>{
+ event.preventDefault();
+ esDeferredInstallPrompt=event;
+});
+window.addEventListener('appinstalled',()=>{
+ esDeferredInstallPrompt=null;
+ showToast(esLanguage==='en'?'App installed successfully.':'Đã cài Epsilon Soft thành công.');
+});
+function esPwaIsInstalled(){
+ return Boolean(window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone===true);
+}
+function esHeroInfoText(vi,en){return esLanguage==='en'?en:vi;}
+function esHeroDialogContent(mode){
+ const T=esHeroInfoText;
+ const heading=(mode==='about')?T('Giới thiệu và liên hệ','About & Contact'):mode==='installed'?T('Ứng dụng đã được cài đặt','App already installed'):T('Cài Epsilon Soft trên thiết bị','Install Epsilon Soft');
+ let body='';
+ if(mode==='about'){
+  body=`<p class="es-hero-intro">${T('Epsilon Soft cung cấp các công cụ trực tuyến miễn phí, dễ dùng và thiết thực cho công việc, học tập và kỹ thuật. Có thể dùng ngay trên trình duyệt, không cần đăng nhập.','Epsilon Soft provides free, easy-to-use online tools for work, study and engineering. Use them directly in your browser without signing in.')}</p>
+   <div class="es-hero-about-products">
+    <article class="es-hero-product"><strong>${icon('grid',20)} Epsilon Soft</strong><p>${T('Công cụ tính toán, tài liệu và tiện ích hằng ngày, ưu tiên xử lý ngay trên thiết bị.','Everyday calculators, document tools and utilities, prioritizing on-device processing.')}</p></article>
+    <article class="es-hero-product"><strong>${icon('settings',20)} Epsilon Lab</strong><p>${T('Các sản phẩm và giải pháp kỹ thuật chuyên sâu trong hệ sinh thái Epsilon.','Specialized technical software and engineering solutions in the Epsilon ecosystem.')}</p></article>
+    <article class="es-hero-product"><strong>${icon('book',20)} Epsilon Edu</strong><p>${T('Các ứng dụng giáo dục và tự học, hướng đến trải nghiệm dễ tiếp cận, có tính sư phạm.','Educational and self-study applications designed for accessible learning.')}</p></article>
+   </div>
+   <a class="es-hero-hub-link" href="#/ecosystem" data-es-go-hub>${icon('orbit',20)} ${T('Khám phá Epsilon Hub','Explore Epsilon Hub')} ${icon('arrow',18)}</a>
+   <h3 class="es-hero-contact-title">${T('Thông tin liên hệ','Contact information')}</h3>
+   <div class="es-hero-contact-links">
+    <a href="mailto:epsilon.vn@gmail.com">${icon('mail',20)} <span>epsilon.vn@gmail.com</span></a>
+    <button type="button" class="es-hero-contact-copy" data-es-copy-phone title="${T('Sao chép số điện thoại','Copy phone number')}" aria-label="${T('Sao chép số điện thoại 0865.749.402','Copy phone number 0865.749.402')}">${icon('phone',20)} <span>0865.749.402</span> ${icon('copy',18)}</button>
+    <a href="https://zalo.me/0865749402" target="_blank" rel="noopener noreferrer">${icon('message-circle',20)} <span>Zalo</span></a>
+   </div>`;
+ }else if(mode==='installed'){
+  body=`<p class="es-hero-intro">${T('Epsilon Soft đang chạy ở chế độ ứng dụng trên thiết bị này. Anh/chị có thể mở lại từ biểu tượng đã thêm trên màn hình hoặc hệ thống ứng dụng.','Epsilon Soft is already running as an installed app. You can launch it from your home screen or app list.')}</p>`;
+ }else{
+  body=`<p class="es-hero-intro">${T('Cài phiên bản Web App của Epsilon Soft để mở nhanh từ màn hình chính hoặc menu ứng dụng. Đây không phải file EXE của ES TOOLKIT Portable. Tính năng cài đặt phụ thuộc trình duyệt và cấu hình website.','Install the Epsilon Soft Web App for quick access from your home screen or app list. This is not the ES TOOLKIT Portable EXE. Installation depends on your browser and the website configuration.')}</p>
+   <div class="es-hero-install-devices">
+    <div class="es-hero-install-device"><h3>${icon('monitor',21)} Windows</h3><p>${T('Dùng Chrome hoặc Edge. Chọn biểu tượng Cài đặt ở thanh địa chỉ hoặc menu trình duyệt → Cài ứng dụng / Install site as app.','Use Chrome or Edge. Select the install icon in the address bar, or the browser menu → Install app / Install site as app.')}</p></div>
+    <div class="es-hero-install-device"><h3>${icon('smartphone',21)} Android</h3><p>${T('Mở bằng Chrome, chọn menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.','Open in Chrome, then menu ⋮ → Install app or Add to Home screen.')}</p></div>
+    <div class="es-hero-install-device"><h3>${icon('tablet',21)} iPhone / iPad</h3><p>${T('Mở bằng Safari → Chia sẻ → Thêm vào Màn hình chính.','Open in Safari → Share → Add to Home Screen.')}</p></div>
+   </div>
+   <p class="es-hero-install-note">${T('Nếu không thấy tùy chọn cài đặt, hãy thử trình duyệt hỗ trợ PWA và đảm bảo website đang mở qua HTTPS. Một số trình duyệt chỉ cho tạo lối tắt.','If you do not see an install option, use a PWA-compatible browser and an HTTPS website. Some browsers only support creating a shortcut.')}</p>`;
+ }
+ return `<div class="es-hero-dialog" role="dialog" aria-modal="true" aria-labelledby="es-hero-dialog-title">
+  <div class="es-hero-dialog-head"><span class="es-hero-dialog-emblem${mode==='about'?' es-hero-dialog-logo':''}">${mode==='about'?'<img src="./icon-152.png" alt="" width="47" height="47" decoding="async">':icon(mode==='installed'?'check':'app-plus',23)}</span><h2 class="es-hero-dialog-title" id="es-hero-dialog-title">${heading}</h2><button type="button" class="es-hero-dialog-close" data-es-hero-close aria-label="${T('Đóng cửa sổ','Close dialog')}" title="${T('Đóng','Close')}">${icon('close',19)}</button></div>
+  ${body}</div>`;
+}
+function esOpenHeroDialog(mode){
+ let layer=document.getElementById('es-hero-dialog-layer');
+ if(!layer){layer=document.createElement('div');layer.id='es-hero-dialog-layer';layer.className='es-hero-dialog-layer';layer.hidden=true;document.body.append(layer);}
+ if(layer.hidden)esHeroDialogPreviousFocus=document.activeElement;
+ layer.dataset.mode=mode;
+ layer.innerHTML=esHeroDialogContent(mode);
+ layer.hidden=false;
+ layer.querySelector('[data-es-hero-close]')?.focus();
+}
+function esCloseHeroDialog(){
+ const layer=document.getElementById('es-hero-dialog-layer');
+ if(!layer||layer.hidden)return;
+ layer.hidden=true;
+ layer.replaceChildren();
+ if(esHeroDialogPreviousFocus?.isConnected)esHeroDialogPreviousFocus.focus();
+ esHeroDialogPreviousFocus=null;
+}
+// Clipboard-only phone contact: never dial or open an external link.
+async function esCopyContactPhone(){
+ const display='0865.749.402';
+ const value='0865749402';
+ let copied=false;
+ try{
+  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);copied=true;}
+ }catch{/* Some browsers block the Clipboard API; try a local fallback. */}
+ if(!copied){
+  const field=document.createElement('textarea');
+  field.value=value;
+  field.setAttribute('readonly','');
+  field.setAttribute('aria-hidden','true');
+  field.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';
+  document.body.appendChild(field);
+  field.select();
+  try{copied=document.execCommand('copy');}catch{/* Browser may restrict clipboard access. */}
+  field.remove();
+  document.querySelector('[data-es-copy-phone]')?.focus();
+ }
+ if(copied)showToast(esLanguage==='en'?`Copied phone number: ${display}`:`Đã sao chép số điện thoại: ${display}`);
+ else showToast(esLanguage==='en'?'Unable to copy. Please select the number manually.':'Không thể sao chép. Vui lòng chọn và sao chép số thủ công.','error');
+}
+
+async function esInstallWebApp(button){
+ if(esPwaIsInstalled()){esOpenHeroDialog('installed');return;}
+ if(!esDeferredInstallPrompt){esOpenHeroDialog('install');return;}
+ const prompt=esDeferredInstallPrompt;
+ esDeferredInstallPrompt=null;
+ button.disabled=true;
+ const label=button.querySelector('span');
+ const oldLabel=label?.textContent;
+ if(label)label.textContent=esHeroInfoText('Đang mở...','Opening...');
+ try{
+  await prompt.prompt();
+  const result=await prompt.userChoice;
+  if(!result || result.outcome!=='accepted')esOpenHeroDialog('install');
+ }catch(err){console.warn('PWA install prompt:',err);esOpenHeroDialog('install');}
+ finally{
+  if(button.isConnected){button.disabled=false;if(label)label.textContent=oldLabel;}
+ }
+}
+
+function currentCatalogData(){
+ if(activeCatalog==='mytools')return { name:'MY TOOLS', sub:'Các công cụ anh/chị đã ghim bằng ngôi sao',icon:'star', tools:preferredTools() };
+ if(activeCatalog==='all')return { name:'Tất cả công cụ',sub:'Chọn công cụ phù hợp hoặc tìm kiếm nhanh',icon:'grid',tools:DEFINITIONS.filter(t=>!t.planned) };
+ const g=GROUPS.find(g=>g.id===activeCatalog);
+ return g?{ name:g.name,sub:g.description,icon:g.icon,tools:DEFINITIONS.filter(t=>t.group===g.id&&!t.planned)}:
+  { name:'Tất cả công cụ',sub:'Chọn công cụ phù hợp',icon:'grid',tools:DEFINITIONS.filter(t=>!t.planned)};
+}
+function renderGroupCards(){
+ const grid=main.querySelector('#tool-columns');
+ if(!grid)return;
+ const data=currentCatalogData();
+ const query=normalize(main.querySelector('#tool-search')?.value||'');
+ const matches=data.tools.filter(t=>!query||normalize([t.name,t.sub,ES_EN_TEXT[normalize(t.name)],ES_EN_TEXT[normalize(t.sub)]].filter(Boolean).join(' ')).includes(query));
+ const count=main.querySelector('#catalog-count');if(count)count.textContent=String(matches.length);
+ const title=main.querySelector('#catalog-title');if(title)title.textContent=data.name;
+ const sub=main.querySelector('#catalog-sub');if(sub)sub.textContent=data.sub;
+ const em=main.querySelector('#catalog-icon');if(em)em.innerHTML=icon(data.icon,23);
+ grid.classList.toggle('es-view-list',displayMode==='list');
+ if(!data.tools.length && activeCatalog==='mytools'){
+  grid.innerHTML=`<div class="mytools-empty"><div class="empty-icon">${icon('star',30)}</div><strong>Chưa có công cụ nào</strong><p>Nhấn ⭐ tại một công cụ để thêm vào MY TOOLS.</p></div>`;
+ }else if(!matches.length){
+  grid.innerHTML='<div class="es-no-matches">Không tìm thấy công cụ phù hợp. Hãy thử từ khóa khác.</div>';
+ }else grid.innerHTML=matches.map(toolCard).join('');
+ renderSidebar();
+ esTranslateRegion(main.querySelector('.es-directory'));
+}
+function applySearch(raw){
+ const input=main.querySelector('#tool-search');if(input && input.value!==raw)input.value=raw;
+ renderGroupCards();
+}
+// Banner content is managed in app.js. Neither banner artwork includes promotional words.
+// Keep copy localized through the existing VI/EN presentation layer without touching tool modules.
+const BANNER_CONTENT = Object.freeze({
+ main:Object.freeze({
+  eyebrow:'CÔNG CỤ TRỰC TUYẾN MIỄN PHÍ',
+  brand:'EPSILON',branch:'SOFT',
+  tagline:'Hỗ trợ công việc hằng ngày. Nhanh gọn và dễ dùng.',
+  description:'Tính toán · Kỹ thuật · Xử lý tài liệu · Tiện ích · Và nhiều công cụ hữu ích khác',
+  perks:['Miễn phí','Không cần tài khoản','Sử dụng ngay trên trình duyệt'],
+  cardTitle:'Nhiều công cụ hữu ích',cardTitleSecond:'trong một nền tảng',
+  cardBullets:['Giao diện hiện đại, dễ sử dụng','Hoạt động ngay trên trình duyệt','Phù hợp công việc, học tập và kỹ thuật'],
+  installLabel:'Cài APP',aboutLabel:'Giới thiệu và liên hệ'
+ })
+});
+
+function catalogHtml(){return `<div class="page-home es-dashboard-layout">${heroBannerHtml()}<section class="es-directory" id="directory" aria-labelledby="catalog-title"><div class="es-directory-header"><div class="es-directory-title-row"><span class="es-directory-emblem" id="catalog-icon">${icon('grid',23)}</span><div><h1 class="es-directory-title" id="catalog-title">Tất cả công cụ</h1><p class="es-directory-sub" id="catalog-sub">Chọn công cụ phù hợp hoặc tìm kiếm nhanh</p></div><span class="es-directory-total" id="catalog-count">${DEFINITIONS.length}</span></div><div class="es-catalog-toolbar"><label class="search-box" for="tool-search">${icon('search',20)}<input id="tool-search" type="search" maxlength="100" autocomplete="off" placeholder="Tìm công cụ..." aria-label="Tìm kiếm công cụ"></label><div class="view-toggle" aria-label="Chế độ hiển thị"><button class="toggle-button ${displayMode==='grid'?'active':''}" type="button" aria-label="Dạng lưới" data-view="grid" title="Dạng lưới">${icon('grid',21)}</button><button class="toggle-button ${displayMode==='list'?'active':''}" type="button" aria-label="Dạng danh sách" data-view="list" title="Dạng danh sách">${icon('list',21)}</button></div></div></div><div class="es-directory-grid" id="tool-columns" tabindex="0" role="region" aria-label="Danh sách công cụ, dùng chuột hoặc phím mũi tên để cuộn"></div></section>${portableBannerHtml()}</div>`;}
+function heroBannerHtml(){
+ const m=BANNER_CONTENT.main;
+ return `<section class="hero es-main-banner" aria-label="Giới thiệu Epsilon Soft"><div class="hero-copy"><p class="eyebrow">${escapeHTML(m.eyebrow)}</p><h1 class="hero-title">${escapeHTML(m.brand)} <strong>${escapeHTML(m.branch)}</strong></h1><p class="hero-subtitle">${escapeHTML(m.tagline)}</p><p class="hero-description">${escapeHTML(m.description)}</p><div class="hero-perks">${m.perks.map(item=>`<span><i class="check-dot">${icon('check',17)}</i>${escapeHTML(item)}</span>`).join('')}</div></div><div class="hero-art" aria-hidden="true"></div><aside class="hero-cta"><div class="es-hero-info"><h2>${escapeHTML(m.cardTitle)}<br>${escapeHTML(m.cardTitleSecond)}</h2>${m.cardBullets.map(item=>`<p>${icon('check',20)}${escapeHTML(item)}</p>`).join('')}</div><div class="es-hero-actions"><button type="button" class="button button-yellow es-hero-install" data-es-install aria-label="Cài APP Epsilon Soft lên thiết bị">${icon('app-plus',19)} <span>${escapeHTML(m.installLabel)}</span></button><button type="button" class="button es-hero-about" data-es-about aria-label="Giới thiệu và liên hệ Epsilon Soft">${icon('contact-card',19)} <span>${escapeHTML(m.aboutLabel)}</span></button></div></aside></section>`;
+}
+function portableBannerHtml(){
+ return `<section class="portable-strip es-footer-banner" id="portable" aria-label="Hình minh họa Epsilon Soft"><img class="es-footer-background" src="./assets/images/footer.png" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="portable-laptop" src="./assets/images/es-laptop.png" alt="Giao diện Epsilon Soft hiển thị trên máy tính xách tay" loading="eager" decoding="async"></section>`;
+}
+function landingInfoHtml(content){return `<div class="page-home es-restored-landing">${heroBannerHtml()}<div class="es-landing-info">${content}</div>${portableBannerHtml()}</div>`;}
+function helpHtml(){return `<div class="es-static-page"><section class="es-static-intro"><span class="es-static-intro-icon">${icon('book',30)}</span><div><h1>Hướng dẫn sử dụng</h1><p>Epsilon Soft miễn phí, không yêu cầu tài khoản.</p></div></section><div class="es-portable-guide"><article class="tool-box"><h2 class="tool-box-heading">${icon('star')} MY TOOLS</h2><p>Nhấn ngôi sao ⭐ trên công cụ để ghim. Chỉ công cụ đã ghim mới xuất hiện trong MY TOOLS. Dữ liệu này được lưu trên trình duyệt hiện tại.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Danh mục và tìm kiếm</h2><p>Chọn chủ đề trên trang chủ hoặc trong sidebar khi đang dùng công cụ. Gõ tên công cụ trong ô tìm kiếm; phím / giúp mở ô tìm kiếm nhanh.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('shield')} Dữ liệu và quyền riêng tư</h2><p>Các công cụ ưu tiên xử lý dữ liệu ngay tại trình duyệt. Một số module có thể tải thư viện từ nguồn ngoài; hãy xem giới hạn và hướng dẫn ngay trong module.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('info')} Kết quả kỹ thuật</h2><p>Đối chiếu đơn vị đo, đầu vào và tiêu chuẩn áp dụng trước khi sử dụng số liệu trong công việc thực tế.</p></article></div></div>`;}
+function ecosystemLoadingHtml(){return `<div class="es-static-page"><section class="es-static-intro es-hub-intro"><span class="es-static-intro-icon es-hub-logo"><img src="./icon-192.png" alt=""></span><div><h1 class="es-hub-wordmark"><span>EPSILON</span><strong>HUB</strong></h1><p>Kết nối các sản phẩm và ứng dụng thuộc hệ sinh thái Epsilon.</p></div></section><div class="es-system-grid" id="es-system-products"><div class="tool-box" role="status">Đang tải danh sách sản phẩm...</div></div></div>`;}
+async function populateEcosystem(token){
+ const target=main.querySelector('#es-system-products');if(!target)return;
+ try{
+  const data=await readStaticJson(SYSTEM_JSON);
+  if(token!==currentRoute||!target.isConnected)return;
+  if(!data||!Array.isArray(data.products)||data.products.length>100)throw Error('Danh sách sản phẩm không hợp lệ.');
+  const allowedIcons=new Set(['book','files','image','calculator','windows','grid','lightbulb','home','shield','orbit']);
+  const items=data.products.filter(p=>p && typeof p.name==='string'&&p.name.trim()&&p.name.length<=100&&typeof p.description==='string'&&p.description.length<=360);
+  if(!items.length){target.innerHTML='<div class="tool-box">Chưa có sản phẩm nào trong danh mục.</div>';return;}
+  target.innerHTML=items.map(p=>{
+   const external=safeExternalUrl(p.url);
+   const pic=typeof p.logo==='string'&&/^assets\/images\/[a-z0-9_./-]+\.(?:png|jpe?g|webp)$/i.test(p.logo)&&!p.logo.includes('..')?`<img src="./${escapeHTML(p.logo)}" alt="" loading="lazy">`:icon(allowedIcons.has(p.icon)?p.icon:'grid',30);
+   return `<article class="es-system-card"><div class="es-system-head"><span class="es-system-logo">${pic}</span><h2>${escapeHTML(p.name)}</h2></div><p>${escapeHTML(p.description)}</p>${external?`<a class="es-system-link" href="${escapeHTML(external)}" target="_blank" rel="noopener noreferrer">Truy cập sản phẩm ${icon('external-link',17)}</a>`:'<span class="es-system-pending">Liên kết đang được cập nhật</span>'}</article>`;
+  }).join('');
+ }catch(error){if(token!==currentRoute)return;console.warn('Epsilon Hub data:',error);target.innerHTML='<div class="tool-box"><p>Không tải được danh sách sản phẩm từ <code>assets/data/ecosystem.json</code>.</p><button type="button" class="button button-outline" data-retry-system>Thử tải lại</button></div>';}
+ finally {if(target.isConnected)esTranslateRegion(target);}
+}
+function portableHtml(){return `<div class="es-static-page"><section class="es-static-intro"><span class="es-static-intro-icon">${icon('windows',30)}</span><div><h1>Windows Portable</h1><p>Thông tin, lợi ích và hướng dẫn sử dụng. Liên kết tải nằm trong từng công cụ Web.</p></div></section><div class="es-portable-guide"><article class="tool-box"><h2 class="tool-box-heading">${icon('info')} Portable là gì?</h2><p>Phiên bản Windows chạy trực tiếp, thường không cần trình cài đặt. Hữu ích khi làm việc offline hoặc cần một tiện ích chuyên dụng trên máy tính.</p><p><strong>Web App vẫn là nền tảng ưu tiên:</strong> sử dụng ngay không cần tải xuống.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('download')} Cách tải từ từng công cụ</h2><ul><li>Mở công cụ Web cần sử dụng.</li><li>Nhấn nút <strong>Portable</strong> cạnh MY TOOLS.</li><li>Nếu có bản công khai, liên kết Google Drive sẽ mở trong tab mới.</li><li>Nếu chưa có, hệ thống thông báo để bạn có thể liên hệ quản trị viên.</li></ul></article><article class="tool-box"><h2 class="tool-box-heading">${icon('shield')} Cảnh báo Windows SmartScreen</h2><p>Windows có thể cảnh báo với file EXE ít phổ biến hoặc chưa được ký số. Hãy xác minh nguồn tải, tên file, phiên bản và quét bằng Windows Security trước khi chạy. Không bỏ qua cảnh báo nếu không chắc chắn file đáng tin cậy.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('windows')} Sử dụng và lưu ý</h2><ul><li>Tải EXE về thư mục có quyền ghi phù hợp, mở trực tiếp trên Windows tương thích.</li><li>Kiểm tra hướng dẫn đi kèm từng bản phát hành.</li><li>Không dùng bản đang test nội bộ như bản phát hành công khai.</li><li>ES TOOLKIT V1.0 hiện vẫn trong giai đoạn thử nghiệm nội bộ.</li></ul></article></div><div class="callout warning">Trang này chỉ cung cấp hướng dẫn, không chứa nút hoặc liên kết tải EXE.</div></div>`;}
+function relatedHtml(toolId){return `<section class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Công cụ liên quan</h2><div class="related-tools">${DEFINITIONS.filter(t=>!t.planned&&t.id!==toolId).slice(0,4).map(t=>`<a href="#/tool/${t.id}"><span class="tool-tile ${t.tone}">${icon(t.icon,21)}</span><span class="related-tool-name">${t.name}</span>${icon('arrow',16)}</a>`).join('')}</div></section>`;}
+function toolHtml(t){return `<div class="tool-page"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/explore">Công cụ</a><span>›</span><span>${t.name}</span></nav><div class="tool-heading"><div class="tool-heading-icon ${t.tone}">${icon(t.icon,37)}</div><div><h1>${t.name}</h1><p>${t.sub} · Miễn phí · Xử lý tại trình duyệt</p></div><div class="es-tool-actions"><span id="tool-portable-slot"><button type="button" class="button es-portable-button is-loading" disabled>${icon('windows',19)} Đang kiểm tra...</button></span><button type="button" class="button button-outline" data-pin="${t.id}" aria-pressed="${isPinned(t.id)}">${icon('star')} ${isPinned(t.id)?'Đã thêm vào MY TOOLS':'Thêm vào MY TOOLS'}</button></div></div><div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div><div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div></div>`;}
+async function showPortableAction(toolId,token){
+ const slot=main.querySelector('#tool-portable-slot');if(!slot)return;
+ let link='',version='';
+ try{
+  const data=await readStaticJson(PORTABLE_JSON);
+  const item=(data&&typeof data.tools==='object'&&!Array.isArray(data.tools))?data.tools[toolId]:null;
+  if(item&&item.status==='published')link=safeExternalUrl(item.url,true);
+  if(item&&typeof item.version==='string')version=item.version.slice(0,40);
+ }catch(err){console.warn('Portable downloads data:',err);}
+ if(token!==currentRoute||!slot.isConnected)return;
+ if(link){slot.innerHTML=`<a class="button es-portable-button" href="${escapeHTML(link)}" target="_blank" rel="noopener noreferrer" title="Tải bản Portable${version?' '+escapeHTML(version):''}">${icon('windows',19)} Portable ${icon('external-link',17)}</a>`;}
+ else{slot.innerHTML=`<button type="button" class="button es-portable-button" data-portable-unavailable="${escapeHTML(toolId)}" title="Kiểm tra bản Windows Portable">${icon('windows',19)} Portable</button>`;}
+}
+function navActive(active){
+ document.querySelectorAll('.nav-link').forEach(link=>link.classList.toggle('is-active',link.dataset.nav===active));
+ document.getElementById('main-nav')?.classList.remove('open');
+ renderSidebar();closeMobileSidebar();
+}
+function renderToolFailure(t,error){
+ console.error('Module failed:',t.id,error);
+ const target=main.querySelector('#tool-workspace');
+ if(target)target.innerHTML='<div class="callout warning">Không thể tải công cụ. Vui lòng kiểm tra tệp JavaScript tương ứng rồi tải lại trang.</div>';
+}
+async function navigate(){
+ esCloseHeroDialog();
+ const route=location.hash||'#/home';const token=++currentRoute;
+ if(currentModuleCleanup){try{currentModuleCleanup();}catch(err){console.warn('Module cleanup:',err);}currentModuleCleanup=null;}
+ main.replaceChildren();
+ const isTool=route.startsWith('#/tool/');
+ document.body.classList.toggle('es-tool-mode',isTool);
+ document.body.classList.toggle('es-catalog-mode',!isTool);
+ setSidebarCollapsed(isTool);
+ closeMainMenu();
+ if(isTool){
+  const id=route.slice(7);if(id==='qr'){location.hash='#/tool/vietqr';return;}
+  const t=map.get(id);if(!t||t.planned||!t.file){location.hash='#/home';return;}
+  navActive('explore');main.innerHTML=toolHtml(t);renderSidebar();
+  favorites.opens[id]=Math.min(1000000,(favorites.opens[id]||0)+1);savePreferences();
+  window.scrollTo({top:0,behavior:'auto'});
+  // Portable availability is read directly from JSON; no tool JS is modified.
+  void showPortableAction(id,token);
+  try{
+   const imported=await import(`./tools/${t.file}`);if(token!==currentRoute)return;
+   const workspace=main.querySelector('#tool-workspace'),abort=new AbortController();
+   const context={icon,showToast,number:v=>new Intl.NumberFormat('en-US',{maximumFractionDigits:4}).format(v),signal:abort.signal};
+   const cleanup=await imported.mount(workspace,context);
+   if(token!==currentRoute){abort.abort();if(typeof cleanup==='function')cleanup();return;}
+   currentModuleCleanup=()=>{abort.abort();if(typeof cleanup==='function')cleanup();};
+  }catch(err){if(token===currentRoute)renderToolFailure(t,err);}
+  return;
+ }
+ if(route==='#/help'){
+  navActive('help');main.innerHTML=landingInfoHtml(helpHtml());window.scrollTo({top:0,behavior:'auto'});return;
+ }
+ if(route==='#/portable'){
+  navActive('portable');main.innerHTML=landingInfoHtml(portableHtml());window.scrollTo({top:0,behavior:'auto'});return;
+ }
+ if(route==='#/ecosystem'){
+  navActive('hub');main.innerHTML=landingInfoHtml(ecosystemLoadingHtml());renderSidebar();window.scrollTo({top:0,behavior:'auto'});
+  void populateEcosystem(token);return;
+ }
+ if(route==='#/mytools')activeCatalog='mytools';
+ else if(route.startsWith('#/category/')){
+  const group=route.slice('#/category/'.length);activeCatalog=GROUPS.some(g=>g.id===group)?group:'all';
+ }else activeCatalog='all';
+ navActive(route==='#/home'?'home':'explore');
+ main.innerHTML=catalogHtml();
+ renderGroupCards();
+ window.scrollTo({top:0,behavior:'auto'});
+}
+async function safeNavigate(){
+ try{await navigate();esTranslateRegion(document.body);}
+ catch(error){
+  console.error('Epsilon Soft navigation error:',error);
+  main.innerHTML='<section class="startup-panel" role="alert"><h1>Không thể hiển thị trang</h1><p>Vui lòng kiểm tra assets/js/app.js và các tệp trong assets/data/, sau đó tải lại trang.</p></section>';
+ }
+}
+readPreferences();hydrateIcons();enhanceHeaderNavigation();esBuildLanguagePicker();buildSidebarShell();buildAppDialog();esUpdateLanguageButtons();esTranslateRegion(document.body);
+window.addEventListener('hashchange',safeNavigate);
+document.getElementById('menu-toggle')?.addEventListener('click',()=>{
+ if(document.getElementById('es-sidebar')?.classList.contains('es-mobile-open'))closeMobileSidebar();
+ else openMobileSidebar();
+});
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape' && sidebarOpenSection!==null && window.matchMedia('(max-width:720px)').matches){
+  sidebarOpenSection=null;renderSidebar();document.getElementById('es-mobile-rail-scroll')?.focus();
+ }
+});
+document.addEventListener('click',event=>{
+ const lang=event.target.closest('[data-es-lang]');if(lang){esSetLanguage(lang.dataset.esLang);return;}
+ const install=event.target.closest('[data-es-install]');if(install){event.preventDefault();void esInstallWebApp(install);return;}
+ const about=event.target.closest('[data-es-about]');if(about){event.preventDefault();esOpenHeroDialog('about');return;}
+ const copyPhone=event.target.closest('[data-es-copy-phone]');if(copyPhone){event.preventDefault();void esCopyContactPhone();return;}
+ if(event.target.closest('[data-es-hero-close]')||event.target.id==='es-hero-dialog-layer'){esCloseHeroDialog();return;}
+ if(event.target.closest('[data-es-go-hub]')){esCloseHeroDialog();return;}
+ if(event.target.closest('#es-mobile-backdrop')){closeMobileSidebar();return;}
+ const mobileFolder=event.target.closest('[data-mobile-folder]');
+ if(mobileFolder){
+  event.preventDefault();
+  const id=mobileFolder.dataset.mobileFolder;
+  sidebarOpenSection=sidebarOpenSection===id?null:id;
+  renderSidebar();
+  document.querySelector(`[data-mobile-folder="${id}"]`)?.focus();
+  if(sidebarOpenSection==='ecosystem')void loadSidebarHubProducts();
+  return;
+ }
+ if(event.target.closest('[data-mobile-folder-close]')){
+  event.preventDefault();sidebarOpenSection=null;renderSidebar();return;
+ }
+ if(event.target.closest('.es-mobile-folder-link')||event.target.closest('.es-mobile-rail-drawer-grid a')){
+  sidebarOpenSection=null;renderSidebar();return;
+ }
+ if(event.target.closest('#es-side-toggle')){
+  if(window.matchMedia('(max-width:1080px)').matches)closeMobileSidebar();else setSidebarCollapsed(!sidebarIsCollapsed);
+  return;
+ }
+ const sideExpand=event.target.closest('[data-side-expand]');
+ if(sideExpand){
+  event.preventDefault();
+  const id=sideExpand.dataset.sideExpand;
+  sidebarOpenSection=sidebarOpenSection===id?null:id;
+  renderSidebar();
+  document.querySelector(`[data-side-expand="${id}"]`)?.focus();
+  if(sidebarOpenSection==='ecosystem')void loadSidebarHubProducts();
+  return;
+ }
+ if(event.target.closest('.es-side-link')||event.target.closest('.es-side-count')||event.target.closest('.es-side-child')){closeMobileSidebar();return;}
+ if(event.target.closest('.main-nav .nav-link')){closeMainMenu();return;}
+ if(event.target.closest('.es-modal-close')||event.target.id==='es-modal-layer'){closeAppDialog();return;}
+ const pin=event.target.closest('[data-pin]');if(pin){event.preventDefault();togglePin(pin.dataset.pin);renderSidebar();return;}
+ const mode=event.target.closest('[data-view]');if(mode){
+  displayMode=mode.dataset.view==='list'?'list':'grid';
+  main.querySelector('#tool-columns')?.classList.toggle('es-view-list',displayMode==='list');
+  main.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===displayMode));return;
+ }
+ const unavailable=event.target.closest('[data-portable-unavailable]');if(unavailable){
+  const t=map.get(unavailable.dataset.portableUnavailable);
+  showAppDialog(esLanguage==='en'?'No Windows Portable release yet':'Chưa có bản Windows Portable',esLanguage==='en'?`No public Windows Portable version is available for ${t?(ES_EN_TEXT[normalize(t.name)]||t.name):'this tool'}. Please contact the Epsilon Soft administrator if you need one.`:`Hiện tại ${t?t.name:'công cụ này'} chưa có phiên bản Windows Portable phát hành công khai. Nếu bạn có nhu cầu, hãy liên hệ quản trị viên Epsilon Soft để trao đổi.`);return;
+ }
+ if(event.target.closest('[data-retry-system]')){void populateEcosystem(currentRoute);return;}
+});
+document.addEventListener('input',event=>{
+ if(event.target.id==='tool-search')applySearch(event.target.value);
+});
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape'){
+  esCloseHeroDialog();closeAppDialog();closeMobileSidebar();closeMainMenu();return;
+ }
+ const heroLayer=document.getElementById('es-hero-dialog-layer');
+ if(event.key==='Tab' && heroLayer && !heroLayer.hidden){
+  const focusables=[...heroLayer.querySelectorAll('a[href],button:not([disabled])')];
+  if(!focusables.length){event.preventDefault();return;}
+  const first=focusables[0],last=focusables[focusables.length-1];
+  if(event.shiftKey && (document.activeElement===first || !heroLayer.contains(document.activeElement))){event.preventDefault();last.focus();return;}
+  if(!event.shiftKey && (document.activeElement===last || !heroLayer.contains(document.activeElement))){event.preventDefault();first.focus();return;}
+ }
+ const modal=document.getElementById('es-modal-layer');
+ if(event.key==='Tab' && modal && !modal.hidden){event.preventDefault();modal.querySelector('.es-modal-close')?.focus();return;}
+ const el=event.target;
+ if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!(el instanceof HTMLInputElement)&&!(el instanceof HTMLTextAreaElement)&&!(el instanceof HTMLSelectElement)){
+  const search=main.querySelector('#tool-search');if(search){event.preventDefault();search.focus();}
+ }
+});
+window.addEventListener('resize',()=>{
+ if(!window.matchMedia('(max-width:1080px)').matches)closeMobileSidebar();
+});
+safeNavigate();
+if('serviceWorker' in navigator && location.protocol==='https:'){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'}).catch(err=>console.warn('Không đăng ký được offline cache:',err)));
+}
