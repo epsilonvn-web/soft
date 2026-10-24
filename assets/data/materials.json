@@ -1,0 +1,222 @@
+[
+  {
+    "name": "Thép",
+    "en": "Steel",
+    "density": 7850
+  },
+  {
+    "name": "Inox",
+    "en": "Stainless steel",
+    "density": 7930
+  },
+  {
+    "name": "Nhôm",
+    "en": "Aluminum",
+    "density": 2700
+  },
+  {
+    "name": "Đồng",
+    "en": "Copper",
+    "density": 8960
+  },
+  {
+    "name": "Gang",
+    "en": "Cast iron",
+    "density": 7200
+  },
+  {
+    "name": "Gỗ MDF",
+    "en": "MDF wood",
+    "density": 750
+  },
+  {
+    "name": "Gỗ thông",
+    "en": "Pine wood",
+    "density": 450
+  },
+  {
+    "name": "Nhựa PC",
+    "en": "Polycarbonate (PC)",
+    "density": 1200
+  },
+  {
+    "name": "Nhựa PMMA (mica)",
+    "en": "Acrylic (PMMA)",
+    "density": 1190
+  },
+  {
+    "name": "Nhựa PTFE",
+    "en": "PTFE",
+    "density": 2200
+  },
+  {
+    "name": "Nhựa UHMWPE",
+    "en": "UHMWPE",
+    "density": 940
+  },
+  {
+    "name": "Cao su thiên nhiên NR",
+    "en": "Natural rubber (NR)",
+    "density": 920
+  },
+  {
+    "name": "Cao su EPDM",
+    "en": "EPDM rubber",
+    "density": 1150
+  },
+  {
+    "name": "Cao su tổng hợp CR",
+    "en": "Chloroprene rubber (CR)",
+    "density": 1200
+  },
+  {
+    "name": "Cao su silicone",
+    "en": "Silicone rubber",
+    "density": 1200
+  },
+  {
+    "name": "Kính",
+    "en": "Glass",
+    "density": 2500
+  },
+  {
+    "name": "Gốm",
+    "en": "Ceramic",
+    "density": 2400
+  },
+  {
+    "name": "Bê tông",
+    "en": "Concrete",
+    "density": 2400
+  },
+  {
+    "name": "Đá marble/granite",
+    "en": "Marble / granite",
+    "density": 2700
+  },
+  {
+    "name": "Đá nhân tạo",
+    "en": "Engineered stone",
+    "density": 2300
+  },
+  {
+    "name": "Đồng thau",
+    "en": "Brass",
+    "density": 8500
+  },
+  {
+    "name": "Đồng thiếc",
+    "en": "Tin bronze",
+    "density": 8800
+  },
+  {
+    "name": "Kẽm",
+    "en": "Zinc",
+    "density": 7140
+  },
+  {
+    "name": "Chì",
+    "en": "Lead",
+    "density": 11340
+  },
+  {
+    "name": "Titan",
+    "en": "Titanium",
+    "density": 4500
+  },
+  {
+    "name": "Magie",
+    "en": "Magnesium",
+    "density": 1740
+  },
+  {
+    "name": "Niken",
+    "en": "Nickel",
+    "density": 8900
+  },
+  {
+    "name": "Thiếc",
+    "en": "Tin",
+    "density": 7290
+  },
+  {
+    "name": "Nhựa ABS",
+    "en": "ABS plastic",
+    "density": 1040
+  },
+  {
+    "name": "Nhựa PP",
+    "en": "Polypropylene (PP)",
+    "density": 900
+  },
+  {
+    "name": "Nhựa HDPE",
+    "en": "High-density polyethylene (HDPE)",
+    "density": 950
+  },
+  {
+    "name": "Nhựa LDPE",
+    "en": "Low-density polyethylene (LDPE)",
+    "density": 920
+  },
+  {
+    "name": "Nhựa PVC cứng",
+    "en": "Rigid PVC",
+    "density": 1400
+  },
+  {
+    "name": "Nhựa PA6 (Nylon)",
+    "en": "Nylon 6 (PA6)",
+    "density": 1140
+  },
+  {
+    "name": "Nhựa POM",
+    "en": "Acetal (POM)",
+    "density": 1420
+  },
+  {
+    "name": "Nhựa PET",
+    "en": "Polyester (PET)",
+    "density": 1380
+  },
+  {
+    "name": "Nhựa PEEK",
+    "en": "PEEK plastic",
+    "density": 1310
+  },
+  {
+    "name": "Nhựa PS",
+    "en": "Polystyrene (PS)",
+    "density": 1050
+  },
+  {
+    "name": "Cao su NBR",
+    "en": "Nitrile rubber (NBR)",
+    "density": 1100
+  },
+  {
+    "name": "Cao su SBR",
+    "en": "Styrene-butadiene rubber (SBR)",
+    "density": 940
+  },
+  {
+    "name": "Gỗ dán (Plywood)",
+    "en": "Plywood",
+    "density": 600
+  },
+  {
+    "name": "Gỗ sồi",
+    "en": "Oak wood",
+    "density": 750
+  },
+  {
+    "name": "Bê tông cốt thép",
+    "en": "Reinforced concrete",
+    "density": 2500
+  },
+  {
+    "name": "Thạch cao",
+    "en": "Gypsum plaster",
+    "density": 850
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "description": "Public links to Epsilon products. Add products or change URLs here; app.js reads this list dynamically.",
+  "products": [
+    {
+      "id": "epsilon-edu-class-1",
+      "name": "Lớp 1 – Epsilon Edu",
+      "description": "Học Toán, Tiếng Việt và Tiếng Anh theo chương trình Epsilon Edu.",
+      "icon": "book",
+      "logo": "",
+      "url": "https://epsilon-class-1.pages.dev/"
+    },
+    {
+      "id": "epsilon-lab",
+      "name": "Epsilon Lab",
+      "description": "Các phần mềm, tiện ích và giải pháp kỹ thuật trong hệ sinh thái Epsilon.",
+      "icon": "calculator",
+      "logo": "",
+      "url": ""
+    }
+  ]
+}
