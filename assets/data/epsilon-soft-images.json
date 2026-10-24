@@ -1,0 +1,202 @@
+{
+  "schema_version": "EPSILON_SOFT_IMAGE_CATALOG_V1",
+  "version": 1,
+  "scope": "Epsilon Soft - Web App",
+  "updated_at": "2026-10-24",
+  "image_count": 7,
+  "base_path": "assets/images/",
+  "groups": {
+    "branding": {
+      "name_vi": "Nhận diện thương hiệu",
+      "name_en": "Branding"
+    },
+    "banners": {
+      "name_vi": "Banner và ảnh Hero",
+      "name_en": "Banners & Hero"
+    },
+    "showcase": {
+      "name_vi": "Giới thiệu sản phẩm",
+      "name_en": "Product Showcase"
+    },
+    "backgrounds": {
+      "name_vi": "Ảnh nền và trang trí",
+      "name_en": "Backgrounds & Decoration"
+    }
+  },
+  "usage_note_vi": "Danh mục ảnh dùng chung của Web App Epsilon Soft. Ảnh được đặt trong assets/images, JSON được lưu ở assets/data/epsilon-soft-images.json. Trường src là đường dẫn tính từ thư mục gốc website (cùng cấp index.html). Mỗi ảnh có một mã key duy nhất, không đổi key khi bổ sung ảnh mới. Khi thêm ảnh: đặt file trong assets/images, thêm mục vào images, điều chỉnh image_count và tăng version của danh mục. Không đổi đường dẫn, tên hoặc chỉnh sửa logo gốc nếu chưa được chốt. Đây là danh mục tài nguyên, không tự thay đổi giao diện hoặc logic ứng dụng.",
+  "images": {
+    "banner_main_visual": {
+      "src": "assets/images/banner-main-visual.webp",
+      "name_vi": "Banner minh họa chính",
+      "name_en": "Main visual banner",
+      "description_vi": "Banner ngang nền xanh tím nhạt với máy tính xách tay, các biểu tượng công cụ và hiệu ứng ánh sáng.",
+      "category": "banners",
+      "tags": [
+        "banner",
+        "hero",
+        "laptop",
+        "tools",
+        "homepage",
+        "blue",
+        "purple",
+        "trang chủ",
+        "công cụ"
+      ],
+      "alt_vi": "Banner Epsilon Soft với máy tính xách tay và các biểu tượng công cụ trực tuyến",
+      "alt_en": "Epsilon Soft banner showing a laptop and online tool icons",
+      "has_text": false,
+      "transparent": false,
+      "width": 2000,
+      "height": 400,
+      "format": "webp",
+      "usage_hint_vi": "Banner lớn ở trang chủ hoặc phần giới thiệu hệ sinh thái."
+    },
+    "epsilon_logo": {
+      "src": "assets/images/epsilon-logo.png",
+      "name_vi": "Logo Epsilon Soft nền trong suốt",
+      "name_en": "Epsilon Soft transparent logo",
+      "description_vi": "Logo ngang EPSILON SOFT màu xanh đậm và vàng, kèm biểu tượng Epsilon; nền trong suốt.",
+      "category": "branding",
+      "tags": [
+        "logo",
+        "brand",
+        "transparent",
+        "wordmark",
+        "epsilon soft",
+        "thương hiệu",
+        "nhận diện"
+      ],
+      "alt_vi": "Logo EPSILON SOFT màu xanh đậm và vàng",
+      "alt_en": "EPSILON SOFT blue and yellow wordmark",
+      "has_text": true,
+      "transparent": true,
+      "width": 2048,
+      "height": 388,
+      "format": "png",
+      "usage_hint_vi": "Nhận diện thương hiệu trên nền sáng; giữ nguyên tỉ lệ ảnh."
+    },
+    "epsilon_logo_white": {
+      "src": "assets/images/epsilon-logo-white.png",
+      "name_vi": "Logo Epsilon Soft nền trắng",
+      "name_en": "Epsilon Soft logo on white",
+      "description_vi": "Logo ngang EPSILON SOFT màu xanh đậm và vàng trên nền trắng.",
+      "category": "branding",
+      "tags": [
+        "logo",
+        "brand",
+        "white background",
+        "wordmark",
+        "epsilon soft",
+        "thương hiệu",
+        "nền trắng"
+      ],
+      "alt_vi": "Logo EPSILON SOFT màu xanh đậm và vàng trên nền trắng",
+      "alt_en": "EPSILON SOFT blue and yellow logo on a white background",
+      "has_text": true,
+      "transparent": false,
+      "width": 2048,
+      "height": 426,
+      "format": "png",
+      "usage_hint_vi": "Các khu vực có nền trắng hoặc tài liệu giới thiệu; giữ nguyên tỉ lệ ảnh."
+    },
+    "epsilon_mark": {
+      "src": "assets/images/epsilon-mark.png",
+      "name_vi": "Biểu tượng Epsilon",
+      "name_en": "Epsilon symbol",
+      "description_vi": "Biểu tượng chữ epsilon màu vàng trong khung vuông bo tròn xanh đậm và vàng, nền trong suốt.",
+      "category": "branding",
+      "tags": [
+        "mark",
+        "icon",
+        "logo",
+        "epsilon",
+        "brand",
+        "biểu tượng",
+        "thương hiệu"
+      ],
+      "alt_vi": "Biểu tượng chữ epsilon vàng trên nền xanh đậm",
+      "alt_en": "Yellow epsilon symbol inside a dark blue rounded square",
+      "has_text": false,
+      "transparent": true,
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "usage_hint_vi": "Icon nhận diện, favicon hoặc thẻ công cụ (cần tạo kích thước phù hợp riêng khi dùng làm favicon)."
+    },
+    "es_laptop": {
+      "src": "assets/images/es-laptop.png",
+      "name_vi": "Laptop giới thiệu Epsilon Soft",
+      "name_en": "Epsilon Soft website laptop mockup",
+      "description_vi": "Ảnh laptop góc nghiêng hiển thị giao diện cổng công cụ Epsilon Soft trên màn hình, nền trong suốt.",
+      "category": "showcase",
+      "tags": [
+        "laptop",
+        "mockup",
+        "showcase",
+        "website",
+        "homepage",
+        "sản phẩm",
+        "giới thiệu"
+      ],
+      "alt_vi": "Máy tính xách tay đang mở giao diện website Epsilon Soft",
+      "alt_en": "Laptop displaying the Epsilon Soft website interface",
+      "has_text": true,
+      "transparent": true,
+      "width": 1448,
+      "height": 1086,
+      "format": "png",
+      "usage_hint_vi": "Khối giới thiệu sản phẩm, ảnh minh họa trang chủ hoặc tài liệu quảng bá."
+    },
+    "footer": {
+      "src": "assets/images/footer.png",
+      "name_vi": "Nền trang trí xanh tím",
+      "name_en": "Blue purple decorative background",
+      "description_vi": "Họa tiết nền xanh tím với dải sáng xanh, vàng và các đường cong mềm.",
+      "category": "backgrounds",
+      "tags": [
+        "background",
+        "footer",
+        "abstract",
+        "blue",
+        "purple",
+        "waves",
+        "nền",
+        "trang trí"
+      ],
+      "alt_vi": "Nền trang trí xanh tím với dải sáng uốn cong",
+      "alt_en": "Blue and purple abstract waves with glowing curved lines",
+      "has_text": false,
+      "transparent": false,
+      "width": 2048,
+      "height": 682,
+      "format": "png",
+      "usage_hint_vi": "Nền trang trí cho footer hoặc khối nội dung; không dùng thay thế logo."
+    },
+    "hero_laptop": {
+      "src": "assets/images/hero-laptop.webp",
+      "name_vi": "Minh họa laptop và bộ công cụ",
+      "name_en": "Laptop and tools illustration",
+      "description_vi": "Laptop hiển thị biểu tượng Epsilon, xung quanh là biểu tượng máy tính, PDF, lịch, kỹ thuật, biểu đồ và cài đặt.",
+      "category": "banners",
+      "tags": [
+        "hero",
+        "laptop",
+        "tools",
+        "pdf",
+        "calendar",
+        "calculator",
+        "illustration",
+        "minh họa",
+        "công cụ"
+      ],
+      "alt_vi": "Laptop Epsilon Soft với các biểu tượng máy tính, PDF, lịch và công cụ",
+      "alt_en": "Epsilon Soft laptop surrounded by calculator, PDF, calendar, and tool icons",
+      "has_text": false,
+      "transparent": false,
+      "width": 491,
+      "height": 258,
+      "format": "webp",
+      "usage_hint_vi": "Hình minh họa ngắn gọn trong hero, thẻ giới thiệu hoặc banner phụ."
+    }
+  }
+}
