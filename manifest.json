@@ -1,0 +1,33 @@
+{
+  "id": "./",
+  "name": "Epsilon Soft - Free Online Tools",
+  "short_name": "Epsilon Soft",
+  "description": "Epsilon Soft: công cụ online miễn phí cho tính toán, kỹ thuật và tiện ích. Không cần đăng nhập.",
+  "start_url": "./index.html#/home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8faff",
+  "theme_color": "#521bd6",
+  "lang": "vi",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
