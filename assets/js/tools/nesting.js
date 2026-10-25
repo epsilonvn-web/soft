@@ -1,14 +1,15 @@
 /**
- * Epsilon Soft - Trải phôi 2D (Web) – PHẦN GIAO DIỆN
- * File này CHỈ chứa giao diện. Lõi tính chạy trên máy chủ Epsilon Soft (API /api/nesting);
- * trình duyệt chỉ gửi thông số và nhận về sơ đồ – thuật toán không bao giờ có mặt ở đây.
+ * Epsilon Soft - Trải phôi 2D (Web) – BẢN TEST NỘI BỘ (một file, có thuật toán)
+ * !!! File này chứa toàn bộ thuật toán. Chỉ dùng để test nội bộ, KHÔNG đưa lên web công khai.
+ * !!! Khi phát hành dùng bản tách: public/nesting.js + API máy chủ (xem HUONG_DAN_BAO_MAT).
+ * Quy ước: kích thước thành phẩm + dư gia công (tổng); mạch cắt k giữa hai chi tiết;
+ * chừa mép đúng bằng số nhập (được = 0); tấm lẻ giữ lại khi ≥ 200 mm;
+ * ưu tiên số chiếc tối đa, bằng nhau chọn sơ đồ ít khối; báo cận trên / còn dư địa.
  * Bản quyền © Epsilon Lab.
  */
 const {field, number: pretty, numeric, icon, setText, downloadBlob} = globalThis.EpsilonSoftShared || {};
 
-const MAX_PREVIEW=900, LIMIT=1e6;
-// Địa chỉ API tính toán; trang web có thể đặt EpsilonSoftShared.nestingEndpoint để đổi.
-const NEST_API=globalThis.EpsilonSoftShared?.nestingEndpoint||'/api/nesting';
+const MAX_PREVIEW=900, LIMIT=1e6, EPS=1e-7;
 // The four Portable presets are UI shortcuts only; names and densities load from materials.json.
 const quickMaterialLabels=['Thép','Inox','Nhôm','Đồng'];
 const loadMaterials=()=>{
@@ -18,9 +19,399 @@ const loadMaterials=()=>{
   if(!r.ok)throw Error('Không đọc được materials.json (HTTP '+r.status+').');return r.json();
  });
 };
+const DP_COST_LIMIT = 6e8;          // khối lượng phép tính tối đa của bước 1
+// pinwheelWork: khối lượng tìm kiếm tối đa của bước 3 (đếm số phép thử, không phụ thuộc đồng hồ –
+// Cloudflare Workers không cho đồng hồ chạy trong lúc tính).
+const DEFAULTS = Object.freeze({ remnantMin: 200, pinwheelMs: 2500, pinwheelWork: 2e7 });
+
+class UserError extends Error {}           // lỗi do số liệu người dùng nhập
+const fail = msg => { throw new UserError(msg); };
+const r6 = v => Math.round(v * 1e6) / 1e6;
+
+/* ======================================================================= */
+/* 1. CHỮ NHẬT – CHẶT SUỐT NHIỀU CẤP                                        */
+/* ======================================================================= */
+
+/** Các vị trí cắt có nghĩa trên chiều dài L: i*A + j*B ≤ L. pureOnly = chỉ bội số thuần. */
+function normalPoints(L, A, B, pureOnly = false) {
+  const s = new Set();
+  if (pureOnly) {
+    for (let i = 1; i * A <= L + EPS; i++) s.add(r6(i * A));
+    for (let j = 1; j * B <= L + EPS; j++) s.add(r6(j * B));
+  } else {
+    const ni = Math.floor(L / A + 1e-9);
+    for (let i = 0; i <= ni; i++) {
+      const nj = Math.floor((L - i * A) / B + 1e-9);
+      for (let j = 0; j <= nj; j++) {
+        const v = r6(i * A + j * B);
+        if (v > 0 && v <= L + EPS) s.add(v);
+      }
+      if (s.size > 40000) break;     // an toàn bộ nhớ – phương án dự phòng sẽ xử lý
+    }
+  }
+  return Float64Array.from([...s].sort((a, b) => a - b));
+}
+
+/** Chỉ số lớn nhất có P[idx] ≤ v (−1 nếu không có). */
+function floorIdx(P, v) {
+  let lo = 0, hi = P.length - 1, ans = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (P[mid] <= v + EPS) { ans = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  return ans;
+}
+
+/**
+ * Bảng quy hoạch động: F[i][j] = số chiếc tối đa trên miếng X[i] × Y[j].
+ * Toạ độ "quy đổi": mỗi chi tiết chiếm (a+k) × (b+k); vùng dùng được cộng thêm k.
+ */
+function buildTable(WW, HH, a, b, k, pureOnly) {
+  const A = a + k, B = b + k;
+  const X = normalPoints(WW, A, B, pureOnly), Y = normalPoints(HH, A, B, pureOnly);
+  const nx = X.length, ny = Y.length;
+  if (!nx || !ny) return null;
+  const cost = nx * nx * ny / 2 + ny * ny * nx / 2;
+  if (cost > DP_COST_LIMIT) return { tooBig: true };
+  const N = nx * ny;
+  const F = new Int32Array(N), BL = new Int32Array(N), T = new Int8Array(N), P = new Int32Array(N);
+  for (let j = 0; j < ny; j++) {
+    const h = Y[j];
+    for (let i = 0; i < nx; i++) {
+      const w = X[i], id = i * ny + j;
+      const n1 = Math.floor(w / A + 1e-9) * Math.floor(h / B + 1e-9);
+      const n2 = Math.floor(w / B + 1e-9) * Math.floor(h / A + 1e-9);
+      let best = n1 >= n2 ? n1 : n2, blocks = best > 0 ? 1 : 0, type = n1 >= n2 ? 0 : 1, pos = -1;
+      // nhát dọc tại X[p] (chỉ xét nửa trái để không trùng)
+      let q = i;
+      for (let p = 0; p < nx && X[p] <= w / 2 + EPS; p++) {
+        const rest = w - X[p];
+        while (q >= 0 && X[q] > rest + EPS) q--;
+        const pid = p * ny + j, qid = q * ny + j;
+        const c = F[pid] + (q >= 0 ? F[qid] : 0);
+        const bl = BL[pid] + (q >= 0 ? BL[qid] : 0);
+        if (c > best || (c === best && c > 0 && bl < blocks)) { best = c; blocks = bl; type = 2; pos = p; }
+      }
+      // nhát ngang tại Y[p]
+      q = j;
+      for (let p = 0; p < ny && Y[p] <= h / 2 + EPS; p++) {
+        const rest = h - Y[p];
+        while (q >= 0 && Y[q] > rest + EPS) q--;
+        const pid = i * ny + p, qid = i * ny + q;
+        const c = F[pid] + (q >= 0 ? F[qid] : 0);
+        const bl = BL[pid] + (q >= 0 ? BL[qid] : 0);
+        if (c > best || (c === best && c > 0 && bl < blocks)) { best = c; blocks = bl; type = 3; pos = p; }
+      }
+      F[id] = best; BL[id] = blocks; T[id] = type; P[id] = pos;
+    }
+  }
+  return { X, Y, nx, ny, F, BL, T, P, A, B, k, a, b };
+}
+
+/** Số chiếc của miếng bất kỳ w × h (quy đổi) theo bảng. */
+function countAny(tb, w, h) {
+  const i = floorIdx(tb.X, w), j = floorIdx(tb.Y, h);
+  return i < 0 || j < 0 ? 0 : tb.F[i * tb.ny + j];
+}
+
+/** Dựng lại toạ độ chi tiết và đường cắt của miếng w × h đặt tại (x0, y0). */
+function placeAny(tb, x0, y0, w, h, out, cuts) {
+  const i = floorIdx(tb.X, w), j = floorIdx(tb.Y, h);
+  if (i >= 0 && j >= 0) placeIdx(tb, i, j, x0, y0, out, cuts);
+}
+function placeIdx(tb, i, j, x0, y0, out, cuts) {
+  const { X, Y, ny, F, T, P, A, B, k } = tb, id = i * ny + j;
+  if (!F[id]) return;
+  const w = X[i], h = Y[j], t = T[id];
+  if (t <= 1) {
+    const pw = t === 0 ? A : B, ph = t === 0 ? B : A;
+    const cx = Math.floor(w / pw + 1e-9), cy = Math.floor(h / ph + 1e-9);
+    for (let c = 0; c < cx; c++) for (let r = 0; r < cy; r++)
+      out.push({ x: x0 + c * pw, y: y0 + r * ph, w: pw - k, h: ph - k });
+    if (cuts) {
+      for (let r = 1; r < cy; r++) cuts.push({ x1: x0, y1: y0 + r * ph - k / 2, x2: x0 + cx * pw - k, y2: y0 + r * ph - k / 2 });
+      for (let c = 1; c < cx; c++) cuts.push({ x1: x0 + c * pw - k / 2, y1: y0, x2: x0 + c * pw - k / 2, y2: y0 + cy * ph - k });
+      if (cx * pw < w - EPS) cuts.push({ x1: x0 + cx * pw - k / 2, y1: y0, x2: x0 + cx * pw - k / 2, y2: y0 + h - k });
+      if (cy * ph < h - EPS) cuts.push({ x1: x0, y1: y0 + cy * ph - k / 2, x2: x0 + Math.min(w, cx * pw) - k, y2: y0 + cy * ph - k / 2 });
+    }
+  } else if (t === 2) {
+    const xs = X[P[id]];
+    if (cuts) cuts.push({ x1: x0 + xs - k / 2, y1: y0, x2: x0 + xs - k / 2, y2: y0 + h - k });
+    placeIdx(tb, P[id], j, x0, y0, out, cuts);
+    placeAny(tb, x0 + xs, y0, w - xs, h, out, cuts);
+  } else {
+    const ys = Y[P[id]];
+    if (cuts) cuts.push({ x1: x0, y1: y0 + ys - k / 2, x2: x0 + w - k, y2: y0 + ys - k / 2 });
+    placeIdx(tb, i, P[id], x0, y0, out, cuts);
+    placeAny(tb, x0, y0 + ys, w, h - ys, out, cuts);
+  }
+}
+
+/** Cận trên: diện tích "xếp được thật" / diện tích 1 chi tiết (đã cộng mạch). */
+function upperBound(WW, HH, A, B) {
+  const best = (L) => {           // tổ hợp i*A + j*B lớn nhất ≤ L
+    let m = 0;
+    for (let i = 0; i * A <= L + EPS; i++) m = Math.max(m, i * A + Math.floor((L - i * A) / B + 1e-9) * B);
+    return m;
+  };
+  return Math.floor(best(WW) * best(HH) / (A * B) + 1e-9);
+}
+
+/** Bố trí 5 khối xoay vòng (không chặt suốt) – chỉ cho laser/plasma. */
+function pinwheel(tb, WW, HH, target, deadline, maxWork) {
+  const raster = (P, L) => {
+    const s = new Set(P);
+    for (const v of P) { const r = floorIdx(P, L - v); if (r >= 0) s.add(P[r]); }
+    return [...s].filter(v => v > EPS && v < L - EPS).sort((a, b) => a - b);
+  };
+  const rx = raster(tb.X, WW), ry = raster(tb.Y, HH);
+  const unit = tb.A * tb.B, area = WW * HH;
+  let best = { n: 0, cut: null }, iter = 0, work = 0, complete = true;
+  outer:
+  for (let a = 0; a < rx.length; a++) {
+    const x1 = rx[a];
+    for (let b = a + 1; b < rx.length; b++) {
+      const x2 = rx[b];
+      for (let c = 0; c < ry.length; c++) {
+        const y1 = ry[c];
+        if ((++iter & 1023) === 0 && Date.now() > deadline) { complete = false; break outer; }
+        if (work > maxWork) { complete = false; break outer; }
+        const k2 = countAny(tb, WW - x1, y1);
+        const k3 = countAny(tb, WW - x2, HH - y1);
+        // cắt tỉa: phần còn lại dù xếp kín cũng không vượt được kết quả tốt nhất
+        const restArea = area - (WW - x1) * y1 - (WW - x2) * (HH - y1);
+        if (k2 + k3 + Math.floor(restArea / unit + 1e-9) <= best.n) continue;
+        work += ry.length - c;
+        for (let d = c + 1; d < ry.length; d++) {
+          const y2 = ry[d];
+          const n = countAny(tb, x1, y2) + k2 + k3 + countAny(tb, x2, HH - y2) + countAny(tb, x2 - x1, y2 - y1);
+          if (n > best.n) { best = { n, cut: [x1, x2, y1, y2] }; if (n >= target) break outer; }
+        }
+      }
+    }
+  }
+  return { ...best, complete, work };
+}
+function placePinwheel(tb, cut, WW, HH, e, out) {
+  const [x1, x2, y1, y2] = cut;
+  placeAny(tb, e, e, x1, y2, out, null);                         // K1
+  placeAny(tb, e + x1, e, WW - x1, y1, out, null);               // K2
+  placeAny(tb, e + x2, e + y1, WW - x2, HH - y1, out, null);     // K3
+  placeAny(tb, e, e + y2, x2, HH - y2, out, null);               // K4
+  placeAny(tb, e + x1, e + y1, x2 - x1, y2 - y1, out, null);     // ô giữa
+}
+
+/** Chuẩn bị bảng cho tấm W × H; tự hạ cấp nếu bài toán quá lớn. */
+function rectTable(W, H, a, b, k, e) {
+  const WW = W - 2 * e + k, HH = H - 2 * e + k;
+  let tb = buildTable(WW, HH, a, b, k, false), exact = true;
+  if (!tb || tb.tooBig) { tb = buildTable(WW, HH, a, b, k, true); exact = false; }
+  if (!tb || tb.tooBig) fail('Chi tiết quá nhỏ so với tấm – hãy tăng kích thước chi tiết.');
+  return { tb, WW, HH, exact };
+}
+
+/** Xếp chữ nhật trên tấm đầy đủ. */
+function rectFull(i, a, b) {
+  const k = i.gap, e = i.margin, shear = i.cutMethod === 'shear';
+  const { tb, WW, HH, exact } = rectTable(i.sheetW, i.sheetH, a, b, k, e);
+  const layout = [], cuts = [];
+  const full = tb.F[tb.nx * tb.ny - 1];
+  placeIdx(tb, tb.nx - 1, tb.ny - 1, e, e, layout, shear ? cuts : null);
+  const ub = upperBound(WW, HH, a + k, b + k);
+  let strategy = tb.BL[tb.nx * tb.ny - 1] > 1 ? 'guillotine' : 'grid', searchComplete = exact;
+  if (!shear && full < ub) {
+    const pw = pinwheel(tb, WW, HH, ub, Date.now() + (i.pinwheelMs ?? DEFAULTS.pinwheelMs), i.pinwheelWork ?? DEFAULTS.pinwheelWork);
+    if (!pw.complete) searchComplete = false;
+    if (pw.n > full) { layout.length = 0; placePinwheel(tb, pw.cut, WW, HH, e, layout); strategy = 'rotary'; }
+  }
+  if (shear) strategy = 'shear';
+  return { tb, layout, cuts, strategy, upper: ub, searchComplete, WW, HH };
+}
+
+/** Điền tay: dải ngắn nhất (nguyên chiều rộng tấm) chứa đủ qty chi tiết – chặt suốt. */
+function rectStrip(i, a, b, qty, tb) {
+  const k = i.gap, e = i.margin, shear = i.cutMethod === 'shear';
+  const jm = tb.ny - 1;
+  let idx = -1;
+  for (let x = 0; x < tb.nx; x++) if (tb.F[x * tb.ny + jm] >= qty) { idx = x; break; }
+  if (idx < 0) return null;
+  const all = [], cuts = [];
+  placeIdx(tb, idx, jm, e, e, all, shear ? cuts : null);
+  all.sort((p, q) => p.x - q.x || p.y - q.y);
+  const layout = all.slice(0, qty);
+  const right = Math.max(...layout.map(p => p.x + p.w));
+  return { layout, cuts: cuts.filter(c => Math.min(c.x1, c.x2) < right + EPS), used: right + e };
+}
+
+/* ======================================================================= */
+/* 2. TRÒN – LƯỚI VUÔNG VÀ SO LE                                           */
+/* ======================================================================= */
+function grid(avail, unit, gap) {
+  if (unit <= 0 || avail + EPS < unit) return 0;
+  return Math.max(0, Math.min(LIMIT, Math.floor((avail + gap) / (unit + gap) + 1e-10)));
+}
+function circleRows(height, d, step) {
+  if (d <= 0 || step <= 0 || height + EPS < d) return 0;
+  return Math.min(LIMIT, Math.floor((height - d) / step + 1e-10) + 1);
+}
+function circleCount(r, d, g, hex, shifted) {
+  const step = d + g, ystep = hex ? step * Math.sqrt(3) / 2 : step;
+  const nr = circleRows(r.h, d, ystep), normal = grid(r.w, d, g);
+  if (!hex) return normal * nr;
+  const shiftedCols = grid(r.w - step / 2, d, g);
+  let a = Math.floor((nr + 1) / 2), b = Math.floor(nr / 2);
+  if (shifted) [a, b] = [b, a];
+  return a * normal + b * shiftedCols;
+}
+function bestCirclePlan(r, d, g) {
+  let best = { count: circleCount(r, d, g, false, false), hex: false, transposed: false, shifted: false };
+  for (const trans of [false, true]) {
+    const sz = trans ? { ...r, w: r.h, h: r.w } : r;
+    const sq = circleCount(sz, d, g, false, false);
+    if (sq > best.count) best = { count: sq, hex: false, transposed: trans, shifted: false };
+    for (const shift of [false, true]) {
+      const c = circleCount(sz, d, g, true, shift);
+      if (c > best.count) best = { count: c, hex: true, transposed: trans, shifted: shift };
+    }
+  }
+  return best;
+}
+function circleLayout(r, d, g, p, limit = Infinity) {
+  const sz = p.transposed ? { ...r, w: r.h, h: r.w } : r;
+  const step = d + g, ystep = p.hex ? step * Math.sqrt(3) / 2 : step;
+  const nr = circleRows(sz.h, d, ystep), out = [];
+  for (let row = 0; row < nr && out.length < limit; row++) {
+    const off = p.hex && ((row % 2 === 1) !== p.shifted) ? step / 2 : 0;
+    const cols = grid(sz.w - off, d, g);
+    for (let col = 0; col < cols && out.length < limit; col++) {
+      let x = col * step + off, y = row * ystep;
+      if (p.transposed) [x, y] = [y, x];
+      out.push({ x: r.x + x, y: r.y + y, w: d, h: d });
+    }
+  }
+  return out;
+}
+
+/* ======================================================================= */
+/* 3. GIAO DIỆN CHUNG                                                      */
+/* ======================================================================= */
+const NUM_KEYS = ['sheetW', 'sheetH', 'thickness', 'gap', 'margin', 'density', 'allowance'];
+
+export function calculateNesting(input) {
+  const i = { ...input };
+  const keys = [...NUM_KEYS, ...(i.shape === 'circle' ? ['diameter'] : ['partW', 'partH'])];
+  for (const key of keys) {
+    const v = i[key];
+    if (!Number.isFinite(v) || v < 0 || v > LIMIT) fail('Số đo không hợp lệ hoặc vượt giới hạn: ' + key);
+  }
+  if (!['rect', 'circle'].includes(i.shape)) fail('Hình dạng chi tiết không hợp lệ.');
+  if (!['laser', 'shear'].includes(i.cutMethod)) fail('Phương pháp cắt không hợp lệ.');
+  if (i.shape === 'circle' && i.cutMethod === 'shear') fail('Chặt sấn chỉ xếp chi tiết chữ nhật.');
+  if (i.sheetW <= 0 || i.sheetH <= 0 || i.thickness <= 0 || i.density <= 0 ||
+      (!i.autoMax && (!Number.isInteger(i.quantity) || i.quantity <= 0 || i.quantity > LIMIT)))
+    fail('Kiểm tra kích thước tấm, dày, vật liệu hoặc số lượng.');
+  if (i.shape === 'rect' && (i.partW <= 0 || i.partH <= 0)) fail('Kích thước thành phẩm phải lớn hơn 0.');
+  if (i.shape === 'circle' && i.diameter <= 0) fail('Đường kính thành phẩm phải lớn hơn 0.');
+  const remnantMin = Number.isFinite(i.remnantMin) && i.remnantMin >= 0 ? i.remnantMin : DEFAULTS.remnantMin;
+  const e = i.margin;
+  if (i.sheetW - 2 * e <= 0 || i.sheetH - 2 * e <= 0) fail('Chừa mép vượt kích thước tấm.');
+
+  const cutW = (i.shape === 'circle' ? i.diameter : i.partW) + i.allowance;
+  const cutH = (i.shape === 'circle' ? i.diameter : i.partH) + i.allowance;
+  const area = i.shape === 'circle' ? Math.PI * i.diameter ** 2 / 4 : i.partW * i.partH;
+
+  // ---------- sức chứa 1 tấm đầy
+  let plan, rect = null;
+  const region = { x: e, y: e, w: i.sheetW - 2 * e, h: i.sheetH - 2 * e };
+  if (i.shape === 'circle') {
+    const p = bestCirclePlan(region, cutW, i.gap);
+    plan = { count: p.count, layout: circleLayout(region, cutW, i.gap, p), cutLines: [],
+             strategy: p.hex ? 'staggered' : 'grid', rotated: p.transposed, staggered: p.hex,
+             upperBound: null, searchComplete: true, circle: p };
+  } else {
+    rect = rectFull(i, cutW, cutH);
+    plan = { count: rect.layout.length, layout: rect.layout, cutLines: rect.cuts, strategy: rect.strategy,
+             staggered: false, upperBound: rect.upper, searchComplete: rect.searchComplete };
+  }
+  if (plan.count < 1) fail('Chi tiết không lọt tấm phôi (đã tính mạch cắt, chừa mép và lượng dư).');
+  if (!Number.isSafeInteger(plan.count) || plan.count > LIMIT) fail('Số chi tiết quá lớn.');
+
+  const qty = i.autoMax ? plan.count : i.quantity;
+  const sheets = Math.ceil(qty / plan.count), lastSheetParts = (qty - 1) % plan.count + 1;
+
+  // ---------- chiều dài phải xuất (tấm lẻ chỉ giữ khi ≥ remnantMin)
+  const keepLength = used => {
+    const L = Math.min(i.sheetW, Math.ceil((used - 1e-9) * 10) / 10);
+    return i.sheetW - L >= remnantMin ? L : i.sheetW;
+  };
+  const stripFor = n => {
+    if (n >= plan.count && i.autoMax) return null;
+    if (i.shape === 'circle') {
+      let lo = 0, hi = i.sheetW;
+      for (let s = 0; s < 40; s++) {
+        const mid = (lo + hi) / 2, r = { x: e, y: e, w: mid - 2 * e, h: i.sheetH - 2 * e };
+        if (r.w > 0 && bestCirclePlan(r, cutW, i.gap).count >= n) hi = mid; else lo = mid;
+      }
+      const r = { x: e, y: e, w: hi - 2 * e, h: i.sheetH - 2 * e };
+      const lay = circleLayout(r, cutW, i.gap, bestCirclePlan(r, cutW, i.gap)).sort((p, q) => p.x - q.x || p.y - q.y).slice(0, n);
+      return { layout: lay, cuts: [], used: Math.max(...lay.map(p => p.x + p.w)) + e };
+    }
+    return rectStrip(i, cutW, cutH, n, rect.tb);          // null nếu chỉ kiểu xoay vòng mới chứa đủ
+  };
+
+  const out = {
+    ...plan, partsPerSheet: plan.count, sheets, lastSheetParts, completeSheets: 0, shownOnSheet: lastSheetParts,
+    cutW, cutH, partArea: area, cutArea: cutW * cutH, sheetArea: i.sheetW * i.sheetH,
+    remnantL: 0, remnantW: 0, savedOffcutKG: 0, issuedLastLength: i.sheetW, remnantMin,
+    input: { ...i, remnantMin }, quantity: qty,
+  };
+  let lengthIssued;
+  if (i.autoMax) {
+    lengthIssued = i.sheetW;                                 // barem: cắt hết tờ
+  } else {
+    out.completeSheets = sheets - 1;
+    const last = stripFor(lastSheetParts);
+    if (last) {
+      out.layout = last.layout; out.cutLines = last.cuts;
+      out.issuedLastLength = keepLength(last.used);
+      if (out.strategy === 'rotary') out.strategy = 'guillotine';
+    } else {
+      out.layout = plan.layout.slice(0, lastSheetParts); out.issuedLastLength = i.sheetW;
+    }
+    out.remnantL = i.sheetW - out.issuedLastLength; out.remnantW = out.remnantL > 0 ? i.sheetH : 0;
+    let fullLen = i.sheetW;
+    if (out.completeSheets > 0) { const f = stripFor(plan.count); if (f) fullLen = keepLength(f.used); }
+    lengthIssued = out.issuedLastLength + out.completeSheets * fullLen;
+    out.savedOffcutKG = (sheets * i.sheetW - lengthIssued) * i.sheetH * i.thickness * i.density / 1e9;
+  }
+  if (out.layout.length > MAX_PREVIEW) out.layout = out.layout.slice(0, MAX_PREVIEW);
+  if (out.cutLines.length > 4 * MAX_PREVIEW) out.cutLines = out.cutLines.slice(0, 4 * MAX_PREVIEW);
+  out.previewDrawn = Math.min(out.shownOnSheet, out.layout.length);
+  out.rotated = i.shape === 'rect' && out.layout.length > 0 && out.layout.every(p => Math.abs(p.w - cutH) < 1e-6 && Math.abs(p.h - cutW) < 1e-6) && cutW !== cutH;
+  out.mixed = i.shape === 'rect' && cutW !== cutH && !out.rotated && out.layout.some(p => Math.abs(p.w - cutH) < 1e-6 && Math.abs(p.h - cutW) < 1e-6);
+  out.slack = out.upperBound == null ? null : Math.max(0, out.upperBound - out.partsPerSheet);
+  out.issuedKG = lengthIssued * i.sheetH * i.thickness * i.density / 1e9;
+  out.finishedKG = area * i.thickness * qty * i.density / 1e9;
+  out.wasteKG = out.issuedKG - out.finishedKG;
+  if (out.wasteKG < 0 && out.wasteKG > -1e-8) out.wasteKG = 0;
+  if (out.wasteKG < 0 || out.finishedKG <= 0) fail('Cân bằng khối lượng không hợp lệ.');
+  out.wasteOverFinishedPercent = 100 * out.wasteKG / out.finishedKG;
+  delete out.circle;
+  return out;
+}
+
+// A module Worker runs the very same nesting.js. No second algorithm file.
+// Editing during a lengthy search terminates the previous Worker immediately.
+if(typeof document==='undefined' && typeof self!=='undefined' && typeof self.postMessage==='function'){
+ self.addEventListener('message',event=>{
+  try{self.postMessage({ok:true,result:calculateNesting(event.data)});}
+  catch(error){self.postMessage({ok:false,error:String(error?.message||'Không thể tính trải phôi.')});}
+ });
+}
+
 // -----------------------------------------------------------------------------
 // UI parity with ES TOOLKIT V1.0 Portable / extensions_windows.go.
-// Lõi tính nằm trên máy chủ; file này chỉ hiển thị kết quả.
+// Keep the checked calculation engine above unchanged.
 // -----------------------------------------------------------------------------
 const DEFAULT_STATE={
  sheetW:'6000',sheetH:'2000',thickness:'20',partW:'300',partH:'200',diameter:'310',
@@ -215,14 +606,14 @@ const NEST_CSS=`
 `;
 
 export function mount(root,ctx){
- // Giao diện; mọi phép tính gửi lên máy chủ qua NEST_API.
+ // One self-contained file; the calculation engine and Worker are unchanged.
  const state=savedState?structuredClone(savedState):structuredClone(DEFAULT_STATE);
  state.sheets??=structuredClone(DEFAULT_STATE.sheets);
  state.gaps??=structuredClone(DEFAULT_STATE.gaps);
  state.allowances??=structuredClone(DEFAULT_STATE.allowances);
  if(!['rect','circle'].includes(state.shape))state.shape='rect';
  if(!['laser','shear'].includes(state.cutMethod))state.cutMethod='laser';
- let materialCatalog=null,request=null,timer=null,serial=0,last=null,lastSVG='';
+ let materialCatalog=null,worker=null,timer=null,serial=0,last=null,lastSVG='';
  root.innerHTML=`<style>${NEST_CSS}</style><div class="nest-pro">
   <div class="nest-top"><p class="nest-subtitle">1 loại chi tiết · Thành phẩm (mm) · Đường bao ngoài</p>
    <div class="nest-materials" role="group" aria-label="Vật liệu"><strong>Vật liệu</strong>
@@ -332,24 +723,18 @@ export function mount(root,ctx){
  }
  function compute(){
   serial++;const job=serial;
-  request?.abort();request=new AbortController();const mine=request;
+  if(worker){worker.terminate();worker=null;}
   let args;try{collectFields();args=payload();}catch(e){invalid(e.message);return;}
   last=null;lastSVG='';status('Đang tính sơ đồ…',true);
-  const timeout=setTimeout(()=>mine.abort(),25000);
-  fetch(NEST_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(args),signal:mine.signal,cache:'no-store',credentials:'omit'})
-   .then(async r=>{
-    const data=await r.json().catch(()=>null);
-    if(!r.ok||!data?.ok)throw Error(data?.error||(r.status===429?'Bạn thao tác quá nhanh, vui lòng thử lại sau ít giây.':'Máy chủ tính toán chưa phản hồi. Vui lòng thử lại.'));
-    return data.result;
-   })
-   .then(res=>{if(job!==serial||ctx.signal?.aborted)return;present(res);})
-   .catch(err=>{
-    if(job!==serial||ctx.signal?.aborted)return;
-    invalid(err?.name==='AbortError'?'Hết thời gian chờ máy chủ tính toán.':(err?.message||'Không thể tính trải phôi.'));
-   })
-   .finally(()=>clearTimeout(timeout));
+  function complete(value,error){if(job!==serial||ctx.signal?.aborted)return;worker?.terminate();worker=null;if(error)invalid(error);else present(value);}
+  try{
+   worker=new Worker(new URL('./nesting.js',import.meta.url),{type:'module',name:'epsilon-nesting'});
+   worker.addEventListener('message',e=>complete(e.data?.result,e.data?.ok?null:e.data?.error||'Không thể tính trải phôi.'),{once:true});
+   worker.addEventListener('error',e=>{if(job!==serial||ctx.signal?.aborted)return;worker?.terminate();worker=null;console.warn('Nesting Worker:',e.message);try{complete(calculateNesting(args),null);}catch(err){complete(null,err.message);}}, {once:true});
+   worker.postMessage(args);
+  }catch(e){worker?.terminate();worker=null;try{complete(calculateNesting(args),null);}catch(err){complete(null,err.message);}}
  }
- function schedule(){clearTimeout(timer);request?.abort();serial++;status('Đang cập nhật…',true);timer=setTimeout(compute,250);}
+ function schedule(){clearTimeout(timer);if(worker){worker.terminate();worker=null;serial++;}status('Đang cập nhật…',true);timer=setTimeout(compute,170);}
  root.addEventListener('input',e=>{
   if(!e.target.matches('input[name]'))return;
   collectFields();if(e.target.name==='quantity'&&state.autoMax)return;schedule();
@@ -411,5 +796,5 @@ export function mount(root,ctx){
   navigator.clipboard.writeText(text).then(()=>ctx.showToast?.('Đã sao chép kết quả.'),()=>ctx.showToast?.('Không sao chép được kết quả.','error'));
  },{signal:ctx.signal});
  syncUI();compute();void loadCatalog();
- return ()=>{clearTimeout(timer);serial++;request?.abort();request=null;};
+ return ()=>{clearTimeout(timer);serial++;worker?.terminate();worker=null;};
 }
