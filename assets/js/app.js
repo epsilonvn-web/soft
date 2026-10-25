@@ -2213,7 +2213,7 @@ function makeSidebarExpandable(id,href,label,iconName,count){
   (id==='ecosystem'&&route.startsWith('#/ecosystem'))||
   route==='#/category/'+id||Boolean(activeTool && id===activeTool.group);
  const escapedLabel=escapeHTML(label);
- const logo=id==='ecosystem'?'<img src="./icon-152.png" alt="" loading="lazy" decoding="async">':icon(iconName,22);
+ const logo=id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" loading="lazy" decoding="async">':icon(iconName,22);
  const actionLabel=esLanguage==='en'?(open?'Collapse':'Expand'):(open?'Thu gọn':'Mở rộng');
  return `<section class="es-side-section" data-side-section="${id}">
   <div class="es-side-parent ${selected?'is-active':''}">
@@ -2270,7 +2270,7 @@ function mobileRailFolderHtml(entry){
  const opened=sidebarOpenSection===entry.id;
  const current=mobileRailIsActive(entry);
  const label=escapeHTML(entry.label);
- const graphic=entry.id==='ecosystem'?'<img src="./icon-152.png" alt="" width="32" height="32">':icon(entry.iconName,22);
+ const graphic=entry.id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" width="32" height="32" decoding="async">':icon(entry.iconName,22);
  const ariaLabel=entry.id==='all'?(esLanguage==='en'?'All tools':'Tất cả công cụ'):
   entry.id==='utility'?(esLanguage==='en'?'Documents and utilities':'Tài liệu & Tiện ích'):entry.label;
  return `<div class="es-mobile-folder ${current?'is-active':''}" data-mobile-section="${entry.id}">
@@ -2451,7 +2451,7 @@ function esHeroDialogContent(mode){
    <p class="es-hero-install-note">${T('Nếu không thấy tùy chọn cài đặt, hãy thử trình duyệt hỗ trợ PWA và đảm bảo website đang mở qua HTTPS. Một số trình duyệt chỉ cho tạo lối tắt.','If you do not see an install option, use a PWA-compatible browser and an HTTPS website. Some browsers only support creating a shortcut.')}</p>`;
  }
  return `<div class="es-hero-dialog" role="dialog" aria-modal="true" aria-labelledby="es-hero-dialog-title">
-  <div class="es-hero-dialog-head"><span class="es-hero-dialog-emblem${mode==='about'?' es-hero-dialog-logo':''}">${mode==='about'?'<img src="./icon-152.png" alt="" width="47" height="47" decoding="async">':icon(mode==='installed'?'check':'app-plus',23)}</span><h2 class="es-hero-dialog-title" id="es-hero-dialog-title">${heading}</h2><button type="button" class="es-hero-dialog-close" data-es-hero-close aria-label="${T('Đóng cửa sổ','Close dialog')}" title="${T('Đóng','Close')}">${icon('close',19)}</button></div>
+  <div class="es-hero-dialog-head"><span class="es-hero-dialog-emblem${mode==='about'?' es-hero-dialog-logo':''}">${mode==='about'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" width="47" height="47" decoding="async">':icon(mode==='installed'?'check':'app-plus',23)}</span><h2 class="es-hero-dialog-title" id="es-hero-dialog-title">${heading}</h2><button type="button" class="es-hero-dialog-close" data-es-hero-close aria-label="${T('Đóng cửa sổ','Close dialog')}" title="${T('Đóng','Close')}">${icon('close',19)}</button></div>
   ${body}</div>`;
 }
 function esOpenHeroDialog(mode){
@@ -2663,7 +2663,7 @@ function ecosystemLoadingHtml(groupId=''){
  const heading=group?(groupId==='edu'?'Epsilon Edu':'Epsilon Lab'):'';
  return `<div class="es-static-page">
  <section class="es-static-intro es-hub-intro">
-  <span class="es-static-intro-icon ${group?'es-hub-group-icon':'es-hub-logo'}">${group?icon(groupId==='edu'?'book':'gear',34):'<img src="./icon-192.png" alt="">'}</span>
+  <span class="es-static-intro-icon ${group?'es-hub-group-icon':'es-hub-logo'}">${group?icon(groupId==='edu'?'book':'gear',34):'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="">'}</span>
   <div>${group?`<h1 id="es-hub-group-heading">${heading}</h1><p id="es-hub-group-sub">${esLanguage==='en'?'Browse products by category':'Khám phá các sản phẩm trong nhóm'}</p>`:`<h1 class="es-hub-wordmark"><span>EPSILON</span><strong>HUB</strong></h1><p>Kết nối các sản phẩm và ứng dụng thuộc hệ sinh thái Epsilon.</p>`}</div>
  </section>
  <div id="es-system-products" role="region" aria-label="${esLanguage==='en'?'Epsilon ecosystem':'Danh mục sản phẩm Epsilon'}"><div class="tool-box" role="status">${esLanguage==='en'?'Loading products...':'Đang tải danh sách sản phẩm...'}</div></div>
