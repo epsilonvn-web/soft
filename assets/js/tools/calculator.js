@@ -31,7 +31,7 @@ const HISTORY_LIMIT = 5; // Keep the most recent five successful calculations on
 
 const session = {
   science: true, deg: true, ans: 0, memory: 0, hasMemory: false,
-  expr: '', result: '0', error: '', history: []
+  expr: '', result: '0', error: '', history: [], finished: false
 };
 
 function isDigit(c) { return !!c && c >= '0' && c <= '9'; }
@@ -259,17 +259,28 @@ const STYLES = `
 .epsilon-kcalc .kc-history-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 9px;border-bottom:1px solid #ecdff8;font-size:18px}
 .epsilon-kcalc .kc-history-line span{overflow-wrap:anywhere;color:#272038}
 .epsilon-kcalc .kc-history-line b{color:#7026df;text-align:right;white-space:nowrap;font-weight:800}
-.epsilon-kcalc .kc-expression-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 7px}
-.epsilon-kcalc .kc-expression-head label{color:#251989;font-size:18px;font-weight:850;letter-spacing:.2px}
-.epsilon-kcalc .kc-new{border:1px solid #cfb0fb;background:#f4eaff;color:#5d22c5;border-radius:9px;min-height:34px;padding:5px 14px;font-size:16px;font-weight:800}
-.epsilon-kcalc .kc-input{display:block;width:100%;height:52px;border:1.5px solid #cba5f9;border-radius:11px;background:#fff;padding:9px 14px;text-align:left;color:#1b173c;font-size:21px;outline:none;min-width:0;caret-color:var(--kc-purple);font-variant-numeric:tabular-nums}
-.epsilon-kcalc .kc-input:focus{box-shadow:0 0 0 3px #d5bfff55;border-color:#9f65ef}
-.epsilon-kcalc .kc-result-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px}
-.epsilon-kcalc .kc-result-label{font-size:16px;color:#6976a3;font-weight:750}
-.epsilon-kcalc .kc-copy{font-size:16px;border:0;background:transparent;color:#6832cc;text-decoration:underline;text-underline-offset:3px;font-weight:700}
-.epsilon-kcalc .kc-result{display:flex;align-items:center;justify-content:flex-end;min-height:59px;overflow-wrap:anywhere;padding:8px 12px;border:0;background:#fff;text-align:right;color:#0b1463;font-size:clamp(24px,2.1vw,32px);font-weight:900;line-height:1.16;width:100%;font-variant-numeric:tabular-nums}
-.epsilon-kcalc .kc-result.is-error{font-size:17px;color:#bb2b37;text-align:left;justify-content:flex-start;font-weight:700;line-height:1.4}
-.epsilon-kcalc .kc-notice{min-height:23px;font-size:16px;color:#1a8574;text-align:left}
+.epsilon-kcalc .kc-expression-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 8px;flex-wrap:wrap}
+.epsilon-kcalc .kc-expression-head label{color:#251989;font-size:17px;font-weight:850;letter-spacing:.15px}
+.epsilon-kcalc .kc-controls{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:0}
+.epsilon-kcalc .kc-controls button{border:1px solid #cfb0fb;background:#f4eaff;color:#5d22c5;border-radius:9px;min-height:35px;padding:5px 11px;font-size:16px;font-weight:750;line-height:1.2;white-space:nowrap}
+.epsilon-kcalc .kc-controls button:hover{background:#e9ddff;border-color:#b99af5}
+.epsilon-kcalc .kc-controls #kc-edit{background:#eff3ff;color:#2846b9;border-color:#ccdaff}
+.epsilon-kcalc .kc-controls #kc-copy{background:#fff;color:#5a2dbb}
+.epsilon-kcalc .kc-screen{border:1.5px solid #cba5f9;border-radius:12px;background:linear-gradient(145deg,#ffffff,#faf8ff);overflow:hidden;min-width:0;transition:border-color .15s,box-shadow .15s}
+.epsilon-kcalc .kc-screen:focus-within{border-color:#9f65ef;box-shadow:0 0 0 3px #d5bfff55}
+.epsilon-kcalc .kc-entry-wrap{position:relative;min-width:0}
+.epsilon-kcalc .kc-input{display:block;width:100%;height:49px;border:0;border-radius:0;background:transparent;padding:9px 13px;text-align:left;color:#1b173c;font-size:21px;outline:none;min-width:0;caret-color:var(--kc-purple);font-variant-numeric:tabular-nums}
+.epsilon-kcalc .kc-input:focus{outline:none;box-shadow:none}
+.epsilon-kcalc.kc-finished .kc-input,.epsilon-kcalc.kc-touch .kc-input{caret-color:transparent}
+.epsilon-kcalc .kc-mobile-caret{display:none;position:absolute;top:50%;left:13px;height:25px;width:2px;border-radius:2px;transform:translateY(-50%);background:#7631e9;pointer-events:none;animation:kc-blink 1s steps(1,end) infinite}
+.epsilon-kcalc.kc-touch:not(.kc-finished) .kc-mobile-caret{display:block}
+@keyframes kc-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+.epsilon-kcalc .kc-screen-divider{height:1px;margin:0 12px;background:#dfdaf4}
+.epsilon-kcalc .kc-result{display:flex;align-items:center;justify-content:flex-end;min-height:47px;overflow-wrap:anywhere;padding:7px 13px;border:0;background:transparent;text-align:right;color:#0b1463;font-size:clamp(24px,2.1vw,32px);font-weight:900;line-height:1.16;width:100%;font-variant-numeric:tabular-nums}
+.epsilon-kcalc .kc-result.is-error{font-size:16px;color:#bb2b37;text-align:left;justify-content:flex-start;font-weight:700;line-height:1.35}
+.epsilon-kcalc .kc-notice{min-height:0;font-size:16px;color:#1a8574;text-align:left}
+.epsilon-kcalc .kc-notice:empty{display:none}
+@media(prefers-reduced-motion:reduce){.epsilon-kcalc .kc-mobile-caret{animation:none;opacity:1}}
 .epsilon-kcalc .kc-keypad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
 .epsilon-kcalc .kc-keypad[data-cols="4"]{grid-template-columns:repeat(4,minmax(0,1fr))}
 .epsilon-kcalc .kc-key{min-width:0;height:59px;padding:4px 7px;border-radius:10px;background:#fbfaff;color:#2e2089;border:1px solid #e6d8fc;font-weight:800;font-size:21px;transition:background .15s,box-shadow .15s}
@@ -277,14 +288,28 @@ const STYLES = `
 .epsilon-kcalc .kc-key:active{transform:scale(.985)}
 .epsilon-kcalc .kc-key.modifier{color:#5a2fba;background:#efe9fc;font-size:18px}
 .epsilon-kcalc .kc-key.modifier[aria-pressed="true"],.epsilon-kcalc .kc-key.equals{background:linear-gradient(125deg,#b24bf3,#7432eb);color:#fff;border-color:#9658ef}
-.epsilon-kcalc .kc-key.op{color:#393be1;background:#eaf1ff;border-color:#d0dafb}
+.epsilon-kcalc .kc-key.op{font-size:30px;font-weight:900;line-height:1;color:#2433c8;background:#eef3ff;border-color:#d6dfff;text-shadow:0 1px 0 rgba(255,255,255,.45)}
+.epsilon-kcalc .kc-key[data-key="÷"]{background:#e9f2ff;border-color:#bfd4ff;color:#0f58cd}
+.epsilon-kcalc .kc-key[data-key="×"]{background:#e8fcfb;border-color:#bdeae6;color:#008f9d}
+.epsilon-kcalc .kc-key[data-key="−"]{background:#fff3e9;border-color:#ffd8b8;color:#ef7a00}
+.epsilon-kcalc .kc-key[data-key="+"]{background:#fff8df;border-color:#ffe59a;color:#bb7b00}
 .epsilon-kcalc .kc-key.danger{color:#b12f52;background:#fff0f4;border-color:#f3ced8}
 .epsilon-kcalc .kc-keypad[data-cols="4"] .kc-key{height:68px}
 .epsilon-kcalc .kc-caption{margin:11px 4px 0;font-size:16px;color:#6575a9;line-height:1.5}
 .epsilon-kcalc button:focus-visible{outline:3px solid #ffd700;outline-offset:2px}
 @media(max-width:1030px){.epsilon-kcalc .kc-columns{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}.epsilon-kcalc .kc-history-card{min-height:630px}.epsilon-kcalc .kc-key{height:58px}}
 @media(max-width:780px){.epsilon-kcalc .kc-columns{grid-template-columns:1fr}.epsilon-kcalc .kc-history-card{min-height:0}.epsilon-kcalc .kc-history{min-height:165px;max-height:240px}.epsilon-kcalc .kc-pad-card{padding:12px}.epsilon-kcalc .kc-title h2{font-size:24px}}
-@media(max-width:400px){.epsilon-kcalc .kc-keypad{gap:5px}.epsilon-kcalc .kc-key{font-size:18px;height:55px;padding:4px 2px}.epsilon-kcalc .kc-mode button{min-width:105px}.epsilon-kcalc .kc-history-line{font-size:16px}}
+@media(max-width:400px){.epsilon-kcalc .kc-keypad{gap:5px}.epsilon-kcalc .kc-key{font-size:18px;height:55px;padding:4px 2px}.epsilon-kcalc .kc-key.op{font-size:31px}.epsilon-kcalc .kc-mode button{min-width:105px}.epsilon-kcalc .kc-history-line{font-size:16px}}
+@media(max-width:780px){
+ .epsilon-kcalc .kc-expression-head{gap:5px;margin:11px 0 7px}
+ .epsilon-kcalc .kc-expression-head label{font-size:16px}
+ .epsilon-kcalc .kc-controls{gap:4px}
+ .epsilon-kcalc .kc-controls button{padding:5px 9px;min-height:34px;font-size:16px}
+ .epsilon-kcalc .kc-input{height:43px;font-size:19px}
+ .epsilon-kcalc .kc-result{min-height:42px;font-size:27px}
+ .epsilon-kcalc .kc-history{max-height:185px}
+}
+@media(max-width:360px){.epsilon-kcalc .kc-controls button{padding:5px 7px;font-size:16px}}
 
 /* Desktop/laptop density aligned with ES TOOLKIT Portable: typography >=16px,
  * same keys, same calculations, mobile retains its approved sizes. */
@@ -302,13 +327,13 @@ const STYLES = `
 .epsilon-kcalc .kc-history{min-height:160px;max-height:380px;padding:9px;border-radius:12px}
 .epsilon-kcalc .kc-expression-head{margin:8px 0 5px}
 .epsilon-kcalc .kc-expression-head label{font-size:17px}
-.epsilon-kcalc .kc-new{min-height:30px;padding:4px 12px}
-.epsilon-kcalc .kc-input{height:43px;padding:7px 12px;font-size:19px}
-.epsilon-kcalc .kc-result-head{margin-top:5px}
-.epsilon-kcalc .kc-result{min-height:43px;padding:5px 9px;font-size:clamp(23px,2vw,29px)}
-.epsilon-kcalc .kc-notice{min-height:19px}
+.epsilon-kcalc .kc-controls button{min-height:30px;padding:4px 10px}
+.epsilon-kcalc .kc-input{height:39px;padding:7px 12px;font-size:19px}
+.epsilon-kcalc .kc-result{min-height:40px;padding:5px 12px;font-size:clamp(23px,2vw,29px)}
+.epsilon-kcalc .kc-mobile-caret{height:22px}
 .epsilon-kcalc .kc-keypad{gap:4px}
 .epsilon-kcalc .kc-key{height:44px;padding:3px 6px;border-radius:9px;font-size:18px}
+.epsilon-kcalc .kc-key.op{font-size:27px}
 .epsilon-kcalc .kc-key.modifier{font-size:17px}
 .epsilon-kcalc .kc-keypad[data-cols="4"] .kc-key{height:55px}
 .epsilon-kcalc .kc-caption{margin:6px 2px 0;line-height:1.3}
@@ -360,10 +385,18 @@ export function mount(root, ctx) {
       <section class="kc-card kc-history-card" aria-label="Lịch sử và phép tính">
         <div class="kc-card-head"><strong class="kc-wordmark">K-CALC</strong><span id="kc-badge" class="kc-angle">DEG</span></div>
         <div class="kc-history" id="kc-history" aria-label="Lịch sử tính toán"></div>
-        <div class="kc-expression-head"><label for="kc-input">PHÉP TÍNH</label><button type="button" class="kc-new" id="kc-new">+ New</button></div>
-        <input id="kc-input" class="kc-input" aria-label="Nhập biểu thức" inputmode="none" spellcheck="false" autocomplete="off" maxlength="500" placeholder="Nhập phép tính..." >
-        <div class="kc-result-head"><span class="kc-result-label">Kết quả</span><button type="button" id="kc-copy" class="kc-copy" title="Sao chép kết quả">${icon('copy',17)} Sao chép</button></div>
-        <div id="kc-result" class="kc-result" aria-live="polite">0</div>
+        <div class="kc-expression-head"><label for="kc-input">PHÉP TÍNH</label>
+          <div class="kc-controls" role="group" aria-label="Thao tác với phép tính">
+            <button type="button" id="kc-new" title="Bắt đầu phép tính mới">New</button>
+            <button type="button" id="kc-edit" title="Sửa hoặc tính tiếp phép tính hiện tại">Edit</button>
+            <button type="button" id="kc-copy" title="Sao chép kết quả">Copy</button>
+          </div>
+        </div>
+        <div class="kc-screen" id="kc-screen" aria-label="Màn hình máy tính hai dòng">
+          <div class="kc-entry-wrap"><input id="kc-input" class="kc-input" aria-label="Nhập biểu thức" inputmode="none" spellcheck="false" autocomplete="off" maxlength="500" placeholder="Nhập phép tính..." ><span id="kc-mobile-caret" class="kc-mobile-caret" aria-hidden="true"></span></div>
+          <div class="kc-screen-divider" aria-hidden="true"></div>
+          <output id="kc-result" class="kc-result" aria-label="Kết quả" aria-live="polite">0</output>
+        </div>
         <div id="kc-notice" class="kc-notice" role="status" aria-live="polite"></div>
       </section>
       <section class="kc-card kc-pad-card" aria-label="Bàn phím máy tính"><div class="kc-keypad" id="kc-keypad"></div><p class="kc-caption" id="kc-caption">Có thể nhập bằng bàn phím. Enter hoặc = để tính. Nhập asin(...), acos(...), atan(...), abs(...) nếu cần.</p></section>
@@ -372,9 +405,11 @@ export function mount(root, ctx) {
   const $ = s => root.querySelector(s);
   const input = $('#kc-input');
   const touchKeypadOnly = usesTouchKeypad();
-  // inputmode=none requests no OS keyboard; readOnly covers Safari/iPadOS.
-  // Programmatic setRangeText()/selection continues to work on a read-only input.
-  input.readOnly = touchKeypadOnly;
+  const surface = root.querySelector('.epsilon-kcalc');
+  surface.classList.toggle('kc-touch', touchKeypadOnly);
+  // Hide the native OS keyboard on touch devices. A CSS caret is positioned
+  // separately because read-only mobile inputs often have no visible caret.
+  input.readOnly = touchKeypadOnly || session.finished;
   input.inputMode = touchKeypadOnly ? 'none' : 'text';
   if (touchKeypadOnly) {
     input.setAttribute('aria-description', 'Chạm các phím K-CALC để nhập, không dùng bàn phím hệ thống.');
@@ -389,6 +424,27 @@ export function mount(root, ctx) {
   const badge = $('#kc-badge');
   const keypad = $('#kc-keypad');
   const modeButtons = [...root.querySelectorAll('[data-mode]')];
+  const mobileCaret = $('#kc-mobile-caret');
+  const caretCanvas = touchKeypadOnly ? document.createElement('canvas') : null;
+  const caretMeasure = caretCanvas?.getContext('2d');
+
+  function setFinished(done) {
+    session.finished = Boolean(done);
+    surface.classList.toggle('kc-finished', session.finished);
+    input.readOnly = touchKeypadOnly || session.finished;
+    updateMobileCaret();
+  }
+
+  function updateMobileCaret() {
+    if (!touchKeypadOnly || !caretMeasure) return;
+    const style = getComputedStyle(input);
+    caretMeasure.font = style.font;
+    const textBeforeCaret = input.value.slice(0, Math.max(0, touchCaretStart));
+    const padding = parseFloat(style.paddingLeft) || 0;
+    const left = padding + caretMeasure.measureText(textBeforeCaret).width - input.scrollLeft;
+    // Never let a long expression paint the cursor outside the input.
+    mobileCaret.style.left = Math.max(2, Math.min(input.clientWidth - 4, left)) + 'px';
+  }
 
   function setNotice(text, error = false) {
     notice.textContent = text;
@@ -420,8 +476,19 @@ export function mount(root, ctx) {
     history.scrollTop = history.scrollHeight;
   }
   function renderResult() {
-    result.textContent = session.error || session.result;
+    let shown = session.result;
+    if (!session.finished && !session.error) {
+      // Preview is display-only: never changes Ans, history or stored result.
+      const draft = input.value.trim();
+      if (draft) {
+        try { shown = formatCalculatorResult(calculate(draft, session.deg ? 'deg' : 'rad', session.ans)); }
+        catch { shown = '—'; }
+      } else shown = '0';
+    }
+    result.textContent = session.error || shown;
     result.classList.toggle('is-error', !!session.error);
+    result.classList.toggle('is-preview-empty', shown === '—' && !session.error);
+    updateMobileCaret();
   }
   function updateMode() {
     modeButtons.forEach(btn => btn.setAttribute('aria-pressed', String((btn.dataset.mode === 'science') === session.science)));
@@ -450,7 +517,7 @@ export function mount(root, ctx) {
         : 'Máy tính cơ bản: cộng, trừ, nhân, chia, ngoặc và xóa. Enter hoặc = để tính.';
   }
   function focusInput() {
-    // Avoid reopening/scrolling toward the native keyboard after each tap.
+    // No OS keyboard on touch; focus the desktop editor without page jumping.
     if (touchKeypadOnly) return;
     try { input.focus({preventScroll:true}); } catch { input.focus(); }
   }
@@ -462,6 +529,7 @@ export function mount(root, ctx) {
   function setEditRange(start, end = start) {
     if (touchKeypadOnly) { touchCaretStart = start; touchCaretEnd = end; }
     input.setSelectionRange(start, end);
+    updateMobileCaret();
   }
   function regroup(start, end) {
     const before = input.value;
@@ -474,6 +542,7 @@ export function mount(root, ctx) {
     }
     if (touchKeypadOnly) { touchCaretStart = start; touchCaretEnd = end; }
     session.expr = input.value;
+    updateMobileCaret();
   }
   function replaceSelection(token) {
     const {start, end} = editRange();
@@ -488,15 +557,36 @@ export function mount(root, ctx) {
     renderResult(); setNotice(''); focusInput();
   }
   function resetExpression() {
+    setFinished(false);
     input.value = '';
     setEditRange(0);
     session.expr = '';
     session.result = '0'; session.error = '';
     renderResult(); setNotice(''); focusInput();
   }
+  function editExpression() {
+    if (session.finished) setFinished(false);
+    session.error = '';
+    setEditRange(input.value.length);
+    renderResult(); setNotice(''); focusInput();
+  }
+  // A digit begins a new calculation after equals; operators continue from Ans.
+  // Edit is the explicit path for changing or extending the old expression.
+  function prepareToken(key) {
+    if (!session.finished) return;
+    if (['+', '−', '×', '÷', '%', 'xʸ', 'x²', 'x³', '±'].includes(key)) {
+      const previous = session.result.replaceAll(',', '');
+      resetExpression();
+      input.value = previous;
+      session.expr = previous;
+      setEditRange(input.value.length);
+    } else {
+      resetExpression();
+    }
+  }
   function execute() {
     const expr = input.value.trim();
-    if (!expr) return;
+    if (!expr || session.finished) return;
     try {
       const num = calculate(expr, session.deg ? 'deg' : 'rad', session.ans);
       const out = formatCalculatorResult(num);
@@ -506,8 +596,9 @@ export function mount(root, ctx) {
       if (session.history.length > HISTORY_LIMIT) {
          session.history.splice(0, session.history.length - HISTORY_LIMIT);
        }
+      setFinished(true);
       renderHistory(); renderResult();
-      setNotice('Đã tính xong');
+      setNotice('');
     } catch (e) {
       session.error = 'Biểu thức không hợp lệ: ' + (e instanceof Error ? e.message : String(e));
       renderResult();setNotice('Vui lòng kiểm tra phép tính.', true);
@@ -517,13 +608,15 @@ export function mount(root, ctx) {
   function keyPress(key) {
     switch (key) {
       case 'New': case 'AC': resetExpression(); return;
-      case 'DEG': session.deg = true; updateMode(); break;
-      case 'RAD': session.deg = false; updateMode(); break;
+      case 'Edit': editExpression(); return;
+      case 'DEG': session.deg = true; updateMode(); renderResult(); break;
+      case 'RAD': session.deg = false; updateMode(); renderResult(); break;
       case 'MC': session.memory = 0; session.hasMemory = false; setNotice('Đã xóa bộ nhớ'); break;
-      case 'MR': replaceSelection(Number(session.memory.toPrecision(14)).toString()); break;
+      case 'MR': prepareToken('MR'); replaceSelection(Number(session.memory.toPrecision(14)).toString()); break;
       case 'M+': session.memory += session.ans; session.hasMemory = true; setNotice('Đã cộng Ans vào bộ nhớ'); break;
       case 'CLR': session.history = []; session.error = ''; session.result = '0'; session.ans = 0; renderHistory(); renderResult(); setNotice('Đã xóa lịch sử'); break;
       case 'DEL': {
+        if (session.finished) return; // Use Edit to change an evaluated expression.
         const {start: p, end} = editRange();
         // A thousands comma is visual only: backspace removes the nearest digit,
         // not just a separator that would immediately be reinserted.
@@ -539,6 +632,7 @@ export function mount(root, ctx) {
       }
       case '=': execute(); return;
       case '1/x': {
+        prepareToken('÷');
         const expr = input.value;
         input.value = expr ? `1/(${expr})` : '1/(';
         session.expr = input.value;
@@ -546,6 +640,7 @@ export function mount(root, ctx) {
         session.error = ''; renderResult();setNotice('');break;
       }
       case '±': {
+        prepareToken('±');
         const expr = input.value;
         input.value = expr.startsWith('-') ? expr.slice(1) : expr ? `-(${expr})` : '';
         session.expr = input.value;
@@ -554,20 +649,22 @@ export function mount(root, ctx) {
       }
       default: {
         const token = mapping(key);
-        if (token !== null) replaceSelection(token);
+        if (token !== null) { prepareToken(key); replaceSelection(token); }
       }
     }
     focusInput();
   }
 
   input.value = session.expr;
-  if (touchKeypadOnly) setEditRange(input.value.length);
+  setFinished(session.finished);
+  setEditRange(input.value.length);
   updateMode();renderHistory();renderResult();
   if (touchKeypadOnly) {
     // A direct tap may move the caret without opening the OS keyboard.
     input.addEventListener('click', () => {
       touchCaretStart = input.selectionStart ?? input.value.length;
       touchCaretEnd = input.selectionEnd ?? touchCaretStart;
+      updateMobileCaret();
     }, {signal:ctx.signal});
   }
   modeButtons.forEach(btn => btn.addEventListener('click', () => {session.science = btn.dataset.mode === 'science';updateMode();}, {signal:ctx.signal}));
@@ -576,6 +673,7 @@ export function mount(root, ctx) {
     if (btn && keypad.contains(btn)) keyPress(btn.dataset.key);
   }, {signal:ctx.signal});
   $('#kc-new').addEventListener('click', () => keyPress('New'), {signal:ctx.signal});
+  $('#kc-edit').addEventListener('click', () => keyPress('Edit'), {signal:ctx.signal});
   input.addEventListener('input', () => {
     const start = input.selectionStart ?? input.value.length;
     const end = input.selectionEnd ?? start;
@@ -583,6 +681,20 @@ export function mount(root, ctx) {
     session.error = '';renderResult();setNotice('');
   }, {signal:ctx.signal});
   input.addEventListener('keydown', e => {
+    if (session.finished && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      // After =, typing a number directly must start a new calculation,
+      // including on a computer with a physical keyboard.
+      if (/^[0-9.]$/.test(e.key)) {
+        e.preventDefault();
+        resetExpression();
+        replaceSelection(e.key);
+        return;
+      }
+      const symbols = {'+': '+', '-':'−', '*':'×', '/':'÷'};
+      if (Object.hasOwn(symbols, e.key)) {
+        e.preventDefault(); keyPress(symbols[e.key]); return;
+      }
+    }
     if (e.key === 'Backspace' && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault(); keyPress('DEL'); return;
     }
@@ -595,10 +707,11 @@ export function mount(root, ctx) {
     if (e.key === 'Escape') {e.preventDefault();resetExpression();}
   }, {signal:ctx.signal});
   $('#kc-copy').addEventListener('click', async () => {
-    if (session.error) return setNotice('Không thể sao chép kết quả lỗi.', true);
+    const visibleResult = result.textContent.trim();
+    if (session.error || visibleResult === '—') return setNotice('Chưa có kết quả hợp lệ để sao chép.', true);
     try {
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard không hỗ trợ');
-      await navigator.clipboard.writeText(session.result);
+      await navigator.clipboard.writeText(visibleResult);
       if (ctx.signal.aborted) return;
       setNotice('Đã sao chép kết quả');
     } catch {setNotice('Trình duyệt chưa cho phép sao chép. Hãy chọn kết quả và sao chép thủ công.', true);}
