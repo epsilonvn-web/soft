@@ -1586,6 +1586,72 @@ small{font-size:16px}
 }
 `;
 
+// Tool workspaces: portrait mobile gets a compact bottom chevron. Tapping it
+// temporarily opens the complete MY TOOLS/category rail; tapping the backdrop
+// or pressing Escape closes it. The homepage keeps its existing pinned dock.
+themeSheet.textContent += `
+.es-tool-rail-toggle,.es-tool-rail-backdrop{display:none}
+body.es-portrait-layout.es-tool-mode .site-header{
+  position:relative!important;
+  top:auto!important;
+}
+body.es-portrait-layout.es-tool-mode .es-mobile-rail{
+  display:block!important;
+  position:fixed!important;
+  top:auto!important;
+  bottom:0!important;
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+  z-index:265!important;
+  margin:0!important;
+  padding:7px 7px calc(7px + env(safe-area-inset-bottom))!important;
+  border:1px solid #dedfff!important;
+  border-radius:17px 17px 0 0!important;
+  background:rgba(252,250,255,.99)!important;
+  box-shadow:0 -5px 24px rgba(38,28,130,.17)!important;
+}
+body.es-portrait-layout.es-tool-mode .es-tool-rail-toggle{
+  display:grid;place-items:center;
+  width:72px;height:39px;min-height:39px;
+  margin:0 auto 7px;padding:4px;
+  border:1px solid #a99afa;border-radius:13px;
+  background:linear-gradient(125deg,#753be5,#4b24d1);
+  color:#fff;box-shadow:0 4px 14px rgba(66,34,160,.22);
+  cursor:pointer;touch-action:manipulation;
+}
+body.es-portrait-layout.es-tool-mode .es-tool-rail-toggle .svg-icon{width:24px;height:24px}
+body.es-portrait-layout.es-tool-mode:not(.es-tool-rail-open) .es-tool-rail-toggle .svg-icon{transform:rotate(180deg)}
+body.es-portrait-layout.es-tool-mode .es-tool-rail-toggle:focus-visible{outline:3px solid #ffd508;outline-offset:3px}
+body.es-portrait-layout.es-tool-mode:not(.es-tool-rail-open) .es-mobile-rail{
+  left:50%!important;right:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  width:72px!important;
+  transform:translateX(-50%);
+  padding:0!important;border:0!important;border-radius:13px!important;
+  background:transparent!important;box-shadow:none!important;
+}
+body.es-portrait-layout.es-tool-mode:not(.es-tool-rail-open) .es-tool-rail-toggle{
+  margin:0!important;
+}
+body.es-portrait-layout.es-tool-mode:not(.es-tool-rail-open) .es-tool-rail-panel{display:none!important}
+body.es-portrait-layout.es-tool-mode.es-tool-rail-open .es-tool-rail-panel{display:block!important}
+/* Give two-line folder labels sufficient height when the menu is expanded. */
+body.es-portrait-layout.es-tool-mode.es-tool-rail-open .es-mobile-folder{height:96px!important}
+body.es-portrait-layout.es-tool-mode.es-tool-rail-open .es-mobile-folder-link{padding:7px 4px!important}
+.es-tool-rail-backdrop{display:none}
+body.es-portrait-layout.es-tool-mode.es-tool-rail-open .es-tool-rail-backdrop{
+  display:block;position:fixed;inset:0;
+  z-index:250;background:rgba(10,17,64,.22);
+}
+body.es-portrait-layout.es-tool-mode .site-footer.shell{
+  padding-bottom:calc(56px + env(safe-area-inset-bottom))!important;
+}
+@media(prefers-reduced-motion:reduce){
+  body.es-portrait-layout.es-tool-mode .es-tool-rail-toggle{transition:none}
+}
+`;
+
 // Former assets/js/lib/engineering.js (bundled, not reimplemented)
 /** Epsilon Soft calculations. Core equations ported with test cases from ES TOOLKIT V1.0 Go source (geometry.go/converter.go). */
 const MASS_SHAPES=[
@@ -2288,20 +2354,40 @@ function renderMobileRail(){
  const rail=document.getElementById('es-mobile-rail');if(!rail)return;
  const existing=document.getElementById('es-mobile-rail-scroll');const left=existing?.scrollLeft||0;
  const entries=mobileRailEntries();const folder=entries.find(item=>item.id===sidebarOpenSection&&item.expand);
- rail.innerHTML=`<div class="es-mobile-rail-drawer" id="es-mobile-rail-drawer" ${folder?'':'hidden'}>
-  ${folder?`<div class="es-mobile-rail-drawer-head"><span>${icon(folder.iconName,18)} ${escapeHTML(folder.label)}</span><button type="button" class="es-mobile-rail-drawer-close" data-mobile-folder-close aria-label="${esLanguage==='en'?'Close':'Đóng'}">${icon('close',18)}</button></div>
-   <div class="es-mobile-rail-drawer-grid">${sidebarChildrenHtml(folder.id)}</div>`:''}
- </div>
- <div class="es-mobile-rail-main">
-  <div class="es-mobile-rail-scroll" id="es-mobile-rail-scroll" role="navigation" tabindex="0"
-   aria-label="${esLanguage==='en'?'Swipe categories horizontally':'Vuốt ngang để xem các danh mục'}">
-   ${entries.map(mobileRailFolderHtml).join('')}
-  </div>
- </div>`;
+ const railOpen=document.body.classList.contains('es-tool-rail-open');
+ rail.innerHTML=`<button type="button" class="es-tool-rail-toggle" id="es-tool-rail-toggle"
+    data-tool-rail-toggle aria-expanded="${railOpen}" aria-controls="es-tool-rail-panel"
+    aria-label="${railOpen?(esLanguage==='en'?'Collapse the tool categories':'Thu gọn danh mục công cụ'):(esLanguage==='en'?'Expand the tool categories':'Mở danh mục công cụ')}">
+    ${icon('chevron-down',24)}
+  </button>
+  <div class="es-tool-rail-panel" id="es-tool-rail-panel">
+   <div class="es-mobile-rail-drawer" id="es-mobile-rail-drawer" ${folder?'':'hidden'}>
+    ${folder?`<div class="es-mobile-rail-drawer-head"><span>${icon(folder.iconName,18)} ${escapeHTML(folder.label)}</span><button type="button" class="es-mobile-rail-drawer-close" data-mobile-folder-close aria-label="${esLanguage==='en'?'Close':'Đóng'}">${icon('close',18)}</button></div>
+     <div class="es-mobile-rail-drawer-grid">${sidebarChildrenHtml(folder.id)}</div>`:''}
+   </div>
+   <div class="es-mobile-rail-main">
+    <div class="es-mobile-rail-scroll" id="es-mobile-rail-scroll" role="navigation" tabindex="0"
+     aria-label="${esLanguage==='en'?'Swipe categories horizontally':'Vuốt ngang để xem các danh mục'}">
+     ${entries.map(mobileRailFolderHtml).join('')}
+    </div>
+   </div>
+  </div>`;
  rail.querySelector('#es-mobile-rail-scroll').scrollLeft=left;
  esTranslateRegion(rail);
 }
 
+function setToolRailOpen(open){
+ const wasOpen=document.body.classList.contains('es-tool-rail-open');
+ const enable=Boolean(open&&document.body.classList.contains('es-portrait-layout')&&document.body.classList.contains('es-tool-mode'));
+ document.body.classList.toggle('es-tool-rail-open',enable);
+ if(!enable&&wasOpen&&sidebarOpenSection!==null){sidebarOpenSection=null;renderSidebar();return;}
+ const toggle=document.getElementById('es-tool-rail-toggle');
+ if(toggle){
+  toggle.setAttribute('aria-expanded',String(enable));
+  toggle.setAttribute('aria-label',enable?(esLanguage==='en'?'Collapse the tool categories':'Thu gọn danh mục công cụ'):(esLanguage==='en'?'Expand the tool categories':'Mở danh mục công cụ'));
+  toggle.innerHTML=icon('chevron-down',24);
+ }
+}
 function renderSidebar() {
  const nav=document.getElementById('es-side-nav');
  if(!nav)return;
@@ -2335,6 +2421,11 @@ function buildSidebarShell() {
  mobileRail.id='es-mobile-rail';
  mobileRail.setAttribute('aria-label','Danh mục công cụ trên điện thoại');
  wrap.append(sidebar,mobileRail,main);
+ const toolRailBackdrop=document.createElement('div');
+ toolRailBackdrop.className='es-tool-rail-backdrop';
+ toolRailBackdrop.id='es-tool-rail-backdrop';
+ toolRailBackdrop.setAttribute('aria-hidden','true');
+ document.body.append(toolRailBackdrop);
  main.classList.remove('shell');
  main.classList.add('es-main-pane');
  document.body.classList.add('es-has-sidebar');
@@ -2728,6 +2819,7 @@ async function navigate(){
  const route=location.hash||'#/home';const token=++currentRoute;
  if(currentModuleCleanup){try{currentModuleCleanup();}catch(err){console.warn('Module cleanup:',err);}currentModuleCleanup=null;}
  main.replaceChildren();
+ setToolRailOpen(false);
  const isTool=route.startsWith('#/tool/');
  document.body.classList.toggle('es-tool-mode',isTool);
  document.body.classList.toggle('es-catalog-mode',!isTool);
@@ -2784,6 +2876,7 @@ function esUpdatePortraitLayout(){
  const previous=document.body.classList.contains('es-portrait-layout');
  document.body.classList.toggle('es-portrait-layout',portrait);
  if(previous!==portrait){
+  setToolRailOpen(false);
   closeHeaderMyTools();
   sidebarOpenSection=null;
   syncMobileInformationOrder();
@@ -2803,6 +2896,14 @@ document.addEventListener('keydown',event=>{
  }
 });
 document.addEventListener('click',event=>{
+ if(event.target.closest('[data-tool-rail-toggle]')){
+  event.preventDefault();
+  setToolRailOpen(!document.body.classList.contains('es-tool-rail-open'));
+  return;
+ }
+ if(event.target.closest('#es-tool-rail-backdrop')){
+  event.preventDefault();setToolRailOpen(false);return;
+ }
  const headerToggle=event.target.closest('[data-header-mytools-toggle]');
  if(headerToggle){
   event.preventDefault();
@@ -2869,6 +2970,7 @@ document.addEventListener('input',event=>{
 });
 document.addEventListener('keydown',event=>{
  if(event.key==='Escape'){
+  if(document.body.classList.contains('es-tool-rail-open')){event.preventDefault();setToolRailOpen(false);document.getElementById('es-tool-rail-toggle')?.focus({preventScroll:true});return;}
   closeHeaderMyTools(true);esCloseHeroDialog();closeAppDialog();closeMobileSidebar();closeMainMenu();return;
  }
  const heroLayer=document.getElementById('es-hero-dialog-layer');
