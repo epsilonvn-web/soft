@@ -2,7 +2,446 @@
   {
     "name": "Thép",
     "en": "Steel",
-    "density": 7850
+    "density": 7850,
+    "steelProfiles": {
+      "version": 1,
+      "unit": "kg/m",
+      "notice": "Đơn trọng danh nghĩa để lập phương án cắt; tùy tiêu chuẩn, bán kính góc, nhà sản xuất và lô hàng có thể khác nhau. Kiểm tra chứng chỉ/barem vật tư trước khi sử dụng chính thức.",
+      "profiles": [
+        {
+          "code": "H100",
+          "family": "H",
+          "dimensions": "100×100×6×8",
+          "kgPerM": 17.2,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H125",
+          "family": "H",
+          "dimensions": "125×125×6.5×9",
+          "kgPerM": 23.8,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H150x75",
+          "family": "H",
+          "dimensions": "150×75×5×7",
+          "kgPerM": 14.0,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H148x100",
+          "family": "H",
+          "dimensions": "148×100×6×9",
+          "kgPerM": 21.1,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H150",
+          "family": "H",
+          "dimensions": "150×150×7×10",
+          "kgPerM": 31.5,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H175",
+          "family": "H",
+          "dimensions": "175×175×7.5×11",
+          "kgPerM": 40.4,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://hungantic.com/product-category/san-pham-thep/thep-hinh/"
+        },
+        {
+          "code": "H198x99",
+          "family": "H",
+          "dimensions": "198×99×4.5×7",
+          "kgPerM": 18.2,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H200x100",
+          "family": "H",
+          "dimensions": "200×100×5.5×8",
+          "kgPerM": 21.3,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H200",
+          "family": "H",
+          "dimensions": "200×200×8×12",
+          "kgPerM": 49.9,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H250",
+          "family": "H",
+          "dimensions": "250×250×9×14",
+          "kgPerM": 72.4,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://www.steelcal.co.kr/steel/weightTable?g=section&i=h-beam"
+        },
+        {
+          "code": "H300",
+          "family": "H",
+          "dimensions": "300×300×10×15",
+          "kgPerM": 94.0,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://hungantic.com/product-category/san-pham-thep/thep-hinh/"
+        },
+        {
+          "code": "H350",
+          "family": "H",
+          "dimensions": "350×350×12×19",
+          "kgPerM": 137.0,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://hungantic.com/product-category/san-pham-thep/thep-hinh/"
+        },
+        {
+          "code": "H400",
+          "family": "H",
+          "dimensions": "400×400×13×21",
+          "kgPerM": 172.0,
+          "standard": "Barem H cán nóng JIS (thương mại, tham khảo)",
+          "source": "https://hungantic.com/product-category/san-pham-thep/thep-hinh/"
+        },
+        {
+          "code": "I100",
+          "family": "I",
+          "dimensions": "100×55×4.5×7.2",
+          "kgPerM": 9.46,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://theptranlong.vn/product-category/thep-hinh/i/"
+        },
+        {
+          "code": "I120",
+          "family": "I",
+          "dimensions": "120×64×4.8×7.3",
+          "kgPerM": 11.5,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://theptranlong.vn/product-category/thep-hinh/i/"
+        },
+        {
+          "code": "I140",
+          "family": "I",
+          "dimensions": "140×73×4.9×7.5",
+          "kgPerM": 13.7,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://theptranlong.vn/product-category/thep-hinh/i/"
+        },
+        {
+          "code": "I150",
+          "family": "I",
+          "dimensions": "150×75×5×7",
+          "kgPerM": 14.0,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "I160",
+          "family": "I",
+          "dimensions": "160×81×5×7.8",
+          "kgPerM": 15.9,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://theptranlong.vn/product-category/thep-hinh/i/"
+        },
+        {
+          "code": "I180",
+          "family": "I",
+          "dimensions": "180×90×5.1×8.1",
+          "kgPerM": 18.4,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://theptranlong.vn/product-category/thep-hinh/i/"
+        },
+        {
+          "code": "I198",
+          "family": "I",
+          "dimensions": "198×99×4.5×7",
+          "kgPerM": 18.2,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "I200",
+          "family": "I",
+          "dimensions": "200×100×5.5×8",
+          "kgPerM": 21.3,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "I250",
+          "family": "I",
+          "dimensions": "250×125×6×9",
+          "kgPerM": 29.6,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "I298",
+          "family": "I",
+          "dimensions": "298×149×5.5×8",
+          "kgPerM": 32.0,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "I300",
+          "family": "I",
+          "dimensions": "300×150×6.5×9",
+          "kgPerM": 36.7,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "I350",
+          "family": "I",
+          "dimensions": "350×175×7×11",
+          "kgPerM": 49.6,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "I400",
+          "family": "I",
+          "dimensions": "400×200×8×13",
+          "kgPerM": 66.0,
+          "standard": "Barem I cán nóng (thương mại, tham khảo)",
+          "source": "https://vinasteel.vn/shops/thep-hinh-i"
+        },
+        {
+          "code": "UPN50",
+          "family": "UPN",
+          "dimensions": "50×38×5×7",
+          "kgPerM": 5.6,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN65",
+          "family": "UPN",
+          "dimensions": "65×42×5.5×7.5",
+          "kgPerM": 7.1,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN80",
+          "family": "UPN",
+          "dimensions": "80×45×6×8",
+          "kgPerM": 8.6,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN100",
+          "family": "UPN",
+          "dimensions": "100×50×6×8.5",
+          "kgPerM": 10.6,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN120",
+          "family": "UPN",
+          "dimensions": "120×55×7×9",
+          "kgPerM": 13.3,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN140",
+          "family": "UPN",
+          "dimensions": "140×60×7×10",
+          "kgPerM": 16.0,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN160",
+          "family": "UPN",
+          "dimensions": "160×65×7.5×10.5",
+          "kgPerM": 18.8,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN180",
+          "family": "UPN",
+          "dimensions": "180×70×8×11",
+          "kgPerM": 22.0,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN200",
+          "family": "UPN",
+          "dimensions": "200×75×8.5×11.5",
+          "kgPerM": 25.3,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN220",
+          "family": "UPN",
+          "dimensions": "220×80×9×12.5",
+          "kgPerM": 29.4,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN240",
+          "family": "UPN",
+          "dimensions": "240×85×9.5×13",
+          "kgPerM": 33.2,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN260",
+          "family": "UPN",
+          "dimensions": "260×90×10×14",
+          "kgPerM": 37.9,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN280",
+          "family": "UPN",
+          "dimensions": "280×95×10×15",
+          "kgPerM": 41.8,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "UPN300",
+          "family": "UPN",
+          "dimensions": "300×100×10×16",
+          "kgPerM": 46.2,
+          "standard": "EN 10365 – UPN (tham khảo)",
+          "source": "https://crosssections.app/en/upn"
+        },
+        {
+          "code": "V40x40x3",
+          "family": "V",
+          "dimensions": "40×40×3",
+          "kgPerM": 1.84,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V40x40x4",
+          "family": "V",
+          "dimensions": "40×40×4",
+          "kgPerM": 2.42,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V50x50x4",
+          "family": "V",
+          "dimensions": "50×50×4",
+          "kgPerM": 3.06,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V50x50x5",
+          "family": "V",
+          "dimensions": "50×50×5",
+          "kgPerM": 3.77,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V60x60x5",
+          "family": "V",
+          "dimensions": "60×60×5",
+          "kgPerM": 4.57,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V60x60x6",
+          "family": "V",
+          "dimensions": "60×60×6",
+          "kgPerM": 5.42,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V65x65x6",
+          "family": "V",
+          "dimensions": "65×65×6",
+          "kgPerM": 5.91,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V70x70x6",
+          "family": "V",
+          "dimensions": "70×70×6",
+          "kgPerM": 6.38,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V70x70x7",
+          "family": "V",
+          "dimensions": "70×70×7",
+          "kgPerM": 7.38,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V75x75x6",
+          "family": "V",
+          "dimensions": "75×75×6",
+          "kgPerM": 6.85,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V75x75x8",
+          "family": "V",
+          "dimensions": "75×75×8",
+          "kgPerM": 8.99,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V80x80x8",
+          "family": "V",
+          "dimensions": "80×80×8",
+          "kgPerM": 9.63,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V90x90x9",
+          "family": "V",
+          "dimensions": "90×90×9",
+          "kgPerM": 12.2,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        },
+        {
+          "code": "V100x100x10",
+          "family": "V",
+          "dimensions": "100×100×10",
+          "kgPerM": 15.0,
+          "standard": "TCVN 7571 (thép góc cạnh đều, tham khảo)",
+          "source": "https://www.vinakyoeisteel.com.vn/thep-goc-canh-deu-53"
+        }
+      ]
+    }
   },
   {
     "name": "Inox",
