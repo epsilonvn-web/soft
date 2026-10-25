@@ -27,6 +27,8 @@ const KEYS_SIMPLE = [
 
 // Keep the same state while navigating to other tools, as the native Portable does.
 // This is intentionally NOT persisted to localStorage or sent to a server.
+const HISTORY_LIMIT = 5; // Keep the most recent five successful calculations only.
+
 const session = {
   science: true, deg: true, ans: 0, memory: 0, hasMemory: false,
   expr: '', result: '0', error: '', history: []
@@ -501,7 +503,9 @@ export function mount(root, ctx) {
       session.ans = num;
       session.result = out; session.error = '';
       session.history.push({expr, result:out});
-      if (session.history.length > 30) session.history = session.history.slice(-30);
+      if (session.history.length > HISTORY_LIMIT) {
+         session.history.splice(0, session.history.length - HISTORY_LIMIT);
+       }
       renderHistory(); renderResult();
       setNotice('Đã tính xong');
     } catch (e) {
