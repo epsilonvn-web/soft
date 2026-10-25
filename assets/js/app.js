@@ -1616,8 +1616,8 @@ body.es-portrait-layout.es-tool-mode .es-tool-rail-toggle{
   width:72px;height:39px;min-height:39px;
   margin:0 auto 7px;padding:4px;
   border:1px solid #a99afa;border-radius:13px;
-  background:linear-gradient(125deg,#753be5,#4b24d1);
-  color:#fff;box-shadow:0 4px 14px rgba(66,34,160,.22);
+  background:linear-gradient(125deg,rgba(117,59,229,.50),rgba(75,36,209,.50));
+  color:#fff;box-shadow:0 4px 14px rgba(66,34,160,.11);
   cursor:pointer;touch-action:manipulation;
 }
 body.es-portrait-layout.es-tool-mode .es-tool-rail-toggle .svg-icon{width:24px;height:24px}
