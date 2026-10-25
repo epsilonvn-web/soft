@@ -140,7 +140,7 @@ body.es-catalog-mode .site-header .mobile-menu{display:none!important}
 
 
 // Approved responsive and bilingual controls, visual-only styles.
-themeSheet.textContent += '\n/* Approved 2026-10-24 improvements: responsive width, viewport-fit, text-brand Hub and language picker. */\n@media(min-width:1081px){\n .shell,.header-inner.shell,.site-footer.shell{max-width:1880px;width:calc(100% - 36px)}\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell{max-width:1880px;width:calc(100% - 36px);grid-template-columns:clamp(280px,18vw,304px) minmax(0,1fr);gap:14px}\n .es-app-layout.es-is-collapsed,body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n .es-sidebar{height:calc(100dvh - 105px);min-height:0;max-height:none;top:12px}\n .es-dashboard-layout{height:calc(100dvh - 102px);min-height:515px;max-height:none;grid-template-rows:clamp(202px,27vh,258px) minmax(0,1fr) clamp(122px,16.8vh,151px);gap:10px}\n .es-dashboard-layout .es-directory{min-height:0;overflow:hidden}\n .es-dashboard-layout .es-directory-grid{min-height:0;overflow-y:auto;overscroll-behavior:contain}\n .es-dashboard-layout .hero{min-width:0}\n .es-dashboard-layout .hero-cta{min-width:0}\n}\n@media(min-width:1081px) and (max-width:1180px){\n .es-dashboard-layout .hero{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}\n .es-dashboard-layout .hero-cta{display:none}\n .es-dashboard-layout .es-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}\n .es-dashboard-layout .portable-strip{grid-template-columns:minmax(155px,.95fr) minmax(210px,1.25fr) minmax(154px,.75fr)}\n .es-dashboard-layout .portable-laptop{display:none}\n}\n@media(min-width:1081px) and (max-height:790px){\n .es-dashboard-layout{grid-template-rows:clamp(193px,26.5vh,217px) minmax(0,1fr) clamp(118px,16.3vh,132px);gap:9px}\n}\n@media(max-width:1080px){\n .shell,.header-inner.shell,.site-footer.shell{max-width:none;width:calc(100% - 28px)}\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell,body.es-catalog-mode .es-app-layout.es-is-collapsed{display:block;width:calc(100% - 28px);max-width:none}\n .es-sidebar{height:100dvh;min-height:0;max-height:none;top:0}\n .es-dashboard-layout{height:auto;min-height:0}\n .es-language-picker{order:9;margin-left:auto}\n .site-header .mobile-menu{order:10;margin-left:0}\n}\n.es-language-picker{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid #ffffff69;background:#250c9a4d;border-radius:11px;flex-shrink:0}\n.es-language-btn{border:0;border-radius:8px;min-width:38px;min-height:34px;padding:4px 7px;background:transparent;color:#fff;font-size:15px;font-weight:850;line-height:1.2;letter-spacing:.2px}\n.es-language-btn[aria-pressed="true"]{background:#fff;color:#4d21c7;box-shadow:0 2px 7px #2907603a}\n.es-language-btn:hover:not([aria-pressed="true"]){background:#ffffff28}\n.es-language-btn:focus-visible{outline:3px solid #ffdc08;outline-offset:2px}\n.es-hub-intro .es-hub-logo{height:61px;width:61px;flex:0 0 61px;border-radius:13px;background:transparent;overflow:hidden;box-shadow:none;padding:0}\n.es-hub-intro .es-hub-logo img{width:100%;height:100%;object-fit:contain}\n.es-hub-intro h1.es-hub-wordmark{display:flex;align-items:baseline;gap:0;margin:0;color:#071faf;font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:clamp(30px,2.9vw,43px);font-weight:950;letter-spacing:-1.7px;line-height:1.05;white-space:nowrap}\n.es-hub-intro h1.es-hub-wordmark strong{color:#ffd300;font:inherit;letter-spacing:-1.5px}\n .es-restored-landing .hero-subtitle{white-space:normal}\n .es-restored-landing .hero-copy{min-width:0}\n@media(max-width:390px){.brand-wordmark{font-size:20px}.brand-mark{width:38px;height:38px}.header-inner{gap:4px}.es-language-btn{min-width:32px;padding:4px}}\n';
+themeSheet.textContent += '\n/* Approved 2026-10-24 improvements: responsive width, viewport-fit, text-brand Hub and language picker. */\n@media(min-width:1081px){\n .shell,.header-inner.shell,.site-footer.shell{max-width:1880px;width:calc(100% - 36px)}\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell{max-width:1880px;width:calc(100% - 36px);grid-template-columns:clamp(280px,18vw,304px) minmax(0,1fr);gap:14px}\n .es-app-layout.es-is-collapsed,body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n .es-sidebar{height:calc(100dvh - 105px);min-height:0;max-height:none;top:12px}\n .es-dashboard-layout{height:calc(100dvh - 102px);min-height:515px;max-height:none;grid-template-rows:clamp(184px,22.5vh,214px) minmax(0,1fr) clamp(122px,16.8vh,151px);gap:10px}\n .es-dashboard-layout .es-directory{min-height:0;overflow:hidden}\n .es-dashboard-layout .es-directory-grid{min-height:0;overflow-y:auto;overscroll-behavior:contain}\n .es-dashboard-layout .hero{min-width:0}\n .es-dashboard-layout .hero-cta{min-width:0}\n}\n@media(min-width:1081px) and (max-width:1180px){\n .es-dashboard-layout .hero{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}\n .es-dashboard-layout .hero-cta{display:none}\n .es-dashboard-layout .es-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}\n .es-dashboard-layout .portable-strip{grid-template-columns:minmax(155px,.95fr) minmax(210px,1.25fr) minmax(154px,.75fr)}\n .es-dashboard-layout .portable-laptop{display:none}\n}\n@media(min-width:1081px) and (max-height:790px){\n .es-dashboard-layout{grid-template-rows:clamp(176px,22vh,198px) minmax(0,1fr) clamp(118px,16.3vh,132px);gap:9px}\n}\n@media(max-width:1080px){\n .shell,.header-inner.shell,.site-footer.shell{max-width:none;width:calc(100% - 28px)}\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell,body.es-catalog-mode .es-app-layout.es-is-collapsed{display:block;width:calc(100% - 28px);max-width:none}\n .es-sidebar{height:100dvh;min-height:0;max-height:none;top:0}\n .es-dashboard-layout{height:auto;min-height:0}\n .es-language-picker{order:9;margin-left:auto}\n .site-header .mobile-menu{order:10;margin-left:0}\n}\n.es-language-picker{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid #ffffff69;background:#250c9a4d;border-radius:11px;flex-shrink:0}\n.es-language-btn{border:0;border-radius:8px;min-width:38px;min-height:34px;padding:4px 7px;background:transparent;color:#fff;font-size:15px;font-weight:850;line-height:1.2;letter-spacing:.2px}\n.es-language-btn[aria-pressed="true"]{background:#fff;color:#4d21c7;box-shadow:0 2px 7px #2907603a}\n.es-language-btn:hover:not([aria-pressed="true"]){background:#ffffff28}\n.es-language-btn:focus-visible{outline:3px solid #ffdc08;outline-offset:2px}\n.es-hub-intro .es-hub-logo{height:61px;width:61px;flex:0 0 61px;border-radius:13px;background:transparent;overflow:hidden;box-shadow:none;padding:0}\n.es-hub-intro .es-hub-logo img{width:100%;height:100%;object-fit:contain}\n.es-hub-intro h1.es-hub-wordmark{display:flex;align-items:baseline;gap:0;margin:0;color:#071faf;font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:clamp(30px,2.9vw,43px);font-weight:950;letter-spacing:-1.7px;line-height:1.05;white-space:nowrap}\n.es-hub-intro h1.es-hub-wordmark strong{color:#ffd300;font:inherit;letter-spacing:-1.5px}\n .es-restored-landing .hero-subtitle{white-space:normal}\n .es-restored-landing .hero-copy{min-width:0}\n@media(max-width:390px){.brand-wordmark{font-size:20px}.brand-mark{width:38px;height:38px}.header-inner{gap:4px}.es-language-btn{min-width:32px;padding:4px}}\n';
 
 // Brand banner shells: artworks are text-free; all copy, buttons and badges are app-rendered.
 // The approved illustration is integrated into a single seamless background, rather than three disconnected panels.
@@ -148,7 +148,7 @@ themeSheet.textContent += `
 /* Epsilon Soft banner shell v2: decorative image assets ONLY, editable app text. */
 .es-dashboard-layout .hero,.es-restored-landing .hero{
  background-color:#eff6ff;
- background-image:url('./assets/images/banner-main-visual.webp');
+ background-image:url('./assets/images/main-banner.png');
  background-repeat:no-repeat;
  background-position:center center;
  background-size:cover;
@@ -197,48 +197,52 @@ themeSheet.textContent += `
 .es-hub-intro .es-hub-logo img{object-fit:contain}
 /* Keep both text and the blue action card inside the approved banner at every laptop height. */
 @media(min-width:1081px){
- .es-dashboard-layout{grid-template-rows:clamp(231px,29.5vh,267px) minmax(0,1fr) clamp(124px,16.8vh,151px)}
- .es-dashboard-layout .hero-subtitle{font-size:16px;letter-spacing:-.22px;line-height:1.25}
- .es-dashboard-layout .hero-cta h2{font-size:19px}
- .es-restored-landing .hero{height:clamp(231px,29.5vh,267px);min-height:0;grid-template-columns:minmax(0,1.29fr) minmax(0,.98fr) minmax(260px,.9fr)}
- .es-restored-landing .hero-copy{padding:14px 8px 12px 22px;display:flex;flex-direction:column;justify-content:center}
+ .es-dashboard-layout{grid-template-rows:clamp(190px,23.4vh,214px) minmax(0,1fr) clamp(124px,16.8vh,151px)}
+ .es-dashboard-layout .hero-subtitle{font-size:15px;letter-spacing:-.16px;line-height:1.2}
+ .es-dashboard-layout .hero-description{font-size:15px;line-height:1.2}
+ .es-dashboard-layout .hero-perks{margin-top:6px;gap:5px 10px;font-size:15px}
+ .es-dashboard-layout .hero-cta h2{font-size:18px}
+ .es-restored-landing .hero{height:clamp(190px,23.4vh,214px);min-height:0;grid-template-columns:minmax(0,1.24fr) minmax(0,.94fr) minmax(245px,.82fr)}
+ .es-restored-landing .hero-copy{padding:11px 8px 10px 20px;display:flex;flex-direction:column;justify-content:center}
  .es-restored-landing .hero .hero-art{min-height:0;height:100%}
- .es-restored-landing .hero .hero-cta{display:flex;grid-column:auto;padding:15px}
- .es-restored-landing .hero .hero-title{font-size:clamp(36px,2.95vw,47px)}
- .es-restored-landing .hero .hero-subtitle{font-size:16px;line-height:1.22;margin:5px 0}
- .es-restored-landing .hero .hero-description{font-size:16px;line-height:1.25}
- .es-restored-landing .hero .hero-perks{margin-top:8px;gap:6px 11px;font-size:16px}
- .es-restored-landing .hero .check-dot{width:20px;height:20px;flex-basis:20px}
- .es-restored-landing .hero .hero-cta h2{font-size:19px}
- .es-restored-landing .hero .hero-cta p{font-size:16px;line-height:1.26;margin:3px 0}
- .es-restored-landing .hero .hero-cta .button{min-height:40px;margin-top:5px;padding:8px 10px}
+ .es-restored-landing .hero .hero-cta{display:flex;grid-column:auto;padding:12px 13px}
+ .es-restored-landing .hero .hero-title{font-size:clamp(32px,2.55vw,42px)}
+ .es-restored-landing .hero .hero-subtitle{font-size:15px;line-height:1.18;margin:4px 0}
+ .es-restored-landing .hero .hero-description{font-size:15px;line-height:1.18}
+ .es-restored-landing .hero .hero-perks{margin-top:6px;gap:5px 10px;font-size:15px}
+ .es-restored-landing .hero .check-dot{width:19px;height:19px;flex-basis:19px}
+ .es-restored-landing .hero .hero-cta h2{font-size:18px}
+ .es-restored-landing .hero .hero-cta p{font-size:15px;line-height:1.22;margin:2px 0}
+ .es-restored-landing .hero .hero-cta .button{min-height:37px;margin-top:4px;padding:7px 10px}
 }
 @media(min-width:1081px) and (max-height:790px){
  .es-restored-landing .hero-description{display:none}
- .es-restored-landing .hero .hero-copy{padding-block:9px}
- .es-restored-landing .hero .hero-perks{margin-top:6px}
- .es-restored-landing .hero .hero-cta{padding:10px 12px}
- .es-restored-landing .hero .hero-cta h2{font-size:18px;margin-bottom:4px}
- .es-restored-landing .hero .hero-cta p{margin:2px 0}
- .es-restored-landing .hero .hero-cta .button{min-height:37px;padding:7px}
+ .es-restored-landing .hero .hero-copy{padding-block:7px}
+ .es-restored-landing .hero .hero-perks{margin-top:4px}
+ .es-restored-landing .hero .hero-cta{padding:8px 10px}
+ .es-restored-landing .hero .hero-cta h2{font-size:17px;margin-bottom:3px}
+ .es-restored-landing .hero .hero-cta p{margin:1px 0}
+ .es-restored-landing .hero .hero-cta .button{min-height:35px;padding:6px 7px}
 }
 @media(min-width:1081px) and (max-width:1380px){
- .es-restored-landing .hero{grid-template-columns:minmax(0,1.29fr) minmax(0,.98fr) minmax(275px,.9fr)}
+ .es-restored-landing .hero{grid-template-columns:minmax(0,1.24fr) minmax(0,.94fr) minmax(255px,.82fr)}
 }
 /* On narrower viewports the illustration stays decorative and copy never overlaps it. */
 @media(min-width:1081px) and (max-width:1380px){
- .es-dashboard-layout .hero .hero-copy{padding-left:16px;padding-right:2px}
- .es-dashboard-layout .hero .hero-title{font-size:clamp(34px,2.9vw,41px)}
- .es-dashboard-layout .hero .hero-subtitle{font-size:16px}
- .es-dashboard-layout .hero .hero-description{font-size:16px;line-height:1.19}
- .es-dashboard-layout .hero .hero-perks{gap:5px 9px}
+ .es-dashboard-layout .hero .hero-copy{padding-left:16px;padding-right:2px;padding-top:9px;padding-bottom:9px}
+ .es-dashboard-layout .hero .hero-title{font-size:clamp(31px,2.45vw,38px)}
+ .es-dashboard-layout .hero .hero-subtitle{font-size:15px}
+ .es-dashboard-layout .hero .hero-description{font-size:15px;line-height:1.16}
+ .es-dashboard-layout .hero .hero-perks{gap:4px 8px}
 }
 @media(max-width:1080px){
  .es-dashboard-layout .hero,.es-restored-landing .hero{background-position:52% center}
 }
 @media(max-width:690px){
  .es-dashboard-layout .hero,.es-restored-landing .hero{
-  background-image:linear-gradient(125deg,#f1f8ff 0%,#e8ecff 100%);
+  background-image:url('./assets/images/main-banner.png');
+  background-position:66% center;
+  background-size:cover;
  }
 }
 `;
@@ -391,13 +395,13 @@ themeSheet.textContent += `
   display:block;
   box-sizing:border-box;
   width:auto;
-  height:calc(100% + 32px);
+  height:calc(100% + 8px);
   min-height:0;
   max-height:none;
   min-width:0;
   max-width:none;
-  right:clamp(65px,17.5%,275px);
-  bottom:0;
+  right:clamp(58px,16.2%,255px);
+  bottom:-6px;
   opacity:1;
   object-fit:contain;
   mix-blend-mode:normal;
@@ -416,9 +420,9 @@ themeSheet.textContent += `
   .es-restored-landing .portable-strip { height:120px; min-height:0; padding:0; }
   .es-dashboard-layout .portable-strip > img.portable-laptop,
   .es-restored-landing .portable-strip > img.portable-laptop {
-    height:calc(100% + 22px);
+    height:calc(100% + 10px);
     right:-2px;
-    bottom:0;
+    bottom:-4px;
     transform:rotate(2.2deg);
   }
 }
@@ -647,7 +651,7 @@ themeSheet.textContent += `
 // Desktop sidebar, tool modules, data and footer remain unchanged.
 themeSheet.textContent += `
 .es-mobile-rail{display:none}
-@media(max-width:720px){
+@media(orientation:portrait){
  .site-header .mobile-menu,body.es-catalog-mode .site-header .mobile-menu{display:none!important}
  .es-sidebar,body.es-catalog-mode .es-sidebar,.es-mobile-backdrop{display:none!important}
  .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell,
@@ -747,10 +751,89 @@ themeSheet.textContent += `
 @media(prefers-reduced-motion:reduce){.es-mobile-folder-expand .svg-icon{transition:none}}
 `;
 
+
+// Epsilon Hub: category -> JSON-driven products. No extra image assets.
+themeSheet.textContent += `
+.es-hub-intro .es-hub-group-icon{background:linear-gradient(140deg,#f1e6ff,#e7d8ff);color:#5d2bd2;border-radius:16px;width:64px;height:64px;flex:0 0 64px}
+.es-hub-intro #es-hub-group-heading{font-size:clamp(24px,3vw,32px);line-height:1.2;color:#18299c}
+.es-hub-families{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
+.es-hub-family-card{position:relative;display:flex;flex-direction:column;gap:16px;min-width:0;min-height:230px;padding:23px 25px;border-radius:20px;border:1px solid #d9def9;background:linear-gradient(125deg,#fff 18%,#f2f4ff 100%);box-shadow:0 9px 25px rgba(29,32,116,.055);color:#142994;overflow:hidden;transition:transform .16s,box-shadow .16s,border-color .16s}
+.es-hub-family-card:hover{border-color:#bcaaf9;box-shadow:0 14px 32px rgba(47,35,139,.12);transform:translateY(-2px)}
+.es-hub-family-card[data-family="edu"]{background:linear-gradient(135deg,#ffffff,#f5edff 90%)}
+.es-hub-family-card[data-family="lab"]{background:linear-gradient(135deg,#ffffff,#eaf4ff 90%)}
+.es-hub-family-main{display:flex;align-items:center;gap:14px;min-width:0}
+.es-hub-family-icon{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;border-radius:17px;background:#e9dcff;color:#6429d0}
+.es-hub-family-card[data-family="lab"] .es-hub-family-icon{background:#ddedff;color:#1760bc}
+.es-hub-family-icon svg{width:34px;height:34px}
+.es-hub-family-heading{min-width:0}
+.es-hub-family-heading h2{font-size:24px;font-weight:900;letter-spacing:-.6px;margin:0;line-height:1.18}
+.es-hub-family-count{display:inline-flex;margin-top:5px;font-size:13px;font-weight:800;color:#704ec0}
+.es-hub-family-card[data-family="lab"] .es-hub-family-count{color:#2b6dba}
+.es-hub-family-card>p{font-size:16px;line-height:1.5;color:#586995;margin:0;flex:1}
+.es-hub-family-action{display:flex;align-items:center;gap:9px;align-self:flex-start;border-radius:11px;background:#5b27d6;color:#fff;padding:10px 15px;min-height:43px;font-weight:800;font-size:15px}
+.es-hub-family-card[data-family="lab"] .es-hub-family-action{background:#1e5fc9}
+.es-hub-family-action svg{width:18px;height:18px}
+.es-hub-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;align-items:stretch}
+.es-hub-section-title{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:13px;color:#142d9b}
+.es-hub-section-title h2{font-size:21px;font-weight:900;line-height:1.2;margin:0}
+.es-hub-section-total{background:#eee8ff;border-radius:99px;color:#5a2bc4;font-weight:800;font-size:13px;padding:4px 10px}
+.es-hub-breadcrumb{display:flex;align-items:center;gap:8px;font-size:14px;color:#586c9d;font-weight:700;margin:0 0 13px}
+.es-hub-breadcrumb a{color:#562acc;text-decoration:underline;text-underline-offset:3px}
+.es-hub-breadcrumb svg{height:16px;width:16px}
+.es-hub-group-intro{margin-bottom:18px;color:#586c9d;font-size:16px;line-height:1.5}
+.es-hub-product-card{display:flex;flex-direction:column;min-width:0;min-height:210px;border:1px solid #dce5fb;border-radius:17px;background:linear-gradient(140deg,#fff,#faf8ff);padding:17px;box-shadow:0 6px 18px rgba(32,38,112,.045)}
+.es-hub-product-card[data-hub-tone="1"]{background:linear-gradient(140deg,#fff,#fff2f9);border-color:#f5d5e9}
+.es-hub-product-card[data-hub-tone="2"]{background:linear-gradient(140deg,#fff,#f3edff);border-color:#e4d7ff}
+.es-hub-product-card[data-hub-tone="3"]{background:linear-gradient(140deg,#fff,#ecf7ff);border-color:#d8e9ff}
+.es-hub-product-card[data-hub-tone="4"]{background:linear-gradient(140deg,#fff,#eafff4);border-color:#d4f2e2}
+.es-hub-product-card[data-hub-tone="5"]{background:linear-gradient(140deg,#fff,#fffae9);border-color:#f4e6c5}
+.es-hub-product-card[data-hub-tone="6"]{background:linear-gradient(140deg,#fff,#eef6ff);border-color:#d9e9fa}
+.es-hub-product-top{display:flex;align-items:center;gap:10px;min-width:0}
+.es-hub-product-symbol{width:45px;height:45px;flex:0 0 45px;display:grid;place-items:center;background:#fff;border:1px solid #ffffffb8;border-radius:13px;color:#5b2dd1;overflow:hidden}
+.es-hub-product-symbol svg{width:25px;height:25px}
+.es-hub-product-symbol img{width:100%;height:100%;object-fit:contain}
+.es-hub-product-top h3{font-size:19px;font-weight:900;margin:0;line-height:1.23;overflow-wrap:anywhere;color:#162d91}
+.es-hub-product-card p{font-size:15px;line-height:1.42;color:#50638a;margin:13px 0 16px;flex:1;overflow-wrap:anywhere}
+.es-hub-product-card .es-system-link{font-size:14px;min-height:44px;padding:10px 12px;border-radius:11px;margin-top:auto}
+.es-hub-product-card .es-system-pending{display:inline-flex;align-items:center;align-self:flex-start;margin-top:auto;padding:10px 0;color:#61718f;font-size:14px;font-weight:700}
+.es-hub-empty{grid-column:1/-1;border:1px dashed #d2d7f8;border-radius:16px;background:#f8faff;padding:26px 20px;color:#586b96;font-size:16px}
+@media(max-width:1100px){.es-hub-products{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){
+ .es-hub-families{grid-template-columns:1fr;gap:13px}
+ .es-hub-family-card{min-height:195px;padding:21px;border-radius:18px;gap:14px}
+ .es-hub-family-icon{height:65px;width:65px;flex-basis:65px}
+ .es-hub-family-heading h2{font-size:22px}
+ .es-hub-family-card>p{font-size:15.5px;line-height:1.45}
+ .es-hub-family-action{min-height:46px;padding:11px 17px;font-size:15px}
+ .es-hub-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ .es-hub-product-card{min-height:219px;padding:15px 13px;border-radius:17px}
+ .es-hub-product-top{align-items:flex-start;flex-direction:column;gap:8px}
+ .es-hub-product-symbol{height:48px;width:48px;flex-basis:48px}
+ .es-hub-product-top h3{font-size:18px}
+ .es-hub-product-card p{font-size:14px;margin:11px 0 16px}
+ .es-hub-product-card .es-system-link{font-size:14px;padding:10px;min-height:45px;align-self:stretch;justify-content:center;text-align:center}
+ .es-mobile-folder{flex-basis:98px;height:84px}
+ .es-mobile-rail-fixed{flex-basis:106px;min-width:106px}
+ .es-mobile-rail-fixed .es-mobile-folder{height:84px}
+ .es-mobile-folder-icon,.es-mobile-folder-icon img{height:35px;width:35px}
+ .es-mobile-folder-icon{flex-basis:35px}
+ .es-mobile-folder-label{font-size:13px;line-height:1.18}
+}
+@media(max-width:360px){
+ .es-hub-products{grid-template-columns:1fr}
+ .es-hub-product-top{flex-direction:row;align-items:center}
+ .es-hub-product-card{min-height:160px}
+ .es-mobile-rail-fixed{flex-basis:99px;min-width:99px}
+ .es-mobile-folder,.es-mobile-rail-fixed .es-mobile-folder{height:80px}
+ .es-mobile-folder{flex-basis:94px}
+}
+@media(prefers-reduced-motion:reduce){.es-hub-family-card{transition:none}}
+`;
+
 // Mobile information priority (2026-10-24): show usable tools/content before promotional copy.
 // The hero text/actions remain real DOM controls below the content. Desktop is unchanged.
 themeSheet.textContent += `
-@media(max-width:720px){
+@media(orientation:portrait){
   .es-dashboard-layout,.es-restored-landing{
     display:flex!important;flex-direction:column!important;align-items:stretch;
     min-height:0!important;height:auto!important;gap:13px!important;
@@ -849,6 +932,457 @@ themeSheet.textContent += `
 }
 `;
 
+
+// 2026-10-24: Remove the crowded blue promo block from the banner.
+// The two action buttons are real controls in a light strip beneath page content.
+// Desktop sidebar no longer duplicates Header > Portable / Help.
+themeSheet.textContent += `
+/* Wider two-part hero: headline on the left, artwork to the right, no blue CTA panel. */
+@media(min-width:721px){
+ .es-dashboard-layout>.hero,.es-restored-landing>.hero{
+  display:grid!important;
+  grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr)!important;
+  position:relative;overflow:hidden;
+ }
+ .es-dashboard-layout>.hero::before,.es-restored-landing>.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(90deg,rgba(241,247,255,.98) 0%,rgba(241,247,255,.91) 22%,rgba(240,246,255,.42) 45%,transparent 69%);
+ }
+ .es-dashboard-layout>.hero .hero-copy,.es-restored-landing>.hero .hero-copy{z-index:2;min-width:0}
+ .es-dashboard-layout>.hero .hero-art,.es-restored-landing>.hero .hero-art{display:block!important;min-width:0}
+}
+/* Very long marketing copy no longer shares the banner with app actions. */
+.es-bottom-actions{
+ min-width:0;display:flex;justify-content:center;align-items:center;gap:12px;
+ padding:7px 12px;border:1px solid #dde5fb;border-radius:15px;
+ background:linear-gradient(110deg,#f8faff,#eef3ff);
+ box-shadow:0 3px 12px rgba(38,53,126,.045);
+}
+.es-bottom-actions .button{
+ margin:0!important;min-width:0;min-height:41px;
+ border-radius:999px;font-size:15px;font-weight:800;
+ padding:8px 20px;gap:9px;line-height:1.2;white-space:nowrap;
+ box-shadow:none;flex:0 1 228px;
+}
+.es-bottom-actions .button svg{width:19px;height:19px;flex:0 0 19px}
+.es-bottom-actions .es-action-install{
+ background:#ffdb0a;color:#071e8e;border:1px solid #ffe679;
+}
+.es-bottom-actions .es-action-about{
+ background:white;color:#1537b2;border:1px solid #cad8ff;flex-basis:258px;
+}
+.es-bottom-actions .es-action-about:hover{background:#f7f8ff}
+.es-bottom-actions .button:focus-visible{outline:3px solid #ffce13;outline-offset:2px}
+@media(min-width:1081px){
+ .es-dashboard-layout{
+  grid-template-rows:clamp(189px,25.5vh,239px) minmax(0,1fr) 58px clamp(112px,15.5vh,137px)!important;
+ }
+ .es-dashboard-layout>.es-bottom-actions{height:58px;min-height:0}
+}
+@media(min-width:721px) and (max-width:1080px){
+ .es-dashboard-layout>.es-bottom-actions{flex:0 0 auto;min-height:56px}
+}
+.es-restored-landing>.es-bottom-actions{margin:15px 0 0}
+@media(max-width:720px){
+ .es-dashboard-layout>.es-bottom-actions,.es-restored-landing>.es-bottom-actions{
+  display:grid;grid-template-columns:minmax(0,1fr);gap:9px;
+  margin:0!important;padding:12px;border-radius:15px;
+  background:linear-gradient(120deg,#f8faff,#f0f4ff);
+ }
+ .es-dashboard-layout>.es-bottom-actions .button,.es-restored-landing>.es-bottom-actions .button{
+  width:100%;min-height:45px;font-size:15px;max-width:none;flex:none;
+ }
+ .es-dashboard-layout>.hero,.es-restored-landing>.hero{border-radius:16px!important}
+}
+`;
+
+// 2026-10-24: laptop-first density. Show the whole catalog using the PAGE scrollbar.
+// The decorative banner follows the last card; the two global actions live inside site-footer.
+themeSheet.textContent += `
+/* No internal catalog scrolling: reveal every card before the footer art. */
+.es-dashboard-layout {
+ height:auto!important;min-height:0!important;max-height:none!important;
+}
+.es-dashboard-layout>.es-directory {
+ height:auto!important;min-height:0!important;max-height:none!important;
+ overflow:visible!important;flex:0 0 auto!important;
+}
+.es-dashboard-layout .es-directory-grid {
+ height:auto!important;min-height:0!important;max-height:none!important;
+ flex:0 0 auto!important;overflow:visible!important;overflow-y:visible!important;
+ overscroll-behavior-y:auto!important;scrollbar-gutter:auto!important;
+ scrollbar-width:none!important;padding-right:0!important;
+}
+.es-dashboard-layout .es-directory-grid::-webkit-scrollbar{display:none!important}
+@media(min-width:1081px){
+ .es-dashboard-layout {
+  display:grid!important;grid-template-rows:clamp(195px,26vh,251px) auto clamp(125px,10.5vw,150px)!important;
+  align-content:start!important;gap:12px!important;
+ }
+ .es-dashboard-layout>.hero{height:100%!important;min-height:0!important}
+ .es-dashboard-layout>.portable-strip{height:100%!important;min-height:0!important;align-self:stretch}
+}
+/* Footer is the last document region, after ALL cards and two-image footer artwork. */
+.site-footer.shell{position:relative;clear:both;margin-top:16px;padding-top:16px;padding-bottom:18px}
+.site-footer>.es-footer-actions {
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;
+ width:min(550px,100%);margin:10px 0 0 auto;padding:0;
+ border:0;border-radius:0;background:transparent;box-shadow:none;
+}
+.site-footer>.es-footer-actions .button {
+ width:100%;min-width:0;min-height:42px;max-width:none;flex:none;
+ padding:9px 13px;font-size:15px;border-radius:12px;
+ box-shadow:0 2px 6px rgba(24,39,106,.05);white-space:normal;
+}
+.site-footer>.es-footer-actions .es-action-install{background:#ffdb08;color:#091f8b;border:1px solid #ffe56e}
+.site-footer>.es-footer-actions .es-action-about{background:#fff;color:#173ab5;border:1px solid #cad8ff}
+.site-footer>.es-footer-actions .button:focus-visible{outline:3px solid #f5bf00;outline-offset:3px}
+.site-footer .footer-bottom{margin-top:13px}
+@media(max-width:760px){
+ .site-footer .footer-main{flex-wrap:wrap;row-gap:8px}
+ .site-footer>.es-footer-actions{margin-top:13px;width:100%}
+}
+@media(max-width:490px){
+ .site-footer>.es-footer-actions{grid-template-columns:1fr;gap:9px}
+ .site-footer>.es-footer-actions .button{min-height:43px;font-size:15px}
+ .site-footer .footer-links{gap:12px;flex-wrap:wrap}
+}
+`;
+
+themeSheet.textContent += `
+/* Epsilon Soft identity and approved portrait/desktop footer layout, 2026-10-24. */
+.site-header .brand{gap:0;min-width:0}
+.site-header .es-header-lockup{display:block;width:clamp(185px,18vw,270px);height:auto;max-height:55px;object-fit:contain}
+.es-hero-logo-title{line-height:1!important;margin:5px 0 7px!important;letter-spacing:0!important}
+.es-hero-lockup{display:block;width:clamp(250px,25vw,330px);height:auto;max-width:100%;object-fit:contain}
+/* The footer is the only decorative image region at the end of the real document. */
+.es-dashboard-layout,.es-restored-landing{height:auto!important;min-height:0!important;max-height:none!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:13px!important}
+.es-dashboard-layout>.es-directory{height:auto!important;min-height:0!important;overflow:visible!important;flex:0 0 auto!important}
+.es-dashboard-layout .es-directory-grid{overflow:visible!important;max-height:none!important;min-height:0!important}
+.site-footer.shell{
+ position:relative;isolation:isolate;overflow:visible;clear:both;
+ margin-top:20px;padding:22px 22px 18px;border:0;border-radius:18px;
+ min-height:210px;color:#f7faff;background-color:#2710b4;
+ background-image:url('./assets/images/footer.png');background-size:cover;background-repeat:no-repeat;background-position:center center;
+ box-shadow:0 10px 28px rgba(41,29,127,.12);
+}
+.site-footer>.footer-main,.site-footer>.es-footer-actions,.site-footer>.footer-bottom{position:relative;z-index:2}
+.site-footer .footer-main{max-width:calc(100% - 305px);gap:14px;flex-wrap:wrap}
+.site-footer .footer-brand img.footer-logo{display:block;width:clamp(200px,18vw,245px);height:auto;object-fit:contain}
+.site-footer .footer-main p{color:#ebeeff;margin:3px 0;font-size:14px}
+.site-footer .footer-links{gap:14px;color:#fff;font-size:14px;flex-wrap:wrap}
+.site-footer .footer-links a:hover{color:#ffe65f}
+.site-footer>.es-footer-actions{margin:10px 0 0;width:min(540px,calc(100% - 305px));grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.site-footer .footer-bottom{margin-top:13px;border-color:#ffffff5c;color:#eff2ff;font-size:13px;padding-top:10px}
+.site-footer .es-footer-laptop{display:block;position:absolute;right:2%;bottom:8px;z-index:1;pointer-events:none;width:clamp(220px,23vw,355px);height:auto;max-width:40%;object-fit:contain;filter:drop-shadow(0 9px 14px rgba(3,7,50,.32));transform:rotate(2deg)}
+@media(max-width:1050px) and (orientation:landscape){
+ .site-footer .footer-main{max-width:calc(100% - 205px)}
+ .site-footer>.es-footer-actions{width:min(460px,calc(100% - 205px))}
+ .site-footer .es-footer-laptop{width:220px}
+}
+/* User-defined mobile: portrait, including tablets. Landscape has no bottom dock. */
+body.es-portrait-layout .site-header{position:sticky!important;top:0;z-index:210}
+body.es-portrait-layout .site-header .brand-divider,body.es-portrait-layout .site-header .header-tagline{display:none!important}
+body.es-portrait-layout .site-header .main-nav,body.es-portrait-layout .site-header .mobile-menu{display:none!important}
+body.es-portrait-layout .site-header .es-header-lockup{width:clamp(157px,44vw,235px);max-height:50px}
+body.es-portrait-layout .es-sidebar{display:none!important}
+body.es-portrait-layout .es-app-layout.shell,body.es-portrait-layout.es-catalog-mode .es-app-layout.shell{display:block!important;width:calc(100% - 18px)!important;max-width:none!important;padding-top:9px!important}
+body.es-portrait-layout .es-mobile-rail{
+ display:block!important;position:fixed!important;top:auto!important;bottom:0!important;left:0!important;right:0!important;
+ z-index:205!important;margin:0!important;padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+ border-radius:17px 17px 0 0!important;border:1px solid #dedfff!important;
+ background:rgba(252,250,255,.98)!important;box-shadow:0 -5px 24px rgba(38,28,130,.17)!important;
+}
+body.es-portrait-layout .es-mobile-rail-main{display:block!important;width:100%;min-width:0!important}
+body.es-portrait-layout .es-mobile-rail-scroll{display:flex!important;width:100%;flex:0 0 100%!important;min-width:0!important;gap:6px!important;padding:0!important;overflow-x:auto!important;overflow-y:hidden!important}
+body.es-portrait-layout .es-mobile-folder{flex:0 0 92px!important;height:75px!important;min-width:92px!important}
+body.es-portrait-layout .es-mobile-folder-link{padding:5px 3px!important}
+body.es-portrait-layout .es-mobile-folder-label{font-size:12px!important}
+body.es-portrait-layout .es-mobile-rail-drawer{margin:0 1px 8px!important;max-height:39dvh!important}
+body.es-portrait-layout .es-dashboard-layout>.hero,body.es-portrait-layout .es-restored-landing>.hero{order:2}
+body.es-portrait-layout .es-dashboard-layout>.es-directory,body.es-portrait-layout .es-restored-landing>.es-landing-info{order:1}
+body.es-portrait-layout .es-hero-lockup{width:clamp(210px,47vw,285px)}
+body.es-portrait-layout .site-footer.shell{margin-top:18px!important;min-height:0!important;padding:19px 16px calc(115px + env(safe-area-inset-bottom))!important;border-radius:16px!important}
+body.es-portrait-layout .site-footer .footer-main{max-width:none!important;display:flex;flex-direction:column;align-items:flex-start;gap:11px}
+body.es-portrait-layout .site-footer>.es-footer-actions{width:100%!important;display:grid;grid-template-columns:1fr!important;max-width:none;margin:12px 0 0}
+body.es-portrait-layout .site-footer .footer-logo{width:min(230px,70vw)!important}
+body.es-portrait-layout .site-footer .es-footer-laptop{display:none!important}
+body.es-portrait-layout .site-footer .footer-bottom{line-height:1.45}
+body:not(.es-portrait-layout) .es-mobile-rail{display:none!important}
+@media(max-width:720px) and (orientation:landscape){
+ .site-header .mobile-menu{display:flex!important}
+ .es-sidebar{display:block!important}
+ .es-app-layout.shell{display:grid!important;grid-template-columns:175px minmax(0,1fr)!important;gap:10px!important}
+ .es-sidebar{height:auto!important;min-height:0!important;position:relative!important;top:auto!important}
+}
+`;
+
+// 2026-10-24: Device installation instructions in the Help page.
+// This is an in-browser Web App install flow, distinct from Windows Portable EXE.
+themeSheet.textContent += `
+.es-portable-guide>.es-help-install-card{
+ grid-column:1/-1;padding:19px 21px 18px;border:1px solid #d8dfff;
+ background:linear-gradient(115deg,#f7faff,#f3f1ff);border-radius:17px;
+}
+.es-help-install-card .tool-box-heading{margin:0 0 9px;color:#1734a3}
+.es-help-install-card .es-help-install-intro{margin:0 0 13px;color:#4b6192}
+.es-help-install-devices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:12px 0}
+.es-help-install-device{min-width:0;padding:13px 14px;background:#fff;border:1px solid #dce5fc;border-radius:12px}
+.es-help-install-device h3{display:flex;align-items:center;gap:7px;line-height:1.3;font-size:16px;color:#172da0;margin:0 0 8px}
+.es-help-install-device h3 svg{color:#6337e5}
+.es-help-install-device p{margin:0;color:#495e89;font-size:15px;line-height:1.5}
+.es-help-install-bottom{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:15px}
+.es-help-install-bottom .es-help-install-button{background:#ffdb08;color:#102783;min-height:43px;min-width:155px;border-radius:11px;box-shadow:none;font-size:15px}
+.es-help-install-bottom .es-help-install-note{flex:1 1 300px;margin:0;font-size:14px;color:#5b6d95;line-height:1.5}
+@media(max-width:960px){.es-help-install-devices{grid-template-columns:1fr}}
+@media(max-width:490px){
+ .es-portable-guide>.es-help-install-card{padding:16px 14px}
+ .es-help-install-bottom{align-items:stretch;gap:9px}
+ .es-help-install-bottom .es-help-install-button{width:100%}
+}
+`;
+
+themeSheet.textContent += `
+
+/* 2026-10-24: Epsilon Soft hero visual 5:1. No duplicate logo inside banner.
+   Original photo is 2048x409, left side intentionally holds live HTML text. */
+.es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{
+ background-image:url('./assets/images/main-banner.png')!important;
+ background-repeat:no-repeat!important;
+ background-position:center center!important;
+ background-size:cover!important;
+}
+@media (orientation:landscape) and (min-width:721px){
+ .es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{
+  aspect-ratio:5 / 1!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  grid-template-columns:minmax(0,43%) minmax(0,57%)!important;
+ }
+ .es-dashboard-layout>.es-main-banner .hero-art,.es-restored-landing>.es-main-banner .hero-art{
+  min-height:0!important;height:100%!important;
+ }
+ .es-dashboard-layout>.es-main-banner::before,.es-restored-landing>.es-main-banner::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(243,249,255,.90) 0%,rgba(240,247,255,.81) 25%,rgba(242,247,255,.35) 43%,rgba(240,246,255,0) 56%)!important;
+ }
+}
+.es-main-banner .es-hero-copy-v3{
+ display:flex!important;flex-direction:column;justify-content:center!important;align-items:flex-start;
+ gap:0!important;padding:11px 12px 11px 18px!important;max-width:100%;min-width:0;z-index:2;
+}
+.es-main-banner .es-hero-kicker-v3{
+ display:flex;align-items:center;flex-wrap:nowrap;gap:8px;max-width:100%;min-width:0;
+ margin-bottom:6px;font-size:11px;font-weight:850;letter-spacing:.38px;line-height:1.1;
+}
+.es-main-banner .es-hero-kicker-left{
+ display:inline-flex;gap:6px;align-items:center;white-space:nowrap;
+ color:#2341b2;border:1px solid #b6d5ff;background:rgba(255,255,255,.82);
+ border-radius:999px;padding:5px 9px;box-shadow:0 3px 9px #142c660b;
+}
+.es-main-banner .es-hero-kicker-left svg{color:#512dd4;width:15px;height:15px}
+/* Two direct Studio shortcuts replace the changeable tools counter. */
+.es-main-banner .es-hero-shortcuts{
+ display:inline-flex;align-items:center;gap:6px;min-width:0;flex-wrap:nowrap;
+}
+.es-main-banner .es-hero-shortcut{
+ display:inline-flex;align-items:center;justify-content:center;gap:5px;
+ flex:0 0 auto;min-height:27px;padding:4px 9px 4px 6px;
+ border-radius:999px;border:1px solid;white-space:nowrap;
+ font-size:11px;font-weight:850;letter-spacing:0;line-height:1.1;
+ box-shadow:0 3px 10px #152b640f;transition:transform .14s ease,box-shadow .14s ease;
+}
+.es-main-banner .es-hero-shortcut:hover{transform:translateY(-1px);box-shadow:0 5px 14px #12276c29}
+.es-main-banner .es-hero-shortcut:focus-visible{outline:3px solid #ffcf17;outline-offset:2px}
+.es-main-banner .es-hero-shortcut-icon{
+ width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;
+ border-radius:6px;flex:0 0 auto;
+}
+.es-main-banner .es-hero-shortcut-icon svg{width:14px;height:14px}
+.es-main-banner .es-hero-shortcut-pdf{color:#b92346;background:linear-gradient(112deg,#fff 0%,#fff0f3 100%);border-color:#f6b6c7}
+.es-main-banner .es-hero-shortcut-pdf .es-hero-shortcut-icon{color:#ed3156;background:#ffdae2}
+.es-main-banner .es-hero-shortcut-image{color:#007e78;background:linear-gradient(112deg,#fff 0%,#e8fcf6 100%);border-color:#9cddd2}
+.es-main-banner .es-hero-shortcut-image .es-hero-shortcut-icon{color:#009c8c;background:#c8f4e9}
+.es-main-banner .es-hero-headline-v3{
+ display:flex;flex-direction:column;align-items:flex-start;gap:0;
+ margin:0 0 5px;color:#071c88;font-size:clamp(26px,2.2vw,37px);
+ letter-spacing:-.75px;line-height:1.065;font-weight:900;
+}
+.es-main-banner .es-hero-headline-v3>span{display:block;white-space:nowrap}
+.es-main-banner .es-hero-headline-v3 strong{
+ position:relative;display:inline-block;white-space:nowrap;
+ font-weight:900;letter-spacing:-.7px;color:#1738c2;
+}
+.es-main-banner .es-hero-headline-v3 strong::after{
+ content:"";position:absolute;left:0;bottom:-2px;width:40%;height:4px;border-radius:8px;
+ background:linear-gradient(90deg,#ffcb00,#ffe65c);transform:skewX(-21deg);
+}
+.es-main-banner .es-hero-subline-v3{
+ margin:5px 0 7px;font-size:clamp(12px,1.02vw,15px);font-weight:650;
+ color:#364e87;white-space:nowrap;line-height:1.25;
+}
+.es-main-banner .es-hero-benefits-v3{
+ display:flex;gap:6px;flex-wrap:wrap;align-items:center;max-width:100%;
+}
+.es-main-banner .es-hero-benefits-v3>span{
+ display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(184,205,247,.76);
+ border-radius:9px;background:rgba(255,255,255,.87);color:#142c8b;
+ padding:4px 7px;font-size:12px;font-weight:750;line-height:1.1;white-space:nowrap;
+ box-shadow:0 2px 6px rgba(29,47,119,.07);
+}
+.es-main-banner .es-hero-benefits-v3 svg{width:14px;height:14px;color:#07a97f}
+.es-main-banner .es-hero-benefits-v3>span:nth-child(2) svg{color:#6838e6}
+@media (orientation:landscape) and (min-width:721px) and (max-width:1180px){
+ .es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{
+  min-height:176px!important;aspect-ratio:auto!important;
+ }
+ .es-main-banner .es-hero-copy-v3{padding:9px 8px 9px 13px!important}
+ .es-main-banner .es-hero-headline-v3{font-size:clamp(23px,2.2vw,28px)}
+ .es-main-banner .es-hero-kicker-v3{font-size:10px;gap:4px;margin-bottom:4px;flex-wrap:wrap}
+ .es-main-banner .es-hero-shortcuts{gap:4px}
+ .es-main-banner .es-hero-shortcut{font-size:10px;min-height:24px;padding:3px 7px 3px 5px;gap:4px}
+ .es-main-banner .es-hero-shortcut-icon{width:17px;height:17px}
+ .es-main-banner .es-hero-subline-v3{margin:4px 0;font-size:12px}
+ .es-main-banner .es-hero-benefits-v3>span{font-size:11px;padding:3px 5px}
+}
+@media (orientation:portrait){
+ /* Preserve the previously approved compact information card AFTER the tools.
+    The full photographic banner MUST NOT appear behind text in portrait mode. */
+ .es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{
+  background:linear-gradient(115deg,#f5f2ff,#eef4ff 75%,#e6edff)!important;
+  background-image:none!important;
+ }
+ .es-main-banner .es-hero-copy-v3{padding:13px 14px!important}
+ .es-main-banner .es-hero-kicker-v3{font-size:10px;gap:5px;flex-wrap:wrap}
+ .es-main-banner .es-hero-shortcuts{gap:5px}
+ .es-main-banner .es-hero-shortcut{font-size:11px;min-height:28px}
+ .es-main-banner .es-hero-headline-v3{font-size:clamp(22px,5vw,28px)}
+ .es-main-banner .es-hero-subline-v3{font-size:12px;white-space:normal}
+ .es-main-banner .es-hero-benefits-v3>span{font-size:11px}
+}
+
+`;
+
+// 2026-10-25: MY TOOLS quick access in the landscape header.
+// The bottom swipe rail remains the only mobile/portrait navigation.
+themeSheet.textContent += `
+/* MY TOOLS: click title for category, chevron for pinned-tool dropdown. */
+.site-header{position:relative;z-index:230}
+.site-header .es-header-mytools{
+ position:relative;display:flex;align-items:center;flex:0 0 auto;isolation:isolate;
+ border:1px solid rgba(241,229,255,.28);border-radius:11px;
+ background:rgba(157,113,250,.32);color:#fff;
+}
+.site-header .es-header-mytools>.es-header-mytools-link{
+ display:inline-flex;align-items:center;gap:6px;min-height:43px;
+ padding:8px 4px 8px 10px;white-space:nowrap;border:0;border-radius:10px 0 0 10px;
+ box-shadow:none;background:transparent;color:inherit;font-size:15px;font-weight:800;
+}
+.site-header .es-header-mytools>.es-header-mytools-link.is-active{background:#fff;color:#5421ce}
+.site-header .es-header-mytools>.es-header-mytools-link svg{height:19px;width:19px}
+.site-header .es-header-mytools-count{
+ display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;
+ padding:1px 5px;border-radius:999px;background:rgba(255,255,255,.19);color:inherit;
+ font-size:12px;font-weight:850;
+}
+.site-header .es-header-mytools-toggle{
+ display:grid;place-items:center;flex:0 0 26px;width:26px;min-height:43px;
+ padding:0;border:0;border-left:1px solid rgba(255,255,255,.25);
+ background:transparent;color:inherit;border-radius:0 10px 10px 0;
+}
+.site-header .es-header-mytools-toggle:hover,.site-header .es-header-mytools>.es-header-mytools-link:hover{
+ background:rgba(255,255,255,.17)
+}
+.site-header .es-header-mytools-toggle[aria-expanded="true"]{background:rgba(255,255,255,.23)}
+.site-header .es-header-mytools-toggle svg{width:17px;height:17px;transition:transform .18s}
+.site-header .es-header-mytools-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.site-header .es-header-mytools a:focus-visible,.site-header .es-header-mytools button:focus-visible{
+ outline:3px solid #ffdb00;outline-offset:2px;
+}
+.es-header-mytools-menu{
+ position:absolute;left:0;top:calc(100% + 9px);z-index:270;
+ width:min(320px,calc(100vw - 26px));max-height:min(390px,calc(100dvh - 102px));
+ overflow-y:auto;overscroll-behavior:contain;padding:9px;
+ border:1px solid #dacdff;border-radius:14px;background:#fff;
+ box-shadow:0 16px 44px rgba(18,18,93,.24);color:#17278b;
+}
+.es-header-mytools-menu[hidden]{display:none!important}
+.es-header-mytools-menu-title{display:flex;align-items:center;gap:8px;padding:7px 9px 9px;
+ font-size:14px;font-weight:900;color:#4621bf;border-bottom:1px solid #e7e3fa}
+.es-header-mytools-items{display:flex;flex-direction:column;gap:3px;padding-top:5px}
+.es-header-mytools-item{display:flex;align-items:center;gap:9px;padding:10px 9px;
+ min-height:43px;border-radius:9px;color:#172f92;font-weight:750;font-size:14px;line-height:1.2;overflow-wrap:anywhere}
+.es-header-mytools-item svg{width:19px;height:19px;color:#6538e5;flex:0 0 19px}
+.es-header-mytools-item:hover,.es-header-mytools-item:focus-visible{background:#f1ecff;color:#4d24c8}
+.es-header-mytools-empty{padding:12px 9px;color:#596a95;font-size:14px;line-height:1.45}
+.es-header-mytools-empty a{display:inline-block;margin-top:8px;font-weight:800;color:#5322cf;text-decoration:underline}
+/* Portrait uses the approved bottom navigation, so there is no duplicate button. */
+body.es-portrait-layout .es-header-mytools{display:none!important}
+/* Preserve every header action near the previous 1080px breakpoint. */
+@media (min-width:1081px) and (max-width:1240px){
+ .site-header .es-header-lockup{width:clamp(170px,17vw,205px)}
+ .site-header .header-inner{gap:7px}
+ .site-header .main-nav{gap:5px}
+ .site-header .main-nav .nav-link{gap:5px;padding:8px 8px;font-size:14px}
+ .site-header .es-header-mytools>.es-header-mytools-link{padding:7px 3px 7px 8px;font-size:14px}
+ .site-header .es-language-picker{padding:2px}
+ .site-header .es-language-btn{min-width:34px;padding:4px 5px}
+}
+/* Correct the legacy width-only header breakpoint: horizontal tablet/laptop IS desktop. */
+@media (max-width:1080px) and (orientation:landscape){
+ body:not(.es-portrait-layout) .site-header .main-nav{
+  display:flex!important;align-items:center;justify-content:flex-end;
+  flex:1 1 auto;min-width:0;margin-left:auto;gap:4px;
+ }
+ body:not(.es-portrait-layout) .site-header .mobile-menu{display:none!important}
+ body:not(.es-portrait-layout) .site-header .header-inner{
+  gap:6px;min-height:65px;max-width:none;width:calc(100% - 20px)
+ }
+ body:not(.es-portrait-layout) .site-header .brand-divider,
+ body:not(.es-portrait-layout) .site-header .header-tagline{display:none!important}
+ body:not(.es-portrait-layout) .site-header .es-header-lockup{
+  width:clamp(130px,17vw,158px);max-height:42px
+ }
+ body:not(.es-portrait-layout) .site-header .main-nav .nav-link{
+  min-height:39px;padding:7px 7px;gap:5px;font-size:clamp(12px,1.4vw,14px);border-radius:9px
+ }
+ body:not(.es-portrait-layout) .site-header .main-nav .nav-link svg{width:16px;height:16px}
+ body:not(.es-portrait-layout) .site-header .es-header-mytools>.es-header-mytools-link{
+  min-height:39px;padding:7px 3px 7px 7px;gap:4px;font-size:13px
+ }
+ body:not(.es-portrait-layout) .site-header .es-header-mytools>.es-header-mytools-link svg{height:16px;width:16px}
+ body:not(.es-portrait-layout) .site-header .es-header-mytools-count{min-width:18px;height:18px;font-size:11px;padding:1px 4px}
+ body:not(.es-portrait-layout) .site-header .es-header-mytools-toggle{width:22px;flex-basis:22px;min-height:39px}
+ body:not(.es-portrait-layout) .site-header .es-language-picker{order:2;margin-left:0;padding:2px}
+ body:not(.es-portrait-layout) .site-header .es-language-btn{min-width:28px;min-height:30px;padding:3px 5px;font-size:13px}
+}
+/* On extremely narrow landscape viewports, use a two-row full navigation rather than hide links. */
+@media (max-width:820px) and (orientation:landscape){
+ body:not(.es-portrait-layout) .site-header .header-inner{flex-wrap:wrap;gap:5px;padding-block:6px}
+ body:not(.es-portrait-layout) .site-header .brand{order:0}
+ body:not(.es-portrait-layout) .site-header .es-language-picker{order:1;margin-left:auto}
+ body:not(.es-portrait-layout) .site-header .main-nav{
+  order:3;position:static!important;inset:auto!important;z-index:auto!important;
+  flex:0 0 100%;width:100%;flex-direction:row!important;align-items:center!important;
+  justify-content:space-between;gap:4px;padding:0!important;
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+ }
+ body:not(.es-portrait-layout) .site-header .main-nav .nav-link{padding:6px 6px}
+}
+/* At landscape phone width the old sidebar grid creates an empty 175px column.
+   Keep the content full-width; quick access is supplied by header MY TOOLS. */
+@media (max-width:720px) and (orientation:landscape){
+ body:not(.es-portrait-layout) .es-sidebar{display:none!important}
+ body:not(.es-portrait-layout) .es-app-layout.shell,
+ body:not(.es-portrait-layout).es-catalog-mode .es-app-layout.shell,
+ body:not(.es-portrait-layout).es-catalog-mode .es-app-layout.es-is-collapsed{
+  display:block!important;grid-template-columns:none!important;
+  width:calc(100% - 20px)!important;max-width:none!important;
+  padding-top:10px!important
+ }
+}
+@media (prefers-reduced-motion:reduce){.site-header .es-header-mytools-toggle svg{transition:none}}
+`;
+
 // Former assets/js/lib/ui.js (bundled, not reimplemented)
 /** Small, dependency-free UI toolkit. Icon IDs are fixed and never sourced from user input. */
 const path = {
@@ -910,6 +1444,7 @@ Object.assign(path, {
  phone:'<path d="M6 2h4l2 5-3 2c1 3 4 6 7 7l2-3 5 2v4c0 2-2 3-4 3C9 21 3 15 2 6c0-2 2-4 4-4Z"/>',
  'message-circle':'<path d="M20 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l1.8-4.7A8.5 8.5 0 1 1 20 11.5Z"/>',
  'app-plus':'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 8h18M12 11v7m-3.5-3.5h7"/>',
+ palette:'<path d="M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 1.2-3.6 2 2 0 0 1 1.2-3.6H18a3 3 0 0 0 3-3 9 9 0 0 0-9-9Z"/><circle cx="7" cy="12" r="1"/><circle cx="9" cy="8" r="1"/><circle cx="14" cy="8" r="1"/>',
  'contact-card':'<rect x="2.5" y="4" width="19" height="16" rx="3"/><circle cx="8" cy="10" r="2"/><path d="M5.5 16c.7-2.5 4.3-2.5 5 0M14 10h5M14 14h4"/>',
  monitor:'<rect x="2" y="3" width="20" height="15" rx="2"/><path d="M8 22h8m-4-4v4"/>',
  smartphone:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
@@ -939,6 +1474,30 @@ function downloadBlob(blob,filename){const link=document.createElement('a');cons
 function debounce(fn,delay=120){let handle;return (...args)=>{clearTimeout(handle);handle=setTimeout(()=>fn(...args),delay);};}
 function normalize(s){return String(s).toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').trim();}
 
+
+
+// Epsilon Soft Basic -> Epsilon Lab Pro: category-specific navigation, not a paid release link.
+themeSheet.textContent += `
+.es-eng-bridge{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0;margin:0 0 12px;border:1px solid #d9defb;border-radius:15px;background:#fff;overflow:hidden;box-shadow:0 4px 16px #2038880b}
+.es-eng-half{display:flex;align-items:center;gap:11px;padding:12px 14px;min-width:0}
+.es-eng-basic{background:linear-gradient(115deg,#f7faff,#ecf4ff);border-right:1px solid #d9defb}
+.es-eng-pro{background:linear-gradient(112deg,#f1edff,#f9f5ff);gap:10px}
+.es-eng-symbol{height:39px;width:39px;flex:0 0 39px;display:grid;place-items:center;border-radius:12px;background:#e2eefe;color:#2365d1}
+.es-eng-pro .es-eng-symbol{background:linear-gradient(135deg,#7941f5,#5326db);color:#fff}
+.es-eng-copy{min-width:0;flex:1}
+.es-eng-label{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:14px;line-height:1.2;font-weight:900;letter-spacing:.25px;color:#1c36a0}
+.es-eng-label span{font-size:12px;line-height:1.4;font-weight:850;letter-spacing:.2px;background:#e4f8ed;color:#07845c;border:1px solid #b9ecd5;border-radius:99px;padding:1px 7px}
+.es-eng-pro .es-eng-label{color:#5622c7}
+.es-eng-pro .es-eng-label span{background:#fff3d7;color:#805309;border-color:#f5dca3}
+.es-eng-copy p{margin:4px 0 0;font-size:14.5px;line-height:1.35;color:#485d91}
+.es-eng-cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;min-height:37px;padding:8px 11px;border-radius:10px;background:linear-gradient(118deg,#7230e7,#4427d5);color:#fff;font-size:14px;line-height:1.2;font-weight:850;text-align:center;white-space:nowrap;box-shadow:0 4px 10px #4925b326;transition:filter .16s ease}
+.es-eng-cta:hover{filter:brightness(1.08)}
+.es-eng-cta .svg-icon{width:15px;height:15px}
+@media(max-width:1250px){.es-eng-bridge{grid-template-columns:1fr}.es-eng-basic{border-right:0;border-bottom:1px solid #d9defb}}
+@media(max-width:630px){.es-eng-half{padding:11px 12px;align-items:flex-start}.es-eng-pro{display:grid;grid-template-columns:39px minmax(0,1fr);align-items:start}.es-eng-pro .es-eng-symbol{grid-column:1;grid-row:1}.es-eng-pro .es-eng-copy{grid-column:2;grid-row:1}.es-eng-cta{grid-column:2;grid-row:2;justify-self:start;margin-left:0;min-height:39px}.es-eng-label{font-size:13px}.es-eng-copy p{font-size:14px}}
+@media(orientation:portrait){.es-dashboard-layout>.es-directory.es-directory-engineering{display:flex!important;flex-direction:column}.es-directory-engineering>.es-directory-header{order:0}.es-directory-engineering>.es-directory-grid{order:1}.es-directory-engineering>.es-eng-bridge{order:2;margin:12px 0 0}}
+@media(prefers-reduced-motion:reduce){.es-eng-cta{transition:none}}
+`;
 
 // Former assets/js/lib/engineering.js (bundled, not reimplemented)
 /** Epsilon Soft calculations. Core equations ported with test cases from ES TOOLKIT V1.0 Go source (geometry.go/converter.go). */
@@ -1127,7 +1686,8 @@ const DEFINITIONS = Object.freeze([
  {id:'nesting',name:'Trải phôi 2D',sub:'Trải phôi 2D theo ES TOOLKIT Portable',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting.js'},
  {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'engineering',icon:'database',tone:'tone-violet',file:'density.js'},
  {id:'beam',name:'Tính kết cấu đơn giản',sub:'Dầm đơn giản: M, V, độ võng',group:'engineering',icon:'beam',tone:'tone-blue',file:'beam.js'},
- {id:'paint',name:'Tính khối lượng sơn',sub:'Ước tính sơn theo bề mặt',group:'engineering',icon:'paint',tone:'tone-mint',file:'paint.js'},
+ {id:'paint',name:'Paint Studio',sub:'Tính lượng sơn · WFT/DFT · diện tích',group:'engineering',icon:'paint',tone:'tone-mint',file:'paint.js'},
+ {id:'color-mixer',name:'Phối màu RGB & CMYK',sub:'Pha màu, chuyển mã và tạo bảng phối hài hòa',group:'engineering',icon:'palette',tone:'tone-violet',file:'color-mixer.js'},
  {id:'pdf',name:'PDF Studio',sub:'Gộp, tách, chỉnh sửa, ký tên và chuyển đổi PDF',group:'utility',icon:'pdf',tone:'tone-red',file:'pdf-studio.js'},
  {id:'calendar',name:'Âm lịch – Dương lịch',sub:'Tra cứu ngày tháng, lịch vạn niên',group:'utility',icon:'calendar',tone:'tone-mint',file:'calendar.js'},
  {id:'vietqr',name:'VietQR',sub:'Tạo mã QR chuyển khoản ngân hàng',group:'utility',icon:'qr',tone:'tone-violet',file:'vietqr.js'},
@@ -1138,7 +1698,7 @@ const DEFINITIONS = Object.freeze([
 ]);
 const GROUPS=Object.freeze([
  {id:'calc',name:'TÍNH TOÁN',description:'Tính toán nhanh, chính xác, tiện lợi',icon:'calculator',cls:'category-calc'},
- {id:'engineering',name:'KỸ THUẬT',description:'Hỗ trợ công việc chuyên môn',icon:'gear',cls:'category-engineering'},
+ {id:'engineering',name:'KỸ THUẬT',description:'Công cụ kỹ thuật Basic miễn phí',icon:'gear',cls:'category-engineering'},
  {id:'utility',name:'TÀI LIỆU & TIỆN ÍCH',description:'Xử lý tài liệu, lịch và tiện ích khác',icon:'pdf',cls:'category-utility'}
 ]);
 const map=new Map(DEFINITIONS.map(t=>[t.id,t]));
@@ -1154,6 +1714,12 @@ const ES_LANGUAGE_KEY='epsilon-soft.language.v1';
 let esLanguage='vi';
 try { if(localStorage.getItem(ES_LANGUAGE_KEY)==='en') esLanguage='en'; } catch {/* Storage disabled: VI remains available. */}
 const ES_EN_TEXT=Object.freeze({
+ 'bo cong cu mien phi':'FREE ONLINE TOOLS',
+ 'lam viec':'Work',
+ 'nhanh hon moi ngay.':'smarter every day.',
+ 'tinh toan · ky thuat · pdf · tien ich':'Calculators · Engineering · PDF · Utilities',
+ 'dung ngay':'Use instantly',
+ 'loi ich epsilon soft':'Epsilon Soft advantages',
  'trang chu':'Home','huong dan':'Help','kham pha cong cu':'Explore tools',
  'danh muc':'CATEGORIES','tat ca cong cu':'All tools','cong cu':'Tools',
  'tinh toan':'Calculations','ky thuat':'Engineering','tai lieu & tien ich':'Documents & Utilities',
@@ -1180,6 +1746,12 @@ const ES_EN_TEXT=Object.freeze({
  'cac cong cu anh/chi da ghim bang ngoi sao':'Your starred tools',
  'tinh toan nhanh, chinh xac, tien loi':'Quick, accurate and convenient calculations',
  'ho tro cong viec chuyen mon':'Professional engineering tools',
+ 'cong cu ky thuat basic mien phi':'Free Basic engineering tools',
+ 'phien ban basic':'BASIC EDITION',
+ 'dinh huong phat trien':'IN DEVELOPMENT PLAN',
+ 'cac cong cu tai day la phien ban co ban, phu hop tinh toan va tra cuu ky thuat hang ngay.':'These are Basic tools for everyday engineering calculations and reference.',
+ 'cong cu ky thuat chuyen sau se duoc phat trien trong epsilon lab.':'Advanced engineering tools are planned within Epsilon Lab.',
+ 'kham pha epsilon lab':'Explore Epsilon Lab',
  'xu ly tai lieu, lich va tien ich khac':'Documents, calendars and everyday utilities',
  'tim cong cu...':'Search tools...','tim kiem cong cu':'Search tools',
  'dang luoi':'Grid view','dang danh sach':'List view',
@@ -1211,6 +1783,15 @@ const ES_EN_TEXT=Object.freeze({
  'hoc toan, tieng viet va tieng anh theo chuong trinh epsilon edu.':'Study Math, Vietnamese and English with Epsilon Edu.',
  'cac phan mem, tien ich va giai phap ky thuat trong he sinh thai epsilon.':'Software, utilities and engineering solutions in the Epsilon ecosystem.',
  'huong dan su dung':'User guide',
+ 'cai app tren dien thoai, may tinh bang va windows':'Install the app on phone, tablet and Windows',
+ 'nhan nut cai app o cuoi trang hoac ben duoi de them epsilon soft vao thiet bi nhu mot ung dung.':'Press Install App at the bottom of the page or below to add Epsilon Soft to your device as an app.',
+ 'windows (chrome / edge)':'Windows (Chrome / Edge)',
+ 'android (chrome)':'Android (Chrome)',
+ 'iphone / ipad (safari)':'iPhone / iPad (Safari)',
+ 'nhan cai app va xac nhan cai dat khi trinh duyet hoi. neu khong hien hop thoai, mo menu chrome/edge hoac bieu tuong cai dat tren thanh dia chi.':'Press Install App and confirm if the browser prompts you. Otherwise, use the Chrome/Edge menu or the install icon in the address bar.',
+ 'mo trang bang chrome, nhan cai app. neu khong thay hop thoai cai dat, chon menu ⋮ → cai dat ung dung hoac them vao man hinh chinh.':'Open this site in Chrome and select Install App. If no prompt appears, open menu ⋮ → Install app or Add to Home screen.',
+ 'mo trang bang safari, chon chia se → them vao man hinh chinh. nut cai app tren trang se hien huong dan neu safari khong ho tro hop thoai cai dat.':'Open this site in Safari, then Share → Add to Home Screen. The Install App button will show instructions if Safari cannot display an install prompt.',
+ 'day la web app, khong phai file exe portable. can trinh duyet ho tro va website https; mot so thiet bi chi tao loi tat, va mot so cong cu van can internet.':'This is a Web App, not a Portable EXE. A compatible browser and HTTPS are required; some devices may only create a shortcut, and some tools still require internet access.',
  'epsilon soft mien phi, khong yeu cau tai khoan.':'Epsilon Soft is free and requires no account.',
  'nhan ngoi sao ⭐ tren cong cu de ghim. chi cong cu da ghim moi xuat hien trong my tools. du lieu nay duoc luu tren trinh duyet hien tai.':'Star a tool to pin it. Only pinned tools appear in MY TOOLS. Preferences are stored in this browser.',
  'danh muc va tim kiem':'Categories and search',
@@ -1251,7 +1832,7 @@ const ES_EN_TEXT=Object.freeze({
  'trai phoi 2d':'2D Nesting','trai phoi 2d theo es toolkit portable':'2D layout from ES TOOLKIT Portable',
  'khoi luong rieng':'Material Density','tra cuu khoi luong rieng (kg/m³)':'Density reference (kg/m³)',
  'tinh ket cau don gian':'Basic Structural Analysis','dam don gian: m, v, do vong':'Simple beams: bending, shear and deflection',
- 'tinh khoi luong son':'Paint Quantity','uoc tinh son theo be mat':'Estimate paint for surfaces',
+ 'paint studio':'Paint Studio','tinh luong son · wft/dft · dien tich':'Paint quantity · WFT/DFT · surface area',
  'gop, tach, chinh sua, ky ten va chuyen doi pdf':'Merge, split, edit, sign and convert PDFs',
  'am lich – duong lich':'Lunar & Solar Calendar','tra cuu ngay thang, lich van nien':'Explore dates and lunar calendars',
  'tao ma qr chuyen khoan ngan hang':'Bank transfer QR code',
@@ -1320,6 +1901,7 @@ function esSetLanguage(next){
  // Text nodes only: no re-mount, no resets of calculator/history/document tool state.
  esTranslateRegion(document.body);
  renderSidebar();
+ if(location.hash.startsWith('#/ecosystem'))void populateEcosystem(currentRoute);
  const heroLayer=document.getElementById('es-hero-dialog-layer');
  if(heroLayer && !heroLayer.hidden){heroLayer.innerHTML=esHeroDialogContent(heroLayer.dataset.mode||'about');heroLayer.querySelector('[data-es-hero-close]')?.focus();}
 }
@@ -1364,6 +1946,44 @@ function preferredTools(){
  // Preserve the order in which users starred their tools.
  return favorites.pinned.map(id=>map.get(id)).filter(t=>t&&!t.planned);
 }
+// MY TOOLS access in the header (landscape widths). The list is ALWAYS sourced from
+// the same favorites state as the sidebar and the portrait bottom category dock.
+function buildHeaderMyTools(){
+ const nav=document.getElementById('main-nav');
+ if(!nav || nav.querySelector('#es-header-mytools'))return;
+ const area=document.createElement('div');area.id='es-header-mytools';area.className='es-header-mytools';
+ area.innerHTML=`<a class="nav-link es-header-mytools-link" id="es-header-mytools-link" data-nav="mytools" href="#/mytools" aria-label="MY TOOLS">${icon('star',18)}<span>MY TOOLS</span><span class="es-header-mytools-count" id="es-header-mytools-count">0</span></a>
+  <button type="button" class="es-header-mytools-toggle" data-header-mytools-toggle aria-expanded="false" aria-controls="es-header-mytools-menu" aria-label="Xổ danh sách MY TOOLS" title="Xổ danh sách MY TOOLS">${icon('chevron-down',17)}</button>
+  <div class="es-header-mytools-menu" id="es-header-mytools-menu" aria-label="Danh sách công cụ đã ghim" hidden></div>`;
+ nav.insertBefore(area,nav.querySelector('[data-nav="explore"]'));
+ refreshHeaderMyTools();
+}
+function closeHeaderMyTools(restoreFocus=false){
+ const area=document.getElementById('es-header-mytools');if(!area)return;
+ const menu=area.querySelector('#es-header-mytools-menu');
+ if(!menu || menu.hidden)return;
+ menu.hidden=true;
+ const toggle=area.querySelector('[data-header-mytools-toggle]');
+ toggle?.setAttribute('aria-expanded','false');
+ if(restoreFocus)toggle?.focus({preventScroll:true});
+}
+function refreshHeaderMyTools(){
+ const area=document.getElementById('es-header-mytools');if(!area)return;
+ const pinned=preferredTools();
+ const count=area.querySelector('#es-header-mytools-count');
+ if(count)count.textContent=String(pinned.length);
+ const link=area.querySelector('#es-header-mytools-link');
+ if(link)link.classList.toggle('is-active',location.hash==='#/mytools');
+ const toggle=area.querySelector('[data-header-mytools-toggle]');
+ if(toggle){const label=esLanguage==='en'?'Show pinned tools':'Xổ danh sách MY TOOLS';toggle.setAttribute('aria-label',label);toggle.title=label;}
+ const menu=area.querySelector('#es-header-mytools-menu');if(!menu)return;
+ const heading=esLanguage==='en'?'MY TOOLS · Pinned tools':'MY TOOLS · Công cụ đã ghim';
+ const list=pinned.length?pinned.map(t=>{
+  const title=esLanguage==='en'?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
+  return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(title)}">${icon(t.icon,19)}<span>${escapeHTML(title)}</span></a>`;
+ }).join(''):`<div class="es-header-mytools-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào MY TOOLS.'}<a href="#/explore">${esLanguage==='en'?'Explore tools':'Khám phá công cụ'}</a></div>`;
+ menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon('star',18)} <span>${heading}</span></div><div class="es-header-mytools-items">${list}</div>`;
+}
 function toolCard(t){
  const action=t.planned?`<div class="tool-link"><div class="tool-tile ${t.tone}">${icon(t.icon,27)}</div><div class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small><span class="soon-label">Đang phát triển</span></div></div>`:
  `<a class="tool-link" href="#/tool/${t.id}" aria-label="Mở ${t.name}"><span class="tool-tile ${t.tone}">${icon(t.icon,27)}</span><span class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small></span></a>`;
@@ -1395,10 +2015,66 @@ async function readStaticJson(filename, maximum = 60000) {
  if (raw.length > maximum) throw Error(filename + ' vượt dung lượng cho phép.');
  return JSON.parse(raw);
 }
+// Read either the new two-level Hub JSON or the former flat products array.
+// All JSON labels are escaped before HTML insertion; links must be HTTPS.
+function normalizedEcosystem(data){
+ if(!data || typeof data!=='object' || Array.isArray(data))throw Error('Invalid Hub JSON');
+ const defaults=[
+  {id:'edu',name:'Epsilon Edu',nameEn:'Epsilon Edu',description:'Các chương trình giáo dục và tự học thuộc hệ sinh thái Epsilon.',descriptionEn:'Education and self-study apps in the Epsilon ecosystem.',icon:'book',products:[]},
+  {id:'lab',name:'Epsilon Lab',nameEn:'Epsilon Lab',description:'Phần mềm và giải pháp kỹ thuật thuộc hệ sinh thái Epsilon.',descriptionEn:'Engineering software and practical tools in the Epsilon ecosystem.',icon:'gear',products:[]}
+ ];
+ let groups;
+ if(Array.isArray(data.groups)){
+  if(data.groups.length>12)throw Error('Too many Hub groups');
+  groups=data.groups;
+ }else if(Array.isArray(data.products)){
+  if(data.products.length>150)throw Error('Too many Hub products');
+  groups=defaults.map(g=>({...g,products:data.products.filter(p=>p && (
+   String(p.group||'').toLowerCase()===g.id ||
+   (!p.group && (g.id==='edu' ? /edu|lớp|class/i.test(String(p.name||'')) : !/edu|lớp|class/i.test(String(p.name||''))))
+  ))}));
+ }else throw Error('Missing groups/products');
+ const icons=new Set(['book','grid','calculator','gear','image','file','files','lightbulb','home','shield','orbit','windows','monitor']);
+ const safeString=(value,limit)=>typeof value==='string'?value.trim().slice(0,limit):'';
+ const normalized=groups.filter(g=>g&&typeof g==='object').map(g=>{
+  const id=safeString(g.id,32).toLowerCase();
+  if(!/^[a-z0-9-]{1,32}$/.test(id))return null;
+  const list=Array.isArray(g.products)?g.products:(Array.isArray(g.items)?g.items:[]);
+  if(list.length>150)throw Error('Too many products in '+id);
+  const products=list.filter(p=>p&&typeof p==='object'&&p.visible!==false).map(p=>{
+   const name=safeString(p.name||p.title,90);
+   if(!name)return null;
+   const url=(p.enabled===false||p.status==='draft')?'':safeExternalUrl(p.url);
+   const logo=safeString(p.logo,180);
+   return {id:safeString(p.id,45),name,nameEn:safeString(p.nameEn||p.titleEn,90),description:safeString(p.description,320),descriptionEn:safeString(p.descriptionEn,320),url,icon:icons.has(p.icon)?p.icon:'book',logo:/^assets\/images\/[a-z0-9_./-]+\.(png|jpe?g|webp)$/i.test(logo)&&!logo.includes('..')?logo:''};
+  }).filter(Boolean);
+  return {id,name:safeString(g.name,90)||'Epsilon '+id,nameEn:safeString(g.nameEn,90),description:safeString(g.description,320),descriptionEn:safeString(g.descriptionEn,320),icon:icons.has(g.icon)?g.icon:(id==='edu'?'book':'gear'),products};
+ }).filter(Boolean);
+ if(!normalized.length)throw Error('No valid Hub groups');
+ return normalized;
+}
+function hubText(item,key){return (esLanguage==='en'&&item[key+'En'])||item[key]||'';}
+function hubIconMarkup(product,size){return product.logo?`<img src="./${escapeHTML(product.logo)}" alt="" loading="lazy" decoding="async">`:icon(product.icon,size);}
+function hubFamilyHtml(group){
+ const label=hubText(group,'name'),ready=group.products.filter(p=>p.url).length;
+ const counts=esLanguage==='en'?`${group.products.length} items · ${ready} available`:`${group.products.length} mục · ${ready} đã có liên kết`;
+ return `<a class="es-hub-family-card" data-family="${escapeHTML(group.id)}" href="#/ecosystem/${encodeURIComponent(group.id)}" aria-label="${escapeHTML(esLanguage==='en'?'Explore ':'Khám phá ')}${escapeHTML(label)}">
+  <div class="es-hub-family-main"><span class="es-hub-family-icon">${icon(group.icon,32)}</span><div class="es-hub-family-heading"><h2>${escapeHTML(label)}</h2><span class="es-hub-family-count">${escapeHTML(counts)}</span></div></div>
+  <p>${escapeHTML(hubText(group,'description'))}</p>
+  <span class="es-hub-family-action">${esLanguage==='en'?'Explore products':'Khám phá sản phẩm'} ${icon('arrow',18)}</span>
+ </a>`;
+}
+function hubProductHtml(product,index){
+ const hasLink=Boolean(product.url);
+ return `<article class="es-hub-product-card" data-hub-tone="${(index%6)+1}"><div class="es-hub-product-top"><span class="es-hub-product-symbol">${hubIconMarkup(product,26)}</span><h3>${escapeHTML(hubText(product,'name'))}</h3></div>
+  <p>${escapeHTML(hubText(product,'description'))}</p>
+  ${hasLink?`<a class="es-system-link" href="${escapeHTML(product.url)}" target="_blank" rel="noopener noreferrer">${esLanguage==='en'?'Open website':'Mở website'} ${icon('external-link',17)}</a>`:`<span class="es-system-pending">${esLanguage==='en'?'Link not yet available':'Chưa cập nhật liên kết'}</span>`}
+ </article>`;
+}
 function makeSidebarLink(id, href, label, iconName, count) {
  const selected = (id === 'all' && ['#/home','#/explore',''].includes(location.hash)) ||
   (id === 'mytools' && location.hash === '#/mytools') ||
-  (id === 'ecosystem' && location.hash === '#/ecosystem') ||
+  (id === 'ecosystem' && location.hash.startsWith('#/ecosystem')) ||
   (id === 'portable' && location.hash === '#/portable') ||
   (id === 'help' && location.hash === '#/help') ||
   location.hash === '#/category/' + id;
@@ -1416,9 +2092,9 @@ function sidebarToolsInSection(id){
 }
 function sidebarChildrenHtml(id){
  if(id==='ecosystem'){
-  const visit=`<a class="es-side-child" href="#/ecosystem">${icon('orbit',17)}<span>${esLanguage==='en'?'Explore Epsilon Hub':'Khám phá Epsilon Hub'}</span></a>`;
-  if(!Array.isArray(sidebarHubProducts)||!sidebarHubProducts.length)return visit;
-  return visit+sidebarHubProducts.map(item=>`<a class="es-side-child" href="${escapeHTML(item.url||'#/ecosystem')}" ${item.url?'target="_blank" rel="noopener noreferrer"':''} title="${escapeHTML(item.name)}">${icon(item.url?'external-link':'orbit',16)}<span>${escapeHTML(item.name)}</span></a>`).join('');
+  const home=`<a class="es-side-child" href="#/ecosystem">${icon('orbit',17)}<span>${esLanguage==='en'?'Epsilon Hub home':'Tổng quan Epsilon Hub'}</span></a>`;
+  const groups=Array.isArray(sidebarHubProducts)&&sidebarHubProducts.length?sidebarHubProducts:[{id:'edu',name:'Epsilon Edu',icon:'book'},{id:'lab',name:'Epsilon Lab',icon:'gear'}];
+  return home+groups.map(item=>`<a class="es-side-child" href="#/ecosystem/${escapeHTML(item.id)}" title="${escapeHTML(item.name)}">${icon(item.icon||'orbit',17)}<span>${escapeHTML(item.name)}</span></a>`).join('');
  }
  const items=sidebarToolsInSection(id);
  if(!items.length)return `<p class="es-side-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào.'}</p>`;
@@ -1433,7 +2109,7 @@ function makeSidebarExpandable(id,href,label,iconName,count){
  const activeTool=route.startsWith('#/tool/')?map.get(route.slice(7)):null;
  const selected=(id==='all'&&['#/home','#/explore',''].includes(route))||
   (id==='mytools'&&route==='#/mytools')||
-  (id==='ecosystem'&&route==='#/ecosystem')||
+  (id==='ecosystem'&&route.startsWith('#/ecosystem'))||
   route==='#/category/'+id||Boolean(activeTool && id===activeTool.group);
  const escapedLabel=escapeHTML(label);
  const logo=id==='ecosystem'?'<img src="./icon-152.png" alt="" loading="lazy" decoding="async">':icon(iconName,22);
@@ -1452,9 +2128,8 @@ async function loadSidebarHubProducts(){
  sidebarHubLoading=true;
  try{
   const data=await readStaticJson(SYSTEM_JSON);
-  if(!data||!Array.isArray(data.products)||data.products.length>100)throw Error('Invalid products');
-  sidebarHubProducts=data.products.filter(p=>p&&typeof p.name==='string'&&p.name.trim()&&p.name.length<=100).map(p=>({name:p.name.trim(),url:safeExternalUrl(p.url)}));
- }catch(error){sidebarHubProducts=[];console.warn('Sidebar Epsilon Hub:',error);}
+  sidebarHubProducts=normalizedEcosystem(data).map(g=>({id:g.id,name:hubText(g,'name'),icon:g.icon}));
+ }catch(error){sidebarHubProducts=null;console.warn('Sidebar Epsilon Hub:',error);}
  finally{
   sidebarHubLoading=false;
   const panel=document.getElementById('es-side-children-ecosystem');
@@ -1487,7 +2162,7 @@ function mobileRailIsActive(entry){
  const t=hash.startsWith('#/tool/')?map.get(hash.slice(7)):null;
  return (entry.id==='mytools'&&hash==='#/mytools')||
   (entry.id==='all'&&(['','#/home','#/explore'].includes(hash)))||
-  (entry.id==='ecosystem'&&hash==='#/ecosystem')||
+  (entry.id==='ecosystem'&&hash.startsWith('#/ecosystem'))||
   hash===entry.href||Boolean(t&&entry.id===t.group);
 }
 function mobileRailFolderHtml(entry){
@@ -1512,17 +2187,15 @@ function renderMobileRail(){
  const rail=document.getElementById('es-mobile-rail');if(!rail)return;
  const existing=document.getElementById('es-mobile-rail-scroll');const left=existing?.scrollLeft||0;
  const entries=mobileRailEntries();const folder=entries.find(item=>item.id===sidebarOpenSection&&item.expand);
- const fixed=entries[0];
- rail.innerHTML=`<div class="es-mobile-rail-main">
-  <div class="es-mobile-rail-fixed">${mobileRailFolderHtml(fixed)}</div>
-  <div class="es-mobile-rail-scroll" id="es-mobile-rail-scroll" role="navigation" tabindex="0"
-   aria-label="${esLanguage==='en'?'Swipe categories horizontally':'Vuốt ngang để xem các danh mục'}">
-   ${entries.slice(1).map(mobileRailFolderHtml).join('')}
-  </div>
- </div>
- <div class="es-mobile-rail-drawer" id="es-mobile-rail-drawer" ${folder?'':'hidden'}>
+ rail.innerHTML=`<div class="es-mobile-rail-drawer" id="es-mobile-rail-drawer" ${folder?'':'hidden'}>
   ${folder?`<div class="es-mobile-rail-drawer-head"><span>${icon(folder.iconName,18)} ${escapeHTML(folder.label)}</span><button type="button" class="es-mobile-rail-drawer-close" data-mobile-folder-close aria-label="${esLanguage==='en'?'Close':'Đóng'}">${icon('close',18)}</button></div>
    <div class="es-mobile-rail-drawer-grid">${sidebarChildrenHtml(folder.id)}</div>`:''}
+ </div>
+ <div class="es-mobile-rail-main">
+  <div class="es-mobile-rail-scroll" id="es-mobile-rail-scroll" role="navigation" tabindex="0"
+   aria-label="${esLanguage==='en'?'Swipe categories horizontally':'Vuốt ngang để xem các danh mục'}">
+   ${entries.map(mobileRailFolderHtml).join('')}
+  </div>
  </div>`;
  rail.querySelector('#es-mobile-rail-scroll').scrollLeft=left;
  esTranslateRegion(rail);
@@ -1530,8 +2203,7 @@ function renderMobileRail(){
 
 function renderSidebar() {
  const nav=document.getElementById('es-side-nav');
- const foot=document.getElementById('es-side-footer');
- if(!nav||!foot)return;
+ if(!nav)return;
  const scroll=nav.scrollTop;
  nav.innerHTML=[
   makeSidebarExpandable('mytools','#/mytools','MY TOOLS','star',preferredTools().length),
@@ -1540,11 +2212,12 @@ function renderSidebar() {
   makeSidebarExpandable('all','#/explore','Tất cả công cụ','grid',DEFINITIONS.filter(t=>!t.planned).length),
   ...GROUPS.map(g=>makeSidebarExpandable(g.id,'#/category/'+g.id,g.name==='TÀI LIỆU & TIỆN ÍCH'?'Tài liệu & Tiện ích':g.name==='TÍNH TOÁN'?'Tính toán':'Kỹ thuật',g.icon,DEFINITIONS.filter(t=>t.group===g.id&&!t.planned).length))
  ].join('');
- foot.innerHTML=makeSidebarLink('portable','#/portable','Windows Portable','windows')+
-  makeSidebarLink('help','#/help','Hướng dẫn','book');
- esTranslateRegion(nav);esTranslateRegion(foot);
+ // Windows Portable and Help are already present in the desktop header.
+ // Mobile keeps its horizontal shortcuts because its header navigation is hidden.
+ esTranslateRegion(nav);
  nav.scrollTop=scroll;
  renderMobileRail();
+ refreshHeaderMyTools();
 }
 function buildSidebarShell() {
  const wrap = document.createElement('div');
@@ -1554,7 +2227,7 @@ function buildSidebarShell() {
  sidebar.id = 'es-sidebar';
  sidebar.className = 'es-sidebar';
  sidebar.setAttribute('aria-label','Danh mục Epsilon Soft');
- sidebar.innerHTML = `<div class="es-sidebar-top"><strong class="es-sidebar-title">DANH MỤC</strong><button type="button" class="es-side-toggle" id="es-side-toggle" aria-label="Thu gọn thanh danh mục" title="Thu gọn thanh danh mục">${icon('panel-left-close',21)}</button></div><nav class="es-side-nav" id="es-side-nav" aria-label="Công cụ và hệ sinh thái"></nav><div class="es-sidebar-bottom" id="es-side-footer"></div>`;
+ sidebar.innerHTML = `<div class="es-sidebar-top"><strong class="es-sidebar-title">DANH MỤC</strong><button type="button" class="es-side-toggle" id="es-side-toggle" aria-label="Thu gọn thanh danh mục" title="Thu gọn thanh danh mục">${icon('panel-left-close',21)}</button></div><nav class="es-side-nav" id="es-side-nav" aria-label="Công cụ và hệ sinh thái"></nav>`;
  main.parentNode.insertBefore(wrap,main);
  const mobileRail=document.createElement('nav');
  mobileRail.className='es-mobile-rail';
@@ -1740,6 +2413,27 @@ async function esInstallWebApp(button){
  }
 }
 
+function engineeringBridgeHtml(){
+ // Epsilon Lab has its own product catalog (assets/data/ecosystem.json).
+ // Until a product URL is published, this CTA opens the Lab catalog—not a fake Pro tool.
+ return `<aside class="es-eng-bridge" aria-label="Epsilon Soft Basic và định hướng Epsilon Lab Pro">
+  <div class="es-eng-half es-eng-basic">
+   <span class="es-eng-symbol" aria-hidden="true">${icon('gear',23)}</span>
+   <div class="es-eng-copy">
+    <div class="es-eng-label"><strong>EPSILON SOFT · BASIC</strong><span>MIỄN PHÍ</span></div>
+    <p>Các công cụ tại đây là phiên bản cơ bản, phù hợp tính toán và tra cứu kỹ thuật hằng ngày.</p>
+   </div>
+  </div>
+  <div class="es-eng-half es-eng-pro">
+   <span class="es-eng-symbol" aria-hidden="true">${icon('beam',22)}</span>
+   <div class="es-eng-copy">
+    <div class="es-eng-label"><strong>EPSILON LAB · PRO</strong><span>ĐỊNH HƯỚNG PHÁT TRIỂN</span></div>
+    <p>Công cụ kỹ thuật chuyên sâu sẽ được phát triển trong Epsilon Lab.</p>
+   </div>
+   <a class="es-eng-cta" href="#/ecosystem/lab" aria-label="Khám phá Epsilon Lab trong Epsilon Hub">Khám phá Epsilon Lab ${icon('arrow',16)}</a>
+  </div>
+ </aside>`;
+}
 function currentCatalogData(){
  if(activeCatalog==='mytools')return { name:'MY TOOLS', sub:'Các công cụ anh/chị đã ghim bằng ngôi sao',icon:'star', tools:preferredTools() };
  if(activeCatalog==='all')return { name:'Tất cả công cụ',sub:'Chọn công cụ phù hợp hoặc tìm kiếm nhanh',icon:'grid',tools:DEFINITIONS.filter(t=>!t.planned) };
@@ -1792,40 +2486,114 @@ function syncMobileInformationOrder(){
  const hero=panel.querySelector(':scope > .es-main-banner');
  const content=panel.querySelector(':scope > .es-directory,:scope > .es-landing-info');
  if(!hero||!content)return;
- if(window.matchMedia('(max-width:720px)').matches){
+ if(window.innerWidth<window.innerHeight){
   if(content.nextElementSibling!==hero)content.after(hero);
  }else if(panel.firstElementChild!==hero){
   panel.insertBefore(hero,content);
  }
 }
 
-function catalogHtml(){return `<div class="page-home es-dashboard-layout">${heroBannerHtml()}<section class="es-directory" id="directory" aria-labelledby="catalog-title"><div class="es-directory-header"><div class="es-directory-title-row"><span class="es-directory-emblem" id="catalog-icon">${icon('grid',23)}</span><div><h1 class="es-directory-title" id="catalog-title">Tất cả công cụ</h1><p class="es-directory-sub" id="catalog-sub">Chọn công cụ phù hợp hoặc tìm kiếm nhanh</p></div><span class="es-directory-total" id="catalog-count">${DEFINITIONS.length}</span></div><div class="es-catalog-toolbar"><label class="search-box" for="tool-search">${icon('search',20)}<input id="tool-search" type="search" maxlength="100" autocomplete="off" placeholder="Tìm công cụ..." aria-label="Tìm kiếm công cụ"></label><div class="view-toggle" aria-label="Chế độ hiển thị"><button class="toggle-button ${displayMode==='grid'?'active':''}" type="button" aria-label="Dạng lưới" data-view="grid" title="Dạng lưới">${icon('grid',21)}</button><button class="toggle-button ${displayMode==='list'?'active':''}" type="button" aria-label="Dạng danh sách" data-view="list" title="Dạng danh sách">${icon('list',21)}</button></div></div></div><div class="es-directory-grid" id="tool-columns" tabindex="0" role="region" aria-label="Danh sách công cụ, dùng chuột hoặc phím mũi tên để cuộn"></div></section>${portableBannerHtml()}</div>`;}
+function catalogHtml(){return `<div class="page-home es-dashboard-layout">${heroBannerHtml()}<section class="es-directory ${activeCatalog==='engineering'?'es-directory-engineering':''}" id="directory" aria-labelledby="catalog-title"><div class="es-directory-header"><div class="es-directory-title-row"><span class="es-directory-emblem" id="catalog-icon">${icon('grid',23)}</span><div><h1 class="es-directory-title" id="catalog-title">Tất cả công cụ</h1><p class="es-directory-sub" id="catalog-sub">Chọn công cụ phù hợp hoặc tìm kiếm nhanh</p></div><span class="es-directory-total" id="catalog-count">${DEFINITIONS.length}</span></div><div class="es-catalog-toolbar"><label class="search-box" for="tool-search">${icon('search',20)}<input id="tool-search" type="search" maxlength="100" autocomplete="off" placeholder="Tìm công cụ..." aria-label="Tìm kiếm công cụ"></label><div class="view-toggle" aria-label="Chế độ hiển thị"><button class="toggle-button ${displayMode==='grid'?'active':''}" type="button" aria-label="Dạng lưới" data-view="grid" title="Dạng lưới">${icon('grid',21)}</button><button class="toggle-button ${displayMode==='list'?'active':''}" type="button" aria-label="Dạng danh sách" data-view="list" title="Dạng danh sách">${icon('list',21)}</button></div></div></div>${activeCatalog==='engineering'?engineeringBridgeHtml():''}<div class="es-directory-grid" id="tool-columns" role="region" aria-label="Danh sách công cụ"></div></section></div>`;}
 function heroBannerHtml(){
+ return `<section class="hero es-main-banner" aria-label="Giới thiệu các công cụ Epsilon Soft">
+  <div class="hero-copy es-hero-copy-v3">
+   <div class="es-hero-kicker-v3">
+    <span class="es-hero-kicker-left">${icon('grid',16)}<span>BỘ CÔNG CỤ MIỄN PHÍ</span></span>
+    <nav class="es-hero-shortcuts" aria-label="${esLanguage==='en'?'Quick access to Studios':'Mở nhanh công cụ Studio'}">
+     <a class="es-hero-shortcut es-hero-shortcut-pdf" href="#/tool/pdf" aria-label="${esLanguage==='en'?'Open PDF Studio':'Mở PDF Studio'}"><span class="es-hero-shortcut-icon">${icon('pdf',16)}</span><span>PDF Studio</span></a>
+     <a class="es-hero-shortcut es-hero-shortcut-image" href="#/tool/image-studio" aria-label="${esLanguage==='en'?'Open Image Studio':'Mở Image Studio'}"><span class="es-hero-shortcut-icon">${icon('image',16)}</span><span>Image Studio</span></a>
+    </nav>
+   </div>
+   <h1 class="es-hero-headline-v3"><span>Làm việc</span><strong>nhanh hơn mỗi ngày.</strong></h1>
+   <p class="es-hero-subline-v3">Tính toán · Kỹ thuật · PDF · Tiện ích</p>
+   <div class="es-hero-benefits-v3" aria-label="Lợi ích Epsilon Soft">
+    <span>${icon('check',15)} Miễn phí</span>
+    <span>${icon('shield',15)} Không cần tài khoản</span>
+    <span>${icon('check',15)} Dùng ngay</span>
+   </div>
+  </div><div class="hero-art" aria-hidden="true"></div>
+ </section>`;
+}
+// Buttons are mounted once in the real site footer, not between catalog and decorative banner.
+// Their click handlers use the existing delegated document events.
+function pageActionButtonsHtml(){
  const m=BANNER_CONTENT.main;
- return `<section class="hero es-main-banner" aria-label="Giới thiệu Epsilon Soft"><div class="hero-copy"><p class="eyebrow">${escapeHTML(m.eyebrow)}</p><h1 class="hero-title">${escapeHTML(m.brand)} <strong>${escapeHTML(m.branch)}</strong></h1><p class="hero-subtitle">${escapeHTML(m.tagline)}</p><p class="hero-description">${escapeHTML(m.description)}</p><div class="hero-perks">${m.perks.map(item=>`<span><i class="check-dot">${icon('check',17)}</i>${escapeHTML(item)}</span>`).join('')}</div></div><div class="hero-art" aria-hidden="true"></div><aside class="hero-cta"><div class="es-hero-info"><h2>${escapeHTML(m.cardTitle)}<br>${escapeHTML(m.cardTitleSecond)}</h2>${m.cardBullets.map(item=>`<p>${icon('check',20)}${escapeHTML(item)}</p>`).join('')}</div><div class="es-hero-actions"><button type="button" class="button button-yellow es-hero-install" data-es-install aria-label="Cài APP Epsilon Soft lên thiết bị">${icon('app-plus',19)} <span>${escapeHTML(m.installLabel)}</span></button><button type="button" class="button es-hero-about" data-es-about aria-label="Giới thiệu và liên hệ Epsilon Soft">${icon('contact-card',19)} <span>${escapeHTML(m.aboutLabel)}</span></button></div></aside></section>`;
+ return `<section class="es-bottom-actions" aria-label="${esLanguage==='en'?'Installation and contact':'Cài đặt và liên hệ'}"><button type="button" class="button es-action-install" data-es-install aria-label="Cài APP Epsilon Soft lên thiết bị">${icon('app-plus',19)} <span>${escapeHTML(m.installLabel)}</span></button><button type="button" class="button es-action-about" data-es-about aria-label="Giới thiệu và liên hệ Epsilon Soft">${icon('contact-card',19)} <span>${escapeHTML(m.aboutLabel)}</span></button></section>`;
+}
+/** Place the global install/contact actions in the actual HTML footer, once per page. */
+function mountFooterActions(){
+ const footer=document.querySelector('.site-footer');
+ if(!footer || footer.querySelector('.es-footer-actions'))return;
+ const shell=document.createElement('div');
+ shell.innerHTML=pageActionButtonsHtml();
+ const actions=shell.firstElementChild;
+ if(!actions)return;
+ actions.classList.add('es-footer-actions');
+ const bottom=footer.querySelector('.footer-bottom');
+ if(bottom)bottom.before(actions);else footer.append(actions);
 }
 function portableBannerHtml(){
  return `<section class="portable-strip es-footer-banner" id="portable" aria-label="Hình minh họa Epsilon Soft"><img class="es-footer-background" src="./assets/images/footer.png" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="portable-laptop" src="./assets/images/es-laptop.png" alt="Giao diện Epsilon Soft hiển thị trên máy tính xách tay" loading="eager" decoding="async"></section>`;
 }
-function landingInfoHtml(content){return `<div class="page-home es-restored-landing">${heroBannerHtml()}<div class="es-landing-info">${content}</div>${portableBannerHtml()}</div>`;}
-function helpHtml(){return `<div class="es-static-page"><section class="es-static-intro"><span class="es-static-intro-icon">${icon('book',30)}</span><div><h1>Hướng dẫn sử dụng</h1><p>Epsilon Soft miễn phí, không yêu cầu tài khoản.</p></div></section><div class="es-portable-guide"><article class="tool-box"><h2 class="tool-box-heading">${icon('star')} MY TOOLS</h2><p>Nhấn ngôi sao ⭐ trên công cụ để ghim. Chỉ công cụ đã ghim mới xuất hiện trong MY TOOLS. Dữ liệu này được lưu trên trình duyệt hiện tại.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Danh mục và tìm kiếm</h2><p>Chọn chủ đề trên trang chủ hoặc trong sidebar khi đang dùng công cụ. Gõ tên công cụ trong ô tìm kiếm; phím / giúp mở ô tìm kiếm nhanh.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('shield')} Dữ liệu và quyền riêng tư</h2><p>Các công cụ ưu tiên xử lý dữ liệu ngay tại trình duyệt. Một số module có thể tải thư viện từ nguồn ngoài; hãy xem giới hạn và hướng dẫn ngay trong module.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('info')} Kết quả kỹ thuật</h2><p>Đối chiếu đơn vị đo, đầu vào và tiêu chuẩn áp dụng trước khi sử dụng số liệu trong công việc thực tế.</p></article></div></div>`;}
-function ecosystemLoadingHtml(){return `<div class="es-static-page"><section class="es-static-intro es-hub-intro"><span class="es-static-intro-icon es-hub-logo"><img src="./icon-192.png" alt=""></span><div><h1 class="es-hub-wordmark"><span>EPSILON</span><strong>HUB</strong></h1><p>Kết nối các sản phẩm và ứng dụng thuộc hệ sinh thái Epsilon.</p></div></section><div class="es-system-grid" id="es-system-products"><div class="tool-box" role="status">Đang tải danh sách sản phẩm...</div></div></div>`;}
+function landingInfoHtml(content){return `<div class="page-home es-restored-landing">${heroBannerHtml()}<div class="es-landing-info">${content}</div></div>`;}
+function helpHtml(){return `<div class="es-static-page">
+ <section class="es-static-intro"><span class="es-static-intro-icon">${icon('book',30)}</span><div><h1>Hướng dẫn sử dụng</h1><p>Epsilon Soft miễn phí, không yêu cầu tài khoản.</p></div></section>
+ <div class="es-portable-guide">
+  <section class="tool-box es-help-install-card" aria-labelledby="es-help-install-title">
+   <h2 class="tool-box-heading" id="es-help-install-title">${icon('app-plus')} Cài APP trên điện thoại, máy tính bảng và Windows</h2>
+   <p class="es-help-install-intro">Nhấn nút Cài APP ở cuối trang hoặc bên dưới để thêm Epsilon Soft vào thiết bị như một ứng dụng.</p>
+   <div class="es-help-install-devices">
+    <div class="es-help-install-device"><h3>${icon('monitor',20)} Windows (Chrome / Edge)</h3><p>Nhấn Cài APP và xác nhận Cài đặt khi trình duyệt hỏi. Nếu không hiện hộp thoại, mở menu Chrome/Edge hoặc biểu tượng cài đặt trên thanh địa chỉ.</p></div>
+    <div class="es-help-install-device"><h3>${icon('smartphone',20)} Android (Chrome)</h3><p>Mở trang bằng Chrome, nhấn Cài APP. Nếu không thấy hộp thoại cài đặt, chọn menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.</p></div>
+    <div class="es-help-install-device"><h3>${icon('tablet',20)} iPhone / iPad (Safari)</h3><p>Mở trang bằng Safari, chọn Chia sẻ → Thêm vào Màn hình chính. Nút Cài APP trên trang sẽ hiện hướng dẫn nếu Safari không hỗ trợ hộp thoại cài đặt.</p></div>
+   </div>
+   <div class="es-help-install-bottom">
+    <button type="button" class="button es-help-install-button" data-es-install aria-label="Cài APP Epsilon Soft lên thiết bị">${icon('app-plus',19)} Cài APP</button>
+    <p class="es-help-install-note">Đây là Web App, không phải file EXE Portable. Cần trình duyệt hỗ trợ và website HTTPS; một số thiết bị chỉ tạo lối tắt, và một số công cụ vẫn cần Internet.</p>
+   </div>
+  </section>
+  <article class="tool-box"><h2 class="tool-box-heading">${icon('star')} MY TOOLS</h2><p>Nhấn ngôi sao ⭐ trên công cụ để ghim. Chỉ công cụ đã ghim mới xuất hiện trong MY TOOLS. Dữ liệu này được lưu trên trình duyệt hiện tại.</p></article>
+  <article class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Danh mục và tìm kiếm</h2><p>Chọn chủ đề trên trang chủ hoặc trong sidebar khi đang dùng công cụ. Gõ tên công cụ trong ô tìm kiếm; phím / giúp mở ô tìm kiếm nhanh.</p></article>
+  <article class="tool-box"><h2 class="tool-box-heading">${icon('shield')} Dữ liệu và quyền riêng tư</h2><p>Các công cụ ưu tiên xử lý dữ liệu ngay tại trình duyệt. Một số module có thể tải thư viện từ nguồn ngoài; hãy xem giới hạn và hướng dẫn ngay trong module.</p></article>
+  <article class="tool-box"><h2 class="tool-box-heading">${icon('info')} Kết quả kỹ thuật</h2><p>Đối chiếu đơn vị đo, đầu vào và tiêu chuẩn áp dụng trước khi sử dụng số liệu trong công việc thực tế.</p></article>
+ </div></div>`;}
+function ecosystemLoadingHtml(groupId=''){
+ const group=groupId==='edu'||groupId==='lab';
+ const heading=group?(groupId==='edu'?'Epsilon Edu':'Epsilon Lab'):'';
+ return `<div class="es-static-page">
+ <section class="es-static-intro es-hub-intro">
+  <span class="es-static-intro-icon ${group?'es-hub-group-icon':'es-hub-logo'}">${group?icon(groupId==='edu'?'book':'gear',34):'<img src="./icon-192.png" alt="">'}</span>
+  <div>${group?`<h1 id="es-hub-group-heading">${heading}</h1><p id="es-hub-group-sub">${esLanguage==='en'?'Browse products by category':'Khám phá các sản phẩm trong nhóm'}</p>`:`<h1 class="es-hub-wordmark"><span>EPSILON</span><strong>HUB</strong></h1><p>Kết nối các sản phẩm và ứng dụng thuộc hệ sinh thái Epsilon.</p>`}</div>
+ </section>
+ <div id="es-system-products" role="region" aria-label="${esLanguage==='en'?'Epsilon ecosystem':'Danh mục sản phẩm Epsilon'}"><div class="tool-box" role="status">${esLanguage==='en'?'Loading products...':'Đang tải danh sách sản phẩm...'}</div></div>
+ </div>`;
+}
 async function populateEcosystem(token){
  const target=main.querySelector('#es-system-products');if(!target)return;
  try{
   const data=await readStaticJson(SYSTEM_JSON);
   if(token!==currentRoute||!target.isConnected)return;
-  if(!data||!Array.isArray(data.products)||data.products.length>100)throw Error('Danh sách sản phẩm không hợp lệ.');
-  const allowedIcons=new Set(['book','files','image','calculator','windows','grid','lightbulb','home','shield','orbit']);
-  const items=data.products.filter(p=>p && typeof p.name==='string'&&p.name.trim()&&p.name.length<=100&&typeof p.description==='string'&&p.description.length<=360);
-  if(!items.length){target.innerHTML='<div class="tool-box">Chưa có sản phẩm nào trong danh mục.</div>';return;}
-  target.innerHTML=items.map(p=>{
-   const external=safeExternalUrl(p.url);
-   const pic=typeof p.logo==='string'&&/^assets\/images\/[a-z0-9_./-]+\.(?:png|jpe?g|webp)$/i.test(p.logo)&&!p.logo.includes('..')?`<img src="./${escapeHTML(p.logo)}" alt="" loading="lazy">`:icon(allowedIcons.has(p.icon)?p.icon:'grid',30);
-   return `<article class="es-system-card"><div class="es-system-head"><span class="es-system-logo">${pic}</span><h2>${escapeHTML(p.name)}</h2></div><p>${escapeHTML(p.description)}</p>${external?`<a class="es-system-link" href="${escapeHTML(external)}" target="_blank" rel="noopener noreferrer">Truy cập sản phẩm ${icon('external-link',17)}</a>`:'<span class="es-system-pending">Liên kết đang được cập nhật</span>'}</article>`;
-  }).join('');
- }catch(error){if(token!==currentRoute)return;console.warn('Epsilon Hub data:',error);target.innerHTML='<div class="tool-box"><p>Không tải được danh sách sản phẩm từ <code>assets/data/ecosystem.json</code>.</p><button type="button" class="button button-outline" data-retry-system>Thử tải lại</button></div>';}
- finally {if(target.isConnected)esTranslateRegion(target);}
+  const groups=normalizedEcosystem(data);
+  const match=location.hash.match(/^#\/ecosystem\/([a-z0-9-]+)$/);
+  const group=match?groups.find(g=>g.id===match[1]):null;
+  if(match && !group){
+   target.innerHTML=`<div class="es-hub-empty">${esLanguage==='en'?'Category not found.':'Không tìm thấy nhóm sản phẩm.'} <a href="#/ecosystem">${esLanguage==='en'?'Back to Hub':'Về Epsilon Hub'}</a></div>`;
+   return;
+  }
+  if(!group){
+   target.innerHTML=`<div class="es-hub-families">${groups.map(hubFamilyHtml).join('')}</div>`;
+  }else{
+   const header=main.querySelector('#es-hub-group-heading');if(header)header.textContent=hubText(group,'name');
+   const sub=main.querySelector('#es-hub-group-sub');if(sub)sub.textContent=hubText(group,'description');
+   target.innerHTML=`<nav class="es-hub-breadcrumb" aria-label="Breadcrumb"><a href="#/ecosystem">${esLanguage==='en'?'Epsilon Hub':'Epsilon Hub'}</a> ${icon('arrow',16)} <span>${escapeHTML(hubText(group,'name'))}</span></nav>
+    <div class="es-hub-section-title"><h2>${esLanguage==='en'?'Applications':'Danh sách ứng dụng'}</h2><span class="es-hub-section-total">${group.products.length}</span></div>
+    ${group.products.length?`<div class="es-hub-products">${group.products.map(hubProductHtml).join('')}</div>`:`<div class="es-hub-empty">${esLanguage==='en'?'The product list is being updated. Add an item in assets/data/ecosystem.json.':'Danh sách sản phẩm đang được cập nhật. Anh thêm sản phẩm vào assets/data/ecosystem.json.'}</div>`}`;
+  }
+ }catch(error){
+  if(token!==currentRoute||!target.isConnected)return;
+  console.warn('Epsilon Hub data:',error);
+  target.innerHTML=`<div class="tool-box"><p>${esLanguage==='en'?'Cannot load ecosystem.json.':'Không tải được danh sách sản phẩm từ'} <code>assets/data/ecosystem.json</code>.</p><button type="button" class="button button-outline" data-retry-system>${esLanguage==='en'?'Retry':'Thử tải lại'}</button></div>`;
+ }finally{if(target.isConnected)esTranslateRegion(target);}
 }
 function portableHtml(){return `<div class="es-static-page"><section class="es-static-intro"><span class="es-static-intro-icon">${icon('windows',30)}</span><div><h1>Windows Portable</h1><p>Thông tin, lợi ích và hướng dẫn sử dụng. Liên kết tải nằm trong từng công cụ Web.</p></div></section><div class="es-portable-guide"><article class="tool-box"><h2 class="tool-box-heading">${icon('info')} Portable là gì?</h2><p>Phiên bản Windows chạy trực tiếp, thường không cần trình cài đặt. Hữu ích khi làm việc offline hoặc cần một tiện ích chuyên dụng trên máy tính.</p><p><strong>Web App vẫn là nền tảng ưu tiên:</strong> sử dụng ngay không cần tải xuống.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('download')} Cách tải từ từng công cụ</h2><ul><li>Mở công cụ Web cần sử dụng.</li><li>Nhấn nút <strong>Portable</strong> cạnh MY TOOLS.</li><li>Nếu có bản công khai, liên kết Google Drive sẽ mở trong tab mới.</li><li>Nếu chưa có, hệ thống thông báo để bạn có thể liên hệ quản trị viên.</li></ul></article><article class="tool-box"><h2 class="tool-box-heading">${icon('shield')} Cảnh báo Windows SmartScreen</h2><p>Windows có thể cảnh báo với file EXE ít phổ biến hoặc chưa được ký số. Hãy xác minh nguồn tải, tên file, phiên bản và quét bằng Windows Security trước khi chạy. Không bỏ qua cảnh báo nếu không chắc chắn file đáng tin cậy.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('windows')} Sử dụng và lưu ý</h2><ul><li>Tải EXE về thư mục có quyền ghi phù hợp, mở trực tiếp trên Windows tương thích.</li><li>Kiểm tra hướng dẫn đi kèm từng bản phát hành.</li><li>Không dùng bản đang test nội bộ như bản phát hành công khai.</li><li>ES TOOLKIT V1.0 hiện vẫn trong giai đoạn thử nghiệm nội bộ.</li></ul></article></div><div class="callout warning">Trang này chỉ cung cấp hướng dẫn, không chứa nút hoặc liên kết tải EXE.</div></div>`;}
 function relatedHtml(toolId){return `<section class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Công cụ liên quan</h2><div class="related-tools">${DEFINITIONS.filter(t=>!t.planned&&t.id!==toolId).slice(0,4).map(t=>`<a href="#/tool/${t.id}"><span class="tool-tile ${t.tone}">${icon(t.icon,21)}</span><span class="related-tool-name">${t.name}</span>${icon('arrow',16)}</a>`).join('')}</div></section>`;}
@@ -1844,6 +2612,7 @@ async function showPortableAction(toolId,token){
  else{slot.innerHTML=`<button type="button" class="button es-portable-button" data-portable-unavailable="${escapeHTML(toolId)}" title="Kiểm tra bản Windows Portable">${icon('windows',19)} Portable</button>`;}
 }
 function navActive(active){
+ closeHeaderMyTools();
  document.querySelectorAll('.nav-link').forEach(link=>link.classList.toggle('is-active',link.dataset.nav===active));
  document.getElementById('main-nav')?.classList.remove('open');
  renderSidebar();closeMobileSidebar();
@@ -1887,15 +2656,15 @@ async function navigate(){
  if(route==='#/portable'){
   navActive('portable');main.innerHTML=landingInfoHtml(portableHtml());syncMobileInformationOrder();window.scrollTo({top:0,behavior:'auto'});return;
  }
- if(route==='#/ecosystem'){
-  navActive('hub');main.innerHTML=landingInfoHtml(ecosystemLoadingHtml());syncMobileInformationOrder();renderSidebar();window.scrollTo({top:0,behavior:'auto'});
+ if(route==='#/ecosystem'||/^#\/ecosystem\/[a-z0-9-]+$/.test(route)){
+  navActive('hub');main.innerHTML=landingInfoHtml(ecosystemLoadingHtml(route.split('/')[2]||''));syncMobileInformationOrder();renderSidebar();window.scrollTo({top:0,behavior:'auto'});
   void populateEcosystem(token);return;
  }
  if(route==='#/mytools')activeCatalog='mytools';
  else if(route.startsWith('#/category/')){
   const group=route.slice('#/category/'.length);activeCatalog=GROUPS.some(g=>g.id===group)?group:'all';
  }else activeCatalog='all';
- navActive(route==='#/home'?'home':'explore');
+ navActive(route==='#/mytools'?'mytools':route==='#/home'?'home':'explore');
  main.innerHTML=catalogHtml();
  syncMobileInformationOrder();
  renderGroupCards();
@@ -1908,24 +2677,40 @@ async function safeNavigate(){
   main.innerHTML='<section class="startup-panel" role="alert"><h1>Không thể hiển thị trang</h1><p>Vui lòng kiểm tra assets/js/app.js và các tệp trong assets/data/, sau đó tải lại trang.</p></section>';
  }
 }
-readPreferences();hydrateIcons();enhanceHeaderNavigation();esBuildLanguagePicker();buildSidebarShell();buildAppDialog();esUpdateLanguageButtons();esTranslateRegion(document.body);
-const esMobileInfoMedia=window.matchMedia('(max-width:720px)');
-if(typeof esMobileInfoMedia.addEventListener==='function'){
- esMobileInfoMedia.addEventListener('change',syncMobileInformationOrder);
-}else if(typeof esMobileInfoMedia.addListener==='function'){
- esMobileInfoMedia.addListener(syncMobileInformationOrder);
+readPreferences();hydrateIcons();enhanceHeaderNavigation();buildHeaderMyTools();esBuildLanguagePicker();buildSidebarShell();buildAppDialog();mountFooterActions();esUpdateLanguageButtons();esTranslateRegion(document.body);
+function esUpdatePortraitLayout(){
+ const portrait=window.innerWidth < window.innerHeight;
+ const previous=document.body.classList.contains('es-portrait-layout');
+ document.body.classList.toggle('es-portrait-layout',portrait);
+ if(previous!==portrait){
+  closeHeaderMyTools();
+  sidebarOpenSection=null;
+  syncMobileInformationOrder();
+  renderSidebar();
+ }
 }
+document.body.classList.toggle('es-portrait-layout',window.innerWidth < window.innerHeight);
+window.addEventListener('resize',esUpdatePortraitLayout,{passive:true});
 window.addEventListener('hashchange',safeNavigate);
 document.getElementById('menu-toggle')?.addEventListener('click',()=>{
  if(document.getElementById('es-sidebar')?.classList.contains('es-mobile-open'))closeMobileSidebar();
  else openMobileSidebar();
 });
 document.addEventListener('keydown',event=>{
- if(event.key==='Escape' && sidebarOpenSection!==null && window.matchMedia('(max-width:720px)').matches){
+ if(event.key==='Escape' && sidebarOpenSection!==null && window.innerWidth < window.innerHeight){
   sidebarOpenSection=null;renderSidebar();document.getElementById('es-mobile-rail-scroll')?.focus();
  }
 });
 document.addEventListener('click',event=>{
+ const headerToggle=event.target.closest('[data-header-mytools-toggle]');
+ if(headerToggle){
+  event.preventDefault();
+  const area=document.getElementById('es-header-mytools');const menu=area?.querySelector('#es-header-mytools-menu');
+  if(menu){const willOpen=menu.hidden;menu.hidden=!willOpen;headerToggle.setAttribute('aria-expanded',String(willOpen));}
+  return;
+ }
+ if(event.target.closest('#es-header-mytools-menu a,#es-header-mytools-link'))closeHeaderMyTools();
+ else if(!event.target.closest('#es-header-mytools'))closeHeaderMyTools();
  const lang=event.target.closest('[data-es-lang]');if(lang){esSetLanguage(lang.dataset.esLang);return;}
  const install=event.target.closest('[data-es-install]');if(install){event.preventDefault();void esInstallWebApp(install);return;}
  const about=event.target.closest('[data-es-about]');if(about){event.preventDefault();esOpenHeroDialog('about');return;}
@@ -1983,7 +2768,7 @@ document.addEventListener('input',event=>{
 });
 document.addEventListener('keydown',event=>{
  if(event.key==='Escape'){
-  esCloseHeroDialog();closeAppDialog();closeMobileSidebar();closeMainMenu();return;
+  closeHeaderMyTools(true);esCloseHeroDialog();closeAppDialog();closeMobileSidebar();closeMainMenu();return;
  }
  const heroLayer=document.getElementById('es-hero-dialog-layer');
  if(event.key==='Tab' && heroLayer && !heroLayer.hidden){
