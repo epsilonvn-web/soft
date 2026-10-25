@@ -330,6 +330,19 @@ function mapping(key) {
   return /^[0-9.+*/()%e-]$/.test(key) ? key : null;
 }
 
+/** Use K-CALC's own keypad on touch-first phones/tablets, in both orientations. */
+function usesTouchKeypad() {
+  const points = navigator.maxTouchPoints || 0;
+  const primaryTouch = typeof window.matchMedia === 'function' &&
+    window.matchMedia('(pointer: coarse)').matches;
+  const touchWithoutHover = points > 0 && typeof window.matchMedia === 'function' &&
+    window.matchMedia('(hover: none)').matches;
+  // iPadOS may report a desktop Mac user agent when using a trackpad.
+  const ipadOS = navigator.platform === 'MacIntel' && points > 1;
+  const mobileOS = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return primaryTouch || touchWithoutHover || ipadOS || mobileOS;
+}
+
 export function mount(root, ctx) {
   if (!icon) throw new Error('Thiếu thành phần giao diện EpsilonSoftShared.');
   root.innerHTML = `<style>${STYLES}</style>
@@ -346,7 +359,7 @@ export function mount(root, ctx) {
         <div class="kc-card-head"><strong class="kc-wordmark">K-CALC</strong><span id="kc-badge" class="kc-angle">DEG</span></div>
         <div class="kc-history" id="kc-history" aria-label="Lịch sử tính toán"></div>
         <div class="kc-expression-head"><label for="kc-input">PHÉP TÍNH</label><button type="button" class="kc-new" id="kc-new">+ New</button></div>
-        <input id="kc-input" class="kc-input" aria-label="Nhập biểu thức" inputmode="text" spellcheck="false" autocomplete="off" maxlength="500" placeholder="Nhập phép tính..." >
+        <input id="kc-input" class="kc-input" aria-label="Nhập biểu thức" inputmode="none" spellcheck="false" autocomplete="off" maxlength="500" placeholder="Nhập phép tính..." >
         <div class="kc-result-head"><span class="kc-result-label">Kết quả</span><button type="button" id="kc-copy" class="kc-copy" title="Sao chép kết quả">${icon('copy',17)} Sao chép</button></div>
         <div id="kc-result" class="kc-result" aria-live="polite">0</div>
         <div id="kc-notice" class="kc-notice" role="status" aria-live="polite"></div>
@@ -356,6 +369,18 @@ export function mount(root, ctx) {
   </section>`;
   const $ = s => root.querySelector(s);
   const input = $('#kc-input');
+  const touchKeypadOnly = usesTouchKeypad();
+  // inputmode=none requests no OS keyboard; readOnly covers Safari/iPadOS.
+  // Programmatic setRangeText()/selection continues to work on a read-only input.
+  input.readOnly = touchKeypadOnly;
+  input.inputMode = touchKeypadOnly ? 'none' : 'text';
+  if (touchKeypadOnly) {
+    input.setAttribute('aria-description', 'Chạm các phím K-CALC để nhập, không dùng bàn phím hệ thống.');
+  }
+  // Read-only touch inputs can reset their DOM selection to 0 when a keypad
+  // button receives focus. Store the actual edit range separately.
+  let touchCaretStart = 0;
+  let touchCaretEnd = 0;
   const history = $('#kc-history');
   const result = $('#kc-result');
   const notice = $('#kc-notice');
@@ -416,34 +441,53 @@ export function mount(root, ctx) {
       if (key === 'DEG' || key === 'RAD') b.setAttribute('aria-pressed', String((key === 'DEG') === session.deg));
       keypad.append(b);
     }));
-    $('#kc-caption').textContent = session.science
-      ? 'Có thể nhập bằng bàn phím. Enter hoặc = để tính. Nhập asin(...), acos(...), atan(...), abs(...) nếu cần.'
-      : 'Máy tính cơ bản: cộng, trừ, nhân, chia, ngoặc và xóa. Enter hoặc = để tính.';
+    $('#kc-caption').textContent = touchKeypadOnly
+      ? 'Chạm các phím K-CALC để nhập phép tính. Bàn phím hệ thống được tắt trên thiết bị cảm ứng.'
+      : session.science
+        ? 'Có thể nhập bằng bàn phím. Enter hoặc = để tính. Nhập asin(...), acos(...), atan(...), abs(...) nếu cần.'
+        : 'Máy tính cơ bản: cộng, trừ, nhân, chia, ngoặc và xóa. Enter hoặc = để tính.';
   }
-  function focusInput() { try { input.focus({preventScroll:true}); } catch { input.focus(); } }
+  function focusInput() {
+    // Avoid reopening/scrolling toward the native keyboard after each tap.
+    if (touchKeypadOnly) return;
+    try { input.focus({preventScroll:true}); } catch { input.focus(); }
+  }
+  function editRange() {
+    if (touchKeypadOnly) return {start: touchCaretStart, end: touchCaretEnd};
+    const start = input.selectionStart ?? input.value.length;
+    return {start, end: input.selectionEnd ?? start};
+  }
+  function setEditRange(start, end = start) {
+    if (touchKeypadOnly) { touchCaretStart = start; touchCaretEnd = end; }
+    input.setSelectionRange(start, end);
+  }
   function regroup(start, end) {
     const before = input.value;
     const after = groupCalculatorExpression(before);
     if (before !== after) {
       input.value = after;
-      input.setSelectionRange(rebaseCaret(before, after, start), rebaseCaret(before, after, end));
+      start = rebaseCaret(before, after, start);
+      end = rebaseCaret(before, after, end);
+      input.setSelectionRange(start, end);
     }
+    if (touchKeypadOnly) { touchCaretStart = start; touchCaretEnd = end; }
     session.expr = input.value;
   }
   function replaceSelection(token) {
-    const start = input.selectionStart ?? input.value.length;
-    const end = input.selectionEnd ?? start;
+    const {start, end} = editRange();
     if (input.value.length - (end-start) + token.length > 500) {
       setNotice('Biểu thức chỉ được dài tối đa 500 ký tự.', true);
       return;
     }
     input.setRangeText(token, start, end, 'end');
-    regroup(input.selectionStart ?? input.value.length, input.selectionEnd ?? input.value.length);
+    regroup(touchKeypadOnly ? start + token.length : input.selectionStart ?? input.value.length,
+      touchKeypadOnly ? start + token.length : input.selectionEnd ?? input.value.length);
     session.error = '';
     renderResult(); setNotice(''); focusInput();
   }
   function resetExpression() {
     input.value = '';
+    setEditRange(0);
     session.expr = '';
     session.result = '0'; session.error = '';
     renderResult(); setNotice(''); focusInput();
@@ -476,8 +520,7 @@ export function mount(root, ctx) {
       case 'M+': session.memory += session.ans; session.hasMemory = true; setNotice('Đã cộng Ans vào bộ nhớ'); break;
       case 'CLR': session.history = []; session.error = ''; session.result = '0'; session.ans = 0; renderHistory(); renderResult(); setNotice('Đã xóa lịch sử'); break;
       case 'DEL': {
-        const p = input.selectionStart ?? input.value.length;
-        const end = input.selectionEnd ?? p;
+        const {start: p, end} = editRange();
         // A thousands comma is visual only: backspace removes the nearest digit,
         // not just a separator that would immediately be reinserted.
         let start = p;
@@ -486,7 +529,8 @@ export function mount(root, ctx) {
           start = Math.max(0, start - 1);
         }
         input.setRangeText('', start, end, 'end');
-        regroup(input.selectionStart ?? input.value.length, input.selectionEnd ?? input.value.length);
+        regroup(touchKeypadOnly ? start : input.selectionStart ?? input.value.length,
+          touchKeypadOnly ? start : input.selectionEnd ?? input.value.length);
         session.error = ''; renderResult(); setNotice(''); break;
       }
       case '=': execute(); return;
@@ -494,14 +538,14 @@ export function mount(root, ctx) {
         const expr = input.value;
         input.value = expr ? `1/(${expr})` : '1/(';
         session.expr = input.value;
-        input.setSelectionRange(input.value.length, input.value.length);
+        setEditRange(input.value.length);
         session.error = ''; renderResult();setNotice('');break;
       }
       case '±': {
         const expr = input.value;
         input.value = expr.startsWith('-') ? expr.slice(1) : expr ? `-(${expr})` : '';
         session.expr = input.value;
-        input.setSelectionRange(input.value.length, input.value.length);
+        setEditRange(input.value.length);
         session.error = '';renderResult();setNotice('');break;
       }
       default: {
@@ -513,7 +557,15 @@ export function mount(root, ctx) {
   }
 
   input.value = session.expr;
+  if (touchKeypadOnly) setEditRange(input.value.length);
   updateMode();renderHistory();renderResult();
+  if (touchKeypadOnly) {
+    // A direct tap may move the caret without opening the OS keyboard.
+    input.addEventListener('click', () => {
+      touchCaretStart = input.selectionStart ?? input.value.length;
+      touchCaretEnd = input.selectionEnd ?? touchCaretStart;
+    }, {signal:ctx.signal});
+  }
   modeButtons.forEach(btn => btn.addEventListener('click', () => {session.science = btn.dataset.mode === 'science';updateMode();}, {signal:ctx.signal}));
   keypad.addEventListener('click', e => {
     const btn = e.target.closest('[data-key]');

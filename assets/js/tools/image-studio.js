@@ -47,6 +47,8 @@ export function makeZip(files) {
 function makeCanvas(w, h) {
   const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c;
 }
+// Always fetch the 2D context the same way, so repeat getContext calls never return null on attribute mismatch.
+const ctx2d = c => c.getContext('2d');
 const canvasBlob = (c, type, q) => new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('Trình duyệt không tạo được ảnh (có thể ảnh quá lớn).')), type, q));
 const isHeic = f => /\.(heic|heif)$/i.test(f.name) || /image\/hei[cf]/i.test(f.type);
 
@@ -109,7 +111,70 @@ function coverCrop(src, w, h) {
   return sr > r ? cropTo(src, { x: (src.width - src.height * r) / 2, y: 0, w: src.height * r, h: src.height })
     : cropTo(src, { x: 0, y: (src.height - src.width / r) / 2, w: src.width, h: src.width / r });
 }
+function placeByPos(cw, ch, w, h, pos, pad) {
+  let x = cw - w - pad, y = ch - h - pad;
+  if (pos === 'bl') x = pad; else if (pos === 'tl') { x = pad; y = pad; } else if (pos === 'tr') y = pad;
+  else if (pos === 'center') { x = (cw - w) / 2; y = (ch - h) / 2; }
+  return { x, y };
+}
+function addBorder(c, s) {
+  const bw = Math.max(0, Math.round(Math.min(c.width, c.height) * (s.borderPct || 0) / 100)); if (!bw && !s.borderRadius) return c;
+  const W = c.width + bw * 2, H = c.height + bw * 2, out = makeCanvas(W, H), g = out.getContext('2d');
+  g.fillStyle = s.borderColor || '#ffffff'; g.fillRect(0, 0, W, H);
+  if (s.borderRadius) { const r = Math.round(Math.min(c.width, c.height) * s.borderRadius / 100), x = bw, y = bw, w = c.width, h = c.height; g.save(); g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); g.clip(); }
+  g.drawImage(c, bw, bw); if (s.borderRadius) g.restore(); return out;
+}
+/** In-place brightness (−100..100), contrast (−100..100), saturation (0..200%). */
+function adjustColors(c, s) {
+  const b = (s.brightness || 0), ct = (s.contrast || 0), sat = (s.saturation ?? 100) / 100;
+  if (!b && !ct && sat === 1) return c;
+  const g = ctx2d(c), img = g.getImageData(0, 0, c.width, c.height), px = img.data;
+  const cf = (259 * (ct + 255)) / (255 * (259 - ct)); // standard contrast factor
+  for (let i = 0; i < px.length; i += 4) {
+    for (let k = 0; k < 3; k++) { let v = px[i + k] + b; v = cf * (v - 128) + 128; px[i + k] = v < 0 ? 0 : v > 255 ? 255 : v; }
+    if (sat !== 1) { const gray = px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114; for (let k = 0; k < 3; k++) px[i + k] = clamp(gray + (px[i + k] - gray) * sat, 0, 255); }
+  }
+  g.putImageData(img, 0, 0); return c;
+}
+/** Unsharp-like sharpen via a 3x3 convolution, amount 0..100. */
+function sharpen(c, amount) {
+  if (!amount) return c;
+  const a = amount / 100, g = ctx2d(c), W = c.width, H = c.height, src = g.getImageData(0, 0, W, H), out = g.createImageData(W, H), s2 = src.data, d = out.data;
+  const center = 1 + 4 * a, side = -a;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4;
+    for (let k = 0; k < 3; k++) {
+      const up = y > 0 ? s2[i - W * 4 + k] : s2[i + k], dn = y < H - 1 ? s2[i + W * 4 + k] : s2[i + k], lf = x > 0 ? s2[i - 4 + k] : s2[i + k], rt = x < W - 1 ? s2[i + 4 + k] : s2[i + k];
+      d[i + k] = clamp(center * s2[i + k] + side * (up + dn + lf + rt), 0, 255);
+    }
+    d[i + 3] = s2[i + 3];
+  }
+  g.putImageData(out, 0, 0); return c;
+}
+/** Black-out or blur rectangular regions (fractions of the canvas): hide CCCD, plates, faces... */
+function maskRegions(c, regions, mode) {
+  if (!regions?.length) return c;
+  const g = ctx2d(c), W = c.width, H = c.height;
+  for (const r of regions) {
+    const x = clamp(Math.round(r.x * W), 0, W - 1), y = clamp(Math.round(r.y * H), 0, H - 1), w = clamp(Math.round(r.w * W), 1, W - x), h = clamp(Math.round(r.h * H), 1, H - y);
+    if (mode === 'blur') {
+      const tiny = makeCanvas(Math.max(1, Math.round(w / 18)), Math.max(1, Math.round(h / 18)));
+      tiny.getContext('2d').drawImage(c, x, y, w, h, 0, 0, tiny.width, tiny.height);
+      const up = makeCanvas(w, h), ug = up.getContext('2d'); ug.imageSmoothingEnabled = false; ug.drawImage(tiny, 0, 0, tiny.width, tiny.height, 0, 0, w, h);
+      g.drawImage(up, x, y);
+    } else {
+      // Write black pixels directly (fillRect can be a no-op on some reused canvases).
+      const blk = new ImageData(w, h); const d = blk.data; for (let i = 0; i < d.length; i += 4) { d[i + 3] = 255; } g.putImageData(blk, x, y);
+    }
+  }
+  return c;
+}
 function stamp(c, s) {
+  if (s.wmLogo) {
+    const g = c.getContext('2d'), w = Math.round(Math.min(c.width, c.height) * (s.wmLogoSize || 18) / 100), h = w * s.wmLogo.height / s.wmLogo.width;
+    const pad = Math.round(Math.min(c.width, c.height) * 0.03), { x, y } = placeByPos(c.width, c.height, w, h, s.wmLogoPos || 'br', pad);
+    g.save(); g.globalAlpha = s.wmLogoOpacity ?? 0.9; g.imageSmoothingQuality = 'high'; g.drawImage(s.wmLogo, x, y, w, h); g.restore();
+  }
   const text = (s.wmText || '').trim(); if (!text) return c;
   const g = c.getContext('2d'), size = Math.max(12, Math.round(Math.min(c.width, c.height) * (s.wmSize || 4) / 100));
   g.save(); g.font = `700 ${size}px system-ui, "Segoe UI", Arial, sans-serif`; g.globalAlpha = s.wmOpacity ?? 0.55;
@@ -134,7 +199,8 @@ export async function processItem(item, s) {
   let c = cropTo(renderBase(item), item.crop);
   let [w, h] = targetSize(c.width, c.height, s);
   c = s.resize === 'exact' ? resizeTo(coverCrop(c, w, h), w, h) : resizeTo(c, w, h);
-  stamp(c, s);
+  adjustColors(c, s); sharpen(c, s.sharpen || 0); maskRegions(c, item.masks, s.maskMode || 'black');
+  c = addBorder(c, s); stamp(c, s);
   let type = outType(item, s);
   if (type === 'image/jpeg') c = flatten(c);
   const q = clamp(s.quality / 100, 0.3, 1);
@@ -166,6 +232,46 @@ export async function processItem(item, s) {
   return { blob, w: c.width, h: c.height, type, note };
 }
 
+/* ---------------------------------------------------------------- montage --- */
+/** Combine canvases into one. mode: 'h' row, 'v' column, 'grid' with `cols` columns. */
+export function montage(canvases, { mode = 'h', cols = 2, gap = 10, bg = '#ffffff', cell = 600 } = {}) {
+  if (!canvases.length) throw new Error('Chưa có ảnh để ghép.');
+  const ncols = mode === 'h' ? canvases.length : mode === 'v' ? 1 : Math.max(1, cols), nrows = Math.ceil(canvases.length / ncols), cw = cell, ch = cell;
+  const W = ncols * cw + (ncols + 1) * gap, H = nrows * ch + (nrows + 1) * gap, out = makeCanvas(W, H), g = out.getContext('2d');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H); g.imageSmoothingQuality = 'high';
+  canvases.forEach((src, i) => {
+    const r = Math.floor(i / ncols), col = i % ncols, bx = gap + col * (cw + gap), by = gap + r * (ch + gap);
+    const k = Math.min(cw / src.width, ch / src.height), w = Math.round(src.width * k), h = Math.round(src.height * k);
+    g.drawImage(src, bx + (cw - w) / 2, by + (ch - h) / 2, w, h);
+  });
+  return out;
+}
+
+/** Arrange ID photos on an A4 sheet (300 dpi). items: [{canvas, copies}], photo size in mm. */
+export function photoSheet(entries, { wmm = 30, hmm = 40, gapmm = 4, marginmm = 10, dpi = 300 } = {}) {
+  const px = mm => Math.round(mm * dpi / 25.4), W = px(210), H = px(297), pw = px(wmm), ph = px(hmm), gap = px(gapmm), m = px(marginmm);
+  const out = makeCanvas(W, H), g = out.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.imageSmoothingQuality = 'high';
+  const cols = Math.max(1, Math.floor((W - 2 * m + gap) / (pw + gap)));
+  let n = 0; const cells = [];
+  for (const e of entries) for (let k = 0; k < (e.copies || 1); k++) cells.push(e.canvas);
+  for (const src of cells) {
+    const col = n % cols, row = Math.floor(n / cols), x = m + col * (pw + gap), y = m + row * (ph + gap);
+    if (y + ph > H - m) break;
+    // cover-crop each photo into the ID cell so proportions are right
+    const k = Math.max(pw / src.width, ph / src.height), sw = pw / k, sh = ph / k, sx = (src.width - sw) / 2, sy = (src.height - sh) / 2;
+    g.drawImage(src, sx, sy, sw, sh, x, y, pw, ph); g.strokeStyle = '#ddd'; g.strokeRect(x, y, pw, ph); n++;
+  }
+  return { canvas: out, placed: n };
+}
+/** Slice one canvas into rows×cols tiles (left→right, top→bottom). */
+export function sliceGrid(src, rows, cols) {
+  const out = []; const tw = Math.floor(src.width / cols), th = Math.floor(src.height / rows);
+  for (let r = 0; r < rows; r++) for (let col = 0; col < cols; col++) {
+    const c = makeCanvas(tw, th); c.getContext('2d').drawImage(src, col * tw, r * th, tw, th, 0, 0, tw, th); out.push(c);
+  }
+  return out;
+}
+
 /* ------------------------------------------------- signature extraction --- */
 /**
  * Make paper transparent and keep ink. Works on uneven lighting by comparing each
@@ -176,7 +282,7 @@ export function extractInk(src, opts) {
   const k = Math.min(1, SIGN_EDGE / Math.max(src.width, src.height));
   const work = k < 1 ? resizeTo(src, src.width * k, src.height * k) : src;
   const W = work.width, H = work.height;
-  const data = work.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, W, H);
+  const data = ctx2d(work).getImageData(0, 0, W, H);
   // Background estimate: tiny blurred copy upscaled back.
   const small = makeCanvas(Math.max(8, Math.round(W / 24)), Math.max(8, Math.round(H / 24)));
   const sg = small.getContext('2d'); sg.filter = 'blur(3px)'; sg.drawImage(work, 0, 0, small.width, small.height);
@@ -303,7 +409,7 @@ const CSS = `
 @media(max-width:750px){.es-img .es-img-drop{padding:24px 14px}.es-img .es-img-tabs{flex-direction:column;align-items:stretch}.es-img .es-img-tab{justify-content:center}}
 `;
 
-const DEFAULTS = { format: 'keep', quality: 82, resize: 'edge', edge: 2000, percent: 50, ew: 354, eh: 472, targetKB: 0, wmText: '', wmPos: 'br', wmSize: 4, wmOpacity: 0.6 };
+const DEFAULTS = { format: 'keep', quality: 82, resize: 'edge', edge: 2000, percent: 50, ew: 354, eh: 472, targetKB: 0, wmText: '', wmPos: 'br', wmSize: 4, wmOpacity: 0.6, wmLogo: null, wmLogoPos: 'br', wmLogoSize: 18, wmLogoOpacity: 0.9, borderPct: 0, borderColor: '#ffffff', borderRadius: 0, baseName: '', startNo: 1, brightness: 0, contrast: 0, saturation: 100, sharpen: 0, maskMode: 'black' };
 const ASPECTS = { free: 0, '1:1': 1, '3:4': 3 / 4, '4:6': 4 / 6, '2:3': 2 / 3, '4:3': 4 / 3, '16:9': 16 / 9, a4: 1 / Math.SQRT2 };
 
 export async function mount(root, ctx = {}) {
@@ -332,6 +438,10 @@ export async function mount(root, ctx = {}) {
     <div class="es-img-tabs" role="tablist">
      <button class="es-img-tab" type="button" role="tab" data-tab="batch" aria-selected="true">${ic('settings', 20)} Nén & đổi định dạng</button>
      <button class="es-img-tab" type="button" role="tab" data-tab="crop" aria-selected="false">${ic('scissors', 20)} Cắt, xoay, làm thẳng</button>
+     <button class="es-img-tab" type="button" role="tab" data-tab="adjust" aria-selected="false">${ic('lightbulb', 20)} Chỉnh màu</button>
+     <button class="es-img-tab" type="button" role="tab" data-tab="mask" aria-selected="false">${ic('area', 20)} Che & cắt</button>
+     <button class="es-img-tab" type="button" role="tab" data-tab="montage" aria-selected="false">${ic('grid', 20)} Ghép ảnh</button>
+     <button class="es-img-tab" type="button" role="tab" data-tab="idphoto" aria-selected="false">${ic('image', 20)} Ảnh thẻ</button>
      <button class="es-img-tab" type="button" role="tab" data-tab="sign" aria-selected="false">${ic('pen', 20)} Tách nền chữ ký / con dấu</button>
     </div>
     <div data-panel="batch">
@@ -344,11 +454,27 @@ export async function mount(root, ctx = {}) {
       <label class="form-field" data-show="percent"><span>Phần trăm (%)</span><input type="number" id="im-percent" min="1" max="400"></label>
       <div class="form-field" data-show="exact"><span>Rộng × cao (px) · 354 × 472 = ảnh thẻ 3×4</span><span class="es-img-pair"><input type="number" id="im-ew" min="1" max="12000" aria-label="Rộng"><input type="number" id="im-eh" min="1" max="12000" aria-label="Cao"></span></div>
      </div>
-     <details><summary>Đóng chữ lên ảnh (ngày chụp, tên công trình...)</summary>
+     <div class="form-grid" style="grid-template-columns:2fr 1fr;margin-top:4px">
+      <label class="form-field"><span>Đổi tên hàng loạt (để trống = giữ tên gốc)</span><input type="text" id="im-basename" maxlength="80" placeholder="VD: cong-trinh"></label>
+      <label class="form-field"><span>Bắt đầu từ số</span><input type="number" id="im-startno" min="0" max="99999" value="1"></label>
+     </div>
+     <details><summary>Đóng chữ / logo lên ảnh (ngày chụp, tên công trình, dấu bản quyền)</summary>
       <div class="form-grid three" style="margin-top:12px">
-       <label class="form-field"><span>Nội dung</span><input type="text" id="im-wm" maxlength="80" placeholder="Công trình A – 23/10/2026"></label>
-       <label class="form-field"><span>Vị trí</span><select id="im-wmpos"><option value="br">Góc dưới phải</option><option value="bl">Góc dưới trái</option><option value="tr">Góc trên phải</option><option value="tl">Góc trên trái</option><option value="center">Chính giữa</option></select></label>
+       <label class="form-field"><span>Nội dung chữ</span><input type="text" id="im-wm" maxlength="80" placeholder="Công trình A – 23/10/2026"></label>
+       <label class="form-field"><span>Vị trí chữ</span><select id="im-wmpos"><option value="br">Góc dưới phải</option><option value="bl">Góc dưới trái</option><option value="tr">Góc trên phải</option><option value="tl">Góc trên trái</option><option value="center">Chính giữa</option></select></label>
        <label class="form-field"><span>Cỡ chữ (% cạnh ngắn)</span><input type="number" id="im-wmsize" min="1" max="20" step="0.5"></label>
+      </div>
+      <div class="form-actions" style="margin-top:10px"><button class="button button-outline button-sm" type="button" id="im-logo-pick">${ic('image', 18)} Chọn ảnh logo/dấu</button><button class="button button-plain button-sm" type="button" id="im-logo-clear" hidden>Bỏ logo</button><img id="im-logo-prev" alt="" hidden style="height:34px;border-radius:6px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/8px 8px"></div>
+      <div class="form-grid three" id="im-logo-opts" hidden style="margin-top:10px">
+       <label class="form-field"><span>Vị trí logo</span><select id="im-logopos"><option value="br">Góc dưới phải</option><option value="bl">Góc dưới trái</option><option value="tr">Góc trên phải</option><option value="tl">Góc trên trái</option><option value="center">Chính giữa</option></select></label>
+       <label class="form-field"><span>Cỡ logo (% cạnh ngắn)</span><input type="number" id="im-logosize" min="3" max="60" value="18"></label>
+       <label class="form-field"><span>Độ đậm logo (%)</span><input type="number" id="im-logoop" min="10" max="100" value="90"></label>
+      </div></details>
+     <details><summary>Khung viền ảnh</summary>
+      <div class="form-grid three" style="margin-top:12px">
+       <label class="form-field"><span>Độ dày viền (% cạnh ngắn)</span><input type="number" id="im-border" min="0" max="25" step="0.5" value="0"></label>
+       <label class="form-field"><span>Màu viền</span><input type="color" id="im-bordercolor" value="#ffffff"></label>
+       <label class="form-field"><span>Bo góc (% cạnh ngắn)</span><input type="number" id="im-radius" min="0" max="50" value="0"></label>
       </div></details>
      <div class="form-actions">
       <button class="button button-purple" type="button" id="im-run">${ic('settings', 20)} Xử lý tất cả</button>
@@ -373,6 +499,50 @@ export async function mount(root, ctx = {}) {
      <div class="es-img-stage" id="im-crop-stage"><canvas id="im-crop-canvas"></canvas></div>
      <p class="tool-hint" id="im-crop-info"></p>
     </div>
+    <div data-panel="adjust" hidden>
+     <div class="form-grid three">
+      <div class="form-field"><span>Độ sáng</span><span class="es-img-range"><input type="range" id="im-brightness" min="-100" max="100" value="0"><output id="im-brightness-val">0</output></span></div>
+      <div class="form-field"><span>Tương phản</span><span class="es-img-range"><input type="range" id="im-contrast" min="-100" max="100" value="0"><output id="im-contrast-val">0</output></span></div>
+      <div class="form-field"><span>Độ tươi màu</span><span class="es-img-range"><input type="range" id="im-saturation" min="0" max="200" value="100"><output id="im-saturation-val">100%</output></span></div>
+      <div class="form-field"><span>Độ nét</span><span class="es-img-range"><input type="range" id="im-sharpen" min="0" max="100" value="0"><output id="im-sharpen-val">0</output></span></div>
+     </div>
+     <div class="form-actions"><button class="button button-plain button-sm" type="button" data-act="adjust-reset">Đặt lại</button></div>
+     <div class="es-img-compare">
+      <div><div class="es-img-stage"><canvas id="im-adj-src"></canvas></div><p class="es-img-cap">Ảnh gốc</p></div>
+      <div><div class="es-img-stage"><canvas id="im-adj-out"></canvas></div><p class="es-img-cap">Sau khi chỉnh (xem trước)</p></div>
+     </div>
+     <p class="tool-hint">Kéo thanh trượt để xem trước ảnh đang chọn. Bấm "Xử lý tất cả" ở tab Nén để áp cho mọi ảnh và xuất.</p>
+    </div>
+    <div data-panel="mask" hidden>
+     <div class="form-grid three">
+      <label class="form-field"><span>Kiểu che</span><select id="im-maskmode"><option value="black">Bôi đen</option><option value="blur">Làm mờ (pixel)</option></select></label>
+      <div class="form-field"><span>&nbsp;</span><button class="button button-plain button-sm" type="button" data-act="mask-clear">Xóa hết vùng che</button></div>
+      <div class="form-field"><span>Cắt thành lưới</span><span class="es-img-pair"><input type="number" id="im-grid-r" min="1" max="10" value="1" aria-label="Số hàng"><input type="number" id="im-grid-c" min="1" max="10" value="2" aria-label="Số cột"></span></div>
+     </div>
+     <div class="form-actions"><button class="button button-outline button-sm" type="button" data-act="grid-run">${ic('scissors', 18)} Cắt ảnh đang chọn theo lưới</button></div>
+     <div class="es-img-stage" id="im-mask-stage"><canvas id="im-mask-canvas"></canvas></div>
+     <p class="tool-hint">Kéo chuột trên ảnh để khoanh vùng cần che (số CCCD, biển số, mặt người...). Vùng che áp dụng cho ảnh đang chọn khi "Xử lý tất cả". Cắt lưới tạo nhiều ảnh mới ngay.</p>
+    </div>
+    <div data-panel="montage" hidden>
+     <div class="form-grid three">
+      <label class="form-field"><span>Kiểu ghép</span><select id="mo-mode"><option value="h">Hàng ngang</option><option value="v">Cột dọc</option><option value="grid">Lưới</option></select></label>
+      <label class="form-field" id="mo-cols-wrap" hidden><span>Số cột</span><input type="number" id="mo-cols" min="1" max="10" value="2"></label>
+      <label class="form-field"><span>Khoảng cách (px)</span><input type="number" id="mo-gap" min="0" max="120" value="10"></label>
+      <label class="form-field"><span>Màu nền</span><input type="color" id="mo-bg" value="#ffffff"></label>
+     </div>
+     <p class="tool-hint">Ghép các ảnh trong danh sách theo thứ tự hiện tại thành một ảnh. Dùng cho ảnh hiện trường, ảnh so sánh trước/sau, ảnh nghiệm thu.</p>
+     <div class="es-img-stage" id="mo-stage"><canvas id="mo-canvas"></canvas></div>
+     <div class="form-actions"><button class="button button-purple" type="button" id="mo-download">${ic('download', 20)} Tải ảnh ghép (PNG)</button></div>
+    </div>
+    <div data-panel="idphoto" hidden>
+     <div class="form-grid three">
+      <label class="form-field"><span>Cỡ ảnh thẻ</span><select id="id-size"><option value="30x40">3 × 4 cm</option><option value="40x60">4 × 6 cm</option><option value="20x30">2 × 3 cm</option><option value="35x45">3.5 × 4.5 cm (visa)</option></select></label>
+      <label class="form-field"><span>Số bản mỗi ảnh</span><input type="number" id="id-copies" min="1" max="40" value="8"></label>
+      <div class="form-field"><span>&nbsp;</span><button class="button button-purple" type="button" id="id-make">${ic('image', 18)} Xếp lên A4 & tải</button></div>
+     </div>
+     <p class="tool-hint">Xếp các ảnh trong danh sách (mỗi ảnh × số bản) lên một tờ A4 để in. Ảnh được cắt vừa đúng tỉ lệ ảnh thẻ. Nên dùng ảnh đã đúng khuôn mặt, nền trơn.</p>
+     <div class="es-img-stage" id="id-stage"><canvas id="id-canvas"></canvas></div>
+    </div>
     <div data-panel="sign" hidden>
      <div class="form-grid three">
       <div class="form-field"><span>Độ nhạy nét</span><span class="es-img-range"><input type="range" id="im-sens" min="1" max="100" value="50" aria-label="Độ nhạy nét"><output id="im-sens-val">50</output></span></div>
@@ -391,6 +561,7 @@ export async function mount(root, ctx = {}) {
    </section>
   </div>
   <input type="file" id="im-input" accept="image/*,.heic,.heif" multiple hidden>
+  <input type="file" id="im-logo-input" accept="image/*" hidden>
   <div class="es-img-busy" id="im-busy" hidden role="status"><span class="spin"></span><span id="im-busy-label"></span></div>
  </div>`;
   const $ = s => root.querySelector(s);
@@ -410,8 +581,15 @@ export async function mount(root, ctx = {}) {
       edge: clamp(num('#im-edge', 2000), 16, MAX_EDGE), percent: clamp(num('#im-percent', 50), 1, 400),
       ew: clamp(Math.round(num('#im-ew', 354)), 1, MAX_EDGE), eh: clamp(Math.round(num('#im-eh', 472)), 1, MAX_EDGE),
       targetKB: clamp(num('#im-target', 0), 0, 50000), wmText: $('#im-wm').value, wmPos: $('#im-wmpos').value, wmSize: clamp(num('#im-wmsize', 4), 1, 20),
+      wmLogoPos: $('#im-logopos').value, wmLogoSize: clamp(num('#im-logosize', 18), 3, 60), wmLogoOpacity: clamp(num('#im-logoop', 90), 10, 100) / 100,
+      borderPct: clamp(num('#im-border', 0), 0, 25), borderColor: $('#im-bordercolor').value, borderRadius: clamp(num('#im-radius', 0), 0, 50),
+      baseName: $('#im-basename').value.trim(), startNo: Math.max(0, Math.floor(num('#im-startno', 1))),
+      brightness: clamp(num('#im-brightness', 0), -100, 100), contrast: clamp(num('#im-contrast', 0), -100, 100),
+      saturation: clamp(num('#im-saturation', 100), 0, 200), sharpen: clamp(num('#im-sharpen', 0), 0, 100), maskMode: $('#im-maskmode').value,
     });
     $('#im-quality-val').textContent = settings.quality + '%';
+    $('#im-brightness-val').textContent = settings.brightness; $('#im-contrast-val').textContent = settings.contrast;
+    $('#im-saturation-val').textContent = settings.saturation + '%'; $('#im-sharpen-val').textContent = settings.sharpen;
     root.querySelectorAll('[data-show]').forEach(el => { el.hidden = el.dataset.show !== settings.resize; });
   }
   readSettings();
@@ -462,7 +640,7 @@ export async function mount(root, ctx = {}) {
           const k = Math.min(1, 128 / Math.max(bmp.width, bmp.height)), t = makeCanvas(bmp.width * k, bmp.height * k);
           t.getContext('2d').drawImage(bmp, 0, 0, t.width, t.height);
           const thumb = URL.createObjectURL(await canvasBlob(t, 'image/png'));
-          items.push({ id: ++seq, file, bmp, thumb, rot: 0, angle: 0, flipH: false, flipV: false, crop: null, result: null, stale: false });
+          items.push({ id: ++seq, file, bmp, thumb, rot: 0, angle: 0, flipH: false, flipV: false, crop: null, masks: [], result: null, stale: false });
         } catch (e) { errors.push(`${file.name}: ${e.message}`); }
         if (signal?.aborted) return;
       }
@@ -470,14 +648,14 @@ export async function mount(root, ctx = {}) {
     if (files.length > room) errors.push(`Chỉ nhận thêm ${room} ảnh (giới hạn ${MAX_FILES}).`);
     if (errors.length) toast(errors.slice(0, 3).join(' '), 'error');
     if (items.length) { if (!active) active = items[0]; $('#im-drop').hidden = true; $('#im-work').hidden = false; }
-    renderList(); showActive();
+    renderList(); showActive(); if (tab === 'montage') drawMontage();
   }
   function removeItem(id) {
     const i = items.findIndex(x => x.id === id); if (i < 0) return;
     const [it] = items.splice(i, 1); it.bmp.close?.(); URL.revokeObjectURL(it.thumb);
     if (active === it) active = items[i] || items[i - 1] || null;
     if (!items.length) { $('#im-work').hidden = true; $('#im-drop').hidden = false; }
-    renderList(); showActive();
+    renderList(); showActive(); if (tab === 'montage') drawMontage();
   }
 
   /* ---- crop editor ---- */
@@ -535,6 +713,11 @@ export async function mount(root, ctx = {}) {
     invalidate([active]); paintCrop();
   };
   cv.addEventListener('pointerup', endDrag, { signal }); cv.addEventListener('pointercancel', endDrag, { signal });
+  const mcv = $('#im-mask-canvas');
+  mcv.addEventListener('pointerdown', e => { if (!active) return; mcv.setPointerCapture(e.pointerId); maskState.drag = { p: maskPoint(e) }; }, { signal });
+  mcv.addEventListener('pointermove', e => { if (!maskState.drag) return; const p = maskPoint(e), a = maskState.drag.p; active._draft = { x: Math.min(a.x, p.x), y: Math.min(a.y, p.y), w: Math.abs(p.x - a.x), h: Math.abs(p.y - a.y) }; paintMask(); const g = mcv.getContext('2d'); const d = active._draft, cv2 = mcv; g.strokeStyle = '#6930df'; g.lineWidth = 2; g.strokeRect(d.x * cv2.width, d.y * cv2.height, d.w * cv2.width, d.h * cv2.height); }, { signal });
+  const endMask = () => { if (!maskState.drag) return; maskState.drag = null; const d = active?._draft; if (d && d.w > 0.01 && d.h > 0.01) { active.masks.push(d); invalidate([active]); } active && (active._draft = null); paintMask(); };
+  mcv.addEventListener('pointerup', endMask, { signal }); mcv.addEventListener('pointercancel', endMask, { signal });
 
   /* ---- signature ---- */
   let signResult = null, signTimer = 0;
@@ -564,13 +747,85 @@ export async function mount(root, ctx = {}) {
     if (active) { $('#im-angle').value = active.angle; $('#im-angle-val').textContent = `${active.angle}°`; }
     if (tab === 'crop') drawCropStage();
     if (tab === 'sign') runSign();
+    if (tab === 'adjust') drawAdjust();
+    if (tab === 'mask') drawMaskStage();
+    if (tab === 'idphoto') drawIdSheet();
     refreshButtons();
   }
   function setTab(name) {
     tab = name;
     root.querySelectorAll('.es-img-tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
     root.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== name; });
+    if (name === 'montage') drawMontage();
+    if (name === 'adjust') drawAdjust();
+    if (name === 'mask') drawMaskStage();
+    if (name === 'idphoto') drawIdSheet();
     showActive();
+  }
+  /* ---- adjust preview ---- */
+  let adjustTimer = 0;
+  function drawAdjust() {
+    if (tab !== 'adjust') return; clearTimeout(adjustTimer);
+    adjustTimer = setTimeout(() => {
+      if (!active) { for (const id of ['#im-adj-src', '#im-adj-out']) { const c = $(id); c.width = 1; c.height = 1; } return; }
+      readSettings();
+      const base = cropTo(renderBase(active), active.crop), k = Math.min(1, 460 / Math.max(base.width, base.height));
+      const show = (cv, src) => { cv.width = Math.round(src.width * k); cv.height = Math.round(src.height * k); const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, cv.width, cv.height); };
+      show($('#im-adj-src'), base);
+      const work = makeCanvas(base.width * k, base.height * k); work.getContext('2d').drawImage(base, 0, 0, work.width, work.height);
+      adjustColors(work, settings); sharpen(work, settings.sharpen); const o = $('#im-adj-out'); o.width = work.width; o.height = work.height; o.getContext('2d').drawImage(work, 0, 0);
+    }, 50);
+  }
+  /* ---- mask editor (draw rectangles to hide) ---- */
+  const maskState = { base: null, scale: 1, drag: null };
+  function drawMaskStage() {
+    const cv = $('#im-mask-canvas'); if (!active) { cv.width = 1; cv.height = 1; return; }
+    maskState.base = cropTo(renderBase(active), active.crop);
+    const stage = $('#im-mask-stage'), maxW = Math.max(240, stage.clientWidth - 20), maxH = 440;
+    maskState.scale = Math.min(1, maxW / maskState.base.width, maxH / maskState.base.height);
+    cv.width = Math.round(maskState.base.width * maskState.scale); cv.height = Math.round(maskState.base.height * maskState.scale);
+    paintMask();
+  }
+  function paintMask() {
+    const cv = $('#im-mask-canvas'), g = cv.getContext('2d'); if (!maskState.base) return;
+    g.clearRect(0, 0, cv.width, cv.height); g.drawImage(maskState.base, 0, 0, cv.width, cv.height);
+    const mode = $('#im-maskmode').value;
+    for (const r of (active?.masks || [])) {
+      const x = r.x * cv.width, y = r.y * cv.height, w = r.w * cv.width, h = r.h * cv.height;
+      if (mode === 'blur') { g.fillStyle = 'rgba(40,40,40,.5)'; g.fillRect(x, y, w, h); g.strokeStyle = '#fff'; g.setLineDash([6, 4]); g.strokeRect(x, y, w, h); g.setLineDash([]); }
+      else { g.fillStyle = '#000'; g.fillRect(x, y, w, h); }
+    }
+  }
+  function maskPoint(e) { const cv = $('#im-mask-canvas'), b = cv.getBoundingClientRect(); return { x: clamp((e.clientX - b.left) / b.width, 0, 1), y: clamp((e.clientY - b.top) / b.height, 0, 1) }; }
+  /* ---- ID photo sheet ---- */
+  let idSheet = null;
+  function drawIdSheet() {
+    if (tab !== 'idphoto') return;
+    try {
+      if (!items.length) { idSheet = null; const cv = $('#id-canvas'); cv.width = 1; cv.height = 1; return; }
+      const [wmm, hmm] = $('#id-size').value.split('x').map(Number), copies = clamp(Number($('#id-copies').value) || 1, 1, 40);
+      const entries = items.map(it => ({ canvas: cropTo(renderBase(it), it.crop), copies }));
+      const res = photoSheet(entries, { wmm, hmm }); idSheet = res.canvas;
+      const stage = $('#id-stage'), maxW = Math.max(240, stage.clientWidth - 20), maxH = 480, k = Math.min(1, maxW / idSheet.width, maxH / idSheet.height);
+      const cv = $('#id-canvas'); cv.width = Math.round(idSheet.width * k); cv.height = Math.round(idSheet.height * k); cv.getContext('2d').drawImage(idSheet, 0, 0, cv.width, cv.height);
+    } catch { idSheet = null; }
+  }
+  /* ---- montage preview ---- */
+  let montageCanvas = null, montageTimer = 0;
+  function drawMontage() {
+    $('#mo-cols-wrap').hidden = $('#mo-mode').value !== 'grid';
+    if (tab !== 'montage') return;
+    clearTimeout(montageTimer);
+    montageTimer = setTimeout(() => {
+      try {
+        if (items.length < 2) { montageCanvas = null; const cv = $('#mo-canvas'); cv.width = 1; cv.height = 1; $('#mo-download').disabled = true; return; }
+        const sources = items.map(it => cropTo(renderBase(it), it.crop));
+        montageCanvas = montage(sources, { mode: $('#mo-mode').value, cols: clamp(Number($('#mo-cols').value) || 2, 1, 10), gap: clamp(Number($('#mo-gap').value) || 0, 0, 120), bg: $('#mo-bg').value, cell: 600 });
+        const stage = $('#mo-stage'), maxW = Math.max(240, stage.clientWidth - 20), maxH = 420, k = Math.min(1, maxW / montageCanvas.width, maxH / montageCanvas.height);
+        const cv = $('#mo-canvas'); cv.width = Math.round(montageCanvas.width * k); cv.height = Math.round(montageCanvas.height * k);
+        cv.getContext('2d').drawImage(montageCanvas, 0, 0, cv.width, cv.height); $('#mo-download').disabled = false;
+      } catch { montageCanvas = null; $('#mo-download').disabled = true; }
+    }, 60);
   }
 
   async function runBatch() {
@@ -588,7 +843,12 @@ export async function mount(root, ctx = {}) {
     } finally { setBusy(''); renderList(); }
     toast(fail ? `Xong, ${fail} ảnh lỗi (ảnh quá lớn hoặc hỏng).` : 'Đã xử lý xong. Bấm "Tải tất cả (ZIP)" để lưu.', fail ? 'error' : 'success');
   }
-  const outName = it => `${baseName(it.file.name)}.${EXT[it.result.type] || 'img'}`;
+  function outName(it, idx) {
+    const ext = EXT[it.result.type] || 'img';
+    if (!settings.baseName) return `${baseName(it.file.name)}.${ext}`;
+    const total = items.filter(i => i.result && !i.stale).length, pad = Math.max(2, String(settings.startNo + Math.max(0, total - 1)).length);
+    return `${baseName(settings.baseName)}-${String(settings.startNo + idx).padStart(pad, '0')}.${ext}`;
+  }
 
   root.addEventListener('click', async e => {
     const b = e.target.closest('button'), row = e.target.closest('.es-img-item');
@@ -596,18 +856,34 @@ export async function mount(root, ctx = {}) {
     if (row && !b) { active = items.find(i => i.id === +row.dataset.id) || active; showActive(); return; }
     if (!b || busy) return;
     if (b.id === 'im-pick' || b.id === 'im-add') $('#im-input').click();
+    else if (b.id === 'im-logo-pick') $('#im-logo-input').click();
+    else if (b.id === 'im-logo-clear') { settings.wmLogo = null; $('#im-logo-prev').hidden = true; $('#im-logo-clear').hidden = true; $('#im-logo-opts').hidden = true; invalidate(); }
+    else if (b.id === 'mo-download' && montageCanvas) download(await canvasBlob(montageCanvas, 'image/png'), (settings.baseName ? baseName(settings.baseName) : 'ghep-anh') + '.png');
+    else if (b.id === 'id-make') { if (!idSheet) { toast('Chưa có ảnh để xếp.', 'error'); return; } download(await canvasBlob(idSheet, 'image/jpeg', 0.92), 'anh-the-A4.jpg'); toast('Đã tạo tờ A4 ảnh thẻ.'); }
     else if (b.id === 'im-clear') { [...items].forEach(i => removeItem(i.id)); }
     else if (b.dataset.tab) setTab(b.dataset.tab);
     else if (b.id === 'im-run') runBatch();
-    else if (b.id === 'im-one' && active?.result) download(active.result.blob, outName(active));
+    else if (b.id === 'im-one' && active?.result) download(active.result.blob, outName(active, items.filter(i => i.result && !i.stale).indexOf(active)));
     else if (b.id === 'im-zip') {
       const done = items.filter(i => i.result && !i.stale);
       setBusy('Đang đóng gói ZIP...');
-      try { const files = []; for (const it of done) files.push({ name: outName(it), data: new Uint8Array(await it.result.blob.arrayBuffer()) }); download(makeZip(files), 'epsilon-image-studio.zip'); }
+      try { const files = []; for (const [i, it] of done.entries()) files.push({ name: outName(it, i), data: new Uint8Array(await it.result.blob.arrayBuffer()) }); download(makeZip(files), 'epsilon-image-studio.zip'); }
       finally { setBusy(''); }
     }
     else if (b.id === 'im-sign-dl') {
       if (!signResult) return; download(await canvasBlob(signResult.canvas, 'image/png'), `${baseName(active.file.name)}-tach-nen.png`); toast('Đã tạo PNG nền trong suốt.');
+    }
+    else if (b.dataset.act === 'adjust-reset') { for (const [id, v] of [['#im-brightness', 0], ['#im-contrast', 0], ['#im-saturation', 100], ['#im-sharpen', 0]]) $(id).value = v; readSettings(); invalidate(); drawAdjust(); }
+    else if (b.dataset.act === 'mask-clear' && active) { active.masks = []; invalidate([active]); paintMask(); }
+    else if (b.dataset.act === 'grid-run' && active) {
+      const rows = clamp(Number($('#im-grid-r').value) || 1, 1, 10), cols = clamp(Number($('#im-grid-c').value) || 1, 1, 10);
+      if (rows * cols < 2) { toast('Chọn ít nhất 2 ô (hàng × cột).', 'error'); return; }
+      setBusy('Đang cắt ảnh...');
+      try {
+        const tiles = sliceGrid(cropTo(renderBase(active), active.crop), rows, cols), made = [];
+        for (const [i, t] of tiles.entries()) { const blob = await canvasBlob(t, 'image/png'); made.push({ name: `${baseName(active.file.name)}-o${i + 1}.png`, data: new Uint8Array(await blob.arrayBuffer()) }); }
+        download(makeZip(made), `${baseName(active.file.name)}-luoi.zip`); toast(`Đã cắt thành ${tiles.length} ảnh (ZIP).`);
+      } finally { setBusy(''); }
     }
     else if (b.dataset.act && active) {
       const a = b.dataset.act;
@@ -627,16 +903,28 @@ export async function mount(root, ctx = {}) {
     const id = e.target.id;
     if (id === 'im-angle' && active) { active.angle = +e.target.value; active.crop = null; $('#im-angle-val').textContent = `${active.angle}°`; invalidate([active]); drawCropStage(); return; }
     if (['im-sens', 'im-ink', 'im-bold', 'im-trim', 'im-speck'].includes(id)) { runSign(); return; }
+    if (id?.startsWith('mo-')) { drawMontage(); return; }
+    if (id?.startsWith('id-')) { drawIdSheet(); return; }
+    if (['im-brightness', 'im-contrast', 'im-saturation', 'im-sharpen'].includes(id)) { readSettings(); invalidate(); drawAdjust(); return; }
+    if (id === 'im-maskmode') { readSettings(); invalidate(); paintMask(); return; }
     if (id === 'im-aspect' || id === 'im-input') return;
-    if (id && id.startsWith('im-')) { readSettings(); invalidate(); }
+    if (id && id.startsWith('im-')) { readSettings(); invalidate(); if (tab === 'montage') drawMontage(); }
   }, { signal });
   root.addEventListener('change', e => {
     const id = e.target.id;
     if (id === 'im-input') { const f = [...e.target.files]; e.target.value = ''; if (f.length) addFiles(f); return; }
+    if (id === 'im-logo-input') {
+      const f = e.target.files?.[0]; e.target.value = ''; if (!f) return;
+      createImageBitmap(f).then(bmp => { const c = makeCanvas(bmp.width, bmp.height); c.getContext('2d').drawImage(bmp, 0, 0); bmp.close?.(); settings.wmLogo = c; $('#im-logo-prev').src = c.toDataURL('image/png'); $('#im-logo-prev').hidden = false; $('#im-logo-clear').hidden = false; $('#im-logo-opts').hidden = false; invalidate(); }).catch(() => toast('Không đọc được ảnh logo.', 'error'));
+      return;
+    }
+    if (id?.startsWith('mo-')) { drawMontage(); return; }
     if (id === 'im-aspect') { if (active?.crop) { const r = active.crop; active.crop = rectFrom({ x: r.x, y: r.y }, { x: r.x + r.w, y: r.y + r.h }); invalidate([active]); paintCrop(); } return; }
     if (['im-sens', 'im-ink', 'im-bold', 'im-trim', 'im-speck'].includes(id)) { runSign(); return; }
     if (id === 'im-angle') return;
-    if (id?.startsWith('im-')) { readSettings(); invalidate(); }
+    if (id?.startsWith('id-')) { drawIdSheet(); return; }
+    if (id === 'im-maskmode') { readSettings(); invalidate(); paintMask(); return; }
+    if (id?.startsWith('im-')) { readSettings(); invalidate(); if (tab === 'montage') drawMontage(); if (tab === 'adjust') drawAdjust(); }
   }, { signal });
   // Accept drops anywhere in the tool, and never let the browser navigate away to a dropped file.
   const hasFiles = e => [...(e.dataTransfer?.types || [])].includes('Files');
@@ -648,7 +936,7 @@ export async function mount(root, ctx = {}) {
     const files = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/'));
     if (files.length) { e.preventDefault(); addFiles(files); toast('Đã dán ảnh từ bộ nhớ tạm.'); }
   }, { signal });
-  window.addEventListener('resize', () => { if (tab === 'crop') drawCropStage(); }, { signal });
+  window.addEventListener('resize', () => { if (tab === 'crop') drawCropStage(); if (tab === 'montage') drawMontage(); if (tab === 'mask') drawMaskStage(); if (tab === 'idphoto') drawIdSheet(); if (tab === 'adjust') drawAdjust(); }, { signal });
 
   return () => { clearTimeout(signTimer); items.forEach(i => { i.bmp.close?.(); URL.revokeObjectURL(i.thumb); }); items.length = 0; root.innerHTML = ''; };
 }
