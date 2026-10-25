@@ -1764,6 +1764,8 @@ globalThis.EpsilonSoftShared = Object.freeze({icon, hydrateIcons, number, numeri
  */
 
 
+themeSheet.textContent += '\n\n/* Epsilon Soft / Nesting 2D - wider real sheet preview, less unused side/panel whitespace.\n   Preserves the original SVG viewBox, coordinates, cutting algorithm and mobile flow.\n   The extra selector specificity intentionally wins over nesting.js embedded CSS. */\n@media (min-width:1261px) {\n  .tool-page .nest-pro .nest-panelgrid {\n    grid-template-columns:minmax(375px,min(34.5%,465px)) minmax(0,1fr);\n    gap:8px;\n  }\n  .tool-page .nest-pro .nest-panel {\n    padding:8px 9px;\n  }\n  .tool-page .nest-pro .nest-figure {\n    padding:5px 6px;\n    min-height:0;\n  }\n  .tool-page .nest-pro .nest-figure-title {\n    margin-bottom:3px;\n  }\n  .tool-page .nest-pro .nest-preview {\n    min-height:0;\n    align-items:center;\n  }\n  .tool-page .nest-pro .nest-preview svg {\n    width:100%;\n    max-width:100%;\n    height:auto;\n    min-height:0;\n    max-height:min(62vh,510px);\n    object-fit:contain;\n  }\n  .tool-page .nest-pro .nest-legend {\n    min-height:25px;\n    margin-top:4px;\n    gap:10px 14px;\n  }\n  .tool-page .nest-pro .nest-caption { margin-top:6px; }\n}\n';
+
 const DEFINITIONS = Object.freeze([
  {id:'calculator',name:'Máy tính khoa học',sub:'Phép tính và hàm toán học',group:'calc',icon:'calculator',tone:'tone-blue',file:'calculator.js'},
  {id:'area',name:'Diện tích hình học',sub:'Tính diện tích nhiều hình',group:'calc',icon:'area',tone:'tone-mint',file:'area.js'},
@@ -1771,6 +1773,7 @@ const DEFINITIONS = Object.freeze([
  {id:'converter',name:'Đổi đơn vị',sub:'Chuyển đổi đơn vị đa dạng',group:'calc',icon:'swap',tone:'tone-violet',file:'converter.js'},
  {id:'interest',name:'Tính lãi suất',sub:'Tiền gửi, vay vốn, đầu tư',group:'calc',icon:'percent',tone:'tone-blue',file:'interest.js'},
  {id:'nesting',name:'Trải phôi 2D',sub:'Trải phôi 2D theo ES TOOLKIT Portable',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting.js'},
+ {id:'bar-cutting',name:'Cắt thép hình 1D',sub:'Tối ưu cắt cây thép · giảm hao phí',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh.js'},
  {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'engineering',icon:'database',tone:'tone-violet',file:'density.js'},
  {id:'beam',name:'Tính kết cấu đơn giản',sub:'Dầm đơn giản: M, V, độ võng',group:'engineering',icon:'beam',tone:'tone-blue',file:'beam.js'},
  {id:'paint',name:'Paint Studio',sub:'Tính lượng sơn · WFT/DFT · diện tích',group:'engineering',icon:'paint',tone:'tone-mint',file:'paint.js'},
@@ -1834,6 +1837,8 @@ const ES_EN_TEXT=Object.freeze({
  'tinh toan nhanh, chinh xac, tien loi':'Quick, accurate and convenient calculations',
  'ho tro cong viec chuyen mon':'Professional engineering tools',
  'cong cu ky thuat basic mien phi':'Free Basic engineering tools',
+ 'cat thep hinh 1d':'1D Steel Bar Cutting',
+ 'toi uu cat cay thep · giam hao phi':'Optimize steel bar cutting · reduce waste',
  'phien ban basic':'BASIC EDITION',
  'dinh huong phat trien':'IN DEVELOPMENT PLAN',
  'cac cong cu tai day la phien ban co ban, phu hop tinh toan va tra cuu ky thuat hang ngay.':'These are Basic tools for everyday engineering calculations and reference.',
