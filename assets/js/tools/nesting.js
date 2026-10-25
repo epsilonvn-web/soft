@@ -512,8 +512,8 @@ const NEST_CSS=`
 .nest-pro .nest-material-retry{color:#5c2bdd;background:#f0eaff;border:1px solid #cfbafb;border-radius:10px;padding:6px 10px;font-size:16px}
 .nest-pro .nest-material-warning{font-size:16px;color:#aa3c3c;margin:0 0 8px}
 .nest-pro .nest-material-warning[hidden]{display:none!important}
-.nest-pro .nest-panelgrid{display:grid;grid-template-columns:minmax(430px,min(39%,555px)) minmax(0,1fr);gap:12px;align-items:stretch}
-.nest-pro .nest-panel{background:#fff;border:1px solid #e4d3ff;border-radius:16px;padding:15px 16px;min-width:0;box-shadow:0 2px 5px #4c2b8a08}
+.nest-pro .nest-panelgrid{display:grid;grid-template-columns:minmax(405px,min(34.5%,490px)) minmax(0,1fr);gap:10px;align-items:stretch}
+.nest-pro .nest-panel{background:#fff;border:1px solid #e4d3ff;border-radius:16px;padding:12px 13px;min-width:0;box-shadow:0 2px 5px #4c2b8a08}
 .nest-pro .nest-parameters{display:flex;flex-direction:column}
 .nest-pro .nest-panel-title{color:#592ac1;font-size:20px;margin:0 0 12px;font-weight:850}
 .nest-pro .nest-grid{display:grid;gap:9px;min-width:0}
@@ -541,11 +541,11 @@ const NEST_CSS=`
 .nest-pro .nest-error{font-size:16px;color:#b52441;font-weight:650;margin:12px 0 0;line-height:1.4}
 .nest-pro .nest-error:empty{display:none}
 .nest-pro .nest-output{display:flex;flex-direction:column}
-.nest-pro .nest-figure{background:#faf7ff;border:1px solid #e7dafa;border-radius:12px;min-width:0;padding:10px;flex:1;display:flex;flex-direction:column;min-height:405px}
-.nest-pro .nest-figure-title{text-align:center;font-size:18px;line-height:1.3;color:#675295;font-weight:800;margin:0 0 10px}
-.nest-pro .nest-preview{flex:1;display:flex;justify-content:center;align-items:center;min-width:0;overflow:hidden}
-.nest-pro .nest-preview svg{width:100%;height:auto;display:block;min-height:225px;max-height:390px}
-.nest-pro .nest-legend{display:flex;justify-content:flex-start;align-items:center;gap:24px;flex-wrap:wrap;min-height:32px;color:#58438f;font-size:16px;font-weight:700;margin:8px 0 0;padding-left:5px}
+.nest-pro .nest-figure{background:#faf7ff;border:1px solid #e7dafa;border-radius:12px;min-width:0;padding:6px 7px;flex:1;display:flex;flex-direction:column;min-height:0}
+.nest-pro .nest-figure-title{text-align:center;font-size:18px;line-height:1.25;color:#675295;font-weight:800;margin:0 0 2px}
+.nest-pro .nest-preview{flex:1;display:flex;justify-content:center;align-items:center;min-width:0;min-height:0;overflow:hidden}
+.nest-pro .nest-preview svg{width:100%;height:auto;display:block;min-height:0;max-height:none}
+.nest-pro .nest-legend{display:flex;justify-content:flex-start;align-items:center;gap:12px;flex-wrap:wrap;min-height:0;color:#58438f;font-size:16px;font-weight:700;margin:2px 0 0;padding-left:4px}
 .nest-pro .nest-legend-item{display:inline-flex;align-items:center;gap:7px}
 .nest-pro .nest-dot{display:inline-block;width:20px;height:15px;flex:0 0 auto;border:1px solid #6850aa}
 .nest-pro .nest-dot-zero{background:#afa2eb}.nest-pro .nest-dot-rot{background:#9bcffc;border-color:#316bb1}.nest-pro .nest-dot-round{background:#baa7f3;border-radius:100%}
@@ -589,10 +589,10 @@ const NEST_CSS=`
 .nest-pro .nest-methods h3{font-size:17px;margin-bottom:6px}
 .nest-pro .nest-toggle{gap:6px}
 .nest-pro .nest-hint{margin-top:4px;line-height:1.25}
-.nest-pro .nest-figure{min-height:305px;padding:7px}
-.nest-pro .nest-figure-title{font-size:17px;margin-bottom:4px}
-.nest-pro .nest-preview svg{min-height:175px;max-height:255px}
-.nest-pro .nest-legend{min-height:25px;gap:14px;margin-top:4px}
+.nest-pro .nest-figure{min-height:0;padding:5px 6px}
+.nest-pro .nest-figure-title{font-size:17px;margin-bottom:2px}
+.nest-pro .nest-preview svg{min-height:0;max-height:none}
+.nest-pro .nest-legend{min-height:0;gap:10px;margin-top:2px}
 .nest-pro .nest-caption{margin-top:6px;gap:6px}
 .nest-pro .nest-summary{font-size:18px}
 .nest-pro .nest-footrow{min-height:31px;gap:7px}
