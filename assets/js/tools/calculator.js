@@ -1,5 +1,5 @@
 /**
- * EPSILON SOFT - K-CALC for Web.
+ * EPSILON SOFT - ES-CALC for Web.
  * Reference: ES TOOLKIT V1.0/core/calculator.go,
  * ui_windows.go/drawCalculator(), main_windows.go/calcKey/evaluate,
  * calc_tokens.go, calc_grouping.go and display_format.go.
@@ -357,7 +357,7 @@ function mapping(key) {
   return /^[0-9.+*/()%e-]$/.test(key) ? key : null;
 }
 
-/** Use K-CALC's own keypad on touch-first phones/tablets, in both orientations. */
+/** Use ES-CALC's own keypad on touch-first phones/tablets, in both orientations. */
 function usesTouchKeypad() {
   const points = navigator.maxTouchPoints || 0;
   const primaryTouch = typeof window.matchMedia === 'function' &&
@@ -373,7 +373,7 @@ function usesTouchKeypad() {
 export function mount(root, ctx) {
   if (!icon) throw new Error('Thiếu thành phần giao diện EpsilonSoftShared.');
   root.innerHTML = `<style>${STYLES}</style>
-  <section class="epsilon-kcalc" aria-label="Máy tính K-CALC">
+  <section class="epsilon-kcalc" aria-label="Máy tính ES-CALC">
     <div class="kc-header">
       <div class="kc-title"><h2 id="kc-title">Máy tính khoa học</h2><p id="kc-subtitle">Lịch sử · DEG / RAD · Bộ nhớ · Công thức khoa học</p></div>
       <div class="kc-mode" role="group" aria-label="Chọn chế độ máy tính">
@@ -383,7 +383,7 @@ export function mount(root, ctx) {
     </div>
     <div class="kc-columns">
       <section class="kc-card kc-history-card" aria-label="Lịch sử và phép tính">
-        <div class="kc-card-head"><strong class="kc-wordmark">K-CALC</strong><span id="kc-badge" class="kc-angle">DEG</span></div>
+        <div class="kc-card-head"><strong class="kc-wordmark">ES-CALC</strong><span id="kc-badge" class="kc-angle">DEG</span></div>
         <div class="kc-history" id="kc-history" aria-label="Lịch sử tính toán"></div>
         <div class="kc-expression-head"><label for="kc-input">PHÉP TÍNH</label>
           <div class="kc-controls" role="group" aria-label="Thao tác với phép tính">
@@ -412,7 +412,7 @@ export function mount(root, ctx) {
   input.readOnly = touchKeypadOnly || session.finished;
   input.inputMode = touchKeypadOnly ? 'none' : 'text';
   if (touchKeypadOnly) {
-    input.setAttribute('aria-description', 'Chạm các phím K-CALC để nhập, không dùng bàn phím hệ thống.');
+    input.setAttribute('aria-description', 'Chạm các phím ES-CALC để nhập, không dùng bàn phím hệ thống.');
   }
   // Read-only touch inputs can reset their DOM selection to 0 when a keypad
   // button receives focus. Store the actual edit range separately.
@@ -511,7 +511,7 @@ export function mount(root, ctx) {
       keypad.append(b);
     }));
     $('#kc-caption').textContent = touchKeypadOnly
-      ? 'Chạm các phím K-CALC để nhập phép tính. Bàn phím hệ thống được tắt trên thiết bị cảm ứng.'
+      ? 'Chạm các phím ES-CALC để nhập phép tính. Bàn phím hệ thống được tắt trên thiết bị cảm ứng.'
       : session.science
         ? 'Có thể nhập bằng bàn phím. Enter hoặc = để tính. Nhập asin(...), acos(...), atan(...), abs(...) nếu cần.'
         : 'Máy tính cơ bản: cộng, trừ, nhân, chia, ngoặc và xóa. Enter hoặc = để tính.';
