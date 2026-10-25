@@ -1,9 +1,9 @@
 {
   "schema_version": "EPSILON_SOFT_IMAGE_CATALOG_V1",
-  "version": 1,
+  "version": 4,
   "scope": "Epsilon Soft - Web App",
   "updated_at": "2026-10-24",
-  "image_count": 7,
+  "image_count": 9,
   "base_path": "assets/images/",
   "groups": {
     "branding": {
@@ -26,10 +26,10 @@
   "usage_note_vi": "Danh mục ảnh dùng chung của Web App Epsilon Soft. Ảnh được đặt trong assets/images, JSON được lưu ở assets/data/epsilon-soft-images.json. Trường src là đường dẫn tính từ thư mục gốc website (cùng cấp index.html). Mỗi ảnh có một mã key duy nhất, không đổi key khi bổ sung ảnh mới. Khi thêm ảnh: đặt file trong assets/images, thêm mục vào images, điều chỉnh image_count và tăng version của danh mục. Không đổi đường dẫn, tên hoặc chỉnh sửa logo gốc nếu chưa được chốt. Đây là danh mục tài nguyên, không tự thay đổi giao diện hoặc logic ứng dụng.",
   "images": {
     "banner_main_visual": {
-      "src": "assets/images/banner-main-visual.webp",
-      "name_vi": "Banner minh họa chính",
+      "src": "assets/images/main-banner.png",
+      "name_vi": "Banner trang chủ 5:1",
       "name_en": "Main visual banner",
-      "description_vi": "Banner ngang nền xanh tím nhạt với máy tính xách tay, các biểu tượng công cụ và hiệu ứng ánh sáng.",
+      "description_vi": "Banner trang chủ tỷ lệ gần 5:1, phần trái thoáng để đặt nội dung HTML, bên phải minh họa PDF Studio, Image Studio và các công cụ.",
       "category": "banners",
       "tags": [
         "banner",
@@ -42,14 +42,14 @@
         "trang chủ",
         "công cụ"
       ],
-      "alt_vi": "Banner Epsilon Soft với máy tính xách tay và các biểu tượng công cụ trực tuyến",
+      "alt_vi": "Hình minh họa Epsilon Soft với laptop cùng các biểu tượng PDF Studio, Image Studio và tiện ích",
       "alt_en": "Epsilon Soft banner showing a laptop and online tool icons",
       "has_text": false,
       "transparent": false,
-      "width": 2000,
-      "height": 400,
-      "format": "webp",
-      "usage_hint_vi": "Banner lớn ở trang chủ hoặc phần giới thiệu hệ sinh thái."
+      "width": 2048,
+      "height": 409,
+      "format": "png",
+      "usage_hint_vi": "Ảnh nền trang chủ; giữ phần nội dung HTML ở bên trái, không nhúng chữ hay logo lặp vào ảnh."
     },
     "epsilon_logo": {
       "src": "assets/images/epsilon-logo.png",
@@ -197,6 +197,54 @@
       "height": 258,
       "format": "webp",
       "usage_hint_vi": "Hình minh họa ngắn gọn trong hero, thẻ giới thiệu hoặc banner phụ."
+    },
+    "epsilon_logo_white_yellow": {
+      "src": "assets/images/ES-logo-white-yellow.png",
+      "name_vi": "Logo Epsilon Soft chữ trắng và vàng có biểu tượng",
+      "name_en": "Epsilon Soft white and yellow logo with mark",
+      "description_vi": "Logo EPSILON màu trắng, SOFT màu vàng, kèm biểu tượng Epsilon xanh-vàng; nền trong suốt.",
+      "category": "branding",
+      "tags": [
+        "logo",
+        "brand",
+        "transparent",
+        "wordmark",
+        "white",
+        "yellow",
+        "epsilon soft"
+      ],
+      "alt_vi": "Logo Epsilon Soft chữ trắng và vàng có biểu tượng",
+      "alt_en": "Epsilon Soft white and yellow logo with mark",
+      "has_text": true,
+      "transparent": true,
+      "width": 2048,
+      "height": 388,
+      "format": "png",
+      "usage_hint_vi": "Logo trên nền tối, header/footer, giữ nguyên tỷ lệ."
+    },
+    "epsilon_logo_white_yellow_no_icon": {
+      "src": "assets/images/ES-logo-white-yellow-no-icon.png",
+      "name_vi": "Logo chữ Epsilon Soft trắng và vàng không biểu tượng",
+      "name_en": "Epsilon Soft white and yellow wordmark only",
+      "description_vi": "Logo chữ EPSILON màu trắng và SOFT màu vàng, không có biểu tượng, nền trong suốt.",
+      "category": "branding",
+      "tags": [
+        "logo",
+        "brand",
+        "transparent",
+        "wordmark",
+        "white",
+        "yellow",
+        "epsilon soft"
+      ],
+      "alt_vi": "Logo chữ Epsilon Soft trắng và vàng không biểu tượng",
+      "alt_en": "Epsilon Soft white and yellow wordmark only",
+      "has_text": true,
+      "transparent": true,
+      "width": 1626,
+      "height": 212,
+      "format": "png",
+      "usage_hint_vi": "Dùng trên nền tối khi không cần icon riêng, giữ nguyên tỷ lệ."
     }
   }
 }

@@ -1,22 +1,105 @@
 {
-  "schemaVersion": 1,
-  "description": "Public links to Epsilon products. Add products or change URLs here; app.js reads this list dynamically.",
-  "products": [
+  "version": 2,
+  "groups": [
     {
-      "id": "epsilon-edu-class-1",
-      "name": "Lớp 1 – Epsilon Edu",
-      "description": "Học Toán, Tiếng Việt và Tiếng Anh theo chương trình Epsilon Edu.",
+      "id": "edu",
+      "name": "Epsilon Edu",
+      "nameEn": "Epsilon Edu",
+      "description": "Chương trình học tập từ Lớp 1 đến Lớp 9 và các ứng dụng giáo dục của Epsilon.",
+      "descriptionEn": "Grade 1–9 learning programs and Epsilon education apps.",
       "icon": "book",
-      "logo": "",
-      "url": "https://epsilon-class-1.pages.dev/"
+      "products": [
+        {
+          "id": "lop-1",
+          "name": "Lớp 1",
+          "nameEn": "Grade 1",
+          "description": "Epsilon Edu Lớp 1 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 1 — learning and self-study.",
+          "icon": "book",
+          "url": "https://epsilon-class-1.pages.dev/"
+        },
+        {
+          "id": "lop-2",
+          "name": "Lớp 2",
+          "nameEn": "Grade 2",
+          "description": "Epsilon Edu Lớp 2 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 2 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        },
+        {
+          "id": "lop-3",
+          "name": "Lớp 3",
+          "nameEn": "Grade 3",
+          "description": "Epsilon Edu Lớp 3 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 3 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        },
+        {
+          "id": "lop-4",
+          "name": "Lớp 4",
+          "nameEn": "Grade 4",
+          "description": "Epsilon Edu Lớp 4 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 4 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        },
+        {
+          "id": "lop-5",
+          "name": "Lớp 5",
+          "nameEn": "Grade 5",
+          "description": "Epsilon Edu Lớp 5 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 5 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        },
+        {
+          "id": "lop-6",
+          "name": "Lớp 6",
+          "nameEn": "Grade 6",
+          "description": "Epsilon Edu Lớp 6 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 6 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        },
+        {
+          "id": "lop-7",
+          "name": "Lớp 7",
+          "nameEn": "Grade 7",
+          "description": "Epsilon Edu Lớp 7 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 7 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        },
+        {
+          "id": "lop-8",
+          "name": "Lớp 8",
+          "nameEn": "Grade 8",
+          "description": "Epsilon Edu Lớp 8 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 8 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        },
+        {
+          "id": "lop-9",
+          "name": "Lớp 9",
+          "nameEn": "Grade 9",
+          "description": "Epsilon Edu Lớp 9 — học tập và tự học.",
+          "descriptionEn": "Epsilon Edu Grade 9 — learning and self-study.",
+          "icon": "book",
+          "url": ""
+        }
+      ]
     },
     {
-      "id": "epsilon-lab",
+      "id": "lab",
       "name": "Epsilon Lab",
-      "description": "Các phần mềm, tiện ích và giải pháp kỹ thuật trong hệ sinh thái Epsilon.",
-      "icon": "calculator",
-      "logo": "",
-      "url": ""
+      "nameEn": "Epsilon Lab",
+      "description": "Phần mềm, tiện ích và giải pháp kỹ thuật của hệ sinh thái Epsilon.",
+      "descriptionEn": "Engineering software and technical tools in the Epsilon ecosystem.",
+      "icon": "gear",
+      "products": []
     }
   ]
 }
