@@ -1,17 +1,14 @@
 /**
- * Epsilon Soft - Trải phôi 2D (Web)
- * Transcribed from ES TOOLKIT V1.0 core/nesting.go + core/nesting_guillotine.go.
- * One self-contained tool module. No external nesting engine, no backend, no DXF.
- * Engineering rules: finished dimensions, TOTAL machining allowance, kerf/2+edge
- * clearance, Laser/Plasma multistage partition, distinct two-stage shear method,
- * circle square/hex rows, manual offcut calculation and weight balance.
+ * Epsilon Soft - Trải phôi 2D (Web) – PHẦN GIAO DIỆN
+ * File này CHỈ chứa giao diện. Lõi tính chạy trên máy chủ Epsilon Soft (API /api/nesting);
+ * trình duyệt chỉ gửi thông số và nhận về sơ đồ – thuật toán không bao giờ có mặt ở đây.
+ * Bản quyền © Epsilon Lab.
  */
 const {field, number: pretty, numeric, icon, setText, downloadBlob} = globalThis.EpsilonSoftShared || {};
 
-const MAX_PREVIEW=900, MAX_CANDIDATES=950, MAX_STATES=16000;
-const MAX_BRANCHES=4000000, MAX_DEPTH=200;
-const LIMIT=1e6, EPS=1e-8;
-const fmin=Math.min, fmax=Math.max;
+const MAX_PREVIEW=900, LIMIT=1e6;
+// Địa chỉ API tính toán; trang web có thể đặt EpsilonSoftShared.nestingEndpoint để đổi.
+const NEST_API=globalThis.EpsilonSoftShared?.nestingEndpoint||'/api/nesting';
 // The four Portable presets are UI shortcuts only; names and densities load from materials.json.
 const quickMaterialLabels=['Thép','Inox','Nhôm','Đồng'];
 const loadMaterials=()=>{
@@ -21,339 +18,9 @@ const loadMaterials=()=>{
   if(!r.ok)throw Error('Không đọc được materials.json (HTTP '+r.status+').');return r.json();
  });
 };
-function grid(avail,unit,gap){
- if(unit<=0 || avail+EPS<unit)return 0;
- return fmax(0,fmin(1e6,Math.floor((avail+gap)/(unit+gap)+1e-10)));
-}
-const rectCount=(r,w,h,g)=>grid(r.w,w,g)*grid(r.h,h,g);
-function bestRectPlan(r,w,h,g){
- let best={count:rectCount(r,w,h,g),axis:0,firstRotated:false,firstGroups:0};
- const rot=rectCount(r,h,w,g);
- if(rot>best.count)best={count:rot,axis:0,firstRotated:true,firstGroups:0};
- if(w===h)return best;
- for(let axis=1;axis<=2;axis++)for(let firstRot=0;firstRot<=1;firstRot++){
-  let aw=w,ah=h,bw=h,bh=w;
-  if(firstRot){aw=h;ah=w;bw=w;bh=h;}
-  let stepA=ah,spanA=r.h,alongA=r.w,spanB=r.w;
-  if(axis===2){stepA=aw;spanA=r.w;alongA=r.h;spanB=r.h;}
-  const nA=fmin(5000,grid(spanA,stepA,g));
-  if(nA<=0)continue;
-  const perA=grid(alongA,axis===2?ah:aw,g);
-  if(perA===0)continue;
-  const perB=grid(spanB,axis===2?bh:bw,g);
-  for(let k=1;k<=nA;k++){
-   const used=k*stepA+(k-1)*g;
-   const remain=spanA-used-g;
-   const nB=grid(remain,axis===2?bw:bh,g);
-   const count=k*perA+nB*perB;
-   if(count>best.count)best={count,axis,firstRotated:Boolean(firstRot),firstGroups:k};
-  }
- }
- return best;
-}
-function addGrid(out,r,w,h,g,limit=MAX_PREVIEW){
- const nx=grid(r.w,w,g),ny=grid(r.h,h,g);
- for(let row=0;row<ny && out.length<limit;row++)for(let col=0;col<nx && out.length<limit;col++){
-  out.push({x:r.x+col*(w+g),y:r.y+row*(h+g),w,h});
- }
- return out;
-}
-function rectPreview(r,w,h,g,p,limit=MAX_PREVIEW){
- const aw=p.firstRotated?h:w,ah=p.firstRotated?w:h;
- const bw=p.firstRotated?w:h,bh=p.firstRotated?h:w;
- if(!p.axis)return addGrid([],r,aw,ah,g,limit);
- if(p.axis===1){
-  const used=p.firstGroups*ah+(p.firstGroups-1)*g;
-  const a={...r,h:used},b={x:r.x,y:r.y+used+g,w:r.w,h:fmax(0,r.h-used-g)};
-  return addGrid(addGrid([],a,aw,ah,g,limit),b,bw,bh,g,limit);
- }
- const used=p.firstGroups*aw+(p.firstGroups-1)*g;
- const a={...r,w:used},b={x:r.x+used+g,y:r.y,w:fmax(0,r.w-used-g),h:r.h};
- return addGrid(addGrid([],a,aw,ah,g,limit),b,bw,bh,g,limit);
-}
-function rectCandidates(maxSize,w,h,gap){
- const a=w+gap,b=h+gap;
- if(maxSize<=0||a<=0||b<=0)return null;
- const ni=grid(maxSize,w,gap),nj=grid(maxSize,h,gap);
- if((ni+1)*(nj+1)>MAX_CANDIDATES*3)return null;
- const arr=[];
- for(let i=0;i<=ni;i++)for(let j=0;j<=nj;j++){
-  if(i+j===0)continue;
-  const pos=i*a+j*b-gap;
-  if(pos>0 && pos+gap+fmin(w,h)<=maxSize+1e-9)arr.push(pos);
- }
- arr.sort((a,b)=>a-b);
- const distinct=[];
- for(const x of arr)if(!distinct.length||x-distinct[distinct.length-1]>1e-7)distinct.push(x);
- return distinct.length<=MAX_CANDIDATES?distinct:null;
-}
-function makeDPSolver(r,w,h,g){
- const splitsX=rectCandidates(r.w,w,h,g),splitsY=rectCandidates(r.h,w,h,g);
- if(!splitsX||!splitsY||splitsX.length*splitsY.length>1700)return null;
- const memo=new Map(); let abort=false,branches=0;
- const canFit=(W,H)=> (W+EPS>=w && H+EPS>=h) || (W+EPS>=h && H+EPS>=w);
- const key=(W,H)=>`${Math.round(W*1e8)},${Math.round(H*1e8)}`;
- function solve(W,H,depth){
-  if(abort||!canFit(W,H))return {count:0,blocks:0,axis:0,rotated:false};
-  const k=key(W,H);
-  if(memo.has(k))return memo.get(k);
-  if(memo.size>=MAX_STATES||depth>=MAX_DEPTH||branches>=MAX_BRANCHES){abort=true;return {count:0,blocks:0};}
-  const c0=rectCount({w:W,h:H},w,h,g),c90=rectCount({w:W,h:H},h,w,g);
-  let node={count:c0,blocks:1,axis:0,rotated:false,split:0};
-  if(c90>c0)node={count:c90,blocks:1,axis:0,rotated:true,split:0};
-  const upper=Math.floor(W*H/(w*h)+1e-9);
-  if(upper<=node.count||w===h){memo.set(k,node);return node;}
-  for(let axis=1;axis<=2;axis++){
-   const length=axis===1?H:W,cuts=axis===1?splitsY:splitsX;
-   for(const pos of cuts){
-    if(pos+g>=length-1e-9)break;
-    const other=length-pos-g;
-    if(other<=0)continue;
-    const aW=axis===1?W:pos,aH=axis===1?pos:H;
-    const bW=axis===1?W:other,bH=axis===1?other:H;
-    if(!canFit(aW,aH)||!canFit(bW,bH))continue;
-    const upperA=Math.floor(aW*aH/(w*h)+1e-9),upperB=Math.floor(bW*bH/(w*h)+1e-9);
-    if(upperA+upperB<node.count)continue;
-    if(++branches>=MAX_BRANCHES){abort=true;return {count:0,blocks:0};}
-    const a=solve(aW,aH,depth+1);if(abort)return {count:0,blocks:0};
-    const b=solve(bW,bH,depth+1);if(abort)return {count:0,blocks:0};
-    const count=a.count+b.count,blocks=a.blocks+b.blocks;
-    if(count>node.count||(count===node.count&&blocks<node.blocks)){
-     node={count,blocks,axis,rotated:false,split:pos};
-    }
-   }
-  }
-  memo.set(k,node);return node;
- }
- function preview(out,region,limit=MAX_PREVIEW){
-  if(out.length>=limit)return out;
-  const node=memo.get(key(region.w,region.h));
-  if(!node?.count)return out;
-  if(node.axis===0)return addGrid(out,region,node.rotated?h:w,node.rotated?w:h,g,limit);
-  let a={...region},b={...region};
-  if(node.axis===1){a.h=node.split;b.y+=node.split+g;b.h-=node.split+g;}
-  else{a.w=node.split;b.x+=node.split+g;b.w-=node.split+g;}
-  preview(out,a,limit);return preview(out,b,limit);
- }
- return {solve,preview,isAborted:()=>abort};
-}
-function improvedArrangement(r,w,h,g,withPreview=true){
- const old=bestRectPlan(r,w,h,g);
- const baselineBlocks=old.axis?2:1;
- let ans={count:old.count,layout:[],rotated:old.firstRotated,mixed:Boolean(old.axis),strategy:old.axis===1?'bands':old.axis===2?'columns':'grid',blocks:baselineBlocks};
- const solver=makeDPSolver(r,w,h,g);
- let useDP=false;
- if(solver){
-  const best=solver.solve(r.w,r.h,0);
-  useDP=!solver.isAborted()&&(best.count>ans.count||(best.count===ans.count&&best.blocks<baselineBlocks));
-  if(useDP){
-   ans.count=best.count;ans.blocks=best.blocks;
-   ans.strategy=best.axis?'guillotine':'grid';
-   if(withPreview){
-    ans.layout=solver.preview([],r);
-    let zero=false,ninety=false;
-    for(const part of ans.layout){
-     if(Math.abs(part.w-w)<1e-7&&Math.abs(part.h-h)<1e-7)zero=true;
-     if(Math.abs(part.w-h)<1e-7&&Math.abs(part.h-w)<1e-7)ninety=true;
-    }
-    ans.mixed=zero&&ninety;
-    ans.rotated=ninety&&!zero;
-   }else{ans.mixed=Boolean(best.axis);ans.rotated=Boolean(best.rotated);}
-  }
- }
- if(!useDP&&withPreview)ans.layout=rectPreview(r,w,h,g,old);
- return ans;
-}
-function bestShearRows(r,w,h,g){
- const perA=grid(r.h,h,g),perB=grid(r.h,w,g);
- const maxA=grid(r.w,w,g);let best={count:0,rowsA:0,rowsB:0,piecesA:perA,piecesB:perB};
- if(perA===0&&perB===0)return best;
- function evaluate(k){
-  if(k<0||k>maxA)return;
-  const remain=k===0?r.w:r.w-k*(w+g);
-  const nb=perB===0?0:grid(remain,h,g);
-  const count=k*perA+nb*perB;
-  if(count>best.count || (count===best.count &&
-    ((!best.rowsA&&!best.rowsB)||(k+nb<best.rowsA+best.rowsB)||
-    ((k+nb===best.rowsA+best.rowsB)&&(k===0||nb===0)&&best.rowsA>0&&best.rowsB>0)))){
-    best={count,rowsA:k,rowsB:nb,piecesA:perA,piecesB:perB};
-  }
- }
- const maxChecks=25000;
- if(maxA<=maxChecks){for(let k=0;k<=maxA;k++)evaluate(k);}
- else{
-  for(let k=0;k<=maxChecks;k++)evaluate(k);
-  const stride=Math.floor(maxA/maxChecks);
-  for(let k=maxChecks;k<=maxA;k+=fmax(1,stride))evaluate(k);
-  for(let k=fmax(0,maxA-250);k<=maxA;k++)evaluate(k);
- }
- return best;
-}
-function shearPreview(r,w,h,g,plan){
- const parts=[],cuts=[];let cursor=r.x;
- function addRows(rows,perRow,length,span){
-  for(let row=0;row<rows;row++){
-   for(let col=0;col<perRow&&parts.length<MAX_PREVIEW;col++){
-    parts.push({x:cursor,y:r.y+col*(span+g),w:length,h:span});
-   }
-   if(cuts.length<MAX_PREVIEW&&row<rows-1)cuts.push(cursor+length+g/2);
-   cursor+=length+g;
-  }
- }
- addRows(plan.rowsA,plan.piecesA,w,h);
- if(plan.rowsA>0&&plan.rowsB>0&&cuts.length<MAX_PREVIEW)cuts.push(cursor-g/2);
- addRows(plan.rowsB,plan.piecesB,h,w);
- return {layout:parts,fullWidthCuts:cuts};
-}
-function circleRows(height,d,step){
- if(d<=0||step<=0||height+EPS<d)return 0;
- return fmin(1e6,Math.floor((height-d)/step+1e-10)+1);
-}
-function circleCount(r,d,g,hex,shifted){
- const step=d+g,ystep=hex?step*Math.sqrt(3)/2:step;
- const nr=circleRows(r.h,d,ystep),normalCols=grid(r.w,d,g);
- if(!hex)return normalCols*nr;
- const shiftedCols=grid(r.w-step/2,d,g);
- let normalRows=Math.floor((nr+1)/2),oddRows=Math.floor(nr/2);
- if(shifted)[normalRows,oddRows]=[oddRows,normalRows];
- return normalRows*normalCols+oddRows*shiftedCols;
-}
-function bestCirclePlan(r,d,g){
- let best={count:circleCount(r,d,g,false,false),hex:false,transposed:false,shifted:false};
- for(let trans=0;trans<=1;trans++){
-  const sz=trans?{...r,w:r.h,h:r.w}:r;
-  for(let shift=0;shift<=1;shift++){
-   const count=circleCount(sz,d,g,true,Boolean(shift));
-   if(count>best.count)best={count,hex:true,transposed:Boolean(trans),shifted:Boolean(shift)};
-  }
- }
- return best;
-}
-function circlePreview(r,d,g,p){
- const sz=p.transposed?{...r,w:r.h,h:r.w}:r;
- const step=d+g,ystep=p.hex?step*Math.sqrt(3)/2:step;
- const nr=circleRows(sz.h,d,ystep),out=[];
- for(let row=0;row<nr&&out.length<MAX_PREVIEW;row++){
-  let offset=0;
-  if(p.hex&&(Boolean(row%2===1)!==p.shifted))offset=step/2;
-  const cols=grid(sz.w-offset,d,g);
-  for(let col=0;col<cols&&out.length<MAX_PREVIEW;col++){
-   let x=col*step+offset,y=row*ystep;
-   if(p.transposed)[x,y]=[y,x];
-   out.push({x:r.x+x,y:r.y+y,w:d,h:d});
-  }
- }
- return out;
-}
-function arrangementFor(i,region,cutW,cutH,multistage=true,withPreview=true){
- if(i.shape==='circle'){
-  const p=bestCirclePlan(region,cutW,i.gap);
-  return {count:p.count,layout:withPreview?circlePreview(region,cutW,i.gap,p):[],rotated:p.transposed,mixed:false,staggered:p.hex,strategy:p.hex?'staggered':'grid',fullWidthCuts:[]};
- }
- if(i.cutMethod==='shear'){
-  const p=bestShearRows(region,cutW,cutH,i.gap);
-  const pic=withPreview?shearPreview(region,cutW,cutH,i.gap,p):{layout:[],fullWidthCuts:[]};
-  return {count:p.count,...pic,rotated:p.rowsA===0,mixed:p.rowsA>0&&p.rowsB>0,staggered:false,strategy:'shear-rows'};
- }
- const p=multistage?improvedArrangement(region,cutW,cutH,i.gap,withPreview):(()=>{
-  const old=bestRectPlan(region,cutW,cutH,i.gap);
-  return {count:old.count,layout:withPreview?rectPreview(region,cutW,cutH,i.gap,old):[],rotated:old.firstRotated,mixed:Boolean(old.axis),strategy:old.axis===1?'bands':old.axis===2?'columns':'grid'};
- })();
- return {...p,staggered:false,fullWidthCuts:[]};
-}
-function manualStrip(i,count,cutW,cutH,allowMultiStage){
- const m=i.margin+i.gap/2,availableH=i.sheetH-2*m;
- function arrange(length,preview=false){
-  const r={x:m,y:m,w:length-2*m,h:availableH};
-  if(r.w<=0)return {count:0,layout:[],strategy:'grid'};
-  return arrangementFor(i,r,cutW,cutH,allowMultiStage,preview);
- }
- let lo=0,hi=i.sheetW;
- const steps=allowMultiStage?fmin(38,fmax(17,Math.ceil(Math.log2(i.sheetW*10+1))+2)):38;
- for(let k=0;k<steps;k++){
-  const mid=(lo+hi)/2;
-  if(arrange(mid).count>=count)hi=mid;else lo=mid;
- }
- let used=fmin(i.sheetW,Math.ceil((hi-1e-9)*10)/10);
- if(arrange(used).count<count && used<i.sheetW)used=fmin(i.sheetW,used+0.1);
- let out=arrange(used,true);
- if(count<=out.layout.length){
-  let maxRight=0;
-  for(const p of out.layout.slice(0,count))maxRight=fmax(maxRight,p.x+p.w);
-  const actual=fmin(i.sheetW,Math.ceil((maxRight+m-1e-9)*10)/10);
-  if(actual>0&&actual<used)used=actual;
- }
- return {...out,length:used};
-}
-export function calculateNesting(input){
- const i={...input};
- const keys=['sheetW','sheetH','thickness','gap','margin','density','allowance',i.shape==='circle'?'diameter':'partW',...(i.shape==='circle'?[]:['partH'])];
- for(const k of keys){const v=i[k];if(!Number.isFinite(v)||v<0||v>LIMIT)throw Error('Số đo không hợp lệ hoặc vượt giới hạn: '+k);}
- if(!['rect','circle'].includes(i.shape))throw Error('Hình dạng chi tiết không hợp lệ.');
- if(!['laser','shear'].includes(i.cutMethod))throw Error('Phương pháp cắt không hợp lệ.');
- if(i.shape==='circle'&&i.cutMethod==='shear')throw Error('Chặt sấn chỉ xếp chi tiết chữ nhật.');
- if(i.sheetW<=0||i.sheetH<=0||i.thickness<=0||i.density<=0||(!i.autoMax&&(!Number.isInteger(i.quantity)||i.quantity<=0||i.quantity>LIMIT)))throw Error('Kiểm tra kích thước tấm, dày, vật liệu hoặc số lượng.');
- if(i.shape==='rect'&&(i.partW<=0||i.partH<=0))throw Error('Kích thước thành phẩm phải lớn hơn 0.');
- if(i.shape==='circle'&&i.diameter<=0)throw Error('Đường kính thành phẩm phải lớn hơn 0.');
- const m=i.margin+i.gap/2,usableW=i.sheetW-2*m,usableH=i.sheetH-2*m;
- if(usableW<=0||usableH<=0)throw Error('Chừa mép và mạch cắt vượt kích thước tấm.');
- const region={x:m,y:m,w:usableW,h:usableH};
- const cutW=(i.shape==='circle'?i.diameter:i.partW)+i.allowance;
- const cutH=(i.shape==='circle'?i.diameter:i.partH)+i.allowance;
- const area=i.shape==='circle'?Math.PI*i.diameter*i.diameter/4:i.partW*i.partH;
- const plan=arrangementFor(i,region,cutW,cutH,true,true);
- if(plan.count<1)throw Error('Chi tiết không lọt tấm phôi (đã tính mạch và lượng dư).');
- // A giant capacity can exceed the safe integer range for downstream mass arithmetic.
- if(!Number.isSafeInteger(plan.count)||plan.count>LIMIT)throw Error('Số chi tiết quá lớn. Hãy điều chỉnh kích thước tấm hoặc chi tiết.');
- const qty=i.autoMax?plan.count:i.quantity;
- const sheets=Math.ceil(qty/plan.count),lastSheetParts=(qty-1)%plan.count+1;
- const out={...plan,partsPerSheet:plan.count,sheets,lastSheetParts,completeSheets:0,shownOnSheet:lastSheetParts,
-  cutW,cutH,partArea:area,cutArea:cutW*cutH,sheetArea:i.sheetW*i.sheetH,
-  remnantL:0,remnantW:0,savedOffcutKG:0,issuedLastLength:i.sheetW,
-  input:i,quantity:qty};
- let lengthIssued=0;
- if(i.autoMax){
-  lengthIssued=i.sheetW;
- }else{
-  out.completeSheets=sheets-1;
-  const allowMultiStage=plan.strategy==='guillotine';
-  const last=manualStrip(i,lastSheetParts,cutW,cutH,allowMultiStage);
-  out.layout=last.layout;
-  out.fullWidthCuts=last.fullWidthCuts;
-  out.rotated=last.rotated;out.mixed=last.mixed;out.staggered=last.staggered;out.strategy=last.strategy;
-  out.issuedLastLength=last.length;
-  out.remnantL=fmax(0,i.sheetW-last.length);out.remnantW=i.sheetH;
-  lengthIssued=last.length;
-  if(out.completeSheets>0){
-   const full=manualStrip(i,out.partsPerSheet,cutW,cutH,last.strategy==='guillotine');
-   lengthIssued+=out.completeSheets*full.length;
-  }
-  out.savedOffcutKG=(sheets*i.sheetW-lengthIssued)*i.sheetH*i.thickness*i.density/1e9;
- }
- out.previewDrawn=fmin(out.shownOnSheet,out.layout.length);
- out.issuedKG=lengthIssued*i.sheetH*i.thickness*i.density/1e9;
- out.finishedKG=area*i.thickness*qty*i.density/1e9;
- out.wasteKG=out.issuedKG-out.finishedKG;
- if(out.wasteKG<0&&out.wasteKG> -1e-8)out.wasteKG=0;
- if(out.wasteKG<0||out.finishedKG<=0)throw Error('Cân bằng khối lượng không hợp lệ.');
- out.wasteOverFinishedPercent=100*out.wasteKG/out.finishedKG;
- out.wasteOverIssuedPercent=100*out.wasteKG/out.issuedKG;
- out.utilizationPercent=100*out.finishedKG/out.issuedKG;
- return out;
-}
-
-// A module Worker runs the very same nesting.js. No second algorithm file.
-// Editing during a lengthy search terminates the previous Worker immediately.
-if(typeof document==='undefined' && typeof self!=='undefined' && typeof self.postMessage==='function'){
- self.addEventListener('message',event=>{
-  try{self.postMessage({ok:true,result:calculateNesting(event.data)});}
-  catch(error){self.postMessage({ok:false,error:String(error?.message||'Không thể tính trải phôi.')});}
- });
-}
-
 // -----------------------------------------------------------------------------
 // UI parity with ES TOOLKIT V1.0 Portable / extensions_windows.go.
-// Keep the checked calculation engine above unchanged.
+// Lõi tính nằm trên máy chủ; file này chỉ hiển thị kết quả.
 // -----------------------------------------------------------------------------
 const DEFAULT_STATE={
  sheetW:'6000',sheetH:'2000',thickness:'20',partW:'300',partH:'200',diameter:'310',
@@ -415,12 +82,11 @@ function previewDrawing(res){
    if(inner>1.4&&ww-2*inner>3&&hh-2*inner>3)shapes+=`<rect x="${pt(xx+inner)}" y="${pt(yy+inner)}" width="${pt(ww-2*inner)}" height="${pt(hh-2*inner)}" rx=".8" fill="#e1dbff"/>`;
   }
  }
- if(i.cutMethod==='shear')for(const cut of res.fullWidthCuts||[]){
-  if(!i.autoMax&&cut>res.issuedLastLength-1e-6)continue;
-  const x=x0+cut*scale;
-  if(x>x0+1&&x<x0+W-1)cuts+=`<line x1="${pt(x)}" y1="${pt(y0+1)}" x2="${pt(x)}" y2="${pt(y0+H-1)}" stroke="#d58027" stroke-width="1.65"/>`;
+ if(i.cutMethod==='shear')for(const c of res.cutLines||[]){
+  if(!i.autoMax&&Math.min(c.x1,c.x2)>res.issuedLastLength-1e-6)continue;
+  cuts+=`<line x1="${pt(x0+c.x1*scale)}" y1="${pt(y0+c.y1*scale)}" x2="${pt(x0+c.x2*scale)}" y2="${pt(y0+c.y2*scale)}" stroke="#d58027" stroke-width="1.2"/>`;
  }
- const m=(i.margin+i.gap/2)*scale;
+ const m=i.margin*scale;
  const boundary=(m>=3&&W>2*m&&H>2*m)?`<rect x="${pt(x0+m)}" y="${pt(y0+m)}" width="${pt(W-2*m)}" height="${pt(H-2*m)}" fill="none" stroke="#ddc9fa" stroke-width="1"/>`:'';
  const diagram=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SW} ${SH}" role="img" aria-label="Sơ đồ tấm phôi ${prettyPortable(i.sheetW)} × ${prettyPortable(i.sheetH)} mm, ${prettyPortable(res.shownOnSheet)} chi tiết" preserveAspectRatio="xMidYMid meet"><rect width="${SW}" height="${SH}" fill="#faf7ff"/><rect x="${pt(x0)}" y="${pt(y0)}" width="${pt(W)}" height="${pt(H)}" fill="#f1ebfd" stroke="#793afa" stroke-width="2"/>${remnant}${boundary}${shapes}${cuts}</svg>`;
  const title=`TẤM PHÔI ${prettyPortable(i.sheetW)} × ${prettyPortable(i.sheetH)} × ${prettyPortable(i.thickness)} mm`;
@@ -435,14 +101,10 @@ function previewDrawing(res){
  return {svg:diagram,download:fullSVG,title,legend,drawn};
 }
 function nestingStrategy(r){
- switch(r.strategy){
-  case 'bands':return 'Phối hợp dải ngang 0°/90°';
-  case 'columns':return 'Phối hợp dải dọc 0°/90°';
-  case 'guillotine':return 'Phối hợp 0°/90° – chia vùng nhiều cấp';
-  case 'shear-rows':return 'Cắt dải nguyên khổ rộng, sau đó chặt theo chi tiết';
-  case 'staggered':return 'Hình tròn xếp so le';
-  default:return r.rotated?'Lưới xoay 90°':'Lưới thẳng 0°';
- }
+ const base={guillotine:'Phối hợp 0°/90° – chia vùng nhiều cấp',rotary:'Phối hợp 0°/90° – bố trí xoay vòng',
+  shear:'Nhát chặt chạy suốt – chia dải nhiều cấp',staggered:'Hình tròn xếp so le'}[r.strategy]||(r.rotated?'Lưới xoay 90°':'Lưới thẳng 0°');
+ if(r.upperBound==null)return base;
+ return r.slack===0?`${base} · ✓ Đã đạt số chiếc tối đa có thể`:`${base} · Theo diện tích còn tối đa ${r.slack} chiếc`;
 }
 const NEST_CSS=`
 .nest-pro{font-size:16px;color:#191c69;min-width:0}
@@ -553,14 +215,14 @@ const NEST_CSS=`
 `;
 
 export function mount(root,ctx){
- // One self-contained file; the calculation engine and Worker are unchanged.
+ // Giao diện; mọi phép tính gửi lên máy chủ qua NEST_API.
  const state=savedState?structuredClone(savedState):structuredClone(DEFAULT_STATE);
  state.sheets??=structuredClone(DEFAULT_STATE.sheets);
  state.gaps??=structuredClone(DEFAULT_STATE.gaps);
  state.allowances??=structuredClone(DEFAULT_STATE.allowances);
  if(!['rect','circle'].includes(state.shape))state.shape='rect';
  if(!['laser','shear'].includes(state.cutMethod))state.cutMethod='laser';
- let materialCatalog=null,worker=null,timer=null,serial=0,last=null,lastSVG='';
+ let materialCatalog=null,request=null,timer=null,serial=0,last=null,lastSVG='';
  root.innerHTML=`<style>${NEST_CSS}</style><div class="nest-pro">
   <div class="nest-top"><p class="nest-subtitle">1 loại chi tiết · Thành phẩm (mm) · Đường bao ngoài</p>
    <div class="nest-materials" role="group" aria-label="Vật liệu"><strong>Vật liệu</strong>
@@ -614,7 +276,7 @@ export function mount(root,ctx){
    <div class="nest-result emphasis"><button id="nest-copy" type="button" title="Sao chép kết quả"><strong>Hao phí / TP (%)</strong><output id="nest-waste">—</output></button></div>
    <div class="nest-result"><strong>Tấm lẻ còn lại (mm)</strong><output id="nest-remnant">—</output></div>
   </section>
-  <p class="nest-note">* Thành phẩm tính theo đường bao ngoài. Hao phí = (Xuất phôi − TP) / TP × 100. Tấm lẻ không tính xuất.</p>
+  <p class="nest-note">* Thành phẩm tính theo đường bao ngoài. Hao phí = (Xuất phôi − TP) / TP × 100. Tấm lẻ (cạnh ≥ 200 mm) được giữ lại, không tính xuất.</p>
  </div>`;
  const getField=name=>root.querySelector(`[name="${name}"]`);
  const getById=id=>root.querySelector('#'+id);
@@ -637,7 +299,7 @@ export function mount(root,ctx){
   if(materialCatalog)chooser.value=state.material>=4?String(state.material):'';
   const kerf=getField('gap').closest('.nest-field').querySelector('.nest-field-label');
   kerf.textContent=state.cutMethod==='shear'?'Khe hở (mm)':'Mạch cắt (mm)';
-  setText(root,'#nest-cut-hint',state.cutMethod==='shear'?'Cắt ngang khổ tấm → chia dải':'');
+  setText(root,'#nest-cut-hint',state.cutMethod==='shear'?'Nhát chặt chạy suốt → chia dải nhiều cấp':'');
  }
  function payload(){
   const names={sheetW:'Dài tấm',sheetH:'Rộng tấm',thickness:'Dày',partW:'Dài TP',partH:'Rộng TP',diameter:'D TP',allowance:'Dư gia công',gap:state.cutMethod==='shear'?'Khe hở':'Mạch cắt',margin:'Chừa mép',quantity:'Số lượng'};
@@ -670,18 +332,24 @@ export function mount(root,ctx){
  }
  function compute(){
   serial++;const job=serial;
-  if(worker){worker.terminate();worker=null;}
+  request?.abort();request=new AbortController();const mine=request;
   let args;try{collectFields();args=payload();}catch(e){invalid(e.message);return;}
   last=null;lastSVG='';status('Đang tính sơ đồ…',true);
-  function complete(value,error){if(job!==serial||ctx.signal?.aborted)return;worker?.terminate();worker=null;if(error)invalid(error);else present(value);}
-  try{
-   worker=new Worker(new URL('./nesting.js',import.meta.url),{type:'module',name:'epsilon-nesting'});
-   worker.addEventListener('message',e=>complete(e.data?.result,e.data?.ok?null:e.data?.error||'Không thể tính trải phôi.'),{once:true});
-   worker.addEventListener('error',e=>{if(job!==serial||ctx.signal?.aborted)return;worker?.terminate();worker=null;console.warn('Nesting Worker:',e.message);try{complete(calculateNesting(args),null);}catch(err){complete(null,err.message);}}, {once:true});
-   worker.postMessage(args);
-  }catch(e){worker?.terminate();worker=null;try{complete(calculateNesting(args),null);}catch(err){complete(null,err.message);}}
+  const timeout=setTimeout(()=>mine.abort(),25000);
+  fetch(NEST_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(args),signal:mine.signal,cache:'no-store',credentials:'omit'})
+   .then(async r=>{
+    const data=await r.json().catch(()=>null);
+    if(!r.ok||!data?.ok)throw Error(data?.error||(r.status===429?'Bạn thao tác quá nhanh, vui lòng thử lại sau ít giây.':'Máy chủ tính toán chưa phản hồi. Vui lòng thử lại.'));
+    return data.result;
+   })
+   .then(res=>{if(job!==serial||ctx.signal?.aborted)return;present(res);})
+   .catch(err=>{
+    if(job!==serial||ctx.signal?.aborted)return;
+    invalid(err?.name==='AbortError'?'Hết thời gian chờ máy chủ tính toán.':(err?.message||'Không thể tính trải phôi.'));
+   })
+   .finally(()=>clearTimeout(timeout));
  }
- function schedule(){clearTimeout(timer);if(worker){worker.terminate();worker=null;serial++;}status('Đang cập nhật…',true);timer=setTimeout(compute,170);}
+ function schedule(){clearTimeout(timer);request?.abort();serial++;status('Đang cập nhật…',true);timer=setTimeout(compute,250);}
  root.addEventListener('input',e=>{
   if(!e.target.matches('input[name]'))return;
   collectFields();if(e.target.name==='quantity'&&state.autoMax)return;schedule();
@@ -743,5 +411,5 @@ export function mount(root,ctx){
   navigator.clipboard.writeText(text).then(()=>ctx.showToast?.('Đã sao chép kết quả.'),()=>ctx.showToast?.('Không sao chép được kết quả.','error'));
  },{signal:ctx.signal});
  syncUI();compute();void loadCatalog();
- return ()=>{clearTimeout(timer);serial++;worker?.terminate();worker=null;};
+ return ()=>{clearTimeout(timer);serial++;request?.abort();request=null;};
 }
