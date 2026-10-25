@@ -25,7 +25,7 @@
           "description": "Epsilon Edu Lớp 2 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 2 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-2.pages.dev/"
         },
         {
           "id": "lop-3",
@@ -34,7 +34,7 @@
           "description": "Epsilon Edu Lớp 3 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 3 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-3.pages.dev/"
         },
         {
           "id": "lop-4",
@@ -43,7 +43,7 @@
           "description": "Epsilon Edu Lớp 4 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 4 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-4.pages.dev/"
         },
         {
           "id": "lop-5",
@@ -52,7 +52,7 @@
           "description": "Epsilon Edu Lớp 5 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 5 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-5.pages.dev/"
         },
         {
           "id": "lop-6",
@@ -61,7 +61,7 @@
           "description": "Epsilon Edu Lớp 6 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 6 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-6.pages.dev/"
         },
         {
           "id": "lop-7",
@@ -70,7 +70,7 @@
           "description": "Epsilon Edu Lớp 7 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 7 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-7.pages.dev/"
         },
         {
           "id": "lop-8",
@@ -79,7 +79,7 @@
           "description": "Epsilon Edu Lớp 8 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 8 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-8.pages.dev/"
         },
         {
           "id": "lop-9",
@@ -88,7 +88,7 @@
           "description": "Epsilon Edu Lớp 9 — học tập và tự học.",
           "descriptionEn": "Epsilon Edu Grade 9 — learning and self-study.",
           "icon": "book",
-          "url": ""
+          "url": "https://epsilon-class-9.pages.dev/"
         }
       ]
     },
