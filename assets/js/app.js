@@ -754,7 +754,7 @@ themeSheet.textContent += `
 
 // Epsilon Hub: category -> JSON-driven products. No extra image assets.
 themeSheet.textContent += `
-.es-hub-intro .es-hub-group-icon{background:linear-gradient(140deg,#f1e6ff,#e7d8ff);color:#5d2bd2;border-radius:16px;width:64px;height:64px;flex:0 0 64px}
+.es-hub-intro .es-hub-group-icon{background:linear-gradient(140deg,#f1e6ff,#e7d8ff);color:#5d2bd2;border-radius:13px;width:52px;height:52px;flex:0 0 52px}
 .es-hub-intro #es-hub-group-heading{font-size:clamp(24px,3vw,32px);line-height:1.2;color:#18299c}
 .es-hub-families{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
 .es-hub-family-card{position:relative;display:flex;flex-direction:column;gap:16px;min-width:0;min-height:230px;padding:23px 25px;border-radius:20px;border:1px solid #d9def9;background:linear-gradient(125deg,#fff 18%,#f2f4ff 100%);box-shadow:0 9px 25px rgba(29,32,116,.055);color:#142994;overflow:hidden;transition:transform .16s,box-shadow .16s,border-color .16s}
@@ -766,36 +766,47 @@ themeSheet.textContent += `
 .es-hub-family-card[data-family="lab"] .es-hub-family-icon{background:#ddedff;color:#1760bc}
 .es-hub-family-icon svg{width:34px;height:34px}
 .es-hub-family-heading{min-width:0}
-.es-hub-family-heading h2{font-size:24px;font-weight:900;letter-spacing:-.6px;margin:0;line-height:1.18}
+.es-hub-family-heading h2{font-size:24px;font-weight:900;letter-spacing:-.6px;margin:0;line-height:1.18;display:flex;align-items:baseline;gap:0;flex-wrap:wrap}
+.es-hub-family-heading h2 .es-hub-family-brand{color:#142994}
+.es-hub-family-heading h2 .es-hub-family-branch{color:var(--yellow)}
 .es-hub-family-count{display:inline-flex;margin-top:5px;font-size:16px;font-weight:800;color:#704ec0}
 .es-hub-family-card[data-family="lab"] .es-hub-family-count{color:#2b6dba}
 .es-hub-family-card>p{font-size:16px;line-height:1.5;color:#586995;margin:0;flex:1}
 .es-hub-family-action{display:flex;align-items:center;gap:9px;align-self:flex-start;border-radius:11px;background:#5b27d6;color:#fff;padding:10px 15px;min-height:43px;font-weight:800;font-size:16px}
 .es-hub-family-card[data-family="lab"] .es-hub-family-action{background:#1e5fc9}
 .es-hub-family-action svg{width:18px;height:18px}
-.es-hub-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;align-items:stretch}
-.es-hub-section-title{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:13px;color:#142d9b}
+.es-hub-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;align-items:stretch}
+.es-hub-section-title{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;color:#142d9b}
 .es-hub-section-title h2{font-size:21px;font-weight:900;line-height:1.2;margin:0}
 .es-hub-section-total{background:#eee8ff;border-radius:99px;color:#5a2bc4;font-weight:800;font-size:16px;padding:4px 10px}
-.es-hub-breadcrumb{display:flex;align-items:center;gap:8px;font-size:16px;color:#586c9d;font-weight:700;margin:0 0 13px}
+.es-hub-breadcrumb{display:flex;align-items:center;gap:8px;font-size:16px;color:#586c9d;font-weight:700;margin:0 0 9px}
 .es-hub-breadcrumb a{color:#562acc;text-decoration:underline;text-underline-offset:3px}
 .es-hub-breadcrumb svg{height:16px;width:16px}
 .es-hub-group-intro{margin-bottom:18px;color:#586c9d;font-size:16px;line-height:1.5}
-.es-hub-product-card{display:flex;flex-direction:column;min-width:0;min-height:210px;border:1px solid #dce5fb;border-radius:17px;background:linear-gradient(140deg,#fff,#faf8ff);padding:17px;box-shadow:0 6px 18px rgba(32,38,112,.045)}
-.es-hub-product-card[data-hub-tone="1"]{background:linear-gradient(140deg,#fff,#fff2f9);border-color:#f5d5e9}
-.es-hub-product-card[data-hub-tone="2"]{background:linear-gradient(140deg,#fff,#f3edff);border-color:#e4d7ff}
-.es-hub-product-card[data-hub-tone="3"]{background:linear-gradient(140deg,#fff,#ecf7ff);border-color:#d8e9ff}
-.es-hub-product-card[data-hub-tone="4"]{background:linear-gradient(140deg,#fff,#eafff4);border-color:#d4f2e2}
-.es-hub-product-card[data-hub-tone="5"]{background:linear-gradient(140deg,#fff,#fffae9);border-color:#f4e6c5}
-.es-hub-product-card[data-hub-tone="6"]{background:linear-gradient(140deg,#fff,#eef6ff);border-color:#d9e9fa}
-.es-hub-product-top{display:flex;align-items:center;gap:10px;min-width:0}
-.es-hub-product-symbol{width:45px;height:45px;flex:0 0 45px;display:grid;place-items:center;background:#fff;border:1px solid #ffffffb8;border-radius:13px;color:#5b2dd1;overflow:hidden}
-.es-hub-product-symbol svg{width:25px;height:25px}
+.es-hub-product-card{--hub-accent:#6334dc;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;min-width:0;min-height:0;padding:13px 15px 12px;border:1px solid #dce5fb;border-radius:15px;background:linear-gradient(145deg,#fff 25%,#faf8ff);box-shadow:0 4px 15px rgba(32,38,112,.055);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.es-hub-product-card[data-hub-tone="1"]{--hub-accent:#bd3ba2;background:linear-gradient(140deg,#fff 28%,#fff2fa);border-color:#f5d9e9}
+.es-hub-product-card[data-hub-tone="2"]{--hub-accent:#6736de;background:linear-gradient(140deg,#fff 28%,#f4efff);border-color:#e3d7ff}
+.es-hub-product-card[data-hub-tone="3"]{--hub-accent:#2768dd;background:linear-gradient(140deg,#fff 28%,#edf7ff);border-color:#d8e9ff}
+.es-hub-product-card[data-hub-tone="4"]{--hub-accent:#079a80;background:linear-gradient(140deg,#fff 28%,#effff6);border-color:#d4f2e3}
+.es-hub-product-card[data-hub-tone="5"]{--hub-accent:#b87819;background:linear-gradient(140deg,#fff 28%,#fffaec);border-color:#f4e6c5}
+.es-hub-product-card[data-hub-tone="6"]{--hub-accent:#1b70c4;background:linear-gradient(140deg,#fff 28%,#eff7ff);border-color:#d9e9fa}
+.es-hub-product-top{display:flex;align-items:center;gap:9px;min-width:0}
+.es-hub-product-symbol{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;background:rgba(255,255,255,.83);border:1px solid rgba(111,95,206,.12);border-radius:12px;color:var(--hub-accent);box-shadow:0 3px 9px rgba(56,42,118,.045);overflow:hidden}
+.es-hub-product-symbol svg{width:23px;height:23px}
 .es-hub-product-symbol img{width:100%;height:100%;object-fit:contain}
-.es-hub-product-top h3{font-size:19px;font-weight:900;margin:0;line-height:1.23;overflow-wrap:anywhere;color:#162d91}
-.es-hub-product-card p{font-size:16px;line-height:1.42;color:#50638a;margin:13px 0 16px;flex:1;overflow-wrap:anywhere}
-.es-hub-product-card .es-system-link{font-size:16px;min-height:44px;padding:10px 12px;border-radius:11px;margin-top:auto}
-.es-hub-product-card .es-system-pending{display:inline-flex;align-items:center;align-self:flex-start;margin-top:auto;padding:10px 0;color:#61718f;font-size:16px;font-weight:700}
+.es-hub-product-top h3{font-size:19px;font-weight:900;margin:0;line-height:1.22;overflow-wrap:anywhere;color:#162d91}
+.es-hub-product-card p{font-size:16px;line-height:1.36;color:#536690;margin:0;flex:0 0 auto;overflow-wrap:anywhere}
+.es-hub-product-card .es-system-link{font-size:16px;min-height:39px;padding:7px 12px;border-radius:10px;margin-top:2px;align-self:flex-start;gap:7px;background:#efeaff;border:1px solid #ddd1ff;color:#5424c9;font-weight:800;box-shadow:0 2px 7px rgba(81,42,160,.065);transition:background .16s,color .16s,transform .16s,border-color .16s}
+.es-hub-product-card .es-system-pending{display:inline-flex;align-items:center;align-self:flex-start;margin:3px 0 0;padding:7px 0;color:#61718f;font-size:16px;font-weight:700}
+
+/* Compact Epsilon Hub cards: elegant accent, readable 16px actions, no forced blank space. */
+.es-hub-intro{padding:14px 18px;gap:12px}
+.es-hub-product-card::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:3px;background:var(--hub-accent);opacity:.8;border-radius:0 5px 5px 0;pointer-events:none}
+.es-hub-product-card:hover{transform:translateY(-2px);box-shadow:0 9px 22px rgba(42,37,122,.12);border-color:#c6b6f8}
+.es-hub-product-card:focus-within{outline:2px solid #8c6af0;outline-offset:2px}
+.es-hub-product-card .es-system-link:hover{background:#602bdb;border-color:#602bdb;color:#fff;transform:translateY(-1px)}
+.es-hub-product-card .es-system-link:focus-visible{outline:3px solid #f1ba00;outline-offset:3px}
+.es-hub-product-card .es-system-link svg{width:17px;height:17px;flex:0 0 17px}
 .es-hub-empty{grid-column:1/-1;border:1px dashed #d2d7f8;border-radius:16px;background:#f8faff;padding:26px 20px;color:#586b96;font-size:16px}
 @media(max-width:1100px){.es-hub-products{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){
@@ -805,13 +816,14 @@ themeSheet.textContent += `
  .es-hub-family-heading h2{font-size:22px}
  .es-hub-family-card>p{font-size:16px;line-height:1.45}
  .es-hub-family-action{min-height:46px;padding:11px 17px;font-size:16px}
- .es-hub-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
- .es-hub-product-card{min-height:219px;padding:15px 13px;border-radius:17px}
- .es-hub-product-top{align-items:flex-start;flex-direction:column;gap:8px}
- .es-hub-product-symbol{height:48px;width:48px;flex-basis:48px}
+ .es-hub-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .es-hub-product-card{min-height:0;padding:12px 11px;border-radius:14px;gap:8px}
+ .es-hub-product-top{align-items:center;flex-direction:row;gap:7px}
+ .es-hub-product-symbol{height:35px;width:35px;flex-basis:35px;border-radius:10px}
+ .es-hub-product-symbol svg{width:21px;height:21px}
  .es-hub-product-top h3{font-size:18px}
- .es-hub-product-card p{font-size:16px;margin:11px 0 16px}
- .es-hub-product-card .es-system-link{font-size:16px;padding:10px;min-height:45px;align-self:stretch;justify-content:center;text-align:center}
+ .es-hub-product-card p{font-size:16px;line-height:1.32;margin:0}
+ .es-hub-product-card .es-system-link{font-size:16px;padding:7px 9px;min-height:39px;gap:6px;align-self:flex-start;justify-content:center;text-align:center}
  .es-mobile-folder{flex-basis:98px;height:84px}
  .es-mobile-rail-fixed{flex-basis:106px;min-width:106px}
  .es-mobile-rail-fixed .es-mobile-folder{height:84px}
@@ -822,12 +834,12 @@ themeSheet.textContent += `
 @media(max-width:360px){
  .es-hub-products{grid-template-columns:1fr}
  .es-hub-product-top{flex-direction:row;align-items:center}
- .es-hub-product-card{min-height:160px}
+ .es-hub-product-card{min-height:0}
  .es-mobile-rail-fixed{flex-basis:99px;min-width:99px}
  .es-mobile-folder,.es-mobile-rail-fixed .es-mobile-folder{height:80px}
  .es-mobile-folder{flex-basis:94px}
 }
-@media(prefers-reduced-motion:reduce){.es-hub-family-card{transition:none}}
+@media(prefers-reduced-motion:reduce){.es-hub-family-card,.es-hub-product-card,.es-hub-product-card .es-system-link{transition:none}}
 `;
 
 // Mobile information priority (2026-10-24): show usable tools/content before promotional copy.
@@ -2130,11 +2142,20 @@ function normalizedEcosystem(data){
 }
 function hubText(item,key){return (esLanguage==='en'&&item[key+'En'])||item[key]||'';}
 function hubIconMarkup(product,size){return product.logo?`<img src="./${escapeHTML(product.logo)}" alt="" loading="lazy" decoding="async">`:icon(product.icon,size);}
+function hubFamilyStyledLabel(label){
+ const text=String(label||'').trim();
+ const parts=text.split(/\s+/);
+ if(parts.length>=2&&parts[0].toLowerCase()==='epsilon'){
+  const branch=parts.slice(1).join(' ');
+  return `<span class="es-hub-family-brand">${escapeHTML(parts[0])}</span><span class="es-hub-family-branch">${escapeHTML(branch)}</span>`;
+ }
+ return `<span class="es-hub-family-brand">${escapeHTML(text)}</span>`;
+}
 function hubFamilyHtml(group){
  const label=hubText(group,'name'),ready=group.products.filter(p=>p.url).length;
  const counts=esLanguage==='en'?`${group.products.length} items · ${ready} available`:`${group.products.length} mục · ${ready} đã có liên kết`;
  return `<a class="es-hub-family-card" data-family="${escapeHTML(group.id)}" href="#/ecosystem/${encodeURIComponent(group.id)}" aria-label="${escapeHTML(esLanguage==='en'?'Explore ':'Khám phá ')}${escapeHTML(label)}">
-  <div class="es-hub-family-main"><span class="es-hub-family-icon">${icon(group.icon,32)}</span><div class="es-hub-family-heading"><h2>${escapeHTML(label)}</h2><span class="es-hub-family-count">${escapeHTML(counts)}</span></div></div>
+  <div class="es-hub-family-main"><span class="es-hub-family-icon">${icon(group.icon,32)}</span><div class="es-hub-family-heading"><h2>${hubFamilyStyledLabel(label)}</h2><span class="es-hub-family-count">${escapeHTML(counts)}</span></div></div>
   <p>${escapeHTML(hubText(group,'description'))}</p>
   <span class="es-hub-family-action">${esLanguage==='en'?'Explore products':'Khám phá sản phẩm'} ${icon('arrow',18)}</span>
  </a>`;
@@ -2143,7 +2164,7 @@ function hubProductHtml(product,index){
  const hasLink=Boolean(product.url);
  return `<article class="es-hub-product-card" data-hub-tone="${(index%6)+1}"><div class="es-hub-product-top"><span class="es-hub-product-symbol">${hubIconMarkup(product,26)}</span><h3>${escapeHTML(hubText(product,'name'))}</h3></div>
   <p>${escapeHTML(hubText(product,'description'))}</p>
-  ${hasLink?`<a class="es-system-link" href="${escapeHTML(product.url)}" target="_blank" rel="noopener noreferrer">${esLanguage==='en'?'Open website':'Mở website'} ${icon('external-link',17)}</a>`:`<span class="es-system-pending">${esLanguage==='en'?'Link not yet available':'Chưa cập nhật liên kết'}</span>`}
+  ${hasLink?`<a class="es-system-link" href="${escapeHTML(product.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML((esLanguage==='en'?'Open website for ':'Mở website ') + hubText(product,'name'))}">${esLanguage==='en'?'Open website':'Mở website'} ${icon('external-link',17)}</a>`:`<span class="es-system-pending">${esLanguage==='en'?'Link not yet available':'Chưa cập nhật liên kết'}</span>`}
  </article>`;
 }
 function makeSidebarLink(id, href, label, iconName, count) {
