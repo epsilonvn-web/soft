@@ -437,12 +437,20 @@ export function mount(root, ctx) {
 
   function updateMobileCaret() {
     if (!touchKeypadOnly || !caretMeasure) return;
+    // Mobile uses its own keypad. Always pin the edit cursor to the end:
+    // Android's readonly inputs may report a stale mid-string selection
+    // after a tap, while programmatic insertions continue at the end.
+    const end = input.value.length;
+    touchCaretStart = touchCaretEnd = end;
+    try { input.setSelectionRange(end, end); } catch { /* readonly browser variations */ }
     const style = getComputedStyle(input);
     caretMeasure.font = style.font;
-    const textBeforeCaret = input.value.slice(0, Math.max(0, touchCaretStart));
     const padding = parseFloat(style.paddingLeft) || 0;
-    const left = padding + caretMeasure.measureText(textBeforeCaret).width - input.scrollLeft;
-    // Never let a long expression paint the cursor outside the input.
+    const textWidth = caretMeasure.measureText(input.value).width;
+    const available = Math.max(0, input.clientWidth - padding - (parseFloat(style.paddingRight) || 0) - 4);
+    // Keep long expressions scrolled to their last character.
+    input.scrollLeft = Math.max(0, textWidth - available);
+    const left = padding + textWidth - input.scrollLeft;
     mobileCaret.style.left = Math.max(2, Math.min(input.clientWidth - 4, left)) + 'px';
   }
 
@@ -660,12 +668,9 @@ export function mount(root, ctx) {
   setEditRange(input.value.length);
   updateMode();renderHistory();renderResult();
   if (touchKeypadOnly) {
-    // A direct tap may move the caret without opening the OS keyboard.
-    input.addEventListener('click', () => {
-      touchCaretStart = input.selectionStart ?? input.value.length;
-      touchCaretEnd = input.selectionEnd ?? touchCaretStart;
-      updateMobileCaret();
-    }, {signal:ctx.signal});
+    // A tap inside a readonly Android input must not leave the custom caret
+    // in the middle while the ES-CALC keypad appends characters at the end.
+    input.addEventListener('click', () => updateMobileCaret(), {signal:ctx.signal});
   }
   modeButtons.forEach(btn => btn.addEventListener('click', () => {session.science = btn.dataset.mode === 'science';updateMode();}, {signal:ctx.signal}));
   keypad.addEventListener('click', e => {
