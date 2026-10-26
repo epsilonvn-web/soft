@@ -323,16 +323,29 @@ export function calculateBars(input) {
 
 /* ========================================================================= */
 /* PRO-MAX: ĐỀ XUẤT NỐI CỘT                                                  */
-/* Quy tắc (đã chốt với anh):                                                */
-/*  - Cột nối = đoạn dưới A (hàn mặt bích) + đoạn trên B ngắn; A + B = dài TP.*/
-/*  - A lấy từ ĐOẠN THỪA hay gặp khi cắt cột nguyên, làm tròn XUỐNG theo bước */
-/*    (mặc định 5 mm); B = dài cột − A.                                       */
-/*  - B ≤ 10% dài cột là lý tưởng – chỉ cảnh báo, vẫn cho phép vượt.          */
-/*  - 3 phương án: KHÔNG NỐI · NỐI ÍT (bớt 1 cây, ít mối nối nhất)            */
-/*    · NỐI NHIỀU (ít cây nhất, ít mối nối nhất cho mức đó).                  */
-/*    Mỗi phương án phải ít hơn phương án trước ít nhất 1 cây.               */
+/* NGUYÊN TẮC NGHIỆP VỤ (đã chốt với anh) – THỨ TỰ ƯU TIÊN TỪ TRÊN XUỐNG:     */
+/*  1. AN TOÀN KẾT CẤU (ràng buộc cứng, không cho chỉnh):                     */
+/*     - Mỗi cột tối đa MỘT mối nối: cột = đoạn dưới A (hàn mặt bích)        */
+/*       + đoạn trên B ngắn; A + B = dài thành phẩm.                          */
+/*  2. ĐOẠN NỐI B ≤ 10% DÀI CỘT là ưu tiên số một khi chọn phương án:         */
+/*     - Mọi đoạn B trong ngưỡng là tốt nhất, kể cả phải nhiều mối nối hơn.  */
+/*     - Bắt buộc vượt thì tối đa 1 sản phẩm, và là sản phẩm vượt ÍT NHẤT.   */
+/*     - Ngưỡng 10% chỉnh được; trên giao diện chỉ cảnh báo, không chặn.     */
+/*  3. ƯU TIÊN NỐI MỘT SẢN PHẨM:                                              */
+/*     - Chỉ nối thêm sản phẩm thứ 2, thứ 3 khi tiết kiệm thêm được ít nhất  */
+/*       MỘT CỘT NGẮN NHẤT trong đơn (cùng số cây; bớt thép xuất hoặc cây lẻ */
+/*       nhập kho dài thêm). Sản phẩm nối thêm có B vượt 10% thì loại luôn.  */
+/*     - Số mối nối tính tổng trên mọi sản phẩm.                              */
+/*  4. SAU CÙNG MỚI TÍNH TIẾT KIỆM: ít mối nối → hao phí thấp; nếu người dùng */
+/*     nhập giá thép / giá phế / chi phí 1 mối nối thì chọn thêm phương án    */
+/*     tối ưu tài chính (giá là lựa chọn của người dùng, không lưu master).   */
+/* Cách tạo đoạn nối: A lấy từ ĐOẠN THỪA khi cắt cột nguyên, làm tròn XUỐNG  */
+/* theo bước (mặc định 5 mm); B = dài cột − A.                               */
+/* Phương án đưa ra: KHÔNG NỐI · NỐI ÍT (mốc bớt cây đầu tiên) · NỐI NHIỀU   */
+/* (ít cây nhất). Mỗi phương án ít hơn phương án trước ít nhất 1 cây.         */
+/* Phần mềm chỉ tính, cảnh báo và đề xuất – người dùng quyết định cuối cùng. */
 /* ========================================================================= */
-const SEARCH_RATIO = 0.3;            // tìm đoạn B tới 30% dài cột (trên 10% chỉ cảnh báo)
+const SEARCH_RATIO = 0.3;            // phạm vi dò đoạn B tới 30% dài cột; đoạn vượt 10% xếp ưu tiên sau (quy tắc 2)
 const PM_EVAL_LIMIT = 900, PM_TIME_MS = 9000;
 
 /** Tách cột theo đặc tả nối: spec = [{ idx, A, B, n }] (idx theo input.parts). */
@@ -393,8 +406,13 @@ export function calculateProMax(input, opts = {}) {
     cache.set(key, r); return r;
   };
   const busy = () => evals > PM_EVAL_LIMIT || Date.now() - t0 > PM_TIME_MS;
-  const better = (x, y) => !y || x.n < y.n || (x.n === y.n && ((x.over - y.over) || (x.res.wastePercent - y.res.wastePercent)) < 0);
-  const pack = (spec, res) => ({ spec, res, n: spec.reduce((s, x) => s + x.n, 0), over: spec.some(x => x.B / input.parts[x.idx].length > ideal + 1e-9) ? 1 : 0 });
+  /* ƯU TIÊN KẾT CẤU TRƯỚC, TIẾT KIỆM SAU (anh chốt):
+   *  st = mức vượt ngưỡng của đoạn nối: 0 nếu mọi đoạn B ≤ ngưỡng lý tưởng; nếu có vượt
+   *  thì st = tỷ lệ B/dài cột lớn nhất (vượt càng ít càng tốt). Tối đa 1 sản phẩm được vượt.
+   *  So sánh: st nhỏ hơn → ít mối nối hơn → hao phí thấp hơn. */
+  const structOf = spec => spec.reduce((m, x) => { const r = x.B / input.parts[x.idx].length; return r > ideal + 1e-9 ? Math.max(m, r) : m; }, 0);
+  const better = (x, y) => !y || (x.st !== y.st ? x.st < y.st : x.n !== y.n ? x.n < y.n : x.res.wastePercent < y.res.wastePercent);
+  const pack = (spec, res) => { const st = structOf(spec); return { spec, res, n: spec.reduce((s, x) => s + x.n, 0), st, over: st > 0 ? 1 : 0 }; };
 
   const cands = spliceCandidates(input, base, step);
   // Cận dưới khi nối tùy ý: nối chỉ làm tăng mạch cưa, nên không thể ít hơn số này
@@ -403,15 +421,19 @@ export function calculateProMax(input, opts = {}) {
   /** Ít mối nối nhất để còn ≤ T cây.
    *  Ưu tiên nối MỘT loại cột (anh chốt: hạn chế nối từ 2 loại trở lên); chỉ khi không
    *  loại cột nào tự đạt được mức T thì mới thử phối hợp hai loại cột. */
-  function minSplices(T) {
+  function minSplices(T, pairs = true) {
     if (T < floorBars) return null;
     let best = null;
-    for (const c of cands) {
+    // xét đoạn nối trong ngưỡng trước, rồi đến đoạn vượt ít nhất
+    const ordered = cands.slice().sort((a, b) => (a.ratio > ideal ? a.ratio : 0) - (b.ratio > ideal ? b.ratio : 0));
+    for (const c of ordered) {
       if (busy()) break;
+      const cs = c.ratio > ideal + 1e-9 ? c.ratio : 0;
+      if (best && cs > best.st) break;                  // kết cấu kém hơn phương án đã có -> bỏ
       const q = input.parts[c.idx].qty;
       const at = n => evalSpec([{ idx: c.idx, A: c.A, B: c.B, n }]);
-      // chỉ tìm số mối nối ít hơn phương án đang có (bằng thì chỉ khi phương án cũ vượt 10%)
-      const limit = best ? Math.min(q, best.over && !(c.ratio > ideal) ? best.n : best.n - 1) : q;
+      // cùng mức kết cấu thì chỉ tìm cách ít mối nối hơn; kết cấu tốt hơn thì tìm đủ
+      const limit = best && cs >= best.st ? Math.min(q, best.n - 1) : q;
       if (limit < 1) continue;
       // dò thưa trước (số cây không luôn giảm đều theo số mối nối), rồi chia đôi cho mịn
       const grid = [];
@@ -425,12 +447,13 @@ export function calculateProMax(input, opts = {}) {
       const cand = pack([{ idx: c.idx, A: c.A, B: c.B, n: lo }], at(lo));
       if (better(cand, best)) best = cand;
     }
-    if (best) return best;
+    if (best || !pairs) return best;
     // một loại cột không đủ -> thử phối hợp hai loại cột
     const top = cands.slice(0, 24);
     for (let a = 0; a < top.length && !busy(); a++) for (let b = a + 1; b < top.length && !busy(); b++) {
       const x = top[a], y = top[b];
       if (x.idx === y.idx) continue;
+      if (x.ratio > ideal + 1e-9 && y.ratio > ideal + 1e-9) continue;   // sản phẩm thứ 2 phải trong ngưỡng
       const qx = input.parts[x.idx].qty, qy = input.parts[y.idx].qty;
       for (let tot = 2; tot <= qx + qy && !busy(); tot++) {
         if (best && tot >= best.n) break;
@@ -447,21 +470,76 @@ export function calculateProMax(input, opts = {}) {
   }
 
   const plans = [{ key: 'none', label: 'Không nối', spec: [], splices: 0, result: base }];
-  if (cands.length) {
-    const few = minSplices(base.totalBars - 1);
-    if (few) {
-      plans.push({ key: 'few', label: 'Nối ít', spec: few.spec, splices: few.n, result: few.res });
-      let many = few;
-      while (!busy()) {
-        const next = minSplices(many.res.totalBars - 1);
-        if (!next) break;
-        many = next;
+  // levels: mỗi mức số cây (bớt 1, 2, 3… cây) kèm cách nối ít mối nhất – để so chi phí
+  /* Nối thêm sản phẩm thứ 2, thứ 3 (anh chốt):
+   *  ưu tiên nối 1 sản phẩm; chỉ nối thêm sản phẩm khác khi tiết kiệm thêm được ít nhất
+   *  MỘT CỘT NGẮN NHẤT trong đơn (bớt thép xuất hoặc cây lẻ nhập kho dài thêm).
+   *  Thép tiêu hao thực = số cây × dài cây − tổng cây lẻ thu hồi. Số mối nối tính tổng. */
+  const colMin = Math.min(...input.parts.map(p => p.length));
+  const netOf = r => r.totalBars * input.stockL - r.recovered.reduce((a, v) => a + v, 0);
+  function extendMulti(P, T) {
+    let cur = P, extEvals = 0;               // giới hạn số lần thử để giữ tốc độ
+    for (let round = 0; round < 2 && !busy(); round++) {            // tối đa 3 sản phẩm
+      const used = new Set(cur.spec.map(x => x.idx));
+      let best = null;
+      // Sản phẩm nối thêm (thứ 2, thứ 3) BẮT BUỘC có đoạn B trong ngưỡng lý tưởng (mặc định 10%);
+      // đoạn B vượt ngưỡng thì loại luôn (anh chốt).
+      for (const withinOnly of [true]) {
+        const seenIdx = new Map();
+        for (const c of cands) {
+          if (busy()) break;
+          if (used.has(c.idx)) continue;
+          if (withinOnly !== (c.ratio <= ideal + 1e-9)) continue;
+          if ((seenIdx.get(c.idx) || 0) >= 2) continue;
+          seenIdx.set(c.idx, (seenIdx.get(c.idx) || 0) + 1);
+          const q = input.parts[c.idx].qty;
+          for (let n = 1; n <= q && !busy() && extEvals < 80; n = Math.max(n + 1, Math.round(n * 1.7))) {
+            extEvals++;
+            const spec = [...cur.spec, { idx: c.idx, A: c.A, B: c.B, n }];
+            const r = evalSpec(spec);
+            if (r.totalBars !== cur.res.totalBars) continue;   // cùng mức số cây; bớt cây là việc của mức sau
+            const gain = netOf(cur.res) - netOf(r);
+            if (gain + 1e-6 < colMin) continue;
+            // đủ ngưỡng thì dừng: ưu tiên thêm ÍT mối nối nhất, bằng nhau mới xét tiết kiệm nhiều hơn
+            const cand = { ...pack(spec, r), gain };
+            if (!best || cand.n < best.n || (cand.n === best.n && gain > best.gain)) best = cand;
+            break;
+          }
+        }
+        if (best) break;
       }
-      if (many !== few) plans.push({ key: 'many', label: 'Nối nhiều', spec: many.spec, splices: many.n, result: many.res });
+      if (!best) break;
+      cur = best;
+    }
+    return cur;
+  }
+
+  const levels = [];
+  if (cands.length) {
+    const levelAt = T => {
+      const single = minSplices(T, false);
+      const P = single || minSplices(T, true);       // không sản phẩm nào tự đạt -> phối hợp
+      if (!P) return null;
+      const X = extendMulti(P, T);
+      return { main: X, alt: X === P ? null : P };   // alt: chỉ nối 1 sản phẩm – giữ để so chi phí
+    };
+    let lv = levelAt(base.totalBars - 1);
+    while (lv) {
+      const cur = lv.main, label = 'Bớt ' + (base.totalBars - cur.res.totalBars) + ' cây';
+      levels.push({ key: 'lv' + levels.length, label, spec: cur.spec, splices: cur.n, result: cur.res });
+      if (lv.alt) levels.push({ key: 'lv' + levels.length, label, spec: lv.alt.spec, splices: lv.alt.n, result: lv.alt.res, alt: true });
+      if (busy()) break;
+      lv = levelAt(cur.res.totalBars - 1);
+    }
+    const mains = levels.filter(l => !l.alt);
+    if (mains.length) {
+      plans.push({ ...mains[0], key: 'few', label: 'Nối ít' });
+      if (mains.length > 1) plans.push({ ...mains[mains.length - 1], key: 'many', label: 'Nối nhiều' });
     }
   }
-  plans.forEach(p => p.spec.forEach(s => { s.L = input.parts[s.idx].length; s.name = input.parts[s.idx].name; s.ratio = 100 * s.B / s.L; }));
-  return { plans, searchComplete: !busy(), evals, ms: Date.now() - t0 };
+  const named = p => p.spec.forEach(s => { s.L = input.parts[s.idx].length; s.name = input.parts[s.idx].name; s.ratio = 100 * s.B / s.L; });
+  plans.forEach(named); levels.forEach(named);
+  return { plans, levels, searchComplete: !busy(), evals, ms: Date.now() - t0 };
 }
 
 /** Phương án do người dùng chỉnh A / B / số cột nối. */
@@ -619,6 +697,11 @@ const CSS = `
 .bar-pro .bp-pct{font-weight:800;white-space:nowrap}.bar-pro .bp-pct.ok{color:#0f6e56}.bar-pro .bp-pct.over{color:#b06a12}
 .bar-pro .bp-pct small{display:block;font-weight:600;font-size:13px}
 .bar-pro .bp-sp-note{font-size:14.5px;color:#6a598b;padding:7px 12px}
+.bar-pro .bp-cost-head{font-size:17px;font-weight:850;color:#5c29bf;margin:2px 0 6px}
+.bar-pro .bp-cost-head small{font-size:14px;font-weight:650;color:#6a598b}
+.bar-pro .bp-cost-hint{font-size:14px;color:#6a598b;margin:-6px 0 12px}
+.bar-pro .bp-plan .bp-money{color:#24156c;font-weight:800}
+.bar-pro .bp-plan .bp-loss{color:#a3365a;font-weight:800}
 .bar-pro .bp-sp-warn{font-size:15px;color:#a3500a;background:#fff7ea;border-top:1px solid #f6d9a8;padding:8px 12px;margin:0;font-weight:700}
 .bar-pro .bp-sp-warn:empty{display:none}
 .bar-pro .bp-sp-table input.is-bad{border:2px solid #e0902a;background:#fff9ef}
@@ -698,7 +781,7 @@ export function mount(root, ctx = {}) {
   const st = saved ? structuredClone(saved) : structuredClone(DEFAULTS);
   st.manualKg = Boolean(st.manualKg);
   let last = null, lastSVG = '', timer = null, disposed = false, worker = null, serial = 0;
-  let lastInput = null, plans = [], current = null, spTimer = null;
+  let lastInput = null, plans = [], levels = [], basePlans = [], current = null, spTimer = null;
   let steelProfiles = [], profilesReady = false, profilesFailed = false;
   let profilesByCode = new Map();
   const fld = (name, label, val, cls = '') =>
@@ -719,6 +802,9 @@ export function mount(root, ctx = {}) {
     <div class="bp-profile-details" id="bp-profile-detail"><span id="bp-profile-description">Khối lượng tham khảo, cần đối chiếu barem khi sử dụng chính thức.</span><a id="bp-profile-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Nguồn tra</a></div>
     <div class="bp-row three">${fld('kerf', 'Mạch cưa (mm)', st.kerf, 'is-kerf')}${fld('trim', 'Cắt bỏ đầu cây (mm)', st.trim)}${fld('remnantMin', 'Cây lẻ thu hồi ≥ (mm)', st.remnantMin)}</div>
     <div class="bp-row three">${fld('spIdeal', 'Đoạn nối B lý tưởng ≤ (%)', st.spIdeal ?? '10')}${fld('spStep', 'Làm tròn đoạn nối (mm)', st.spStep ?? '5')}</div>
+    <div class="bp-cost-head">Chi phí <small>(tùy chọn – nhập đủ để phần mềm chọn phương án lợi nhất về tiền)</small></div>
+    <div class="bp-row three">${fld('giaThep', 'Giá thép (đ/kg)', st.giaThep ?? '')}${fld('giaPhe', 'Giá phế (đ/kg)', st.giaPhe ?? '')}${fld('giaNoi', 'Chi phí 1 mối nối (đ)', st.giaNoi ?? '')}</div>
+    <p class="bp-cost-hint">Chi phí 1 mối nối gồm nhân công và dây hàn. Cây lẻ thu hồi tính theo giá thép, phế liệu tính theo giá phế.</p>
     <div class="bp-parts-head"><strong>Chi tiết cần cắt</strong><small id="bp-count"></small></div>
     <div class="bp-parts" id="bp-parts"></div>
     <button type="button" class="bp-add" id="bp-add">＋ Thêm chi tiết</button>
@@ -838,7 +924,7 @@ export function mount(root, ctx = {}) {
   }
   renderParts();
   function collect() {
-    for (const k of ['spec', 'kgPerM', 'stockL', 'kerf', 'trim', 'remnantMin', 'spIdeal', 'spStep']) st[k] = val(k);
+    for (const k of ['spec', 'kgPerM', 'stockL', 'kerf', 'trim', 'remnantMin', 'spIdeal', 'spStep', 'giaThep', 'giaPhe', 'giaNoi']) st[k] = val(k);
     st.manualKg=weightEdit.checked;
     st.parts.forEach((p, t) => { p.name = val(`name${t}`); p.length = val(`length${t}`); p.allowance = val(`allowance${t}`); p.qty = val(`qty${t}`); p.splice = root.querySelector(`[data-splice="${t}"]`)?.checked !== false; });
     const total = st.parts.reduce((s, p) => s + (String(p.length).trim() ? (Number(String(p.qty).replaceAll(',', '')) || 0) : 0), 0);
@@ -871,7 +957,9 @@ export function mount(root, ctx = {}) {
     put('bp-summary', `${res.totalBars} cây ${pretty(res.input.stockL / 1000)} m` + (plan ? ` · ${plan.label}${plan.splices ? ` – ${plan.splices} mối nối` : ''}` : ''));
     put('bp-proof', res.proven ? '✓ Số cây tối thiểu – đã chứng minh'
       : `Cận dưới ${res.lowerBound} cây · phương án hơn cận dưới ${res.gap} cây`);
+    const prc = prices();
     put('bp-strategy', `${res.groups.length} kiểu cắt · phần dư dồn về cây cuối` + (plan?.splices ? ' · đoạn B nét đứt = đoạn nối đầu cột' : '') +
+      (prc && plan ? ` · Chi phí ${money(costOf({ result: res, splices: plan.splices || 0 }, prc))}` : '') +
       ` · Hao phí nếu không thu hồi: ${res.wasteNoRecoveryPercent.toFixed(2)} %`);
     put('bp-issued', pretty(res.issuedKG)); put('bp-finished', pretty(res.finishedKG));
     put('bp-waste', res.wastePercent.toFixed(2));
@@ -888,15 +976,43 @@ export function mount(root, ctx = {}) {
     put('bp-error', '');
   }
   /* ---------- PRO-MAX: 3 phương án và chỉnh đoạn nối ---------- */
+  const money = v => `${Math.round(v).toLocaleString('vi-VN')} đ`;
+  /** Giá người dùng nhập; null nếu chưa đủ (cần giá thép và chi phí mối nối). */
+  function prices() {
+    const n = v => { const t = String(v ?? '').replaceAll(',', '').replaceAll('.', '').trim(); return t === '' ? NaN : Number(t); };
+    const steel = n(st.giaThep), scrap = n(st.giaPhe), joint = n(st.giaNoi);
+    if (!(steel > 0) || !(joint >= 0)) return null;
+    return { steel, scrap: scrap >= 0 ? scrap : 0, joint };
+  }
+  /** Chi phí = (xuất − cây lẻ thu hồi) × giá thép − phế × giá phế + số mối nối × chi phí nối. */
+  function costOf(p, pr) {
+    const r = p.result, net = r.issuedKG - r.recoveredKG, scrap = Math.max(0, net - r.finishedKG);
+    return net * pr.steel - scrap * pr.scrap + p.splices * pr.joint;
+  }
+  /** Dựng danh sách thẻ: có giá -> Không nối / Tối ưu tài chính / Tối ưu thép; chưa có giá -> không nối / ít / nhiều. */
+  function buildPlans() {
+    const pr = prices();
+    if (!pr || !levels.length) { plans = basePlans.slice(); return; }
+    const none = basePlans[0];
+    let fin = none, finCost = costOf(none, pr);
+    for (const p of levels) { const c = costOf(p, pr); if (c < finCost - 1e-6) { fin = p; finCost = c; } }
+    const mains = levels.filter(l => !l.alt), most = mains[mains.length - 1];
+    plans = [{ ...none, label: fin === none ? 'Không nối · tối ưu tài chính' : 'Không nối' }];
+    if (fin !== none && fin !== most) plans.push({ ...fin, key: 'fin', label: 'Tối ưu tài chính' });
+    plans.push({ ...most, key: 'many', label: fin === most ? 'Tối ưu thép & tài chính' : 'Tối ưu thép' });
+  }
   function renderPlans() {
     const base = plans[0]?.result;
     $('bp-plans').innerHTML = plans.map(p => {
-      const r = p.result, save = base ? base.totalBars - r.totalBars : 0;
+      const r = p.result, save = base ? base.totalBars - r.totalBars : 0, pr = prices();
       const sub = p.key === 'none' ? 'Cắt nguyên, không mối hàn'
-        : `${p.splices} mối nối${p.spec.length > 1 ? ` (${p.spec.length} loại cột)` : ` – cột ${esc(p.spec[0]?.name || '')}`} · <span class="bp-save">bớt ${save} cây</span>`;
+        : `${p.splices} mối nối – cột ${p.spec.map(x => esc(x.name || '')).join(', ')}${p.spec.length > 1 ? ` (${p.spec.length} loại)` : ''} · <span class="bp-save">bớt ${save} cây</span>`;
       return `<button type="button" class="bp-plan${current?.key === p.key ? ' is-active' : ''}" data-plan="${p.key}">
         <b>${p.label}</b><big>${r.totalBars} cây</big><small>${sub}</small>
-        <small>Hao phí ${r.wastePercent.toFixed(2)} %${r.recovered.length ? ` · ${r.recovered.length} cây lẻ` : ''}</small></button>`;
+        <small>Hao phí ${r.wastePercent.toFixed(2)} %${r.recovered.length ? ` · ${r.recovered.length} cây lẻ` : ''}</small>
+        ${pr ? (() => { const c = costOf(p, pr), d = costOf(plans[0], pr) - c;
+          return `<small>Chi phí <span class="bp-money">${money(c)}</span></small>` +
+            (p.key === 'none' ? '' : `<small>${d >= 0 ? `Lợi <span class="bp-save">${money(d)}</span>` : `Lỗ <span class="bp-loss">${money(-d)}</span>`} so với không nối</small>`); })() : ''}</button>`;
     }).join('') + (plans.length === 1 && lastInput?.parts.some(p => p.allowSplice)
       ? '<small class="bp-sp-note" style="grid-column:1/-1">Nối cột không bớt được cây nào cho đơn này – giữ phương án không nối.</small>' : '');
   }
@@ -951,7 +1067,8 @@ export function mount(root, ctx = {}) {
     } catch (e) { invalid(e?.message || 'Không tính được.'); return; }
     $('bp-proof').innerHTML = 'Đang tìm phương án nối<span class="bp-busy"></span>';
     runWorker({ mode: 'promax', input, opts }, res => {
-      lastInput = input; plans = res.plans;
+      lastInput = input; basePlans = res.plans; levels = res.levels || [];
+      buildPlans();
       showPlan(plans.find(p => p.key === st.plan) || plans[0]);
     });
   }
@@ -1005,7 +1122,7 @@ export function mount(root, ctx = {}) {
   }, ctx.signal ? { signal: ctx.signal } : undefined);
   $('bp-splice').addEventListener('click', e => {
     if (e.target.id !== 'bp-sp-reset') return;
-    const p = plans.find(x => x.key === current?.key);
+    const p = plans.find(x => x.key === current?.key) || basePlans.find(x => x.key === current?.key);
     if (p) showPlan(p);
   }, ctx.signal ? { signal: ctx.signal } : undefined);
   $('bp-plans').addEventListener('click', e => {
@@ -1018,6 +1135,16 @@ export function mount(root, ctx = {}) {
   const schedule = () => { clearTimeout(timer); timer = setTimeout(compute, 200); };
   root.addEventListener('input', e => {
     if(!e.target.matches('input[name]'))return;
+    if (['giaThep', 'giaPhe', 'giaNoi'].includes(e.target.name)) {
+      collect(); saved = structuredClone(st);
+      if (!basePlans.length) return;
+      const keep = current;
+      buildPlans();
+      const p = plans.find(x => x.key === keep?.key) || plans.find(x => x.splices === keep?.splices && x.result.totalBars === keep?.result.totalBars);
+      if (keep?.edited) { renderPlans(); present(keep.result, keep); }
+      else showPlan(p || plans[0]);
+      return;
+    }
     if(e.target === specInput){
       // A different section should never silently inherit a previous manual mass.
       if(weightEdit.checked)weightEdit.checked=false;
