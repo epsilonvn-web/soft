@@ -1839,6 +1839,7 @@ const DEFINITIONS = Object.freeze([
  {id:'converter',name:'Đổi đơn vị',sub:'Chuyển đổi đơn vị đa dạng',group:'calc',icon:'swap',tone:'tone-violet',file:'converter.js'},
  {id:'interest',name:'Tính lãi suất',sub:'Tiền gửi, vay vốn, đầu tư',group:'calc',icon:'percent',tone:'tone-blue',file:'interest.js'},
  {id:'nesting',name:'Trải phôi 2D',sub:'Trải phôi 2D theo ES TOOLKIT Portable',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting.js'},
+ {id:'nesting-pro',name:'Trải phôi 2D PRO',sub:'Cutting plan tôn tấm · nhiều chi tiết, nhiều khổ, xuất DXF · thử nghiệm nội bộ',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting_pro.js'},
  {id:'bar-cutting',name:'Cắt thép hình 1D',sub:'Tối ưu cắt cây thép · giảm hao phí',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh.js'},
  {id:'bar-cutting-pro',name:'Cắt thép hình 1D PRO',sub:'Tối ưu sơ đồ cắt · bản thử nghiệm nội bộ',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh_pro.js'},
  {id:'bar-cutting-pro-max',name:'Cắt thép hình 1D PRO MAX',sub:'Tối ưu cắt và đề xuất nối cột · thử nghiệm nội bộ',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh_pro_max.js'},
