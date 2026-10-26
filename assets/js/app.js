@@ -1840,6 +1840,8 @@ const DEFINITIONS = Object.freeze([
  {id:'interest',name:'Tính lãi suất',sub:'Tiền gửi, vay vốn, đầu tư',group:'calc',icon:'percent',tone:'tone-blue',file:'interest.js'},
  {id:'nesting',name:'Trải phôi 2D',sub:'Trải phôi 2D theo ES TOOLKIT Portable',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting.js'},
  {id:'bar-cutting',name:'Cắt thép hình 1D',sub:'Tối ưu cắt cây thép · giảm hao phí',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh.js'},
+ {id:'bar-cutting-pro',name:'Cắt thép hình 1D PRO',sub:'Tối ưu sơ đồ cắt · bản thử nghiệm nội bộ',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh_pro.js'},
+ {id:'bar-cutting-pro-max',name:'Cắt thép hình 1D PRO MAX',sub:'Tối ưu cắt và đề xuất nối cột · thử nghiệm nội bộ',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh_pro_max.js'},
  {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'engineering',icon:'database',tone:'tone-violet',file:'density.js'},
  {id:'beam',name:'Tính kết cấu đơn giản',sub:'Dầm đơn giản: M, V, độ võng',group:'engineering',icon:'beam',tone:'tone-blue',file:'beam.js'},
  {id:'paint',name:'Paint Studio',sub:'Tính lượng sơn · WFT/DFT · diện tích',group:'engineering',icon:'paint',tone:'tone-mint',file:'paint.js'},
