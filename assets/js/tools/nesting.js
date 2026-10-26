@@ -384,6 +384,24 @@ export function calculateNesting(input) {
     lengthIssued = out.issuedLastLength + out.completeSheets * fullLen;
     out.savedOffcutKG = (sheets * i.sheetW - lengthIssued) * i.sheetH * i.thickness * i.density / 1e9;
   }
+  // Report actual free strips on the displayed sheet, regardless of the
+  // remnantMin threshold used exclusively for issued-weight accounting.
+  // Calculate before preview truncation so >900 pieces remain correct.
+  // These are geometric free regions, NOT an instruction to retain/reuse them.
+  let maxPartRight = 0, maxPartBottom = 0;
+  for (const p of out.layout) {
+    maxPartRight = Math.max(maxPartRight, p.x + p.w);
+    maxPartBottom = Math.max(maxPartBottom, p.y + p.h);
+  }
+  const freeRight = Math.max(0, r6(i.sheetW - maxPartRight));
+  const freeBottom = Math.max(0, r6(i.sheetH - maxPartBottom));
+  out.freeStrips = [];
+  // The two rectangles do not overlap: the bottom strip stops at the
+  // rightmost part boundary; the right strip uses the full sheet height.
+  if (freeRight > EPS) out.freeStrips.push({side:'right', w:freeRight, h:i.sheetH});
+  if (freeBottom > EPS && maxPartRight > EPS)
+    out.freeStrips.push({side:'bottom', w:r6(maxPartRight), h:freeBottom});
+
   if (out.layout.length > MAX_PREVIEW) out.layout = out.layout.slice(0, MAX_PREVIEW);
   if (out.cutLines.length > 4 * MAX_PREVIEW) out.cutLines = out.cutLines.slice(0, 4 * MAX_PREVIEW);
   out.previewDrawn = Math.min(out.shownOnSheet, out.layout.length);
@@ -566,6 +584,7 @@ const NEST_CSS=`
 .nest-pro .nest-result.emphasis{background:linear-gradient(115deg,#a943f7,#7930e8);border-color:transparent;color:white}
 .nest-pro .nest-result strong{font-size:16px;display:block;font-weight:750}
 .nest-pro .nest-result output{font-size:23px;font-weight:850;display:block;line-height:1.35;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.nest-pro #nest-remnant{font-size:18px;line-height:1.3;white-space:pre-line;font-weight:750}
 .nest-pro .nest-result button{display:block;background:none;border:0;color:inherit;text-align:left;padding:0;cursor:pointer;width:100%}
 .nest-pro .nest-note{font-size:16px;color:#6a6691;text-align:center;margin:7px 0 0;line-height:1.4}
 @media(max-width:1260px){.nest-pro .nest-panelgrid{grid-template-columns:minmax(0,1fr)}.nest-pro .nest-figure{min-height:330px}.nest-pro .nest-materials{justify-content:flex-start;margin-left:0}}
@@ -667,7 +686,7 @@ export function mount(root,ctx){
    <div class="nest-result emphasis"><button id="nest-copy" type="button" title="Sao chép kết quả"><strong>Hao phí / TP (%)</strong><output id="nest-waste">—</output></button></div>
    <div class="nest-result"><strong>Tấm lẻ còn lại (mm)</strong><output id="nest-remnant">—</output></div>
   </section>
-  <p class="nest-note">* Thành phẩm tính theo đường bao ngoài. Hao phí = (Xuất phôi − TP) / TP × 100. Tấm lẻ (cạnh ≥ 200 mm) được giữ lại, không tính xuất.</p>
+  <p class="nest-note">* Thành phẩm tính theo đường bao ngoài. Hao phí = (Xuất phôi − TP) / TP × 100. Phần dư mép tấm luôn được liệt kê (kể cả dưới 200 mm); kích thước theo biên chi tiết, chưa trừ mạch cắt để tách tấm. Quy tắc giữ lại ≥ 200 mm khi tính xuất phôi vẫn giữ nguyên.</p>
  </div>`;
  const getField=name=>root.querySelector(`[name="${name}"]`);
  const getById=id=>root.querySelector('#'+id);
@@ -714,7 +733,11 @@ export function mount(root,ctx){
   setText(root,'#nest-issued',prettyPortable(res.issuedKG));
   setText(root,'#nest-finished',prettyPortable(res.finishedKG));
   setText(root,'#nest-waste',percentagePortable(res.wasteOverFinishedPercent));
-  setText(root,'#nest-remnant',state.autoMax?'—':res.remnantL>0?`${prettyPortable(res.remnantL)} × ${prettyPortable(res.remnantW)}`:'Không có');
+  // Display the leftover dimensions even in Tự động mode or below 200 mm.
+  // No change to issuedKG, waste, savedOffcutKG or remnantMin policy.
+  const freeLabels = (res.freeStrips||[]).map(p =>
+    `${p.side==='right'?'Dư phải':'Dư dưới'}: ${prettyPortable(p.w)} × ${prettyPortable(p.h)}`);
+  setText(root,'#nest-remnant',freeLabels.length?freeLabels.join('\n'):'Không có');
   setText(root,'#nest-summary',state.autoMax?`${prettyPortable(res.partsPerSheet)} chi tiết / tấm`:`Tấm cuối: ${prettyPortable(res.lastSheetParts)} / ${prettyPortable(res.partsPerSheet)} chi tiết`);
   const i=res.input;
   setText(root,'#nest-sizing',i.shape==='circle'?`TP D${prettyPortable(i.diameter)} → Cắt D${prettyPortable(res.cutW)} mm`:`TP ${prettyPortable(i.partW)} × ${prettyPortable(i.partH)} → Cắt ${prettyPortable(res.cutW)} × ${prettyPortable(res.cutH)} mm`);
@@ -791,7 +814,8 @@ export function mount(root,ctx){
  },{signal:ctx.signal});
  getById('nest-copy').addEventListener('click',()=>{
   if(!last)return;
-  const text=`ES TOOLKIT Nesting | capacity ${last.partsPerSheet}/sheet | ${last.sheets} sheets | issued ${prettyPortable(last.issuedKG)} kg | finished ${prettyPortable(last.finishedKG)} kg | waste ${prettyPortable(last.wasteKG)} kg | waste/finished ${percentagePortable(last.wasteOverFinishedPercent)}% | last remnant ${prettyPortable(last.remnantL)} x ${prettyPortable(last.remnantW)} mm | last issued length ${prettyPortable(last.issuedLastLength)} mm`;
+  const freeText=(last.freeStrips||[]).map(p=>`${p.side==='right'?'right':'bottom'}: ${prettyPortable(p.w)} x ${prettyPortable(p.h)} mm`).join('; ')||'none';
+  const text=`ES TOOLKIT Nesting | capacity ${last.partsPerSheet}/sheet | ${last.sheets} sheets | issued ${prettyPortable(last.issuedKG)} kg | finished ${prettyPortable(last.finishedKG)} kg | waste ${prettyPortable(last.wasteKG)} kg | waste/finished ${percentagePortable(last.wasteOverFinishedPercent)}% | free strips ${freeText} | retained remnant ${prettyPortable(last.remnantL)} x ${prettyPortable(last.remnantW)} mm | last issued length ${prettyPortable(last.issuedLastLength)} mm`;
   if(!navigator.clipboard?.writeText){ctx.showToast?.('Không thể sao chép khi trình duyệt không hỗ trợ.','error');return;}
   navigator.clipboard.writeText(text).then(()=>ctx.showToast?.('Đã sao chép kết quả.'),()=>ctx.showToast?.('Không sao chép được kết quả.','error'));
  },{signal:ctx.signal});
