@@ -414,13 +414,25 @@ function buildBlock(C, T, R, o) {
       for (let c = 1; c < cx; c++) cuts.push({ x1: R.x + c * pw - k / 2, y1: R.y, x2: R.x + c * pw - k / 2, y2: R.y + cy * ph - k });
     }
   }
+  let removed = [];
   if (raw.length > o.n) {
     raw.sort(o.order === 'x' ? (p, q) => p.x - q.x || p.y - q.y : (p, q) => p.y - q.y || p.x - q.x);
-    raw.length = o.n;
+    removed = raw.splice(o.n);
   }
   let bw = 0, bh = 0;
   for (const p of raw) { bw = Math.max(bw, p.x + p.w - R.x + k); bh = Math.max(bh, p.y + p.h - R.y + k); }
   bw = Math.min(bw, R.w); bh = Math.min(bh, R.h);
+  // KHỐI THIẾU CHIẾC: chỗ của các chiếc bớt đi nằm TRONG khung khối thành ô trống dùng được
+  // (vd. khối 3 × 3 chỉ lấy 8 chiếc -> trống 1 ô vừa 3 mặt bích). Chỉ nhận khi vẫn chặt suốt được.
+  let hole = null;
+  if (removed.length) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const p of removed) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x + p.w + k); y1 = Math.max(y1, p.y + p.h + k); }
+    x1 = Math.min(x1, R.x + bw); y1 = Math.min(y1, R.y + bh);
+    const h = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+    const clash = raw.some(p => p.x < h.x + h.w - EPS && p.x + p.w + k > h.x + EPS && p.y < h.y + h.h - EPS && p.y + p.h + k > h.y + EPS);
+    if (h.w > EPS && h.h > EPS && !clash && guillotineOK([...raw, { x: h.x, y: h.y, w: h.w - k, h: h.h - k }], k)) hole = h;
+  }
   // xén các nhát nội bộ vào khung bao (giao của sơ đồ chặt suốt với một hình chữ nhật vẫn chặt suốt)
   const xMax = R.x + bw - k, yMax = R.y + bh - k, inner = [];
   for (const c of cuts || []) {
@@ -428,7 +440,7 @@ function buildBlock(C, T, R, o) {
     if (c.x1 === c.x2 ? c.x1 < xMax - EPS && y2 - y1 > EPS : c.y1 < yMax - EPS && x2 - x1 > EPS)
       inner.push({ x1, y1, x2, y2, seq: 0 });
   }
-  return { items: raw.map(p => tag(T, p)), cuts: inner, bw, bh };
+  return { items: raw.map(p => tag(T, p)), cuts: inner, bw, bh, hole };
 }
 
 /** Ước lượng nhanh diện tích lấp được của ô R nếu chỉ dùng MỘT loại (loại tốt nhất còn chi tiết). */
@@ -508,6 +520,7 @@ function blockPack(C, rem0, region, opt, quota = null) {
     const b = buildBlock(C, best.T, R, best.o);
     if (!b.items.length) continue;
     items.push(...b.items); rem[best.T.t] -= b.items.length; counts[best.T.t] += b.items.length; blocks++;
+    if (b.hole) free.push(b.hole);                                  // ô trống trong khối thiếu chiếc
     const { bw, bh } = b, k = C.k;
     let mode = opt.rule === 'look' && opt.split === 'look' ? best.mode : opt.split;
     if (mode === 'look') mode = 'max';
@@ -845,6 +858,23 @@ function packSheet(C, rem, region, { mode = 'area', needAll = false, full = true
   // dồn tờ cuối (needAll) chạy nhiều lần -> dùng bộ chiến lược rút gọn để nhanh
   for (const o of needAll ? BLOCK_OPTS_FAST : BLOCK_OPTS) cands.push(blockPack(C, rem, region, o, quota));
   if (!quota && !(C.shear && C.types.some(T => T.circle && rem[T.t] > 0))) cands.push(bandPack(C, rem, region));
+  // dồn tờ cuối (needAll): thêm sơ đồ chặt suốt tối ưu nhiều loại rồi bớt chiếc thừa – để chi tiết nhỏ chui vào ô trống
+  // (vd. 3 mặt bích lấp ô trống của khối FS) thay vì nằm ngoài làm hẹp tấm lẻ
+  if (needAll && !quota) {
+    const live = C.types.filter(T => rem[T.t] > 0);
+    if (live.length && live.length <= 3 && !live.some(T => T.circle)) {
+      const sets = [live.map(() => 1), ...live.map(T => live.map(U => (U === T ? 1.4 : 1)))];
+      for (const ws of sets) {
+        const weights = C.types.map(() => 0);
+        live.forEach((T, n) => { weights[T.t] = T.cutArea * ws[n]; });
+        const dp = guillotineKnap(C, weights, region);
+        if (!dp || dp.counts.some((c, t) => c < rem[t])) continue;
+        const keep = rem.slice();
+        const items = dp.items.slice().sort((a, b) => a.x - b.x || a.y - b.y).filter(p => keep[p.t]-- > 0);   // bớt chiếc thừa ở phía phải
+        cands.push({ ...dp, items, counts: rem.slice(), cuts: [] });
+      }
+    }
+  }
   if (!C.shear && !tidy && !quota && total <= (needAll ? 150 : DEFAULTS.maxRectsPieces)) for (const o of FREE_OPTS) cands.push(maxRectsPack(C, rem, region, o));
   const rank = (a, b) => sheetScore(C, b, mode) - sheetScore(C, a, mode) || a.blocks - b.blocks;
   let pool = cands.filter(c => !must || c.counts.every((v, t) => v >= must[t])).sort(rank);
@@ -955,6 +985,8 @@ function remnantOf(C, items, remnantMin) {
   const usedL = Math.min(C.W, ceil1(maxR + C.e)), usedH = Math.min(C.H, ceil1(maxB + C.e));
   const opts = [];
   const remL = r6(C.W - usedL), remH = r6(C.H - usedH);
+  // 0) MỖI TỜ MỘT TẤM LẺ: dồn hết phần dư thành một tấm liền (dù dài hẹp) tốt hơn hai tấm rời cùng tổng diện tích –
+  //    chỉ dải lớn nhất được tính thu hồi, nên bước dồn tờ cuối tự kéo chi tiết nhỏ vào ô trống bên trong.
   // 1) THU HỒI hay HAO PHÍ: dải dư có cạnh ngắn ≥ ngưỡng (mặc định 200, tùy chỉnh) là thu hồi – không phân biệt dọc hay ngang.
   if (Math.min(remL, C.H) >= remnantMin - EPS && remL > EPS) opts.push({ side: 'right', at: usedL, w: remL, h: C.H });
   if (Math.min(remH, C.W) >= remnantMin - EPS && remH > EPS) opts.push({ side: 'bottom', at: usedH, w: C.W, h: remH });
