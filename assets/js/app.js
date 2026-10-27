@@ -1278,6 +1278,7 @@ themeSheet.textContent += `
 // The bottom swipe rail remains the only mobile/portrait navigation.
 themeSheet.textContent += `
 /* MY TOOLS: click title for category, chevron for pinned-tool dropdown. */
+.site-header .main-nav>.nav-link{box-sizing:border-box;height:45px;min-height:45px;padding-top:0;padding-bottom:0}   /* cao đúng bằng khung MY TOOLS */
 .site-header{position:relative;z-index:230}
 .site-header .es-header-mytools{
  position:relative;display:flex;align-items:center;flex:0 0 auto;isolation:isolate;
@@ -1297,7 +1298,7 @@ themeSheet.textContent += `
  font-size:16px;font-weight:850;
 }
 .site-header .es-header-mytools-toggle{
- display:grid;place-items:center;flex:0 0 31px;width:31px;min-height:43px;   /* +20 % cho dễ bấm (26 → 31) */
+ display:grid;place-items:center;flex:0 0 34px;width:34px;min-height:43px;   /* dễ bấm: 26 → 31 → 34 px */
  padding:0;border:0;border-left:1px solid rgba(255,255,255,.25);
  background:transparent;color:inherit;border-radius:0 10px 10px 0;
 }
@@ -1329,6 +1330,17 @@ themeSheet.textContent += `
 .es-header-mytools-empty a{display:inline-block;margin-top:8px;font-weight:800;color:#5322cf;text-decoration:underline}
 /* Portrait uses the approved bottom navigation, so there is no duplicate button. */
 body.es-portrait-layout .es-header-mytools{display:none!important}
+/* ALL TOOLS: cùng kiểu MY TOOLS; menu rộng hơn, có tiêu đề nhóm. Màn hình dọc: chỉ giữ link, không có mũi tên. */
+.es-header-alltools-menu{width:min(360px,calc(100vw - 26px));max-height:min(470px,calc(100dvh - 102px))}
+.es-header-alltools-group{display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px 9px 6px;border-top:1px solid #eee9fb;
+ font-size:14.5px;font-weight:900;letter-spacing:.03em;color:#6a4bd0;text-transform:uppercase}
+.es-header-alltools-group:first-child{margin-top:0;border-top:0}
+.es-header-alltools-group svg{width:17px;height:17px}
+.es-header-alltools-group small,.es-header-alltools-count{margin-left:auto;font-size:13px;font-weight:800;color:#8a79c8}
+.es-header-alltools-group:hover{color:#4d24c8;background:#f6f2ff;border-radius:9px}
+body.es-portrait-layout .es-header-alltools{display:flex!important;border:0;background:transparent}
+body.es-portrait-layout .site-header .main-nav>.nav-link{height:auto}
+body.es-portrait-layout .es-header-alltools .es-header-mytools-toggle,body.es-portrait-layout .es-header-alltools-menu{display:none!important}
 /* Preserve every header action near the previous 1080px breakpoint. */
 @media (min-width:1081px) and (max-width:1240px){
  .site-header .es-header-lockup{width:clamp(170px,17vw,205px)}
@@ -1363,7 +1375,8 @@ body.es-portrait-layout .es-header-mytools{display:none!important}
  }
  body:not(.es-portrait-layout) .site-header .es-header-mytools>.es-header-mytools-link svg{height:16px;width:16px}
  body:not(.es-portrait-layout) .site-header .es-header-mytools-count{min-width:18px;height:18px;font-size:16px;padding:1px 4px}
- body:not(.es-portrait-layout) .site-header .es-header-mytools-toggle{width:26px;flex-basis:26px;min-height:39px}
+ body:not(.es-portrait-layout) .site-header .es-header-mytools-toggle{width:29px;flex-basis:29px;min-height:39px}   /* +10 % */
+ body:not(.es-portrait-layout) .site-header .main-nav>.nav-link{height:41px;min-height:41px}   /* cao bằng khung MY TOOLS (39 + viền) */
  body:not(.es-portrait-layout) .site-header .es-language-picker{order:2;margin-left:0;padding:2px}
  body:not(.es-portrait-layout) .site-header .es-language-btn{min-width:28px;min-height:30px;padding:3px 5px;font-size:16px}
 }
@@ -1879,7 +1892,7 @@ const ES_EN_TEXT=Object.freeze({
  'tinh toan · ky thuat · pdf · tien ich':'Calculators · Engineering · PDF · Utilities',
  'dung ngay':'Use instantly',
  'loi ich epsilon soft':'Epsilon Soft advantages',
- 'trang chu':'Home','huong dan':'Help','kham pha cong cu':'Explore tools',
+ 'trang chu':'Home','huong dan':'Help','kham pha cong cu':'Explore tools','kham pha tat ca cong cu':'Explore all tools',
  'danh muc':'CATEGORIES','tat ca cong cu':'All tools','cong cu':'Tools',
  'tinh toan':'Calculations','ky thuat':'Engineering','tai lieu & tien ich':'Documents & Utilities',
  'tai lieu va tien ich':'Documents & Utilities','tai lieu, lich va cac tien ich khac':'Documents, calendars & utilities',
@@ -2117,9 +2130,39 @@ function buildHeaderMyTools(){
   <button type="button" class="es-header-mytools-toggle" data-header-mytools-toggle aria-expanded="false" aria-controls="es-header-mytools-menu" aria-label="Xổ danh sách MY TOOLS" title="Xổ danh sách MY TOOLS">${icon('chevron-down',20)}</button>
   <div class="es-header-mytools-menu" id="es-header-mytools-menu" aria-label="Danh sách công cụ đã ghim" hidden></div>`;
  nav.insertBefore(area,nav.querySelector('[data-nav="explore"]'));
+ buildHeaderAllTools(nav);
  refreshHeaderMyTools();
 }
+/* 2026-10-27: ALL TOOLS có mũi tên xổ giống MY TOOLS – danh sách công cụ theo nhóm. Dùng chung kiểu dáng MY TOOLS. */
+function buildHeaderAllTools(nav){
+ const link=nav.querySelector('[data-nav="explore"]');
+ if(!link || nav.querySelector('#es-header-alltools'))return;
+ const area=document.createElement('div');area.id='es-header-alltools';area.className='es-header-mytools es-header-alltools';
+ nav.insertBefore(area,link);
+ link.classList.add('es-header-mytools-link');link.id='es-header-alltools-link';
+ area.append(link);
+ area.insertAdjacentHTML('beforeend',`<button type="button" class="es-header-mytools-toggle" data-header-alltools-toggle aria-expanded="false" aria-controls="es-header-alltools-menu" aria-label="Xổ danh sách tất cả công cụ" title="Xổ danh sách tất cả công cụ">${icon('chevron-down',20)}</button>
+  <div class="es-header-mytools-menu es-header-alltools-menu" id="es-header-alltools-menu" role="region" aria-label="Danh sách tất cả công cụ" hidden></div>`);
+}
+function refreshHeaderAllTools(){
+ const area=document.getElementById('es-header-alltools');if(!area)return;
+ const en=esLanguage==='en';
+ const toggle=area.querySelector('[data-header-alltools-toggle]');
+ if(toggle){const label=en?'Show all tools':'Xổ danh sách tất cả công cụ';toggle.setAttribute('aria-label',label);toggle.title=label;}
+ const menu=area.querySelector('#es-header-alltools-menu');if(!menu)return;
+ const ready=DEFINITIONS.filter(t=>!t.planned);
+ const nameOf=t=>en?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
+ const groupName=g=>{const vi=g.name==='TÀI LIỆU & TIỆN ÍCH'?'Tài liệu & Tiện ích':g.name==='TÍNH TOÁN'?'Tính toán':'Kỹ thuật';return en?(ES_EN_TEXT[normalize(vi)]||ES_EN_TEXT[normalize(g.name)]||vi):vi;};
+ const groups=GROUPS.map(g=>{
+  const tools=ready.filter(t=>t.group===g.id);
+  if(!tools.length)return '';
+  return `<a class="es-header-alltools-group" href="#/category/${encodeURIComponent(g.id)}">${icon(g.icon,18)}<span>${escapeHTML(groupName(g))}</span><small>${tools.length}</small></a>`+
+   tools.map(t=>`<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(nameOf(t))}">${icon(t.icon,19)}<span>${escapeHTML(nameOf(t))}</span></a>`).join('');
+ }).join('');
+ menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon('grid',18)} <span>${en?'ALL TOOLS':'ALL TOOLS · Tất cả công cụ'}</span><small class="es-header-alltools-count">${ready.length}</small></div><div class="es-header-mytools-items">${groups}</div>`;
+}
 function closeHeaderMyTools(restoreFocus=false){
+ closeHeaderAllTools(restoreFocus);
  const area=document.getElementById('es-header-mytools');if(!area)return;
  const menu=area.querySelector('#es-header-mytools-menu');
  if(!menu || menu.hidden)return;
@@ -2128,7 +2171,17 @@ function closeHeaderMyTools(restoreFocus=false){
  toggle?.setAttribute('aria-expanded','false');
  if(restoreFocus)toggle?.focus({preventScroll:true});
 }
+function closeHeaderAllTools(restoreFocus=false){
+ const area=document.getElementById('es-header-alltools');if(!area)return;
+ const menu=area.querySelector('#es-header-alltools-menu');
+ if(!menu || menu.hidden)return;
+ menu.hidden=true;
+ const toggle=area.querySelector('[data-header-alltools-toggle]');
+ toggle?.setAttribute('aria-expanded','false');
+ if(restoreFocus)toggle?.focus({preventScroll:true});
+}
 function refreshHeaderMyTools(){
+ refreshHeaderAllTools();
  const area=document.getElementById('es-header-mytools');if(!area)return;
  const pinned=preferredTools();
  const count=area.querySelector('#es-header-mytools-count');
@@ -2911,9 +2964,21 @@ document.addEventListener('click',event=>{
  if(headerToggle){
   event.preventDefault();
   const area=document.getElementById('es-header-mytools');const menu=area?.querySelector('#es-header-mytools-menu');
-  if(menu){const willOpen=menu.hidden;menu.hidden=!willOpen;headerToggle.setAttribute('aria-expanded',String(willOpen));}
+  if(menu){const willOpen=menu.hidden;closeHeaderAllTools();menu.hidden=!willOpen;headerToggle.setAttribute('aria-expanded',String(willOpen));}
   return;
  }
+ const allToggle=event.target.closest('[data-header-alltools-toggle]');
+ if(allToggle){
+  event.preventDefault();
+  const menu=document.getElementById('es-header-alltools-menu');
+  if(menu){const willOpen=menu.hidden;
+   // chỉ mở một menu tại một thời điểm
+   const my=document.getElementById('es-header-mytools-menu');if(my&&!my.hidden){my.hidden=true;document.querySelector('[data-header-mytools-toggle]')?.setAttribute('aria-expanded','false');}
+   menu.hidden=!willOpen;allToggle.setAttribute('aria-expanded',String(willOpen));}
+  return;
+ }
+ if(event.target.closest('#es-header-alltools-menu a,#es-header-alltools-link'))closeHeaderAllTools();
+ else if(!event.target.closest('#es-header-alltools'))closeHeaderAllTools();
  if(event.target.closest('#es-header-mytools-menu a,#es-header-mytools-link'))closeHeaderMyTools();
  else if(!event.target.closest('#es-header-mytools'))closeHeaderMyTools();
  const lang=event.target.closest('[data-es-lang]');if(lang){esSetLanguage(lang.dataset.esLang);return;}
