@@ -1319,6 +1319,77 @@ function finalizeLast(ctxs, groups, mode) {
   return out;
 }
 
+/**
+ * Sơ đồ chặt suốt TỐI ƯU cho NHIỀU loại trên một tờ (quy hoạch động không giới hạn số lượng):
+ * mỗi ô X × Y lấy giá trị lớn nhất giữa "đặt 1 chi tiết" và mọi nhát cắt dọc / ngang tại các điểm chuẩn
+ * (tổ hợp kích thước các chi tiết). weights[t] = giá trị 1 chiếc loại t (diện tích × hệ số ưu tiên).
+ * Cho ra các sơ đồ tờ "kiểu kỹ sư" như 7 FS + 15 mặt bích (98,8 %) để bước phối hợp tờ chọn.
+ */
+function guillotineKnap(C, weights, region) {
+  const k = C.k, WW = region.w, HH = region.h;
+  const kinds = [];
+  for (const T of C.types) {
+    if (!(weights[T.t] > 0) || T.circle) continue;
+    kinds.push({ T, a: T.A, b: T.B });
+    if (T.rot) kinds.push({ T, a: T.B, b: T.A });
+  }
+  if (!kinds.length) return null;
+  const pts = (L, dims) => {
+    const set = new Set([0]); let frontier = [0];
+    while (frontier.length && set.size < 2500) {
+      const next = [];
+      for (const v of frontier) for (const d of dims) { const u = r6(v + d); if (u <= L + EPS && !set.has(u)) { set.add(u); next.push(u); } }
+      frontier = next;
+    }
+    set.delete(0);
+    return Float64Array.from([...set].sort((a, b) => a - b));
+  };
+  const X = pts(WW, [...new Set(kinds.map(q => q.a))]), Y = pts(HH, [...new Set(kinds.map(q => q.b))]);
+  const nx = X.length, ny = Y.length;
+  if (!nx || !ny || nx * nx * ny + ny * ny * nx > 4e7) return null;   // giới hạn khối lượng tính cho nhanh
+  const N = nx * ny, V = new Float64Array(N), CH = new Int32Array(N), PS = new Int32Array(N);
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const w = X[i], h = Y[j], id = i * ny + j;
+    let best = 0, ch = -1, pos = -1;
+    kinds.forEach((q, qi) => { if (q.a <= w + EPS && q.b <= h + EPS && weights[q.T.t] > best) { best = weights[q.T.t]; ch = qi; } });
+    for (let p = 0; p < nx && X[p] <= w / 2 + EPS; p++) {
+      const r = floorIdx(X, w - X[p]); if (r < 0) continue;
+      const v = V[p * ny + j] + V[r * ny + j];
+      if (v > best + 1e-9) { best = v; ch = -2; pos = p; }
+    }
+    for (let p = 0; p < ny && Y[p] <= h / 2 + EPS; p++) {
+      const r = floorIdx(Y, h - Y[p]); if (r < 0) continue;
+      const v = V[i * ny + p] + V[i * ny + r];
+      if (v > best + 1e-9) { best = v; ch = -3; pos = p; }
+    }
+    V[id] = best; CH[id] = ch; PS[id] = pos;
+  }
+  const items = [], cuts = [], counts = C.types.map(() => 0);
+  let seq = 0;
+  const place = (i, j, x0, y0, depth = 0) => {
+    if (i < 0 || j < 0) return;
+    const id = i * ny + j, ch = CH[id], w = X[i], h = Y[j];
+    if (ch >= 0) {
+      const q = kinds[ch];
+      items.push(tag(q.T, { x: x0, y: y0, w: q.a - k, h: q.b - k })); counts[q.T.t]++;
+      if (C.shear) {
+        if (q.a < w - EPS) cuts.push({ x1: x0 + q.a - k / 2, y1: y0, x2: x0 + q.a - k / 2, y2: y0 + h - k, seq: depth < 2 ? ++seq : 0 });
+        if (q.b < h - EPS) cuts.push({ x1: x0, y1: y0 + q.b - k / 2, x2: x0 + q.a - k, y2: y0 + q.b - k / 2, seq: depth < 2 ? ++seq : 0 });
+      }
+    } else if (ch === -2) {
+      const xs = X[PS[id]];
+      if (C.shear) cuts.push({ x1: x0 + xs - k / 2, y1: y0, x2: x0 + xs - k / 2, y2: y0 + h - k, seq: depth < 2 ? ++seq : 0 });
+      place(PS[id], j, x0, y0, depth + 1); place(floorIdx(X, w - xs), j, x0 + xs, y0, depth + 1);
+    } else if (ch === -3) {
+      const ys = Y[PS[id]];
+      if (C.shear) cuts.push({ x1: x0, y1: y0 + ys - k / 2, x2: x0 + w - k, y2: y0 + ys - k / 2, seq: depth < 2 ? ++seq : 0 });
+      place(i, PS[id], x0, y0, depth + 1); place(i, floorIdx(Y, h - ys), x0, y0 + ys, depth + 1);
+    }
+  };
+  place(nx - 1, ny - 1, region.x, region.y);
+  return { items, cuts, counts, blocks: items.length ? Math.max(1, Math.round(items.length / 6)) : 0, strategy: 'guillotine-dp' };
+}
+
 /* ======================================================================= */
 /* 10b. PHỐI HỢP ÍT TỜ NHẤT                                                 */
 /* Xếp tham từng tờ (lấp đầy tờ đầu) có khi tốn thêm 1 tờ. Khi số tờ còn    */
@@ -1344,6 +1415,17 @@ function coverPlan(C, demand, k, deadline) {
     subs.push(demand.map((v, t) => (t === T.t ? v : Math.ceil(v / k))));
     subs.push(demand.map((v, t) => (t === T.t ? v : 0)));
     for (const U of types) if (U.t > T.t && types.length <= 6) subs.push(demand.map((v, t) => (t === T.t || t === U.t ? v : 0)));
+  }
+  // sơ đồ tối ưu chặt suốt nhiều loại – thử nhiều bộ trọng số để có các cách phối khác nhau
+  if (types.length <= 4 && !types.some(T => T.circle)) {
+    const wsets = [types.map(() => 1)];
+    for (const T of types) for (const f of [1.5, 3, 0]) wsets.push(types.map(U => (U === T ? f : 1)));
+    for (const ws of wsets) {
+      if (Date.now() > deadline) break;
+      const weights = C.types.map(() => 0);
+      types.forEach((T, n) => { weights[T.t] = T.cutArea * ws[n]; });
+      add(guillotineKnap(C, weights, C.full));
+    }
   }
   for (const sub of subs) {
     if (Date.now() > deadline) break;
@@ -1407,6 +1489,7 @@ function coverPlan(C, demand, k, deadline) {
 /* các phương án tốt nhất khác nhau để người dùng chọn.                     */
 /* ======================================================================= */
 const STRATEGY_LABEL = {
+  'guillotine-dp': 'Chặt suốt tối ưu nhiều loại',
   area: 'Lấp kín từng tờ', big: 'Chi tiết lớn trước', small: 'Chi tiết nhỏ trước',
   even: 'Phối đều các loại trên mọi tờ', cover: 'Phối hợp ít tờ nhất', look: 'Mở đầu khác', mixed: 'Kết hợp khổ từng tờ', last: 'Tờ cuối khổ nhỏ hơn',
 };
@@ -1708,6 +1791,57 @@ function sheetLowerBound(C, demand) {
 }
 
 /**
+ * Thứ tự nhát chặt kiểu thợ (chặt sấn): dựng lại cây nhát cắt từ hình học các chi tiết.
+ * Ở mỗi miếng phôi, trong các đường chặt suốt được, chọn đường tách KHÁC LOẠI chi tiết (ranh giới khối)
+ * và cân đối nhất; đánh số theo từng cấp (nhát 1 trước, rồi các nhát trên từng nửa…).
+ * Chỉ đánh số nhát đầu và các nhát tách khối khác loại (nhát chính); nhát trong khối cùng loại kẻ nét đứt, không đánh số.
+ */
+function shearCutTree(items, region, k) {
+  const cuts = [], queue = [{ set: items, r: region, depth: 0 }];
+  let seq = 0;
+  while (queue.length) {
+    const { set, r, depth } = queue.shift();
+    if (!set.length) continue;
+    const xR = r.x + r.w, yB = r.y + r.h;
+    if (set.length === 1) {                                     // tách chiếc cuối khỏi phần thừa
+      const p = set[0];
+      if (p.x + p.w < xR - 0.5) cuts.push({ x1: p.x + p.w + k / 2, y1: r.y, x2: p.x + p.w + k / 2, y2: yB, seq: 0 });
+      if (p.y + p.h < yB - 0.5) cuts.push({ x1: r.x, y1: p.y + p.h + k / 2, x2: Math.min(xR, p.x + p.w + k), y2: p.y + p.h + k / 2, seq: 0 });
+      continue;
+    }
+    let best = null;
+    for (const [lo, len] of [['x', 'w'], ['y', 'h']]) {
+      const sorted = set.slice().sort((a, b) => a[lo] - b[lo]);
+      let reach = -Infinity;
+      for (let n = 0; n < sorted.length - 1; n++) {
+        reach = Math.max(reach, sorted[n][lo] + sorted[n][len]);
+        if (sorted[n + 1][lo] < reach + k - 1e-5) continue;
+        const L = sorted.slice(0, n + 1), R = sorted.slice(n + 1);
+        // mức "ranh giới khối": 1 − phần chung về tỉ lệ các loại hai bên (cùng loại = 0, khác hẳn = 1)
+        const frac = G => { const m = new Map(); for (const p of G) m.set(p.t, (m.get(p.t) || 0) + 1 / G.length); return m; };
+        const fl = frac(L), fr = frac(R);
+        let overlap = 0; for (const [t, v] of fl) overlap += Math.min(v, fr.get(t) || 0);
+        const boundary = 1 - overlap;
+        const score = 2 * boundary + Math.min(L.length, R.length) / set.length;
+        if (!best || score > best.score + 1e-9) best = { score, boundary, lo, at: reach + k / 2, L, R };
+      }
+    }
+    if (!best) return null;                                       // không chặt suốt được (không xảy ra với sơ đồ đã kiểm)
+    const num = depth === 0 || (depth < 4 && best.boundary > 0.05 && r.numbered !== false) ? ++seq : 0;   // nhát đầu + nhát tách khối khác loại
+    if (best.lo === 'x') {
+      cuts.push({ x1: best.at, y1: r.y, x2: best.at, y2: yB, seq: num });
+      queue.push({ set: best.L, r: { x: r.x, y: r.y, w: best.at - r.x, h: r.h, numbered: num > 0 }, depth: depth + 1 },
+                 { set: best.R, r: { x: best.at, y: r.y, w: xR - best.at, h: r.h, numbered: num > 0 }, depth: depth + 1 });
+    } else {
+      cuts.push({ x1: r.x, y1: best.at, x2: xR, y2: best.at, seq: num });
+      queue.push({ set: best.L, r: { x: r.x, y: r.y, w: r.w, h: best.at - r.y, numbered: num > 0 }, depth: depth + 1 },
+                 { set: best.R, r: { x: r.x, y: best.at, w: r.w, h: yB - best.at, numbered: num > 0 }, depth: depth + 1 });
+    }
+  }
+  return cuts;
+}
+
+/**
  * Tổng hợp phương án.
  *  - Phần dư mép tờ (dư phải, dư dưới) LUÔN được ghi kích thước, dù to hay nhỏ.
  *  - Tấm lẻ thu hồi: dải dư lớn nhất của tờ có cạnh ngắn ≥ ngưỡng (mặc định 200 mm, tùy chỉnh),
@@ -1730,6 +1864,11 @@ function evaluate(ctxs, groups, remnantMin) {
     if (remnant) recoveredArea += g.n * remnant.w * remnant.h;
     const netArea = items.reduce((s, p) => s + (p.circle ? Math.PI * (p.w ** 2 - (p.hole || 0) ** 2) / 4 : p.w * p.h), 0);
     let cuts = g.sheet.cuts.slice();
+    if (C.shear) {                                                  // thứ tự nhát chặt kiểu thợ, dựng từ hình học
+      const reg = !remnant ? { x: 0, y: 0, w: Wd, h: Hd } : remnant.side === 'right' ? { x: 0, y: 0, w: remnant.at, h: Hd } : { x: 0, y: 0, w: Wd, h: remnant.at };
+      const tree = shearCutTree(items, reg, C.k);
+      if (tree) cuts = tree;
+    }
     if (C.shear && remnant) {
       // chặt sấn: nhát tách tấm lẻ chạy suốt tờ là NHÁT 1, các nhát khác lùi số; bỏ nhát trùng đường tách
       const v = remnant.side === 'right', at = remnant.at;

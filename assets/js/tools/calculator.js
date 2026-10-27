@@ -272,8 +272,18 @@ const STYLES = `
 .epsilon-kcalc .kc-input{display:block;width:100%;height:49px;border:0;border-radius:0;background:transparent;padding:9px 13px;text-align:left;color:#1b173c;font-size:21px;outline:none;min-width:0;caret-color:var(--kc-purple);font-variant-numeric:tabular-nums}
 .epsilon-kcalc .kc-input:focus{outline:none;box-shadow:none}
 .epsilon-kcalc.kc-finished .kc-input,.epsilon-kcalc.kc-touch .kc-input{caret-color:transparent}
-.epsilon-kcalc .kc-mobile-caret{display:none;position:absolute;top:50%;left:13px;height:25px;width:2px;border-radius:2px;transform:translateY(-50%);background:#7631e9;pointer-events:none;animation:kc-blink 1s steps(1,end) infinite}
-.epsilon-kcalc.kc-touch:not(.kc-finished) .kc-mobile-caret{display:block}
+/* On touch devices the visible text and the cursor share one inline layout.
+   This prevents a Canvas font-metrics mismatch from placing the cursor behind digits. */
+.epsilon-kcalc .kc-mobile-view{display:none;position:absolute;inset:0;overflow:hidden;white-space:nowrap;padding:9px 13px;text-align:left;color:#1b173c;font-size:21px;pointer-events:none;scrollbar-width:none}
+.epsilon-kcalc .kc-mobile-view::-webkit-scrollbar{display:none}
+.epsilon-kcalc.kc-touch .kc-input{color:transparent}
+.epsilon-kcalc.kc-touch .kc-input::placeholder{color:transparent}
+.epsilon-kcalc.kc-touch .kc-mobile-view{display:block}
+.epsilon-kcalc .kc-mobile-text{white-space:pre}
+.epsilon-kcalc .kc-mobile-hint{display:none;color:#9290a2}
+.epsilon-kcalc .kc-mobile-view.is-empty .kc-mobile-hint{display:inline}
+.epsilon-kcalc .kc-mobile-caret{display:none;width:2px;height:25px;margin-left:1px;border-radius:2px;vertical-align:middle;background:#7631e9;animation:kc-blink 1s steps(1,end) infinite}
+.epsilon-kcalc.kc-touch:not(.kc-finished) .kc-mobile-caret{display:inline-block}
 @keyframes kc-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 .epsilon-kcalc .kc-screen-divider{height:1px;margin:0 12px;background:#dfdaf4}
 .epsilon-kcalc .kc-result{display:flex;align-items:center;justify-content:flex-end;min-height:47px;overflow-wrap:anywhere;padding:7px 13px;border:0;background:transparent;text-align:right;color:#0b1463;font-size:clamp(24px,2.1vw,32px);font-weight:900;line-height:1.16;width:100%;font-variant-numeric:tabular-nums}
@@ -306,6 +316,7 @@ const STYLES = `
  .epsilon-kcalc .kc-controls{gap:4px}
  .epsilon-kcalc .kc-controls button{padding:5px 9px;min-height:34px;font-size:16px}
  .epsilon-kcalc .kc-input{height:43px;font-size:19px}
+ .epsilon-kcalc .kc-mobile-view{font-size:19px}
  .epsilon-kcalc .kc-result{min-height:42px;font-size:27px}
  .epsilon-kcalc .kc-history{max-height:185px}
 }
@@ -393,7 +404,7 @@ export function mount(root, ctx) {
           </div>
         </div>
         <div class="kc-screen" id="kc-screen" aria-label="Màn hình máy tính hai dòng">
-          <div class="kc-entry-wrap"><input id="kc-input" class="kc-input" aria-label="Nhập biểu thức" inputmode="none" spellcheck="false" autocomplete="off" maxlength="500" placeholder="Nhập phép tính..." ><span id="kc-mobile-caret" class="kc-mobile-caret" aria-hidden="true"></span></div>
+          <div class="kc-entry-wrap"><input id="kc-input" class="kc-input" aria-label="Nhập biểu thức" inputmode="none" spellcheck="false" autocomplete="off" maxlength="500" placeholder="Nhập phép tính..." ><div id="kc-mobile-view" class="kc-mobile-view is-empty" aria-hidden="true"><span id="kc-mobile-text" class="kc-mobile-text"></span><span id="kc-mobile-caret" class="kc-mobile-caret"></span><span class="kc-mobile-hint">Nhập phép tính...</span></div></div>
           <div class="kc-screen-divider" aria-hidden="true"></div>
           <output id="kc-result" class="kc-result" aria-label="Kết quả" aria-live="polite">0</output>
         </div>
@@ -407,8 +418,8 @@ export function mount(root, ctx) {
   const touchKeypadOnly = usesTouchKeypad();
   const surface = root.querySelector('.epsilon-kcalc');
   surface.classList.toggle('kc-touch', touchKeypadOnly);
-  // Hide the native OS keyboard on touch devices. A CSS caret is positioned
-  // separately because read-only mobile inputs often have no visible caret.
+  // Keep the native OS keyboard hidden on touch devices. The visible expression
+  // is mirrored as safe textContent so the blinking caret uses the same text layout.
   input.readOnly = touchKeypadOnly || session.finished;
   input.inputMode = touchKeypadOnly ? 'none' : 'text';
   if (touchKeypadOnly) {
@@ -424,9 +435,8 @@ export function mount(root, ctx) {
   const badge = $('#kc-badge');
   const keypad = $('#kc-keypad');
   const modeButtons = [...root.querySelectorAll('[data-mode]')];
-  const mobileCaret = $('#kc-mobile-caret');
-  const caretCanvas = touchKeypadOnly ? document.createElement('canvas') : null;
-  const caretMeasure = caretCanvas?.getContext('2d');
+  const mobileView = $('#kc-mobile-view');
+  const mobileText = $('#kc-mobile-text');
 
   function setFinished(done) {
     session.finished = Boolean(done);
@@ -436,22 +446,23 @@ export function mount(root, ctx) {
   }
 
   function updateMobileCaret() {
-    if (!touchKeypadOnly || !caretMeasure) return;
-    // Mobile uses its own keypad. Always pin the edit cursor to the end:
-    // Android's readonly inputs may report a stale mid-string selection
-    // after a tap, while programmatic insertions continue at the end.
+    if (!touchKeypadOnly) return;
+    // The keypad always appends at the end on touch devices, regardless of
+    // stale DOM selection ranges reported by readonly Android inputs.
     const end = input.value.length;
     touchCaretStart = touchCaretEnd = end;
     try { input.setSelectionRange(end, end); } catch { /* readonly browser variations */ }
+    // Mirror the *visible* text, not just its measured width. The native input
+    // stays in the DOM for accessibility, but is transparent on touch devices.
+    mobileText.textContent = input.value;
+    mobileView.classList.toggle('is-empty', end === 0);
     const style = getComputedStyle(input);
-    caretMeasure.font = style.font;
-    const padding = parseFloat(style.paddingLeft) || 0;
-    const textWidth = caretMeasure.measureText(input.value).width;
-    const available = Math.max(0, input.clientWidth - padding - (parseFloat(style.paddingRight) || 0) - 4);
-    // Keep long expressions scrolled to their last character.
-    input.scrollLeft = Math.max(0, textWidth - available);
-    const left = padding + textWidth - input.scrollLeft;
-    mobileCaret.style.left = Math.max(2, Math.min(input.clientWidth - 4, left)) + 'px';
+    mobileView.style.font = style.font;
+    mobileView.style.fontVariantNumeric = style.fontVariantNumeric;
+    mobileView.style.letterSpacing = style.letterSpacing;
+    // Native scrolling and Canvas measurements can differ from the rendered
+    // input. Scrolling this same text+caret row keeps the caret exactly at end.
+    mobileView.scrollLeft = mobileView.scrollWidth;
   }
 
   function setNotice(text, error = false) {
@@ -670,7 +681,8 @@ export function mount(root, ctx) {
   if (touchKeypadOnly) {
     // A tap inside a readonly Android input must not leave the custom caret
     // in the middle while the ES-CALC keypad appends characters at the end.
-    input.addEventListener('click', () => updateMobileCaret(), {signal:ctx.signal});
+    input.addEventListener('click', updateMobileCaret, {signal:ctx.signal});
+    window.addEventListener('resize', updateMobileCaret, {signal:ctx.signal});
   }
   modeButtons.forEach(btn => btn.addEventListener('click', () => {session.science = btn.dataset.mode === 'science';updateMode();}, {signal:ctx.signal}));
   keypad.addEventListener('click', e => {
