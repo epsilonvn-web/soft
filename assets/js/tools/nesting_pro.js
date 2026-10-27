@@ -1394,6 +1394,15 @@ export function calculateNestingPro(input) {
   const finishedArea = base.types.reduce((s, T) => s + T.qty * T.tpArea, 0);
   const lbCache = new Map();
   const mainCtx = ctxs[kept[0].single ?? ctxs.findIndex(C => !C.stock.remnant)] || ctxs[0];
+  // HAO PHÍ TIÊU CHUẨN (barem – mục đích 1): ghép MỘT MÌNH chi tiết lên cả tờ khổ tiêu chuẩn (dòng khổ chuẩn đầu tiên
+  // trong kho phôi, mặc định 6000 × 2000), cắt hết tờ, không trừ thu hồi: HP = (tờ − n × TP) / (n × TP).
+  const bIdx = Math.max(0, ctxs.findIndex(C => !C.stock.remnant)), bCtx = { ...ctxs[bIdx], demand: base.types.map(() => Infinity) };
+  const bMs = Math.max(150, Math.min(800, 2500 / rectTypes));
+  const baremStd = base.types.map(T => {
+    const P = bCtx.pure[T.t].items.length && !T.rot ? bCtx.pure[T.t] : purePattern(bCtx, T, bMs);   // đủ sức chứa, không giới hạn bởi số lượng đơn
+    const n = P.items.length, sheet = bCtx.W * bCtx.H;
+    return { W: bCtx.W, H: bCtx.H, n, percent: n > 0 ? 100 * (sheet - n * T.tpArea) / (n * T.tpArea) : null, strategy: P.strategy };
+  });
   // Thép tấm: chọn hao phí thấp nhất. Chỉ đưa thêm phương án thay thế khi nó KHÁC BIỆT THẬT
   // (dùng khổ khác, ít tờ hơn, ít kiểu tờ hơn – dễ cắt) và hao phí không kém quá altWithin điểm %.
   const wasteOf = p => 100 * (p.issuedArea - p.recoveredArea - finishedArea) / finishedArea;
@@ -1434,10 +1443,10 @@ export function calculateNestingPro(input) {
     stocks: stocks.map(s => ({ W: s.W, H: s.H, limit: s.limit === Infinity ? null : s.limit, remnant: s.remnant, lot: s.lot })),
     types: base.types.map(T => {
       const p = i.parts[T.t];
-      return { t: T.t, name: T.name, noRotate: T.noRotate, circle: T.circle, ring: T.ring, hole: T.hole, cw: T.cw, ch: T.ch, rot: T.rot, qty: T.qty,
+      return { t: T.t, name: T.name, noRotate: T.noRotate, circle: T.circle, ring: T.ring, hole: T.hole, cw: T.cw, ch: T.ch, rot: T.rot, qty: T.qty, tpArea: T.tpArea,
         tpW: T.circle ? p.diameter : p.partW, tpH: T.circle ? p.diameter : p.partH, tpIn: T.ring ? p.inner : null,
         allowance: p.allowance, allowanceIn: p.allowanceIn, inHoles: T.qty - sheetDemand[T.t],
-        pureCount: mainCtx.pure[T.t].items.length };
+        pureCount: mainCtx.pure[T.t].items.length, barem: baremStd[T.t] };
     }),
     plans: out, invalid, tried: plans.length, pieces, ms: Date.now() - t0,
   };
@@ -1700,6 +1709,70 @@ export function zipFiles(files) {
   return out;
 }
 
+/* ---------- XLSX tối thiểu (Excel, LibreOffice, Google Sheets đều mở được) ---------- */
+const xmlEsc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '');
+const colName = n => { let s = ''; for (n++; n > 0; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + (n - 1) % 26) + s; return s; };
+/**
+ * sheets: [{ name, cols: [độ rộng], rows: [[ô…]] }]; ô = chuỗi | số | { v, s } với s: 'title' | 'head' | 'int' | 'dec' | 'pct' | 'bold' | 'note'.
+ */
+export function xlsxBook(sheets) {
+  const ST = { text: 1, title: 2, head: 3, int: 4, dec: 5, pct: 6, bold: 7, note: 8, boldint: 9, bolddec: 10, hlpct: 11, hldec: 12, hlhead: 13, ref: 14, dec3: 15 };
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="3"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="0.00&quot; %&quot;"/><numFmt numFmtId="166" formatCode="0.000"/></numFmts>
+<fonts count="5"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="11"/><name val="Arial"/></font><font><b/><sz val="14"/><color rgb="FF4A1FA8"/><name val="Arial"/></font><font><i/><sz val="10"/><color rgb="FF6A6691"/><name val="Arial"/></font><font><sz val="11"/><color rgb="FF7A7496"/><name val="Arial"/></font></fonts>
+<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEDE6FC"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDDF6EA"/><bgColor indexed="64"/></patternFill></fill></fills>
+<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFB9A8E6"/></left><right style="thin"><color rgb="FFB9A8E6"/></right><top style="thin"><color rgb="FFB9A8E6"/></top><bottom style="thin"><color rgb="FFB9A8E6"/></bottom><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="16">
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+<xf numFmtId="3" fontId="1" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="1" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="165" fontId="1" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="1" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="165" fontId="4" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1"/>
+<xf numFmtId="166" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+</cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+  const sheetXml = sh => {
+    const rows = sh.rows.map((row, r) => `<row r="${r + 1}">${row.map((cell, c) => {
+      if (cell == null || cell === '') return '';
+      const o = typeof cell === 'object' ? cell : { v: cell };
+      const ref = colName(c) + (r + 1);
+      if (typeof o.v === 'number' && Number.isFinite(o.v)) return `<c r="${ref}" s="${ST[o.s || 'dec']}"><v>${o.v}</v></c>`;
+      return `<c r="${ref}" s="${ST[o.s || 'text']}" t="inlineStr"><is><t xml:space="preserve">${xmlEsc(o.v)}</t></is></c>`;
+    }).join('')}</row>`).join('');
+    const cols = sh.cols ? `<cols>${sh.cols.map((w, c) => `<col min="${c + 1}" max="${c + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : '';
+    const freeze = sh.freeze ? `<sheetViews><sheetView workbookViewId="0"><pane ySplit="${sh.freeze}" topLeftCell="A${sh.freeze + 1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>` : '';
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${freeze}${cols}<sheetData>${rows}</sheetData></worksheet>`;
+  };
+  const safe = n => String(n).replace(/[\\/?*[\]:]/g, ' ').slice(0, 31);
+  const files = [
+    { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_, k) => `<Override PartName="/xl/worksheets/sheet${k + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>` },
+    { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+    { name: 'xl/workbook.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s, k) => `<sheet name="${xmlEsc(safe(s.name))}" sheetId="${k + 1}" r:id="rId${k + 1}"/>`).join('')}</sheets></workbook>` },
+    { name: 'xl/_rels/workbook.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_, k) => `<Relationship Id="rId${k + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${k + 1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+    { name: 'xl/styles.xml', data: styles },
+    ...sheets.map((s, k) => ({ name: `xl/worksheets/sheet${k + 1}.xml`, data: sheetXml(s) })),
+  ];
+  return zipFiles(files);
+}
+
 // Module Worker chạy chính file này – không có file thuật toán thứ hai.
 if (typeof document === 'undefined' && typeof self !== 'undefined' && typeof self.postMessage === 'function') {
   self.addEventListener('message', e => {
@@ -1906,8 +1979,33 @@ const CSS = `
 .np .np-tb-main strong{display:block;font-size:26px;font-weight:900;line-height:1.15}
 .np .np-tb-main small{display:block;font-size:13px;opacity:.88}
 .np .np-tb-cell span{display:block;font-size:13.5px;color:#6a598b;font-weight:700}
+.np .np-tb-cell small.np-tb-use{display:block;font-size:13.5px;color:#0d6b4c;font-weight:700;margin-top:2px}
+.np .np-tb-cell small.np-tb-use b{display:inline;font-size:13.5px;color:#0d6b4c;margin:0}
 .np .np-tb-cell b{display:block;font-size:18px;color:#2e1b70;font-weight:850;margin-top:3px;overflow-wrap:anywhere}
 @media(max-width:820px){.np .np-total-bar{grid-template-columns:repeat(2,minmax(0,1fr))}.np .np-tb-main{grid-column:1/-1}}
+.np details.np-barem textarea{width:100%;min-height:96px;margin:4px 0 6px;border:1px solid #d4b7ff;border-radius:10px;padding:7px 9px;font:15px/1.4 ui-monospace,Consolas,monospace;color:#24156c;resize:vertical}
+.np details.np-barem summary small{font-size:13.5px;font-weight:700;color:#147451;margin-left:6px}
+.np details.np-barem code{background:#f3eefc;border-radius:5px;padding:0 4px}
+.np .np-list.no-hole .np-col-hole{display:none}
+.np .np-std-src{margin:8px 0 8px}
+.np .np-cap{display:flex;align-items:center;gap:8px;margin:0 0 4px}
+.np .np-cap span{margin:0!important;font-size:15px}
+.np .np-cap input{width:76px;min-height:36px;text-align:right;font-weight:800}
+.np .np-cap small{font-weight:800;color:#5c29bf}
+.np #np-std-copy{margin:2px 0 8px}
+.np #np-table-box[hidden]{display:none}
+.np th.np-ref,.np td.np-ref{color:#7a7496}.np th.np-ref small{font-weight:600}
+.np th.np-real{background:#e8f8ef;color:#0d6b4c}.np td.np-real{background:#f2fcf6;font-weight:850;color:#0d6b4c;font-size:16px}
+.np .np-missing{margin-top:12px;border:2px solid #e6a23c;background:#fff8ec;border-radius:12px;padding:10px 13px;color:#6b4208;font-size:15px;line-height:1.45}
+.np .np-missing[hidden]{display:none}
+.np .np-missing>b,.np .np-missing>span{display:block}
+.np .np-missing ul{margin:5px 0 8px 18px;padding:0}
+.np .np-missing code{background:#fff;border:1px solid #f0cf96;border-radius:5px;padding:0 5px;font-weight:700}
+.np sup.np-cap-tag{font-size:10.5px;font-weight:800;color:#4a1fa8}
+.np .np-est sup{font-size:10.5px;font-weight:800;color:#c2410c;margin-left:2px}
+.np .np-est{color:#8a5a12;font-style:normal}
+.np td.np-k{color:#4a1fa8;font-weight:900}
+.np td.dev-up{color:#a3500a;font-weight:800}.np td.dev-down{color:#0f6e56;font-weight:800}
 .np .np-remnant-box{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 12px;padding:9px 12px;border:2px solid #16a374;border-radius:12px;background:linear-gradient(110deg,#e6fbf2,#f4fffa);cursor:text}
 .np .np-remnant-box span{white-space:normal;margin:0}
 .np .np-rb-text{flex:1 1 auto;min-width:0}
@@ -1944,6 +2042,7 @@ const DEFAULT_STATE = {
     shear: [{ kind: 'std', W: '2440', H: '1220', qty: '', lot: '' }],
   },
   info: { project: '', drawingNo: '', material: '', drawnBy: '' },
+  barem: '', stdSource: 'table', squareCaps: { laser: '15', shear: '14' },
   parts: [
     { name: 'BM1', shape: 'rect', partW: '490', partH: '555', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '30', rotate: true },
     { name: 'BM2', shape: 'rect', partW: '300', partH: '200', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '60', rotate: true },
@@ -1954,6 +2053,71 @@ const DEFAULT_STATE = {
 const ALLOW_DEFAULT = { rect: '0', circle: '5', ring: '5' };
 const PRESETS = { laser: [[6000, 2000], [3000, 1500], [2500, 1250]], shear: [[2440, 1220], [3000, 1500], [6000, 2000]] };
 let savedState = null;
+/** Phần tờ thực sử dụng (đơn vị TẤM): 1 − tấm lẻ thu hồi / diện tích tờ. Không thu hồi = 1 tấm. Ví dụ thu hồi 2 m trên tờ 6 m: 4/6 = 0,667 tấm. */
+const sheetUse = g => g.remnant ? 1 - (g.remnant.w * g.remnant.h) / (g.W * g.H) : 1;
+const fmtTam = v => { const r = Math.round(v * 1000) / 1000; return Number.isInteger(r) ? String(r) : r.toFixed(3); };   // dấu chấm thập phân như các số khác
+/** Tổng xuất kho quy đổi theo tấm, tách theo khổ: "1,403 tấm 6000×2000". */
+const useBySize = res => {
+  const m = new Map();
+  res.groups.forEach(g => { const k = (g.remnantStock ? 'tấm lẻ ' : '') + g.W + '×' + g.H; m.set(k, (m.get(k) || 0) + g.n * sheetUse(g)); });
+  return [...m].map(([k, v]) => `${fmtTam(v)} tấm ${k}`).join(' + ');
+};
+
+/* ---------- BẢNG HAO PHÍ TIÊU CHUẨN & HAO PHÍ THỰC TẾ TỪNG CHI TIẾT ---------- */
+/** Khoá tra: chữ nhật "nhỏ x lớn" (không phân biệt chiều), tròn "D310", vành khuyên "D900/640". */
+const baremKey = raw => {
+  let s = String(raw ?? '').toUpperCase().replace(/\s+/g, '').replace(/[×*X]/g, 'x').replace(/^(Ø|Φ|PHI|DN?)/, 'D').replace(',', '.');
+  const ring = s.match(/^D(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if (ring) return `D${+ring[1]}/${+ring[2]}`;
+  const round = s.match(/^D(\d+(?:\.\d+)?)$/);
+  if (round) return `D${+round[1]}`;
+  const rect = s.match(/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)$/);
+  if (rect) { const [a, b] = [+rect[1], +rect[2]].sort((p, q) => p - q); return `${a}x${b}`; }
+  return null;
+};
+/** Đọc bảng dán: mỗi dòng "kích thước <tab/;/,> hao phí". Bỏ dòng tiêu đề, dòng lỗi; trùng kích thước giữ dòng đầu. */
+function parseBarem(text) {
+  const map = new Map(); let bad = 0, dup = 0;
+  for (const line of String(text || '').split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const cells = line.split(/\t|;|\|/).map(c => c.trim()).filter(Boolean);
+    let key = null, val = null;
+    for (const c of cells) {
+      const k = baremKey(c);
+      if (k && !key) { key = k; continue; }
+      const m = c.replace(',', '.').match(/^(-?\d+(?:\.\d+)?)\s*(%?)$/);
+      if (key && m && val == null) { const v = +m[1]; val = m[2] || v > 1 ? v : v * 100; }
+    }
+    if (!key || val == null || !(val >= 0) || val > 1000) { bad++; continue; }
+    if (map.has(key)) { dup++; continue; }
+    map.set(key, val);
+  }
+  return { map, bad, dup };
+}
+const typeKey = T => T.ring ? `D${T.tpW}/${T.tpIn}` : T.circle ? `D${T.tpW}` : baremKey(`${T.tpW}x${T.tpH}`);
+/**
+ * Hao phí thực tế từng chi tiết = hao phí tiêu chuẩn × K (một hệ số K chung cho cả trình cắt).
+ * K chọn sao cho:  Σ TP_i × (1 + HP thực tế_i) = khối lượng xuất kho thực (xuất − tấm lẻ thu hồi)
+ *   => K = (xuất thực − Σ TP) / Σ (TP_i × HP tiêu chuẩn_i).   K > 1: ghép kém hơn tiêu chuẩn; K < 1: tốt hơn.
+ * BẮT BUỘC mọi chi tiết có HP tiêu chuẩn: lấy từ bảng; chưa có thì dùng HP tính mới theo trình cắt
+ * 1 chi tiết / tờ khổ tiêu chuẩn (barem) và yêu cầu bổ sung vào bảng.
+ * std[k] = { value, source: 'table' | 'new' | 'none' }
+ */
+function allocateWaste(res, std) {
+  const kg = a => a * res.input.thickness * res.input.density / 1e9;
+  const tp = res.types.map(T => kg(T.qty * T.tpArea));
+  const tpAll = tp.reduce((a, b) => a + b, 0), net = res.issuedKG - res.recoveredKG;
+  const used = std.map(s => s.value ?? res.wastePercent);              // 'none' (không lọt khổ chuẩn): tạm hao phí chung
+  const base = res.types.reduce((s, T, k) => s + tp[k] * used[k] / 100, 0);
+  const K = base > 0 ? (net - tpAll) / base : null;
+  const rows = res.types.map((T, k) => {
+    const actual = K == null ? res.wastePercent : used[k] * K;
+    return { std: used[k], source: std[k].source, capped: std[k].capped, actual, tpKG: tp[k],
+      issuedKG: tp[k] * (1 + actual / 100), stdIssuedKG: tp[k] * (1 + used[k] / 100) };
+  });
+  rows.K = K; rows.net = net;
+  return rows;
+}
 
 export function mount(root, ctx = {}) {
   const st = savedState ? structuredClone(savedState) : structuredClone(DEFAULT_STATE);
@@ -1982,6 +2146,14 @@ export function mount(root, ctx = {}) {
     <div class="np-stock-head"><span>Loại</span><span>Dài (mm)</span><span>Rộng (mm)</span><span>Số tờ</span><span>Mã lô / seri</span><span></span></div>
     <div id="np-stocks"></div>
     <div class="np-presets" id="np-presets"></div>
+    <details class="np-info np-barem"><summary>Hao phí tiêu chuẩn (tham chiếu) <small id="np-barem-status"></small></summary>
+     <div class="np-toggle np-std-src" role="group" aria-label="Nguồn hao phí tiêu chuẩn">
+      <button type="button" data-stdsrc="table">Theo bảng công ty</button><button type="button" data-stdsrc="auto">Máy tự tính</button></div>
+     <label class="np-cap"><span id="np-cap-label">Trần hao phí khổ vuông</span><input name="squareCap" value="${esc(st.squareCaps[st.cutMethod])}" inputmode="decimal" autocomplete="off"><small>%</small></label>
+     <p class="np-hint" id="np-std-hint"></p>
+     <button type="button" class="np-export" id="np-std-copy">⧉ Sao chép bảng HP tiêu chuẩn của đơn này</button>
+     <div id="np-table-box"><p class="np-hint">Dán 2 cột từ Google Sheets / Excel: <b>Kích thước</b> và <b>Hao phí</b> (vd. <code>260x260 ⇥ 14.6%</code>). Tròn ghi <code>D310</code>. Kích thước theo thành phẩm, không phân biệt dài × rộng. Chi tiết chưa có trong bảng: máy tự tính và yêu cầu bổ sung.</p>
+     <textarea id="np-barem" rows="5" spellcheck="false" placeholder="260x260	14.6%&#10;270x310	5.4%&#10;D310	9.5%">${esc(st.barem)}</textarea></div></details>
     <details class="np-info"><summary>Hồ sơ cutting plan (khung tên DXF)</summary>
      <div class="np-row two">${txt('project', 'Dự án', st.info.project)}${txt('drawingNo', 'Số bản vẽ', st.info.drawingNo)}</div>
      <div class="np-row two">${txt('matName', 'Mác thép', st.info.material)}${txt('drawnBy', 'Người lập', st.info.drawnBy)}</div></details>
@@ -1993,7 +2165,7 @@ export function mount(root, ctx = {}) {
    <section class="np-panel" aria-label="Phương án trải phôi">
     <div class="np-total-bar" id="np-total-bar" hidden>
      <div class="np-tb-main"><span>HAO PHÍ CHUNG</span><strong id="np-tb-waste">—</strong><small id="np-tb-sub"></small></div>
-     <div class="np-tb-cell"><span>Xuất kho</span><b id="np-tb-issued">—</b></div>
+     <div class="np-tb-cell"><span>Xuất kho</span><b id="np-tb-issued">—</b><small class="np-tb-use">sử dụng: <b id="np-tb-use">—</b></small></div>
      <div class="np-tb-cell"><span>Tấm lẻ thu hồi</span><b id="np-tb-rec">—</b></div>
      <div class="np-tb-cell"><span>Thực tiêu hao</span><b id="np-tb-net">—</b></div>
      <div class="np-tb-cell"><span>Thành phẩm</span><b id="np-tb-tp">—</b></div>
@@ -2006,11 +2178,12 @@ export function mount(root, ctx = {}) {
     <div class="np-footrow"><span></span><span>
      <button class="np-export" type="button" id="np-dxf-cut" disabled title="Mỗi kiểu tờ một file, chỉ đường bao cắt – đưa vào CypCut / phần mềm máy cắt">↓ DXF máy cắt (.zip)</button>
      <button class="np-export" type="button" id="np-dxf-plan" disabled title="Bản vẽ cutting plan chuẩn dự án">↓ DXF cutting plan</button>
-     <button class="np-export" type="button" id="np-csv" disabled>↓ CSV</button>
+     <button class="np-export" type="button" id="np-csv" disabled title="Danh sách chi tiết + hao phí tiêu chuẩn / thực tế, sơ đồ từng tờ, toạ độ, tổng hợp">↓ Excel thông tin cắt</button>
      <button class="np-export" type="button" id="np-svg" disabled>↓ SVG tờ này</button></span></div>
     <div class="np-status" id="np-status" role="status" aria-live="polite"></div>
+    <div class="np-missing" id="np-missing" role="status" hidden></div>
     <div class="np-list" id="np-list" hidden><div class="np-list-title"><span>DANH SÁCH CHI TIẾT ĐÃ XẾP</span><small id="np-list-count"></small></div>
-     <div class="np-scroll"><table><thead><tr><th>NO</th><th>Mã chi tiết</th><th class="num">Thành phẩm (mm)</th><th class="num">Kích thước cắt (mm)</th><th class="num">Yêu cầu</th><th class="num">Đã xếp</th><th class="num">Trong lỗ</th></tr></thead><tbody id="np-list-body"></tbody></table></div></div>
+     <div class="np-scroll"><table><thead><tr><th>NO</th><th>Mã chi tiết</th><th class="num">Thành phẩm (mm)</th><th class="num">Kích thước cắt (mm)</th><th class="num">Yêu cầu</th><th class="num">Đã xếp</th><th class="num np-col-hole">Trong lỗ</th><th class="num np-ref">HP tiêu chuẩn<br><small>tham chiếu</small></th><th class="num np-real">HP thực tế</th></tr></thead><tbody id="np-list-body"></tbody></table></div></div>
    </section>
   </div>
   <section class="np-results" aria-label="Kết quả">
@@ -2111,6 +2284,7 @@ export function mount(root, ctx = {}) {
   }
   const exportsOff = off => { for (const id of ['np-csv', 'np-svg', 'np-dxf-cut', 'np-dxf-plan']) $(id).disabled = off; };
   function invalid(msg) {
+    $('np-missing').hidden = true;
     last = null; lastSVG = '';
     $('np-preview').textContent = 'Không thể lập sơ đồ với thông số hiện tại.'; $('np-tabs').innerHTML = ''; $('np-legend').innerHTML = '';
     $('np-list').hidden = true; $('np-plans').innerHTML = ''; $('np-total-bar').hidden = true; exportsOff(true); full = null;
@@ -2142,7 +2316,7 @@ export function mount(root, ctx = {}) {
     $('np-legend').innerHTML = res.types.filter(T => present.has(T.t)).map(T => `<span>${chip(T)}${T.t + 1}. ${esc(T.name)} ${sizeText(T)} <b>×${g.counts[T.t]}</b></span>`).join('') +
       (anyRot ? '<span><i class="np-chip hatch"></i>Xoay 90°</span>' : '') +
       (g.cuts.some(c => c.seq > 0) ? '<span><i class="np-chip" style="background:#fff7ea;border-color:#d58027"></i>Số = thứ tự nhát chặt chính</span>' : '');
-    put('np-summary', `${sheetRange(res, group)} / ${res.totalSheets}: ${g.items.length} chi tiết · hao phí tờ ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(2) + ' %'} · dùng ${g.usedPercent.toFixed(1)} % tờ`);
+    put('np-summary', `${sheetRange(res, group)} / ${res.totalSheets}: ${g.items.length} chi tiết · hao phí tờ ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(2) + ' %'}${g.remnant ? ` · sử dụng: ${fmtTam(sheetUse(g))} tấm` : ''} · lấp đầy ${g.usedPercent.toFixed(1)} %`);
     put('np-strategy', strategyText(g.strategy) + ' · ' + freeText(g));
   }
   function present(res, keepPlan = false) {
@@ -2154,6 +2328,77 @@ export function mount(root, ctx = {}) {
         <small>${esc(p.reason)}</small><small>Thu hồi ${pretty(p.recoveredKG)} kg · ${p.kinds} kiểu tờ</small></button>`).join('');
     showPlan(planIdx);
   }
+  let baremCache = { text: null, parsed: null };
+  const barem = () => {
+    if (baremCache.text !== st.barem) baremCache = { text: st.barem, parsed: parseBarem(st.barem) };
+    return baremCache.parsed;
+  };
+  const r1 = v => Math.round(v * 10) / 10;                             // bảng tiêu chuẩn ghi 1 chữ số thập phân
+  /** Quy tắc thực tế (bất quy tắc): chi tiết khổ VUÔNG – HP tiêu chuẩn tối đa = trần (mặc định 15 %). */
+  const isSquare = T => !T.circle && Math.abs(T.tpW - T.tpH) < 1e-9;
+  /** Trần theo phương pháp cắt: laser / plasma 15 %, chặt sấn 14 % (kinh nghiệm thực tế, chỉnh được). */
+  const capOf = () => { const v = Number(String(st.squareCaps[st.cutMethod] ?? '').replace(',', '.')); return Number.isFinite(v) && v > 0 ? v : null; };
+  const capped = (T, v) => { const c = capOf(); return v != null && c != null && isSquare(T) && v > c ? { value: c, capped: true } : { value: v, capped: false }; };
+  /** Máy tự tính: trình cắt 1 chi tiết / tờ khổ chuẩn (barem), làm tròn 1 số lẻ, áp trần khổ vuông. */
+  const autoStd = T => T.barem?.percent == null ? { value: null, capped: false } : capped(T, r1(T.barem.percent));
+  const stdOf = res => { const b = barem(); return res.types.map(T => {
+    if (st.stdSource === 'table') {
+      const k = typeKey(T);
+      if (k && b.map.has(k)) return { value: b.map.get(k), capped: false, source: 'table' };   // bảng đã xét duyệt: dùng nguyên số
+    }
+    const a = autoStd(T);
+    return a.value != null ? { ...a, source: st.stdSource === 'table' ? 'new' : 'auto' } : { value: null, capped: false, source: 'none' };
+  }); };
+  const stdLines = (res, onlyNew) => { const std = stdOf(res); return res.types.map((T, k) => ({ T, s: std[k] }))
+    .filter(({ T, s }) => typeKey(T) && s.value != null && (!onlyNew || s.source === 'new'))
+    .map(({ T, s }) => `${typeKey(T)}\t${s.value.toFixed(1)}%`); };
+  /** Chi tiết chưa có trong bảng: hiện danh sách + nút bổ sung vào bảng / sao chép để dán vào Google Sheets. */
+  function renderMissing(res) {
+    const std = stdOf(res), box = $('np-missing');
+    const miss = st.stdSource === 'table' ? res.types.filter((T, k) => std[k].source !== 'table') : [];
+    if (!miss.length) { box.hidden = true; box.innerHTML = ''; return; }
+    const b0 = miss.find(T => T.barem)?.barem;
+    box.hidden = false;
+    box.innerHTML = `<b>⚠ ${miss.length} chi tiết chưa có trong bảng hao phí tiêu chuẩn – cần bổ sung.</b>
+      <span>Máy đã tính theo trình cắt <b>1 chi tiết / tờ ${b0 ? b0.W + ' × ' + b0.H : 'khổ chuẩn'}</b> (cắt hết tờ):</span>
+      <ul>${miss.map(T => T.barem?.percent != null
+        ? `<li><code>${esc(typeKey(T) || T.name)}</code> ${esc(T.name)}: <b>${autoStd(T).value.toFixed(1)} %</b> <small>(${T.barem.n} chiếc / tờ${autoStd(T).capped ? ` · khổ vuông, giới hạn ${capOf()} %` : ''})</small></li>`
+        : `<li><code>${esc(T.name)}</code>: không lọt tờ khổ chuẩn – cần nhập tay</li>`).join('')}</ul>
+      <span><button type="button" class="np-export" id="np-miss-add">＋ Thêm vào bảng tiêu chuẩn</button>
+      <button type="button" class="np-export" id="np-miss-copy">⧉ Sao chép để dán Google Sheets</button></span>`;
+  }
+  const missingLines = res => stdLines(res, true);
+  function baremStatus() {
+    const b = barem(), auto = st.stdSource !== 'table', cap = capOf();
+    root.querySelectorAll('[data-stdsrc]').forEach(x => { const yes = x.dataset.stdsrc === st.stdSource; x.classList.toggle('is-active', yes); x.setAttribute('aria-pressed', String(yes)); });
+    $('np-table-box').hidden = auto;
+    const method = st.cutMethod === 'shear' ? 'chặt sấn' : 'laser / plasma';
+    const capInput = root.querySelector('[name="squareCap"]');
+    if (capInput && document.activeElement !== capInput) capInput.value = st.squareCaps[st.cutMethod] ?? '';
+    put('np-cap-label', `Trần HP khổ vuông – ${method}`);
+    put('np-barem-status', (auto ? 'máy tự tính' : `bảng công ty · ${b.map.size} kích thước`) + (cap ? ` · khổ vuông ≤ ${cap} % (${method})` : ''));
+    put('np-std-hint', auto
+      ? 'Mỗi chi tiết được ghép một mình kín tờ khổ chuẩn (dòng khổ chuẩn đầu tiên trong kho phôi), cắt hết tờ: HP = (tờ − n × TP) / (n × TP); khổ vuông áp trần. Sao chép bảng này để dựng bảng tiêu chuẩn của công ty.'
+      : `Ưu tiên bảng đã xét duyệt (dùng nguyên số trong bảng)${b.dup ? ` · ${b.dup} dòng trùng` : ''}${b.bad ? ` · ${b.bad} dòng bỏ qua` : ''}. Chi tiết chưa có: máy tính theo 1 chi tiết / tờ (khổ vuông áp trần) và yêu cầu bổ sung.`);
+  }
+  /** Bảng chi tiết: thêm hao phí tiêu chuẩn (tra bảng) và hao phí thực tế (phân bổ sau ghép phôi). */
+  const stdTip = (T, a) => (a.source === 'table' ? 'Theo bảng công ty' : a.source === 'none' ? 'Không lọt tờ khổ chuẩn – cần nhập tay'
+    : `Máy tính: 1 chi tiết / tờ ${T.barem.W}×${T.barem.H} = ${T.barem.n} chiếc / tờ → ${r1(T.barem.percent).toFixed(1)} %`) + (a.capped ? ` · khổ vuông: giới hạn ${capOf()} %` : '');
+  function renderPartTable(res) {
+    renderMissing(res);
+    const alloc = allocateWaste(res, stdOf(res));
+    const pc = v => v == null ? '—' : v.toFixed(2) + ' %';
+    $('np-list-body').innerHTML = res.types.map((T, k) => {
+      const made = res.groups.reduce((s, g) => s + g.counts[T.t] * g.n, 0), a = alloc[k];
+      const tp = T.ring ? `Ø${pretty(T.tpW)} / Ø${pretty(T.tpIn)}` : T.circle ? 'D' + pretty(T.tpW) : pretty(T.tpW) + ' × ' + pretty(T.tpH);
+      const dev = a.actual == null ? '' : a.actual > a.std + 0.005 ? 'dev-up' : a.actual < a.std - 0.005 ? 'dev-down' : '';
+      return `<tr><td>${T.t + 1}</td><td>${chip(T)} ${esc(T.name)}${T.noRotate ? ' <small>(không xoay)</small>' : ''}</td>
+       <td class="num">${tp}</td><td class="num">${sizeText(T)}</td>
+       <td class="num">${pretty(T.qty)}</td><td class="num ${made === T.qty ? 'ok' : ''}">${pretty(made)}${made === T.qty ? ' ✓' : ''}</td><td class="num np-col-hole">${T.inHoles ? pretty(T.inHoles) : ''}</td>
+       <td class="num np-ref" title="${stdTip(T, a)}">${a.source === 'none' ? '<i class="np-est">? <sup>nhập tay</sup></i>' : a.source === 'new' ? `<i class="np-est">${pc(a.std)} <sup>mới</sup></i>` : pc(a.std)}${a.capped ? ' <sup class="np-cap-tag">≤' + capOf() + '</sup>' : ''}</td><td class="num np-real ${dev}" title="Lệch ${(a.actual - a.std).toFixed(2)} điểm % so với tiêu chuẩn">${pc(a.actual)}</td></tr>`;
+    }).join('') + `<tr class="np-total"><td colspan="4">TỔNG</td><td class="num">${pretty(res.pieces)}</td><td class="num">${pretty(res.pieces)}</td><td class="num np-col-hole">${pretty(res.types.reduce((s, T) => s + T.inHoles, 0)) || ''}</td><td class="num np-k">${alloc.K == null ? '' : 'K = ' + alloc.K.toFixed(3)}</td><td class="num np-real">${res.wastePercent.toFixed(2)} %</td></tr>`;
+    $('np-list').classList.toggle('no-hole', !res.types.some(T => T.ring));
+  }
   function showPlan(k) {
     planIdx = k;
     const res = { ...full, ...full.plans[k] };
@@ -2162,7 +2407,7 @@ export function mount(root, ctx = {}) {
     const multi = new Set(res.groups.map(g => g.W + 'x' + g.H)).size > 1;
     $('np-tabs').innerHTML = res.groups.map((g, gi) => {
       const r = g.freeStrips.find(f => f.side === 'right');
-      return `<button type="button" class="np-tab" role="tab" data-group="${gi}"><b>${sheetRange(res, gi)}${g.n > 1 ? ` · ×${g.n}` : ''}</b><small>${multi || g.remnantStock ? `${g.remnantStock ? 'Lẻ ' : ''}${g.W}×${g.H} · ` : ''}${g.items.length} ct · hp ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(1) + ' %'}${g.remnant ? ' · <span class="np-tab-rem">thu hồi</span>' : ''}</small></button>`;
+      return `<button type="button" class="np-tab" role="tab" data-group="${gi}"><b>${sheetRange(res, gi)}${g.n > 1 ? ` · ×${g.n}` : ''}</b><small>${multi || g.remnantStock ? `${g.remnantStock ? 'Lẻ ' : ''}${g.W}×${g.H} · ` : ''}${g.items.length} ct · hp ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(1) + ' %'}${g.remnant ? ` · <span class="np-tab-rem">sử dụng ${fmtTam(sheetUse(g))} tấm</span>` : ''}</small></button>`;
     }).join('');
     showGroup(group < res.groups.length ? group : 0);
     const proof = $('np-proof');
@@ -2177,6 +2422,7 @@ export function mount(root, ctx = {}) {
     $('np-total-bar').hidden = false;
     put('np-tb-waste', res.wastePercent.toFixed(2) + ' %');
     put('np-tb-sub', `${res.totalSheets} tờ · nếu không thu hồi ${res.wasteFullPercent.toFixed(2)} %`);
+    put('np-tb-use', useBySize(res));
     put('np-tb-issued', pretty(res.issuedKG) + ' kg'); put('np-tb-rec', pretty(res.recoveredKG) + ' kg');
     put('np-tb-net', pretty(res.issuedKG - res.recoveredKG) + ' kg'); put('np-tb-tp', pretty(res.finishedKG) + ' kg');
     put('np-waste', res.wastePercent.toFixed(2)); put('np-waste-sub', `Nếu không thu hồi: ${res.wasteFullPercent.toFixed(2)} % · tổng cả trình cắt · đã thử ${full.tried} cách xếp`);
@@ -2186,13 +2432,7 @@ export function mount(root, ctx = {}) {
     const lr = res.lastFree.find(f => f.side === 'right'), lb = res.lastFree.find(f => f.side === 'bottom');
     put('np-remnant-sub', (nRem ? rems.map(g => `${pretty(g.remnant.w)}×${pretty(g.remnant.h)}${g.n > 1 ? ` (×${g.n})` : ''}`).slice(0, 3).join('; ') + (rems.length > 3 ? '…' : '') + ' · ' : '')
       + `Tờ cuối dư phải ${lr ? pretty(lr.w) + '×' + pretty(lr.h) : '0'}, dư dưới ${lb ? pretty(lb.w) + '×' + pretty(lb.h) : '0'}`);
-    $('np-list-body').innerHTML = res.types.map(T => {
-      const made = res.groups.reduce((s, g) => s + g.counts[T.t] * g.n, 0);
-      const tp = T.ring ? `Ø${pretty(T.tpW)} / Ø${pretty(T.tpIn)}` : T.circle ? 'D' + pretty(T.tpW) : pretty(T.tpW) + ' × ' + pretty(T.tpH);
-      return `<tr><td>${T.t + 1}</td><td>${chip(T)} ${esc(T.name)}${T.noRotate ? ' <small>(không xoay)</small>' : ''}</td>
-       <td class="num">${tp}</td><td class="num">${sizeText(T)}</td>
-       <td class="num">${pretty(T.qty)}</td><td class="num ${made === T.qty ? 'ok' : ''}">${pretty(made)}${made === T.qty ? ' ✓' : ''}</td><td class="num">${T.inHoles ? pretty(T.inHoles) : ''}</td></tr>`;
-    }).join('') + `<tr class="np-total"><td colspan="4">TỔNG</td><td class="num">${pretty(res.pieces)}</td><td class="num">${pretty(res.pieces)}</td><td class="num">${pretty(res.types.reduce((s, T) => s + T.inHoles, 0)) || ''}</td></tr>`;
+    renderPartTable(res);
     put('np-list-count', `${res.types.length} loại · ${pretty(res.pieces)} chi tiết · tính ${(res.ms / 1000).toFixed(1)} s`);
     $('np-list').hidden = false; exportsOff(false);
     put('np-error', ''); status('');
@@ -2223,6 +2463,7 @@ export function mount(root, ctx = {}) {
     if (!e.target.matches('input[name]')) return;
     collect();
     if (INFO.includes(e.target.name)) return;                     // khung tên không ảnh hưởng phương án
+    if (e.target.name === 'squareCap') { st.squareCaps[st.cutMethod] = e.target.value; savedState = structuredClone(st); baremStatus(); if (last) renderPartTable(last); return; }
     schedule();
   });
   on(root, 'change', e => {
@@ -2258,10 +2499,36 @@ export function mount(root, ctx = {}) {
       st.thick[st.cutMethod] = st.thickness; st.gaps[st.cutMethod] = st.gap; st.margins[st.cutMethod] = st.margin;
       st.cutMethod = cut.dataset.cut;
       st.thickness = st.thick[st.cutMethod]; st.gap = st.gaps[st.cutMethod]; st.margin = st.margins[st.cutMethod];
-      savedState = structuredClone(st); syncUI(); schedule(); return;
+      savedState = structuredClone(st); syncUI(); baremStatus(); schedule(); return;
     }
     const mat = e.target.closest('[data-mat]');
     if (mat && catalog) { st.material = Number(mat.dataset.mat); st.density = String(catalog[st.material].density); savedState = structuredClone(st); syncUI(); schedule(); }
+  });
+  on($('np-missing'), 'click', e => {
+    if (!last) return;
+    const lines = missingLines(last);
+    if (!lines.length) return;
+    if (e.target.closest('#np-miss-add')) {
+      st.barem = (st.barem.trim() ? st.barem.replace(/\s*$/, '\n') : '') + lines.join('\n');
+      $('np-barem').value = st.barem; savedState = structuredClone(st);
+      root.querySelector('details.np-barem').open = true;
+      baremStatus(); renderPartTable(last);
+      ctx.showToast?.(`Đã thêm ${lines.length} kích thước vào bảng hao phí tiêu chuẩn.`);
+    } else if (e.target.closest('#np-miss-copy')) {
+      navigator.clipboard?.writeText(lines.join('\n')).then(() => ctx.showToast?.('Đã sao chép – dán vào bảng hao phí trên Google Sheets.'), () => {});
+    }
+  });
+  on(root, 'click', e => {
+    const src = e.target.closest('[data-stdsrc]');
+    if (src) { st.stdSource = src.dataset.stdsrc; savedState = structuredClone(st); baremStatus(); if (last) renderPartTable(last); return; }
+    if (e.target.closest('#np-std-copy') && last) {
+      const lines = stdLines(last, false);
+      navigator.clipboard?.writeText(['Kích thước\tHao phí', ...lines].join('\n')).then(() => ctx.showToast?.(`Đã sao chép ${lines.length} dòng hao phí tiêu chuẩn.`), () => {});
+    }
+  });
+  on($('np-barem'), 'input', () => {
+    st.barem = $('np-barem').value; savedState = structuredClone(st);
+    baremStatus(); if (last) renderPartTable(last);
   });
   on($('np-add'), 'click', () => {
     collect();
@@ -2299,27 +2566,68 @@ export function mount(root, ctx = {}) {
   });
   on($('np-csv'), 'click', () => {
     if (!last) return;
-    const q = v => `"${String(v).replaceAll('"', '""')}"`, res = last, rows = [];
-    rows.push([q('Dự án'), q(st.info.project), q('Số bản vẽ'), q(st.info.drawingNo), q('Vật liệu'), q(matName()), q('Dày (mm)'), res.input.thickness,
-      q('Phương pháp'), q(res.input.cutMethod === 'shear' ? 'Chặt sấn' : 'Laser / Plasma'), q('Mạch cắt'), res.input.gap, q('Chừa mép'), res.input.margin].join(','));
-    rows.push('');
-    rows.push([q('Phương án'), q(`${planIdx + 1}. ${res.label}`)].join(','));
-    rows.push(['Kiểu tờ', 'Tờ số', 'Số tờ', 'Khổ (mm)', 'Nguồn phôi', 'Mã lô / seri', ...res.types.map(T => `${T.t + 1}. ${T.name}`), 'Dùng (%)', 'Dư phải (mm)', 'Dư dưới (mm)', `Tấm lẻ thu hồi ≥ ${res.input.remnantMin} (mm)`, 'Cách xếp'].map(q).join(','));
-    const fr = (g, side) => { const f = g.freeStrips.find(x => x.side === side); return f ? `${f.w} x ${f.h}` : '0'; };
-    res.groups.forEach((g, gi) => rows.push([gi + 1, sheetRange(res, gi), g.n, `${g.W} x ${g.H}`, g.remnantStock ? 'Tấm lẻ kho' : 'Khổ chuẩn', g.lot,
-      ...res.types.map(T => g.counts[T.t]), g.usedPercent.toFixed(1), fr(g, 'right'), fr(g, 'bottom'), g.remnant ? `${g.remnant.w} x ${g.remnant.h}` : '', strategyText(g.strategy)].map(q).join(',')));
-    rows.push('');
-    rows.push([q('Tổng số tờ'), res.totalSheets, q('Cận dưới'), res.lowerBound ?? ''].join(','));
-    rows.push([q('Xuất kho (kg)'), res.issuedKG.toFixed(2), q('Tấm lẻ thu hồi (kg)'), res.recoveredKG.toFixed(2), q('Thành phẩm (kg)'), res.finishedKG.toFixed(2)].join(','));
-    rows.push([q('Hao phí / TP (%)'), res.wastePercent.toFixed(2), q('Nếu không thu hồi (%)'), res.wasteFullPercent.toFixed(2), q('Ngưỡng thu hồi (mm)'), res.input.remnantMin].join(','));
-    rows.push('');
-    rows.push(['Các phương án đã thử', 'Số tờ', 'Xuất kho (kg)', 'Thu hồi (kg)', 'Hao phí / TP (%)', 'Số kiểu tờ', 'Đang xem'].map(q).join(','));
-    full.plans.forEach((p, k) => rows.push([`${k + 1}. ${p.label}`, p.totalSheets, p.issuedKG.toFixed(2), p.recoveredKG.toFixed(2), p.wastePercent.toFixed(2), p.kinds, k === planIdx ? 'X' : ''].map(q).join(',')));
-    rows.push('');
-    rows.push(['Kiểu tờ', 'STT', 'NO', 'Mã chi tiết', 'Hình', 'X (mm)', 'Y (mm)', 'Dài cắt (mm)', 'Rộng cắt (mm)', 'Ø lỗ (mm)', 'Xoay 90°'].map(q).join(','));
-    res.groups.forEach((g, gi) => g.items.forEach((p, k) => rows.push([gi + 1, k + 1, p.t + 1, res.types[p.t].name, p.ring ? 'Vành khuyên' : p.circle ? 'Tròn' : 'Chữ nhật', p.x, p.y, p.w, p.h, p.ring ? p.hole : '', p.rot ? 'Có' : ''].map(q).join(','))));
-    downloadBlob?.(new Blob(['\ufeff' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' }), `${fileTag()}.csv`);
-    ctx.showToast?.('Đã tạo bảng cắt CSV.');
+    const res = last, alloc = allocateWaste(res, stdOf(res)), i = res.input, kgOf = a => a * i.thickness * i.density / 1e9;
+    const head = arr => arr.map(v => ({ v, s: 'head' }));
+    const r2 = v => v == null ? '' : { v: Math.round(v * 100) / 100, s: 'dec' }, pc = v => v == null ? '' : { v: Math.round(v * 100) / 100, s: 'pct' };
+    const title = `${matName()} ${i.thickness} mm – ${i.cutMethod === 'shear' ? 'chặt sấn' : 'laser / plasma'}`;
+    const shapeOf = T => T.ring ? 'Vành khuyên' : T.circle ? 'Tròn' : 'Chữ nhật';
+    const tpOf = T => T.ring ? `Ø${T.tpW} / Ø${T.tpIn}` : T.circle ? `D${T.tpW}` : `${T.tpW} x ${T.tpH}`;
+    const cutOf = T => T.ring ? `Ø${T.cw} / Ø${T.hole}` : T.circle ? `D${T.cw}` : `${T.cw} x ${T.ch}`;
+    // 1. danh sách chi tiết + hao phí tiêu chuẩn / thực tế
+    const s1 = [[{ v: `THÔNG TIN CẮT – ${title}`, s: 'title' }], [{ v: `${st.info.project ? 'Dự án: ' + st.info.project + ' · ' : ''}Phương án: ${res.label} · HP THỰC TẾ dùng cho bóc tách, chi phí và thống kê; HP tiêu chuẩn chỉ để tham chiếu (kiểm soát, báo giá) · HP thực tế = HP tiêu chuẩn × K, với K = (xuất kho − thu hồi − Σ TP) / Σ (TP × HP tiêu chuẩn) = ${alloc.K == null ? '—' : alloc.K.toFixed(4)}`, s: 'note' }],
+      head(['NO', 'Mã chi tiết', 'Hình dạng', 'Thành phẩm (mm)', 'Kích thước cắt (mm)', 'Số lượng', 'KL TP / chiếc (kg)', 'KL TP (kg)']).concat(
+        ['HP tiêu chuẩn – tham chiếu (%)', 'KL xuất theo tiêu chuẩn (kg)', 'Hệ số K'].map(v => ({ v, s: 'head' })),
+        ['HP THỰC TẾ (%)', 'KL XUẤT THỰC TẾ (kg)'].map(v => ({ v, s: 'hlhead' })), [{ v: 'Chênh lệch (kg)', s: 'head' }, { v: 'Ghi chú', s: 'head' }])];
+    let sTP = 0, sStd = 0, sAct = 0, stdAll = true;
+    res.types.forEach((T, k) => {
+      const a = alloc[k]; sTP += a.tpKG; sAct += a.issuedKG; sStd += a.stdIssuedKG;
+      s1.push([{ v: T.t + 1, s: 'int' }, T.name, shapeOf(T), tpOf(T), cutOf(T), { v: T.qty, s: 'int' }, r2(kgOf(T.tpArea)), r2(a.tpKG),
+        a.std == null ? '' : { v: Math.round(a.std * 100) / 100, s: 'ref' }, r2(a.stdIssuedKG), alloc.K == null ? '' : { v: Math.round(alloc.K * 10000) / 10000, s: 'dec' },
+        { v: Math.round(a.actual * 100) / 100, s: 'hlpct' }, { v: Math.round(a.issuedKG * 100) / 100, s: 'hldec' },
+        a.stdIssuedKG == null ? '' : r2(a.issuedKG - a.stdIssuedKG),
+        [a.source === 'new' ? `HP tiêu chuẩn TÍNH MỚI (1 chi tiết / tờ ${T.barem.W}×${T.barem.H}: ${T.barem.n} chiếc / tờ) – cần bổ sung vào bảng`
+          : a.source === 'auto' ? `HP tiêu chuẩn máy tính: 1 chi tiết / tờ ${T.barem.W}×${T.barem.H}, ${T.barem.n} chiếc / tờ`
+          : a.source === 'none' ? 'Không lọt tờ khổ chuẩn – tạm dùng hao phí chung, cần nhập tay' : 'HP tiêu chuẩn theo bảng công ty',
+         a.capped ? `khổ vuông: giới hạn ${capOf()} %` : '',
+         T.inHoles ? `${T.inHoles} chiếc chèn trong lỗ vành` : ''].filter(Boolean).join('; ')]);
+    });
+    s1.push([{ v: '', s: 'bold' }, { v: 'TỔNG', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: res.pieces, s: 'boldint' }, { v: '', s: 'bold' },
+      { v: Math.round(sTP * 100) / 100, s: 'bolddec' }, { v: '', s: 'bold' }, stdAll ? { v: Math.round(sStd * 100) / 100, s: 'bolddec' } : { v: '', s: 'bold' },
+      alloc.K == null ? { v: '', s: 'bold' } : { v: Math.round(alloc.K * 10000) / 10000, s: 'bolddec' }, { v: Math.round(res.wastePercent * 100) / 100, s: 'hlpct' }, { v: Math.round(sAct * 100) / 100, s: 'hldec' }, stdAll ? { v: Math.round((sAct - sStd) * 100) / 100, s: 'bolddec' } : { v: '', s: 'bold' }, { v: '', s: 'bold' }]);
+    // 2. sơ đồ từng tờ
+    const s2 = [[{ v: `SƠ ĐỒ CẮT TỪNG TỜ – ${title}`, s: 'title' }], [{ v: `Mạch cắt ${i.gap} mm · chừa mép ${i.margin} mm · thu hồi tấm lẻ khi cạnh ngắn ≥ ${i.remnantMin} mm`, s: 'note' }],
+      head(['Kiểu tờ', 'Tờ số', 'Số tờ', 'Khổ (mm)', 'Nguồn phôi', 'Mã lô / seri', ...res.types.map(T => `${T.t + 1}. ${T.name}`), 'Sử dụng (tấm / tờ)', 'Sử dụng cả nhóm (tấm)', 'Lấp đầy (%)', 'Hao phí tờ (%)', 'Dư phải (mm)', 'Dư dưới (mm)', 'Tấm lẻ thu hồi (mm)'])];
+    const fr = (g, side) => { const f = g.freeStrips.find(x => x.side === side); return f ? `${Math.round(f.w * 10) / 10} x ${Math.round(f.h * 10) / 10}` : '0'; };
+    res.groups.forEach((g, gi) => s2.push([{ v: gi + 1, s: 'int' }, sheetRange(res, gi), { v: g.n, s: 'int' }, `${g.W} x ${g.H}`, g.remnantStock ? 'Tấm lẻ kho' : 'Khổ chuẩn', g.lot || '',
+      ...res.types.map(T => ({ v: g.counts[T.t], s: 'int' })), { v: Math.round(sheetUse(g) * 1000) / 1000, s: 'dec3' }, { v: Math.round(g.n * sheetUse(g) * 1000) / 1000, s: 'dec3' }, pc(g.usedPercent), pc(g.wastePercent), fr(g, 'right'), fr(g, 'bottom'), g.remnant ? `${g.remnant.w} x ${g.remnant.h}` : '']));
+    // 3. toạ độ
+    const s3 = [[{ v: 'TOẠ ĐỘ CHI TIẾT (gốc: góc trên-trái tờ, mm)', s: 'title' }], [],
+      head(['Kiểu tờ', 'STT', 'NO', 'Mã chi tiết', 'Hình dạng', 'X (mm)', 'Y (mm)', 'Dài cắt (mm)', 'Rộng cắt (mm)', 'Ø lỗ (mm)', 'Xoay 90°'])];
+    res.groups.forEach((g, gi) => g.items.forEach((p, k) => s3.push([{ v: gi + 1, s: 'int' }, { v: k + 1, s: 'int' }, { v: p.t + 1, s: 'int' }, res.types[p.t].name,
+      p.ring ? 'Vành khuyên' : p.circle ? 'Tròn' : 'Chữ nhật', r2(p.x), r2(p.y), r2(p.w), r2(p.h), p.ring ? r2(p.hole) : '', p.rot ? 'Có' : ''])));
+    // 4. tổng hợp
+    const s4 = [[{ v: `TỔNG HỢP ĐỊNH MỨC – ${title}`, s: 'title' }], [], head(['Hạng mục', 'Giá trị', 'Ghi chú']),
+      ['Dự án', st.info.project || '', ''], ['Số bản vẽ', st.info.drawingNo || '', ''], ['Vật liệu', matName(), `${i.density} kg/m³`],
+      ['Chiều dày', { v: i.thickness, s: 'dec' }, 'mm'], ['Phương pháp cắt', i.cutMethod === 'shear' ? 'Chặt sấn' : 'Laser / Plasma', `mạch cắt ${i.gap} mm · chừa mép ${i.margin} mm`],
+      ['Phương án', res.label, ''], ['Số tờ xuất', { v: res.totalSheets, s: 'int' }, [...new Set(res.groups.map(g => `${g.W}×${g.H}`))].join(', ')],
+      ['Xuất kho quy đổi (sử dụng)', useBySize(res), 'tấm · có thu hồi thì = 1 − tấm lẻ / tờ'],
+      ['Khối lượng xuất kho', r2(res.issuedKG), 'kg'], ['Tấm lẻ thu hồi', r2(res.recoveredKG), `kg · ngưỡng ≥ ${i.remnantMin} mm`],
+      ['Thép thực tiêu hao', r2(res.issuedKG - res.recoveredKG), 'kg'], ['Khối lượng thành phẩm', r2(res.finishedKG), 'kg (phủ bì, vành khuyên trừ lỗ)'],
+      ['HAO PHÍ CHUNG / TP', pc(res.wastePercent), '(xuất − thu hồi − TP) / TP'], ['Hao phí nếu không thu hồi', pc(res.wasteFullPercent), ''],
+      ['Số tờ tối thiểu', res.lowerBound == null ? '' : res.proven ? 'Đã chứng minh' : `Cận dưới ${res.lowerBound} tờ`, ''],
+      ['Nguồn HP tiêu chuẩn', st.stdSource === 'table' ? `Bảng công ty (${barem().map.size} kích thước)` : 'Máy tự tính (1 chi tiết / tờ khổ chuẩn)',
+        st.stdSource === 'table' ? `${alloc.filter(a => a.source === 'table').length}/${res.types.length} chi tiết có trong bảng` : 'tham chiếu cho kiểm soát và báo giá'],
+      ['Trần HP khổ vuông', capOf() == null ? 'không áp dụng' : { v: capOf(), s: 'pct' }, `${i.cutMethod === 'shear' ? 'chặt sấn' : 'laser / plasma'} · chỉ áp cho HP máy tính · ${alloc.filter(a => a.capped).length} chi tiết bị giới hạn`],
+      ['Hệ số K', alloc.K == null ? '' : { v: Math.round(alloc.K * 10000) / 10000, s: 'dec' }, 'HP thực tế = HP tiêu chuẩn × K; Σ TP × (1 + HP thực tế) = xuất kho − thu hồi'],
+      [], [{ v: `Ngày lập: ${stamp()}${st.info.drawnBy ? ' · Người lập: ' + st.info.drawnBy : ''} · Epsilon Lab`, s: 'note' }]];
+    const book = xlsxBook([
+      { name: 'Danh sách chi tiết', cols: [6, 22, 12, 16, 16, 9, 12, 12, 13, 15, 10, 13, 15, 13, 30], rows: s1, freeze: 3 },
+      { name: 'Sơ đồ từng tờ', cols: [8, 10, 8, 14, 12, 14, ...res.types.map(() => 11), 12, 13, 10, 12, 16, 16, 18], rows: s2, freeze: 3 },
+      { name: 'Toạ độ', cols: [8, 7, 6, 22, 12, 11, 11, 12, 12, 10, 9], rows: s3, freeze: 3 },
+      { name: 'Tổng hợp', cols: [28, 24, 44], rows: s4 },
+    ]);
+    downloadBlob?.(new Blob([book], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `${fileTag()}_thong_tin_cat.xlsx`);
+    ctx.showToast?.('Đã tạo file Excel thông tin cắt.');
   });
   async function loadCatalog() {
     const sel = $('np-mat-list'), warn = $('np-warn');
@@ -2339,6 +2647,6 @@ export function mount(root, ctx = {}) {
       console.warn('Nesting PRO catalog:', err);
     }
   }
-  renderParts(); syncUI(); compute(); void loadCatalog();
+  renderParts(); syncUI(); baremStatus(); compute(); void loadCatalog();
   return () => { disposed = true; clearTimeout(timer); serial++; worker?.terminate(); worker = null; };
 }
