@@ -21,7 +21,7 @@ const LIMIT = 1e6, EPS = 1e-7;
 const MAX_TYPES = 200, MAX_PIECES = 20000, MAX_SHEETS = 5000;
 const DEFAULTS = Object.freeze({
   remnantMin: 200,
-  longStripMin: 300,        // chặt sấn: tấm lẻ dải dọc chiều dài tờ (2440 × h) chỉ thu hồi khi h ≥ 300 mm
+  longStripMin: 300,        // chặt sấn: ƯU TIÊN dải dài 2440 × h khi h ≥ 300 mm (chỉ để chọn phương án, không phải ngưỡng thu hồi)
   dpCostFull: 6e7,          // khối lượng phép tính tối đa cho bảng quy hoạch động đầy đủ / 1 loại
   dpCostPure: 3e8,          // khi vượt -> bảng thu gọn (chỉ bội số thuần)
   pinwheelMsTotal: 2000,    // thời gian tìm kiểu xoay vòng cho các tờ một loại (chia đều các loại)
@@ -854,7 +854,8 @@ function packSheet(C, rem, region, { mode = 'area', needAll = false, full = true
     <= region.w * region.h - C.types.reduce((s2, T) => s2 + c.counts[T.t] * T.lbArea, 0) + 1e-6;
   // dồn tờ cuối: còn thiếu quá nhiều chiếc thì vùng đang thử chắc chắn chật -> không tốn công chèn khe
   if (!C.shear && pool.length && sum(pool[0].counts) < total && roomOK(pool[0]) && (!needAll || total - sum(pool[0].counts) <= 30)) {
-    const top = pool.slice(0, needAll ? 1 : 2).map(c => withRegion(C, region, () => gapFill(C, c, rem, needAll ? 1.5e5 : 6e5)));
+    const top = pool.slice(0, needAll || total > 150 ? 1 : 2)   // đơn nhiều chiếc: chỉ chèn khe cho ứng viên tốt nhất (nhanh)
+      .map(c => withRegion(C, region, () => gapFill(C, c, rem, needAll ? 1.5e5 : 6e5)));
     pool = [...top, ...pool.slice(top.length)].sort(rank);
   }
   if (needAll) pool = pool.filter(c => sum(c.counts) >= total);
@@ -954,15 +955,16 @@ function remnantOf(C, items, remnantMin) {
   const usedL = Math.min(C.W, ceil1(maxR + C.e)), usedH = Math.min(C.H, ceil1(maxB + C.e));
   const opts = [];
   const remL = r6(C.W - usedL), remH = r6(C.H - usedH);
-  // Dạng tấm lẻ đẹp (quy tắc xưởng):
-  //  • Dải NGANG tờ (cắt theo chiều dài, giữ nguyên bề rộng tờ, vd. L × 2000 / L × 1220): luôn được, cạnh ngắn ≥ ngưỡng thu hồi.
-  //  • Dải DỌC theo chiều dài tờ (giữ nguyên chiều dài, vd. 6000 × h / 2440 × h):
-  //      laser / plasma: KHÔNG thu hồi (tấm 6000 × 500 không dùng được – ưu tiên khổ 2 m);
-  //      chặt sấn: chỉ thu hồi khi h ≥ ranh giới dải dài (mặc định 300 mm); hẹp hơn thì ưu tiên cắt dải ngang (vd. 1220 × 400).
+  // 1) THU HỒI hay HAO PHÍ: dải dư có cạnh ngắn ≥ ngưỡng (mặc định 200, tùy chỉnh) là thu hồi – không phân biệt dọc hay ngang.
   if (Math.min(remL, C.H) >= remnantMin - EPS && remL > EPS) opts.push({ side: 'right', at: usedL, w: remL, h: C.H });
-  const longMin = C.shear ? Math.max(remnantMin, C.longStripMin ?? DEFAULTS.longStripMin) : Infinity;
-  if (Math.min(remH, C.W) >= longMin - EPS && remH > EPS) opts.push({ side: 'bottom', at: usedH, w: C.W, h: remH });
-  opts.sort((a, b) => b.w * b.h - a.w * a.h);
+  if (Math.min(remH, C.W) >= remnantMin - EPS && remH > EPS) opts.push({ side: 'bottom', at: usedH, w: C.W, h: remH });
+  // 2) ƯU TIÊN dạng tấm lẻ đẹp khi chọn phương án (chỉ để chọn, không đổi ngưỡng thu hồi):
+  //    laser / plasma: ưu tiên dải ngang giữ khổ rộng tờ (L × 2000), tránh dải dọc kiểu 6000 × 500;
+  //    chặt sấn: dải dài 2440 × h đẹp khi h ≥ 300 (tùy chỉnh); hẹp hơn thì ưu tiên dải ngang kiểu 1220 × 400.
+  const longMin = C.longStripMin ?? DEFAULTS.longStripMin;
+  const factor = o => C.shear ? (o.side === 'bottom' && o.h < longMin - EPS ? 0.5 : 1) : (o.side === 'right' ? 1 : 0.5);
+  for (const o of opts) o.score = o.w * o.h * factor(o);
+  opts.sort((a, b) => b.score - a.score);
   const free = [];
   if (C.W - maxR > EPS) free.push({ side: 'right', w: r6(C.W - maxR), h: C.H });
   if (C.H - maxB > EPS && maxR > EPS) free.push({ side: 'bottom', w: r6(maxR), h: r6(C.H - maxB) });
@@ -972,8 +974,8 @@ function remnantOf(C, items, remnantMin) {
 /** Dồn tờ cuối: tìm vùng ngắn nhất (theo dài hoặc theo rộng) vẫn xếp đủ chi tiết của tờ đó. */
 function compactLast(C, groups, remnantMin, mode) {
   const g = groups[groups.length - 1], need = g.sheet.counts.slice();
-  let best = { sheet: g.sheet, rem: remnantOf(C, g.sheet.items, remnantMin).remnant };
-  const area = best.rem ? best.rem.w * best.rem.h : 0;
+  let best = { sheet: g.sheet, rem: remnantOf(C, g.sheet.items, remnantMin).remnant };   // so theo điểm ưu tiên (score)
+  const area = best.rem ? best.rem.score : 0;
   let bestArea = area;
   const needArea = C.types.reduce((s, T) => s + need[T.t] * T.lbArea, 0);
   for (const axis of C.shear ? ['w', 'h'] : ['w']) {             // laser: chỉ dồn theo chiều dài (tấm lẻ giữ nguyên khổ rộng)
@@ -991,13 +993,13 @@ function compactLast(C, groups, remnantMin, mode) {
       return found;
     };
     const any = search(false), neat = any && /^free/.test(any.strategy) ? search(true) : null;
-    const remA = r => { const x = r && remnantOf(C, r.items, remnantMin).remnant; return x ? x.w * x.h : 0; };
+    const remA = r => { const x = r && remnantOf(C, r.items, remnantMin).remnant; return x ? x.score : 0; };
     // sơ đồ gọn thắng nếu tấm lẻ chỉ kém trong ngưỡng chấp nhận
     let found = any;
     if (neat && (!any || remA(neat) >= remA(any) - DEFAULTS.tidyTolerance * other - 1e-6)) found = neat;
     if (!found) continue;
     const r = remnantOf(C, found.items, remnantMin).remnant;
-    const a = r ? r.w * r.h : 0;
+    const a = r ? r.score : 0;
     const tidyNow = !/^free/.test(best.sheet.strategy), tidyNew = !/^free/.test(found.strategy);
     if (a > bestArea + 1e-6 && (tidyNew || !tidyNow || a > bestArea + DEFAULTS.tidyTolerance * other)) { best = { sheet: found, rem: r }; bestArea = a; }
     else if (tidyNew && !tidyNow && a >= bestArea - DEFAULTS.tidyTolerance * other - 1e-6) { best = { sheet: found, rem: r }; bestArea = a; }
@@ -2402,11 +2404,11 @@ export function mount(root, ctx = {}) {
      <button type="button" data-cut="laser">Laser / Plasma</button><button type="button" data-cut="shear">Chặt sấn</button></div>
      <p class="np-hint" id="np-cut-hint"></p></div>
     <div class="np-row three">${fld('thickness', 'Dày (mm)', st.thickness)}${fld('gap', 'Mạch cắt (mm)', st.gap, 'is-kerf')}${fld('margin', 'Chừa mép (mm)', st.margin, 'is-margin')}</div>
-    <label class="np-remnant-box"><span class="np-rb-text"><b>Ngưỡng thu hồi tấm lẻ</b><small>Dải dư có cạnh ngắn ≥ ngưỡng được thu hồi, nhỏ hơn tính vào hao phí</small></span>
+    <label class="np-remnant-box"><span class="np-rb-text"><b>Ngưỡng thu hồi tấm lẻ</b><small>Dải dư có cạnh ngắn ≥ ngưỡng được thu hồi (dọc hay ngang đều vậy), nhỏ hơn tính vào hao phí</small></span>
      <span class="np-rb-input"><input name="remnantMin" value="${esc(st.remnantMin)}" inputmode="decimal" autocomplete="off" aria-label="Ngưỡng thu hồi tấm lẻ (mm)"><small>mm</small></span></label>
     <div class="np-strip-rule" id="np-strip-rule">
-     <p class="np-hint" id="np-strip-laser">Laser / plasma: tấm lẻ luôn giữ nguyên khổ rộng tờ (cắt theo chiều dài, vd. 1800 × 2000); dải dọc chiều dài như 6000 × 500 không thu hồi.</p>
-     <label class="np-cap" id="np-strip-shear"><span>Chặt sấn: dải dài (2440 × h) thu hồi khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
+     <p class="np-hint" id="np-strip-laser">Laser / plasma: khi chọn phương án, ưu tiên tấm lẻ giữ nguyên khổ rộng tờ (vd. 1800 × 2000) thay vì dải dọc kiểu 6000 × 500. Dải nào ≥ ngưỡng vẫn thu hồi.</p>
+     <label class="np-cap" id="np-strip-shear" title="Chỉ để chọn phương án, không phải ngưỡng thu hồi"><span>Chặt sấn: ưu tiên dải dài 2440 × h khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
     </div>
     <div class="np-tol-box"><span class="np-rb-text"><b>Đề xuất khi "cận"</b><small>Tờ thực tế thường lớn hơn khổ danh nghĩa; chi tiết giảm 0,5 mm thường chấp nhận được. Nếu điều chỉnh nhỏ mà tiết kiệm rõ, máy đưa đề xuất để người dùng duyệt. 0 = tắt.</small></span>
      <span class="np-rb-input np-tol2"><label><small>Dài +</small><input name="lengthTol" value="${esc(st.lengthTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép tăng khổ dài (mm)"></label>
@@ -2547,7 +2549,7 @@ export function mount(root, ctx = {}) {
     return {
       cutMethod: st.cutMethod, density, stocks: stockList,
       thickness: parseNum(st.thickness, 'Dày', { positive: true }), gap: parseNum(st.gap, st.cutMethod === 'shear' ? 'Khe hở' : 'Mạch cắt'),
-      margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), longStripMin: parseNum(st.longStripMin || '0', 'Ranh giới dải dài'), widthTol: parseNum(st.widthTol || '0', 'Cho phép tăng khổ rộng'), lengthTol: parseNum(st.lengthTol || '0', 'Cho phép tăng khổ dài'), shrinkTol: parseNum(st.shrinkTol || '0', 'Cho phép giảm kích thước'), parts,
+      margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), longStripMin: parseNum(st.longStripMin || '0', 'Ưu tiên dải dài'), widthTol: parseNum(st.widthTol || '0', 'Cho phép tăng khổ rộng'), lengthTol: parseNum(st.lengthTol || '0', 'Cho phép tăng khổ dài'), shrinkTol: parseNum(st.shrinkTol || '0', 'Cho phép giảm kích thước'), parts,
     };
   }
   function status(msg = '', busy = false) {
