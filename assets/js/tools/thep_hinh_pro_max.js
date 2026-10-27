@@ -13,6 +13,7 @@
  *  - Bài toán vừa: duyệt toàn bộ → số cây tối thiểu ĐƯỢC CHỨNG MINH.
  *    Bài toán lớn: tính cận dưới chặt bằng quy hoạch tuyến tính; phương án bằng cận dưới
  *    là tối ưu đã chứng minh, nếu chưa bằng thì báo rõ còn cách cận dưới bao nhiêu cây.
+ *  - Xuất file: DXF sơ đồ trải phôi (sạch, không nét thừa) + Excel danh sách chi tiết cắt.
  * Bản quyền © Epsilon Lab.
  */
 const {setText, downloadBlob} = globalThis.EpsilonSoftShared || {};
@@ -624,6 +625,256 @@ function drawBars(res) {
   return svg;
 }
 
+/* ========================================================================= */
+/* XUẤT FILE: DXF SƠ ĐỒ TRẢI PHÔI + EXCEL DANH SÁCH CHI TIẾT CẮT              */
+/* DXF R12 (AutoCAD / mọi phần mềm CAD đọc được), tỷ lệ 1:1 mm theo chiều dài */
+/* cây. Bản vẽ SẠCH – không nét thừa:                                        */
+/*  - mỗi kiểu cắt: 1 khung cây (polyline kín) + 1 vạch tại mỗi nhát cưa      */
+/*    (đặt giữa mạch cưa), không vẽ chồng hình chữ nhật từng đoạn;           */
+/*  - chữ: tên + dài cắt trong từng đoạn, số cây bên trái, cây lẻ / dư cuối.  */
+/* ========================================================================= */
+const dxfNum = v => { const s = (Math.round(v * 1e4) / 1e4).toFixed(4).replace(/\.?0+$/, ''); return s === '-0' ? '0' : s; };
+/** Ký tự ngoài ASCII -> \U+XXXX (AutoCAD hiểu trong mọi phiên bản). */
+const dxfText = s => String(s ?? '').replace(/[\r\n]+/g, ' ').replace(/[^\x20-\x7e]/g, c => '\\U+' + c.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0'));
+function dxfWriter(layers) {
+  const out = [], mn = [Infinity, Infinity], mx = [-Infinity, -Infinity];
+  const g = (c, v) => out.push(String(c), String(v));
+  const ext = (x, y) => { mn[0] = Math.min(mn[0], x); mn[1] = Math.min(mn[1], y); mx[0] = Math.max(mx[0], x); mx[1] = Math.max(mx[1], y); };
+  return {
+    line(l, x1, y1, x2, y2) { g(0, 'LINE'); g(8, l); g(10, dxfNum(x1)); g(20, dxfNum(y1)); g(30, 0); g(11, dxfNum(x2)); g(21, dxfNum(y2)); g(31, 0); ext(x1, y1); ext(x2, y2); },
+    rect(l, x, y, w, h) {
+      g(0, 'POLYLINE'); g(8, l); g(66, 1); g(10, 0); g(20, 0); g(30, 0); g(70, 1);
+      for (const [px, py] of [[x, y], [x + w, y], [x + w, y + h], [x, y + h]]) { g(0, 'VERTEX'); g(8, l); g(10, dxfNum(px)); g(20, dxfNum(py)); g(30, 0); ext(px, py); }
+      g(0, 'SEQEND'); g(8, l);
+    },
+    /** align: 'l' trái | 'c' giữa | 'r' phải (căn giữa theo chiều cao) */
+    text(l, x, y, h, s, align = 'l') {
+      g(0, 'TEXT'); g(8, l); g(10, dxfNum(x)); g(20, dxfNum(y)); g(30, 0); g(40, dxfNum(h)); g(1, dxfText(s));
+      if (align !== 'l') { g(72, align === 'c' ? 1 : 2); g(11, dxfNum(x)); g(21, dxfNum(y)); g(31, 0); g(73, 2); }
+      ext(x, y); ext(x + (align === 'l' ? 1 : 0) * h * String(s).length * 0.7, y + h);
+    },
+    toString() {
+      const h = [], p = (c, v) => h.push(String(c), String(v));
+      p(0, 'SECTION'); p(2, 'HEADER'); p(9, '$ACADVER'); p(1, 'AC1009'); p(9, '$INSBASE'); p(10, 0); p(20, 0); p(30, 0);
+      p(9, '$EXTMIN'); p(10, dxfNum(mn[0])); p(20, dxfNum(mn[1])); p(30, 0); p(9, '$EXTMAX'); p(10, dxfNum(mx[0])); p(20, dxfNum(mx[1])); p(30, 0); p(0, 'ENDSEC');
+      p(0, 'SECTION'); p(2, 'TABLES');
+      p(0, 'TABLE'); p(2, 'LTYPE'); p(70, 1); p(0, 'LTYPE'); p(2, 'CONTINUOUS'); p(70, 0); p(3, 'Solid line'); p(72, 65); p(73, 0); p(40, 0); p(0, 'ENDTAB');
+      p(0, 'TABLE'); p(2, 'LAYER'); p(70, layers.length);
+      for (const [name, color] of layers) { p(0, 'LAYER'); p(2, name); p(70, 0); p(62, color); p(6, 'CONTINUOUS'); }
+      p(0, 'ENDTAB');
+      p(0, 'TABLE'); p(2, 'STYLE'); p(70, 1); p(0, 'STYLE'); p(2, 'STANDARD'); p(70, 0); p(40, 0); p(41, 1); p(50, 0); p(71, 0); p(42, 2.5); p(3, 'txt'); p(4, ''); p(0, 'ENDTAB');
+      p(0, 'ENDSEC'); p(0, 'SECTION'); p(2, 'ENTITIES');
+      return h.concat(out, ['0', 'ENDSEC', '0', 'EOF']).join('\r\n') + '\r\n';
+    },
+  };
+}
+/** Toạ độ từng đoạn trên một cây: [{k, x0, x1}] (x0..x1 = đoạn cắt), các vị trí nhát cưa, phần dư. */
+function barLayout(res, b) {
+  const { trim, kerf, stockL } = res.input, segs = [], cuts = [];
+  let x = trim;
+  if (trim > 0) cuts.push(trim);                                      // nhát cắt bỏ đầu cây
+  for (const k of b.pieces) {
+    const x1 = x + res.cutL[k];
+    segs.push({ k, x0: x, x1 });
+    if (x1 + kerf / 2 < stockL - 1e-6) cuts.push(x1 + kerf / 2);       // nhát cưa đặt giữa mạch cưa
+    x = x1 + kerf;
+  }
+  return { segs, cuts, restFrom: Math.min(stockL, x), rest: b.leftover };
+}
+/**
+ * DXF sơ đồ trải phôi. meta: { spec, project, drawnBy, date, planLabel }.
+ * Layer: CAY (khung cây), NHAT_CAT (vạch cưa), CHI_TIET (tên + dài đoạn), CAY_LE (cây lẻ / dư), KHUNG_TEN (tiêu đề, số cây).
+ */
+export function barsDXF(res, meta = {}) {
+  const d = dxfWriter([['CAY', 7], ['NHAT_CAT', 1], ['CHI_TIET', 3], ['CAY_LE', 30], ['KHUNG_TEN', 2]]);
+  const L = res.input.stockL, band = Math.max(120, Math.round(L / 60));   // bề cao dải biểu diễn một cây
+  const th = Math.round(band * 0.28), gap = Math.round(band * 1.1);
+  // tiêu đề
+  let y = 0;
+  d.text('KHUNG_TEN', 0, y + 2.6 * th, th * 1.4, `SƠ ĐỒ TRẢI PHÔI THÉP HÌNH ${meta.spec || ''} – CÂY ${L} mm`.replace(/\s+/g, ' '));
+  d.text('KHUNG_TEN', 0, y + 0.6 * th, th * 0.9,
+    `${res.totalBars} cây · ${res.groups.length} kiểu cắt · mạch cưa ${res.input.kerf} mm · cắt đầu cây ${res.input.trim} mm · ` +
+    `xuất ${res.issuedKG.toFixed(1)} kg · thu hồi ${res.recoveredKG.toFixed(1)} kg · hao phí / TP ${res.wastePercent.toFixed(2)} %` +
+    (meta.planLabel ? ` · ${meta.planLabel}` : ''));
+  y -= gap;
+  let first = 1;
+  res.groups.forEach((b, gi) => {
+    const top = y, bot = y - band, last = first + b.n - 1;
+    // số cây bên trái
+    d.text('KHUNG_TEN', -th * 0.8, bot + band / 2 + th * 0.55, th, `KIỂU ${gi + 1}`, 'r');
+    d.text('KHUNG_TEN', -th * 0.8, bot + band / 2 - th * 0.75, th * 0.85, `${b.n} cây (${first === last ? 'cây ' + first : 'cây ' + first + '–' + last})`, 'r');
+    // khung cây + vạch cưa
+    d.rect('CAY', 0, bot, L, band);
+    const lay = barLayout(res, b);
+    for (const x of lay.cuts) d.line('NHAT_CAT', x, bot, x, top);
+    // tên + dài cắt trong từng đoạn (thu nhỏ chữ cho đoạn ngắn, không vượt khỏi đoạn)
+    for (const s of lay.segs) {
+      const p = res.parts[s.k], len = s.x1 - s.x0, cx = (s.x0 + s.x1) / 2;
+      const name = String(p.name || ''), num = String(res.cutL[s.k]);
+      const h1 = Math.min(th, len / (Math.max(name.length, num.length) * 0.8 + 0.6));
+      if (h1 >= 8) {
+        if (name) d.text('CHI_TIET', cx, bot + band * 0.66, h1, name, 'c');
+        d.text('CHI_TIET', cx, bot + band * (name ? 0.3 : 0.5), h1, num, 'c');
+      } else {
+        const h2 = Math.min(th, len / (num.length * 0.8 + 0.4));
+        if (h2 >= 5) d.text('CHI_TIET', cx, bot + band * 0.5, h2, num, 'c');
+      }
+    }
+    // phần dư cuối cây
+    if (lay.rest > 0) {
+      const cx = L - lay.rest / 2, label = `${b.recovered ? 'CÂY LẺ' : 'DƯ'} ${lay.rest}`;
+      const h = Math.min(th, lay.rest / (label.length * 0.8 + 0.6));
+      if (h >= 6) d.text('CAY_LE', cx, bot + band * 0.5, h, label, 'c');
+      else if (lay.rest >= 1) d.text('CAY_LE', L + th * 0.5, bot + band * 0.5, th * 0.8, label);
+    }
+    y = bot - gap;
+    first = last + 1;
+  });
+  // chú thích cuối bản vẽ
+  d.text('KHUNG_TEN', 0, y + gap - band * 0.2 - th * 1.2, th * 0.8,
+    `${meta.project ? 'Dự án: ' + meta.project + ' · ' : ''}${meta.drawnBy ? 'Người lập: ' + meta.drawnBy + ' · ' : ''}Ngày lập: ${meta.date || ''} · Epsilon Lab`);
+  return d.toString();
+}
+
+/* ---------- ZIP không nén + XLSX tối thiểu (Excel, LibreOffice, Google Sheets đều mở được) ---------- */
+const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = b => { let c = 0xffffffff; for (let i = 0; i < b.length; i++) c = CRC_TABLE[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+function zipFiles(files) {
+  const enc = new TextEncoder(), chunks = [], central = [];
+  let offset = 0;
+  const u16 = v => [v & 255, (v >>> 8) & 255], u32 = v => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
+  for (const f of files) {
+    const name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : f.data, crc = crc32(data);
+    const local = Uint8Array.from([...u32(0x04034b50), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)]);
+    chunks.push(local, name, data);
+    central.push(Uint8Array.from([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(offset)]), name);
+    offset += local.length + name.length + data.length;
+  }
+  const cdSize = central.reduce((s, c) => s + c.length, 0);
+  const end = Uint8Array.from([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cdSize), ...u32(offset), ...u16(0)]);
+  const all = [...chunks, ...central, end], out = new Uint8Array(all.reduce((s, c) => s + c.length, 0));
+  let p = 0; for (const c of all) { out.set(c, p); p += c.length; }
+  return out;
+}
+const xmlEsc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '');
+const colName = n => { let s = ''; for (n++; n > 0; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + (n - 1) % 26) + s; return s; };
+/**
+ * sheets: [{ name, cols: [độ rộng], rows: [[ô…]] }]; ô = chuỗi | số | { v, s } với s: 'title' | 'head' | 'int' | 'dec' | 'pct' | 'bold' | 'note'.
+ */
+function xlsxBook(sheets) {
+  const ST = { text: 1, title: 2, head: 3, int: 4, dec: 5, pct: 6, bold: 7, note: 8, boldint: 9, bolddec: 10 };
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="2"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="0.00&quot; %&quot;"/></numFmts>
+<fonts count="4"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="11"/><name val="Arial"/></font><font><b/><sz val="14"/><color rgb="FF4A1FA8"/><name val="Arial"/></font><font><i/><sz val="10"/><color rgb="FF6A6691"/><name val="Arial"/></font></fonts>
+<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEDE6FC"/><bgColor indexed="64"/></patternFill></fill></fills>
+<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFB9A8E6"/></left><right style="thin"><color rgb="FFB9A8E6"/></right><top style="thin"><color rgb="FFB9A8E6"/></top><bottom style="thin"><color rgb="FFB9A8E6"/></bottom><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="11">
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+<xf numFmtId="3" fontId="1" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="1" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>
+</cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+  const sheetXml = sh => {
+    const rows = sh.rows.map((row, r) => `<row r="${r + 1}">${row.map((cell, c) => {
+      if (cell == null || cell === '') return '';
+      const o = typeof cell === 'object' ? cell : { v: cell };
+      const ref = colName(c) + (r + 1);
+      if (typeof o.v === 'number' && Number.isFinite(o.v)) return `<c r="${ref}" s="${ST[o.s || 'dec']}"><v>${o.v}</v></c>`;
+      return `<c r="${ref}" s="${ST[o.s || 'text']}" t="inlineStr"><is><t xml:space="preserve">${xmlEsc(o.v)}</t></is></c>`;
+    }).join('')}</row>`).join('');
+    const cols = sh.cols ? `<cols>${sh.cols.map((w, c) => `<col min="${c + 1}" max="${c + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : '';
+    const freeze = sh.freeze ? `<sheetViews><sheetView workbookViewId="0"><pane ySplit="${sh.freeze}" topLeftCell="A${sh.freeze + 1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>` : '';
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${freeze}${cols}<sheetData>${rows}</sheetData></worksheet>`;
+  };
+  const safe = n => String(n).replace(/[\\/?*[\]:]/g, ' ').slice(0, 31);
+  const files = [
+    { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_, k) => `<Override PartName="/xl/worksheets/sheet${k + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>` },
+    { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+    { name: 'xl/workbook.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s, k) => `<sheet name="${xmlEsc(safe(s.name))}" sheetId="${k + 1}" r:id="rId${k + 1}"/>`).join('')}</sheets></workbook>` },
+    { name: 'xl/_rels/workbook.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_, k) => `<Relationship Id="rId${k + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${k + 1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+    { name: 'xl/styles.xml', data: styles },
+    ...sheets.map((s, k) => ({ name: `xl/worksheets/sheet${k + 1}.xml`, data: sheetXml(s) })),
+  ];
+  return zipFiles(files);
+}
+/**
+ * Excel danh sách chi tiết cắt – 3 sheet:
+ *  1. Danh sách cắt: từng chi tiết (kể cả đoạn nối A/B), dài TP, dư, dài cắt, số lượng, tổng dài, KL.
+ *  2. Sơ đồ cắt: từng kiểu cắt, số cây, cây số, thứ tự các đoạn, phần dư, thu hồi / phế.
+ *  3. Tổng hợp: thông số, định mức xuất kho, thu hồi, hao phí, đoạn nối cột.
+ */
+export function barsXLSX(res, meta = {}) {
+  const i = res.input, kgm = i.kgPerM, title = `${meta.spec || 'Thép hình'} – cây ${i.stockL} mm`;
+  const head = arr => arr.map(v => ({ v, s: 'head' }));
+  // 1. danh sách chi tiết
+  const s1 = [[{ v: `DANH SÁCH CHI TIẾT CẮT – ${title}`, s: 'title' }], [{ v: meta.planLabel ? `Phương án: ${meta.planLabel}` : '', s: 'note' }],
+    head(['STT', 'Mã chi tiết', 'Dài TP (mm)', 'Dư gia công (mm)', 'Dài cắt (mm)', 'Số lượng', 'Tổng dài cắt (m)', 'KL thành phẩm (kg)', 'Ghi chú'])];
+  let sumQ = 0, sumL = 0, sumKg = 0;
+  res.parts.forEach((p, k) => {
+    const cut = res.cutL[k], totL = cut * p.qty / 1000, w = p.length / 1000 * kgm * p.qty;
+    sumQ += p.qty; sumL += totL; sumKg += w;
+    s1.push([{ v: k + 1, s: 'int' }, p.name, { v: p.length, s: 'int' }, { v: p.allowance, s: 'int' }, { v: cut, s: 'int' }, { v: p.qty, s: 'int' },
+      { v: Math.round(totL * 1000) / 1000, s: 'dec' }, { v: Math.round(w * 100) / 100, s: 'dec' },
+      p.splice === 'A' ? 'Đoạn dưới A (đầu có mặt bích)' : p.splice === 'B' ? 'Đoạn trên B (nối)' : '']);
+  });
+  s1.push([{ v: '', s: 'bold' }, { v: 'TỔNG', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' },
+    { v: sumQ, s: 'boldint' }, { v: Math.round(sumL * 1000) / 1000, s: 'bolddec' }, { v: Math.round(sumKg * 100) / 100, s: 'bolddec' }, { v: '', s: 'bold' }]);
+  // 2. sơ đồ cắt
+  const s2 = [[{ v: `SƠ ĐỒ CẮT – ${title}`, s: 'title' }], [{ v: `Mạch cưa ${i.kerf} mm · cắt đầu cây ${i.trim} mm · cây lẻ thu hồi khi ≥ ${i.remnantMin} mm`, s: 'note' }],
+    head(['Kiểu cắt', 'Số cây', 'Cây số', 'Thứ tự các đoạn cắt (tên × dài cắt mm)', 'Số đoạn / cây', 'Tổng dài cắt / cây (mm)', 'Phần dư (mm)', 'Phần dư'])];
+  let first = 1;
+  res.groups.forEach((g, gi) => {
+    const last = first + g.n - 1, cnt = new Map();
+    g.pieces.forEach(k => cnt.set(k, (cnt.get(k) || 0) + 1));
+    const list = [...cnt].map(([k, n]) => `${res.parts[k].name} × ${res.cutL[k]}${n > 1 ? ` (${n} đoạn)` : ''}`).join(' + ');
+    const cutTot = g.pieces.reduce((s, k) => s + res.cutL[k], 0);
+    s2.push([{ v: gi + 1, s: 'int' }, { v: g.n, s: 'int' }, first === last ? String(first) : `${first} – ${last}`, list, { v: g.pieces.length, s: 'int' },
+      { v: cutTot, s: 'int' }, { v: g.leftover, s: 'int' }, g.leftover <= 0 ? '—' : g.recovered ? 'Cây lẻ thu hồi' : 'Phế liệu']);
+    first = last + 1;
+  });
+  s2.push([{ v: 'TỔNG', s: 'bold' }, { v: res.totalBars, s: 'boldint' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }]);
+  // 3. tổng hợp
+  const s3 = [[{ v: `TỔNG HỢP ĐỊNH MỨC – ${title}`, s: 'title' }], [],
+    head(['Hạng mục', 'Giá trị', 'Đơn vị']),
+    ['Quy cách', meta.spec || '', ''], ['Khối lượng mét', { v: kgm, s: 'dec' }, 'kg/m'], ['Dài cây', { v: i.stockL, s: 'int' }, 'mm'],
+    ['Mạch cưa', { v: i.kerf, s: 'dec' }, 'mm'], ['Cắt bỏ đầu cây', { v: i.trim, s: 'dec' }, 'mm'], ['Ngưỡng thu hồi cây lẻ', { v: i.remnantMin, s: 'int' }, 'mm'],
+    ['Số cây xuất', { v: res.totalBars, s: 'int' }, 'cây'], ['Số kiểu cắt', { v: res.groups.length, s: 'int' }, 'kiểu'],
+    ['Khối lượng xuất kho', { v: Math.round(res.issuedKG * 100) / 100, s: 'dec' }, 'kg'],
+    ['Cây lẻ thu hồi', { v: Math.round(res.recoveredKG * 100) / 100, s: 'dec' }, `kg (${res.recovered.length} cây${res.recovered.length ? ': ' + res.recovered.join('; ') + ' mm' : ''})`],
+    ['Khối lượng thành phẩm', { v: Math.round(res.finishedKG * 100) / 100, s: 'dec' }, 'kg'],
+    ['Hao phí / thành phẩm', { v: Math.round(res.wastePercent * 100) / 100, s: 'pct' }, '(xuất − thu hồi − TP) / TP'],
+    ['Hao phí nếu không thu hồi', { v: Math.round(res.wasteNoRecoveryPercent * 100) / 100, s: 'pct' }, ''],
+    ['Số cây tối thiểu', res.proven ? 'Đã chứng minh' : `Cận dưới ${res.lowerBound} cây`, ''],
+  ];
+  if (meta.planLabel) s3.push(['Phương án', meta.planLabel, '']);
+  if (meta.splices?.length) {
+    s3.push([], head(['Cột nối', 'Dài TP (mm)', 'Đoạn dưới A (mm)', 'Đoạn trên B (mm)', 'B / dài cột (%)', 'Số cột nối']));
+    for (const s of meta.splices) s3.push([s.name, { v: s.L, s: 'int' }, { v: s.A, s: 'int' }, { v: s.B, s: 'int' }, { v: Math.round(1000 * s.B / s.L) / 10, s: 'pct' }, { v: s.n, s: 'int' }]);
+  }
+  if (meta.project || meta.date) s3.push([], [{ v: `${meta.project ? 'Dự án: ' + meta.project + ' · ' : ''}Ngày lập: ${meta.date || ''} · Epsilon Lab`, s: 'note' }]);
+  return xlsxBook([
+    { name: 'Danh sách cắt', cols: [6, 24, 12, 12, 12, 10, 14, 16, 28], rows: s1, freeze: 3 },
+    { name: 'Sơ đồ cắt', cols: [9, 8, 10, 60, 10, 14, 12, 16], rows: s2, freeze: 3 },
+    { name: 'Tổng hợp', cols: [28, 16, 40, 16, 14, 12], rows: s3 },
+  ]);
+}
+
 const CSS = `
 .bar-pro{font-size:16px;color:#191c69;min-width:0}.bar-pro *{box-sizing:border-box}
 .bar-pro .bp-sub{font-size:16px;color:#706d99;margin:0 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -815,7 +1066,7 @@ export function mount(root, ctx = {}) {
     <div class="bp-splice" id="bp-splice" hidden></div>
     <div class="bp-figure"><div class="bp-head" id="bp-head">SƠ ĐỒ CẮT</div><div id="bp-figure"></div></div>
     <div class="bp-caption"><strong class="bp-summary" id="bp-summary">—</strong><span class="bp-proof" id="bp-proof"></span></div>
-    <div class="bp-caption"><p class="bp-strategy" id="bp-strategy">—</p><span><button class="bp-export" type="button" id="bp-csv" disabled>↓ Bảng cắt CSV</button> <button class="bp-export" type="button" id="bp-export" disabled>↓ Tải sơ đồ SVG</button></span></div>
+    <div class="bp-caption"><p class="bp-strategy" id="bp-strategy">—</p><span><button class="bp-export" type="button" id="bp-csv" disabled title="Danh sách chi tiết cắt, sơ đồ cắt từng cây, tổng hợp định mức">↓ Excel danh sách cắt</button> <button class="bp-export" type="button" id="bp-export" disabled title="Sơ đồ trải phôi 1:1 mm, mở bằng AutoCAD">↓ DXF sơ đồ trải phôi</button></span></div>
     <div class="bp-cut-list" id="bp-cut-list" hidden>
       <div class="bp-cut-title"><span>DANH SÁCH CHI TIẾT CẦN CẮT</span><small id="bp-cut-count"></small></div>
       <div class="bp-cut-scroll"><table class="bp-cut-table"><thead><tr><th>STT</th><th>Mã chi tiết</th><th class="bp-num">Dài TP (mm)</th><th class="bp-num">Dư gia công (mm)</th><th class="bp-num">Số lượng</th></tr></thead><tbody id="bp-cut-body"></tbody></table></div>
@@ -1180,32 +1431,22 @@ export function mount(root, ctx = {}) {
     st.parts.splice(Number(btn.dataset.del), 1);
     renderParts(); collect(); schedule();
   }, ctx.signal ? { signal: ctx.signal } : undefined);
+  const today = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; };
+  const exportMeta = () => ({ spec: st.spec || '', date: today(),
+    planLabel: current ? current.label + (current.splices ? ` – ${current.splices} mối nối` : '') : '',
+    splices: current?.splices ? current.spec.filter(s => s.n > 0) : [] });
+  const fileBase = () => `${(st.spec || 'thep-hinh').replace(/[^\w.-]+/g, '_')}_cay${last?.input.stockL || ''}`;
   $('bp-csv').addEventListener('click', () => {
     if (!last) return;
-    const q = v => `"${String(v).replaceAll('"', '""')}"`;
-    const rows = [['Kiểu cắt', 'Số cây', 'Các đoạn cắt (tên × dài cắt mm)', 'Phần dư (mm)', 'Thu hồi'].map(q).join(',')];
-    last.groups.forEach((g, i) => {
-      const cnt = new Map(); g.pieces.forEach(k => cnt.set(k, (cnt.get(k) || 0) + 1));
-      const list = [...cnt].map(([k, n]) => `${last.parts[k].name} × ${last.cutL[k]}${n > 1 ? ` (${n} đoạn)` : ''}`).join(' + ');
-      rows.push([i + 1, g.n, list, g.leftover, g.recovered ? 'Cây lẻ' : 'Phế liệu'].map(q).join(','));
-    });
-    if (current?.splices) {
-      rows.push('');
-      rows.push(['Phương án', 'Cột', 'Dài TP (mm)', 'Đoạn dưới A (mm)', 'Đoạn trên B (mm)', 'B / dài cột (%)', 'Số cột nối'].map(q).join(','));
-      current.spec.forEach(s => rows.push([current.label, s.name, s.L, s.A, s.B, (100 * s.B / s.L).toFixed(1), s.n].map(q).join(',')));
-    }
-    rows.push('');
-    rows.push([q('Tổng số cây'), last.totalBars].join(','));
-    rows.push([q('Hao phí / TP (%)'), last.wastePercent.toFixed(2)].join(','));
-    const blob = new Blob(['\ufeff' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' });
-    if (downloadBlob) downloadBlob(blob, 'epsilon-soft-bang-cat-thep-hinh-pro-max.csv');
-    ctx.showToast?.('Đã tạo bảng cắt CSV.');
+    const blob = new Blob([barsXLSX(last, exportMeta())], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    if (downloadBlob) downloadBlob(blob, `${fileBase()}_danh_sach_cat.xlsx`);
+    ctx.showToast?.('Đã tạo file Excel danh sách chi tiết cắt.');
   }, ctx.signal ? { signal: ctx.signal } : undefined);
   $('bp-export').addEventListener('click', () => {
-    if (!lastSVG) return;
-    const blob = new Blob([lastSVG], { type: 'image/svg+xml;charset=utf-8' });
-    if (downloadBlob) downloadBlob(blob, 'epsilon-soft-cat-thep-hinh-pro-max.svg');
-    ctx.showToast?.('Đã tạo sơ đồ SVG.');
+    if (!last) return;
+    const blob = new Blob([barsDXF(last, exportMeta())], { type: 'application/dxf' });
+    if (downloadBlob) downloadBlob(blob, `${fileBase()}_so_do_trai_phoi.dxf`);
+    ctx.showToast?.('Đã tạo DXF sơ đồ trải phôi.');
   }, ctx.signal ? { signal: ctx.signal } : undefined);
   updateReferenceWeight();
   compute();
