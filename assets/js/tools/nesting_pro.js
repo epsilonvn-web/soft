@@ -21,6 +21,7 @@ const LIMIT = 1e6, EPS = 1e-7;
 const MAX_TYPES = 200, MAX_PIECES = 20000, MAX_SHEETS = 5000;
 const DEFAULTS = Object.freeze({
   remnantMin: 200,
+  remnantMinLong: 500,      // tấm lẻ phải dài tối thiểu 500 mm (cạnh dài) mới thu hồi – đã chốt (chuẩn: tận dụng được cho chi tiết cỡ 400 × 190)
   longStripMin: 300,        // chặt sấn: ƯU TIÊN dải dài 2440 × h khi h ≥ 300 mm (chỉ để chọn phương án, không phải ngưỡng thu hồi)
   dpCostFull: 6e7,          // khối lượng phép tính tối đa cho bảng quy hoạch động đầy đủ / 1 loại
   dpCostPure: 3e8,          // khi vượt -> bảng thu gọn (chỉ bội số thuần)
@@ -983,24 +984,35 @@ function remnantOf(C, items, remnantMin) {
   for (const p of items) { maxR = Math.max(maxR, p.x + p.w); maxB = Math.max(maxB, p.y + p.h); }
   const ceil1 = v => Math.ceil(v * 10 - 1e-6) / 10;
   const usedL = Math.min(C.W, ceil1(maxR + C.e)), usedH = Math.min(C.H, ceil1(maxB + C.e));
-  const opts = [];
   const remL = r6(C.W - usedL), remH = r6(C.H - usedH);
-  // 0) MỖI TỜ MỘT TẤM LẺ: dồn hết phần dư thành một tấm liền (dù dài hẹp) tốt hơn hai tấm rời cùng tổng diện tích –
-  //    chỉ dải lớn nhất được tính thu hồi, nên bước dồn tờ cuối tự kéo chi tiết nhỏ vào ô trống bên trong.
-  // 1) THU HỒI hay HAO PHÍ: dải dư có cạnh ngắn ≥ ngưỡng (mặc định 200, tùy chỉnh) là thu hồi – không phân biệt dọc hay ngang.
-  if (Math.min(remL, C.H) >= remnantMin - EPS && remL > EPS) opts.push({ side: 'right', at: usedL, w: remL, h: C.H });
-  if (Math.min(remH, C.W) >= remnantMin - EPS && remH > EPS) opts.push({ side: 'bottom', at: usedH, w: C.W, h: remH });
+  // 1) THU HỒI hay HAO PHÍ: mỗi dải dư có cạnh ngắn ≥ ngưỡng (mặc định 200, tùy chỉnh) là thu hồi – không phân biệt dọc hay ngang.
+  //    Dư cả phải lẫn dưới (dạng chữ L) thì cắt thành 2 dải, dải nào đủ ngưỡng đều thu hồi (chi tiết hẹp 190 vẫn dùng được).
+  //    Hai cách cắt: (A) tách dải phải suốt chiều rộng trước, rồi dải dưới phần còn lại; (B) tách dải dưới suốt chiều dài trước.
+  //    Tấm lẻ còn phải ĐỦ DÀI mới tận dụng được: cạnh dài ≥ remnantMinLong (mặc định 500, tùy chỉnh) – vd. mẩu 250 × 300 ở góc chữ L bỏ.
+  const longNeed = C.remnantMinLong ?? DEFAULTS.remnantMinLong;
+  const keep = r => r.w > EPS && r.h > EPS && Math.min(r.w, r.h) >= remnantMin - EPS && Math.max(r.w, r.h) >= longNeed - EPS;
+  const A = [{ side: 'right', at: usedL, x: usedL, y: 0, w: remL, h: C.H, cut: { x1: usedL, y1: 0, x2: usedL, y2: C.H } },
+             { side: 'bottom', at: usedH, x: 0, y: usedH, w: usedL, h: remH, cut: { x1: 0, y1: usedH, x2: usedL, y2: usedH } }].filter(keep);
+  const B = [{ side: 'bottom', at: usedH, x: 0, y: usedH, w: C.W, h: remH, cut: { x1: 0, y1: usedH, x2: C.W, y2: usedH } },
+             { side: 'right', at: usedL, x: usedL, y: 0, w: remL, h: usedH, cut: { x1: usedL, y1: 0, x2: usedL, y2: usedH } }].filter(keep);
+  // nếu chỉ còn một dải thì dải đó chạy suốt cạnh tờ
+  if (A.length === 1 && A[0].side === 'bottom') Object.assign(A[0], { w: C.W, cut: { x1: 0, y1: usedH, x2: C.W, y2: usedH } });
+  if (B.length === 1 && B[0].side === 'right') Object.assign(B[0], { h: C.H, cut: { x1: usedL, y1: 0, x2: usedL, y2: C.H } });
   // 2) ƯU TIÊN dạng tấm lẻ đẹp khi chọn phương án (chỉ để chọn, không đổi ngưỡng thu hồi):
-  //    laser / plasma: ưu tiên dải ngang giữ khổ rộng tờ (L × 2000), tránh dải dọc kiểu 6000 × 500;
+  //    laser / plasma: ưu tiên dải giữ khổ rộng tờ (L × 2000), tránh dải dọc kiểu 6000 × 500;
   //    chặt sấn: dải dài 2440 × h đẹp khi h ≥ 300 (tùy chỉnh); hẹp hơn thì ưu tiên dải ngang kiểu 1220 × 400.
+  //    Cùng diện tích thì MỘT tấm liền tốt hơn hai tấm rời.
   const longMin = C.longStripMin ?? DEFAULTS.longStripMin;
   const factor = o => C.shear ? (o.side === 'bottom' && o.h < longMin - EPS ? 0.5 : 1) : (o.side === 'right' ? 1 : 0.5);
-  for (const o of opts) o.score = o.w * o.h * factor(o);
-  opts.sort((a, b) => b.score - a.score);
+  const score = list => list.reduce((s2, o) => s2 + o.w * o.h * factor(o), 0) * (list.length > 1 ? 0.999 : 1);
+  const pick = score(B) > score(A) + 1e-6 ? B : A;
+  const remnants = pick.map(o => ({ ...o }));
+  const total = remnants.reduce((s2, o) => s2 + o.w * o.h, 0);
+  const remnant = remnants.length ? { ...remnants[0], score: score(pick), area: total } : null;
   const free = [];
   if (C.W - maxR > EPS) free.push({ side: 'right', w: r6(C.W - maxR), h: C.H });
   if (C.H - maxB > EPS && maxR > EPS) free.push({ side: 'bottom', w: r6(maxR), h: r6(C.H - maxB) });
-  return { remnant: opts[0] || null, freeStrips: free };
+  return { remnant, remnants, freeStrips: free };
 }
 
 /** Dồn tờ cuối: tìm vùng ngắn nhất (theo dài hoặc theo rộng) vẫn xếp đủ chi tiết của tờ đó. */
@@ -1571,6 +1583,7 @@ export function calculateNestingPro(input) {
   const maxW = Math.max(...stocks.map(s => s.W)), maxH = Math.max(...stocks.map(s => s.H));
   const base = prepareTypes(i, maxW, maxH);
   base.longStripMin = i.longStripMin ?? DEFAULTS.longStripMin;
+  base.remnantMinLong = i.remnantMinLong ?? DEFAULTS.remnantMinLong;
   base.maxCutArea = Math.max(...base.types.map(T => T.cutArea));
   const demand = base.types.map(T => T.qty);
   for (const T of base.types) if (!stocks.some(s => fitsStock(T, s.W, s.H, base.k, base.e)))
@@ -1890,31 +1903,34 @@ function evaluate(ctxs, groups, remnantMin) {
     const needW = C.W > Wn && Math.ceil(maxR + C.e - 1e-6) > Wn ? Math.ceil(maxR + C.e - 1e-6) : null;
     const needH = C.H > Hn && Math.ceil(maxB + C.e - 1e-6) > Hn ? Math.ceil(maxB + C.e - 1e-6) : null;
     const Wd = needW ?? Wn, Hd = needH ?? Hn;
-    const { remnant } = remnantOf({ ...C, W: Wn, H: Hn }, items, remnantMin);       // tấm lẻ theo khổ danh nghĩa
+    const { remnant, remnants } = remnantOf({ ...C, W: Wn, H: Hn }, items, remnantMin);   // tấm lẻ theo khổ danh nghĩa (1–2 dải)
+    const remArea = remnants.reduce((s2, o) => s2 + o.w * o.h, 0);
     const { freeStrips } = remnantOf({ ...C, W: Wd, H: Hd }, items, 0);             // dư phải / dư dưới theo tờ thực tế cần
     totalSheets += g.n; blocks += g.sheet.blocks * g.n; issuedArea += g.n * Wn * Hn;
-    if (remnant) recoveredArea += g.n * remnant.w * remnant.h;
+    recoveredArea += g.n * remArea;
     const netArea = items.reduce((s, p) => s + (p.circle ? Math.PI * (p.w ** 2 - (p.hole || 0) ** 2) / 4 : p.w * p.h), 0);
     let cuts = g.sheet.cuts.slice();
     if (C.shear) {                                                  // thứ tự nhát chặt kiểu thợ, dựng từ hình học
-      const reg = !remnant ? { x: 0, y: 0, w: Wd, h: Hd } : remnant.side === 'right' ? { x: 0, y: 0, w: remnant.at, h: Hd } : { x: 0, y: 0, w: Wd, h: remnant.at };
+      const rightKept = remnants.some(o => o.side === 'right'), bottomKept = remnants.some(o => o.side === 'bottom');
+      const reg = { x: 0, y: 0, w: rightKept ? remnants.find(o => o.side === 'right').at : Wd, h: bottomKept ? remnants.find(o => o.side === 'bottom').at : Hd };
       const tree = shearCutTree(items, reg, C.k);
       if (tree) cuts = tree;
     }
-    if (C.shear && remnant) {
-      // chặt sấn: nhát tách tấm lẻ chạy suốt tờ là NHÁT 1, các nhát khác lùi số; bỏ nhát trùng đường tách
-      const v = remnant.side === 'right', at = remnant.at;
-      cuts = cuts.filter(c => !(v ? Math.abs(c.x1 - at) < 1.5 && Math.abs(c.x2 - at) < 1.5 : Math.abs(c.y1 - at) < 1.5 && Math.abs(c.y2 - at) < 1.5))
-        .map(c => (c.seq > 0 ? { ...c, seq: c.seq + 1 } : c));
-      let n = 0; cuts = cuts.map(c => (c.seq > 0 ? { ...c, seq: ++n + 1 } : c));
-      cuts.unshift(v ? { x1: at, y1: 0, x2: at, y2: Hd, seq: 1, rem: true } : { x1: 0, y1: at, x2: Wd, y2: at, seq: 1, rem: true });
+    if (C.shear && remnants.length) {
+      // chặt sấn: các nhát tách tấm lẻ là NHÁT ĐẦU (1, 2), các nhát khác lùi số; bỏ nhát trùng đường tách
+      const same = (c, r) => Math.abs(c.x1 - r.x1) < 1.5 && Math.abs(c.x2 - r.x2) < 1.5 && Math.abs(c.y1 - r.y1) < 1.5 && Math.abs(c.y2 - r.y2) < 1.5;
+      const on = (c, r) => r.x1 === r.x2 ? Math.abs(c.x1 - r.x1) < 1.5 && Math.abs(c.x2 - r.x1) < 1.5 : Math.abs(c.y1 - r.y1) < 1.5 && Math.abs(c.y2 - r.y1) < 1.5;
+      const rc = remnants.map(o => o.cut);
+      cuts = cuts.filter(c => !rc.some(r => same(c, r) || on(c, r)));
+      let n = rc.length; cuts = cuts.map(c => (c.seq > 0 ? { ...c, seq: ++n } : c));
+      cuts.unshift(...rc.map((r, k2) => ({ ...r, y2: r.y2 === Hn ? Hd : r.y2, x2: r.x2 === Wn ? Wd : r.x2, seq: k2 + 1, rem: true })));
     }
     const tp = g.sheet.counts.reduce((s2, c, t) => s2 + c * C.types[t].tpArea, 0);
     return { n: g.n, si: g.si, W: Wd, H: Hd, Wn, Hn, needW, needH, lot: C.stock.lot, remnantStock: C.stock.remnant,
       items, cuts, counts: g.sheet.counts, strategy: g.sheet.strategy,
-      blocks: g.sheet.blocks, remnant, freeStrips, usedPercent: 100 * netArea / (Wn * Hn),
+      blocks: g.sheet.blocks, remnant, remnants, freeStrips, usedPercent: 100 * netArea / (Wn * Hn),
       // hao phí riêng của tờ này = (tờ − tấm lẻ thu hồi − thành phẩm trên tờ) / thành phẩm trên tờ
-      wastePercent: tp > 0 ? 100 * (Wn * Hn - (remnant ? remnant.w * remnant.h : 0) - tp) / tp : null };
+      wastePercent: tp > 0 ? 100 * (Wn * Hn - remArea - tp) / tp : null };
   });
   const last = gs[gs.length - 1];
   const lastFree = last ? Math.max(0, ...last.freeStrips.map(f => f.w * f.h)) : 0;
@@ -2009,20 +2025,19 @@ export function planDXF(res, info = {}) {
     // tờ
     d.rect('VIEN_TAM', 0, by, W, H);
     // phần dư mép tờ: CHỈ GHI CHÚ kích thước (giữ lại hay bỏ do người dùng quyết định)
-    const zones = (g.freeStrips || []).filter(f => Math.min(f.w, f.h) >= DXF_MIN_ZONE).map(f => f.side === 'right'
-      ? { x: W - f.w, y: 0, w: f.w, h: f.h, name: 'DU PHAI', key: 'R' } : { x: 0, y: H - f.h, w: f.w, h: f.h, name: 'DU DUOI', key: 'B' })
-      .map(z => {
-        const R = g.remnant;
-        if (!R || (R.side === 'right') !== (z.key === 'R')) return z;
-        // tấm lẻ thu hồi: kích thước theo nhát tách (biên chi tiết + chừa mép)
-        return R.side === 'right' ? { x: R.at, y: 0, w: R.w, h: R.h, name: 'SURPLUS SP.01', key: 'SP.01', kept: true }
-          : { x: 0, y: R.at, w: R.w, h: R.h, name: 'SURPLUS SP.01', key: 'SP.01', kept: true };
-      });
+    // tấm lẻ thu hồi (1–2 dải, SP.01 / SP.02) + phần dư dưới ngưỡng (ghi chú, vào hao phí)
+    const rems = g.remnants || (g.remnant ? [g.remnant] : []);
+    const zones = rems.map((o, n) => ({ x: o.x, y: o.y, w: o.w, h: o.side === 'right' && o.h >= (g.Hn ?? H) - 1e-6 ? H : o.h, name: `SURPLUS SP.0${n + 1}`, key: `SP.0${n + 1}`, kept: true, size: `${Math.round(o.w)} x ${Math.round(o.h)}` }));
+    for (const f of (g.freeStrips || []).filter(f => Math.min(f.w, f.h) >= DXF_MIN_ZONE)) {
+      const z = f.side === 'right' ? { x: W - f.w, y: 0, w: f.w, h: H, name: 'DU PHAI', key: 'R' } : { x: 0, y: H - f.h, w: f.w, h: f.h, name: 'DU DUOI', key: 'B' };
+      const cov = zones.some(o => Math.max(0, Math.min(z.x + z.w, o.x + o.w) - Math.max(z.x, o.x)) * Math.max(0, Math.min(z.y + z.h, o.y + o.h) - Math.max(z.y, o.y)) > 0.5 * z.w * z.h);
+      if (!cov) zones.push({ ...z, size: `${Math.round(z.w)} x ${Math.round(z.h)}` });
+    }
     for (const z of zones) {
       const x0 = z.x, y0 = by + H - z.y - z.h;
       d.rect('SURPLUS', x0, y0, z.w, z.h);
       const hh = Math.min(th, z.h * 0.45, z.w / 9);
-      if (hh >= 4) d.text('SURPLUS', x0 + z.w / 2, y0 + z.h / 2, hh, `${z.name} ${Math.round(z.w)} x ${Math.round(z.h)}`, 'c');
+      if (hh >= 4) d.text('SURPLUS', x0 + z.w / 2, y0 + z.h / 2, hh, `${z.name} ${z.size}`, 'c');
     }
     // chi tiết + số hiệu NO (= số dòng BOM)
     for (const p of g.items) {
@@ -2074,7 +2089,7 @@ export function planDXF(res, info = {}) {
       const top = ty;
       d.line('KHUNG_TEN', tx, ty, tx + cols[4], ty);
       tableRow(['FREE', 'SIZE (mm)', 'AREA (m2)', 'KEEP'], ty); ty -= rowH;
-      for (const z of zones) { tableRow([z.key, `${Math.round(z.w)} x ${Math.round(z.h)}`, (z.w * z.h / 1e6).toFixed(3), z.kept ? 'YES' : 'SCRAP'], ty); ty -= rowH; }
+      for (const z of zones) { tableRow([z.key, z.size, (z.w * z.h / 1e6).toFixed(3), z.kept ? 'YES' : 'SCRAP'], ty); ty -= rowH; }
       for (const x of cols) d.line('KHUNG_TEN', tx + x, top, tx + x, ty);
     }
     oy = Math.min(by - 3.5 * th, ty) - 3 * th;
@@ -2244,18 +2259,28 @@ function drawSheet(res, gi) {
   const W = sheetW * scale, H = sheetH * scale, x0 = inset + (plotW - W) / 2, y0 = 12 + (plotH - H) / 2;
   const pt = n => Number(n).toFixed(2);
   let body = '';
-  // phần dư mép tờ: luôn ghi kích thước; dải được thu hồi (≥ ngưỡng) tô xanh, dải dưới ngưỡng ghi "hao phí"
+  // phần dư mép tờ: luôn ghi kích thước; tấm lẻ thu hồi (≥ ngưỡng, 1–2 dải) tô xanh, phần dư dưới ngưỡng ghi "hao phí"
+  const rems = remsOf(g);
+  const covered = (x, y, w, h) => rems.some(o => Math.max(0, Math.min(x + w, o.x + o.w) - Math.max(x, o.x)) * Math.max(0, Math.min(y + h, o.y + o.h) - Math.max(y, o.y)) > 0.5 * w * h);
+  const label = (fx, fy, fw, fh, text, color) => {
+    const fsz = Math.min(18, fh * 0.5, fw / text.length * 1.7);
+    if (fsz >= 9) body += `<text x="${pt(fx + fw / 2)}" y="${pt(fy + fh / 2 + fsz * 0.35)}" font-size="${pt(fsz)}" fill="${color}" font-weight="700" font-family="Arial,sans-serif" text-anchor="middle">${text}</text>`;
+  };
   for (const f0 of g.freeStrips || []) {
     const f = f0.side === 'bottom' ? { ...f0, h: f0.h - cut } : { ...f0, h: sheetH };
     if (Math.min(f.w, f.h) < 50) continue;                         // dải quá hẹp: chỉ ghi số, không vẽ khung
-    const kept = g.remnant && g.remnant.side === f.side, z = kept ? { ...g.remnant, h: f.side === 'right' ? sheetH : g.remnant.h } : f;   // tấm lẻ: kích thước theo nhát tách
-    const fx = f.side === 'right' ? x0 + (sheetW - z.w) * scale : x0, fy = f.side === 'right' ? y0 : y0 + (sheetH - z.h) * scale;
-    const fw = z.w * scale, fh = z.h * scale;
-    body += kept ? `<rect x="${pt(fx)}" y="${pt(fy)}" width="${pt(fw)}" height="${pt(fh)}" fill="#e3f8eb" stroke="#169a70" stroke-width="1.6"/>`
-      : `<rect x="${pt(fx)}" y="${pt(fy)}" width="${pt(fw)}" height="${pt(fh)}" fill="#fbf6ee" stroke="#c49a5a" stroke-width="1" stroke-dasharray="6 4"/>`;
-    const label = `${kept ? 'TẤM LẺ THU HỒI' : f.side === 'right' ? 'DƯ PHẢI' : 'DƯ DƯỚI'} ${pretty(z.w)} × ${pretty(kept ? g.remnant.h : z.h)}`, fsz = Math.min(18, fh * 0.5, fw / label.length * 1.7);
-    if (fsz >= 9) body += `<text x="${pt(fx + fw / 2)}" y="${pt(fy + fh / 2 + fsz * 0.35)}" font-size="${pt(fsz)}" fill="${kept ? '#147451' : '#8a5a12'}" font-weight="700" font-family="Arial,sans-serif" text-anchor="middle">${label}</text>`;
+    const rx = f.side === 'right' ? sheetW - f.w : 0, ry = f.side === 'right' ? 0 : sheetH - f.h;
+    if (covered(rx, ry, f.w, f.h)) continue;
+    const fx = x0 + rx * scale, fy = y0 + ry * scale, fw = f.w * scale, fh = f.h * scale;
+    body += `<rect x="${pt(fx)}" y="${pt(fy)}" width="${pt(fw)}" height="${pt(fh)}" fill="#fbf6ee" stroke="#c49a5a" stroke-width="1" stroke-dasharray="6 4"/>`;
+    label(fx, fy, fw, fh, `${f.side === 'right' ? 'DƯ PHẢI' : 'DƯ DƯỚI'} ${pretty(f.w)} × ${pretty(f.h)}`, '#8a5a12');
   }
+  rems.forEach(o => {
+    const h = o.side === 'right' && o.h >= (g.Hn ?? sheetH) - 1e-6 ? sheetH : o.h;   // tăng khổ: vẽ hết bề rộng tờ thực tế
+    const fx = x0 + o.x * scale, fy = y0 + o.y * scale, fw = o.w * scale, fh = h * scale;
+    body += `<rect x="${pt(fx)}" y="${pt(fy)}" width="${pt(fw)}" height="${pt(fh)}" fill="#e3f8eb" stroke="#169a70" stroke-width="1.6"/>`;
+    label(fx, fy, fw, fh, `TẤM LẺ THU HỒI ${pretty(o.w)} × ${pretty(o.h)}`, '#147451');
+  });
   const m = i.margin * scale;
   if (m >= 3) body += `<rect x="${pt(x0 + m)}" y="${pt(y0 + m)}" width="${pt(W - 2 * m)}" height="${pt(H - 2 * m)}" fill="none" stroke="#ddc9fa" stroke-width="1"/>`;
   let labels = 0;
@@ -2466,7 +2491,7 @@ const CSS = `
 `;
 
 const DEFAULT_STATE = {
-  thickness: '20', gap: '3', margin: '0', remnantMin: '200', longStripMin: '300', widthTol: '10', lengthTol: '10', shrinkTol: '0.5', density: '7850', cutMethod: 'laser', material: 0,
+  thickness: '20', gap: '3', margin: '0', remnantMin: '200', remnantMinLong: '500', longStripMin: '300', widthTol: '10', lengthTol: '10', shrinkTol: '0.5', density: '7850', cutMethod: 'laser', material: 0,
   thick: { laser: '20', shear: '3' }, gaps: { laser: '3', shear: '0' }, margins: { laser: '0', shear: '0' },   // chừa mép mặc định 0: bề rộng tôn thực tế thường > khổ danh nghĩa (anh xác nhận)
   stocks: {
     laser: [{ kind: 'std', W: '6000', H: '2000', qty: '', lot: '' }],
@@ -2485,7 +2510,10 @@ const ALLOW_DEFAULT = { rect: '0', circle: '5', ring: '5' };
 const PRESETS = { laser: [[6000, 2000], [3000, 1500], [2500, 1250]], shear: [[2440, 1220], [3000, 1500], [6000, 2000]] };
 let savedState = null;
 /** Phần tờ thực sử dụng (đơn vị TẤM): 1 − tấm lẻ thu hồi / diện tích tờ. Không thu hồi = 1 tấm. Ví dụ thu hồi 2 m trên tờ 6 m: 4/6 = 0,667 tấm. */
-const sheetUse = g => g.remnant ? 1 - (g.remnant.w * g.remnant.h) / ((g.Wn ?? g.W) * (g.Hn ?? g.H)) : 1;
+const remsOf = g => g.remnants || (g.remnant ? [g.remnant] : []);
+const remArea = g => remsOf(g).reduce((s, o) => s + o.w * o.h, 0);
+const remText = (g, sep = ' + ') => remsOf(g).map(o => `${pretty(o.w)} × ${pretty(o.h)}`).join(sep);
+const sheetUse = g => remsOf(g).length ? 1 - remArea(g) / ((g.Wn ?? g.W) * (g.Hn ?? g.H)) : 1;
 /** Phần tăng khổ của tờ (phương án tăng khổ): "dài +3, rộng +6" */
 const growText = g => [g.needW ? `dài +${g.needW - g.Wn}` : '', g.needH ? `rộng +${g.needH - g.Hn}` : ''].filter(Boolean).join(', ');
 const needText = g => (g.needW || g.needH) ? `cần tờ ≥ ${g.W} × ${g.H}` : '';
@@ -2578,6 +2606,7 @@ export function mount(root, ctx = {}) {
     <label class="np-remnant-box"><span class="np-rb-text"><b>Ngưỡng thu hồi tấm lẻ</b><small>Dải dư có cạnh ngắn ≥ ngưỡng được thu hồi (dọc hay ngang đều vậy), nhỏ hơn tính vào hao phí</small></span>
      <span class="np-rb-input"><input name="remnantMin" value="${esc(st.remnantMin)}" inputmode="decimal" autocomplete="off" aria-label="Ngưỡng thu hồi tấm lẻ (mm)"><small>mm</small></span></label>
     <div class="np-strip-rule" id="np-strip-rule">
+     <label class="np-cap" title="Tấm lẻ đủ rộng nhưng quá ngắn (vd. mẩu ở góc khi dư dạng chữ L) khó tận dụng – tính vào hao phí"><span>Tấm lẻ phải dài (cạnh dài) ≥</span><input name="remnantMinLong" value="${esc(st.remnantMinLong)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
      <p class="np-hint" id="np-strip-laser">Laser / plasma: khi chọn phương án, ưu tiên tấm lẻ giữ nguyên khổ rộng tờ (vd. 1800 × 2000) thay vì dải dọc kiểu 6000 × 500. Dải nào ≥ ngưỡng vẫn thu hồi.</p>
      <label class="np-cap" id="np-strip-shear" title="Chỉ để chọn phương án, không phải ngưỡng thu hồi"><span>Chặt sấn: ưu tiên dải dài 2440 × h khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
     </div>
@@ -2674,7 +2703,7 @@ export function mount(root, ctx = {}) {
     put('np-count', `${st.parts.length} loại · ${total.toLocaleString('vi-VN')} chiếc`);
   }
   function collect() {
-    for (const k of ['thickness', 'gap', 'margin', 'remnantMin', 'longStripMin', 'widthTol', 'lengthTol', 'shrinkTol']) st[k] = val(k);
+    for (const k of ['thickness', 'gap', 'margin', 'remnantMin', 'remnantMinLong', 'longStripMin', 'widthTol', 'lengthTol', 'shrinkTol']) st[k] = val(k);
     st.info = { project: val('project'), drawingNo: val('drawingNo'), material: val('matName'), drawnBy: val('drawnBy') };
     stocks().forEach((s, j) => { s.W = val(`sW${j}`); s.H = val(`sH${j}`); s.qty = val(`sQ${j}`); s.lot = val(`sL${j}`); });
     st.parts.forEach((p, t) => {
@@ -2720,7 +2749,7 @@ export function mount(root, ctx = {}) {
     return {
       cutMethod: st.cutMethod, density, stocks: stockList,
       thickness: parseNum(st.thickness, 'Dày', { positive: true }), gap: parseNum(st.gap, st.cutMethod === 'shear' ? 'Khe hở' : 'Mạch cắt'),
-      margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), longStripMin: parseNum(st.longStripMin || '0', 'Ưu tiên dải dài'), widthTol: parseNum(st.widthTol || '0', 'Cho phép tăng khổ rộng'), lengthTol: parseNum(st.lengthTol || '0', 'Cho phép tăng khổ dài'), shrinkTol: parseNum(st.shrinkTol || '0', 'Cho phép giảm kích thước'), parts,
+      margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), longStripMin: parseNum(st.longStripMin || '0', 'Ưu tiên dải dài'), remnantMinLong: parseNum(st.remnantMinLong || '0', 'Tấm lẻ dài tối thiểu'), widthTol: parseNum(st.widthTol || '0', 'Cho phép tăng khổ rộng'), lengthTol: parseNum(st.lengthTol || '0', 'Cho phép tăng khổ dài'), shrinkTol: parseNum(st.shrinkTol || '0', 'Cho phép giảm kích thước'), parts,
     };
   }
   function status(msg = '', busy = false) {
@@ -2738,16 +2767,14 @@ export function mount(root, ctx = {}) {
     for (const id of ['np-proof', 'np-sheets-sub', 'np-issued-sub', 'np-waste-sub', 'np-remnant-sub']) put(id, '');
     status('');
   }
-  /** Dư phải, dư dưới luôn ghi kích thước; dải được thu hồi đánh dấu ✓, dải còn lại ghi "vào hao phí". */
+  /** Dư phải, dư dưới luôn ghi kích thước; kèm các tấm lẻ được thu hồi (≥ ngưỡng), phần còn lại vào hao phí. */
   const freeText = g => {
     const part = side => {
       const f0 = (g.freeStrips || []).find(x => x.side === side), name = side === 'right' ? 'Dư phải' : 'Dư dưới';
       const sh = g.needH ?? g.H, f = !f0 ? null : side === 'right' ? { ...f0, h: sh } : { ...f0, h: f0.h - (g.H - sh) };   // tăng khổ: theo bề rộng thực tế cần
-      if (!f) return `${name}: 0`;
-      const kept = g.remnant && g.remnant.side === side;
-      return `${name}: ${pretty(f.w)} × ${pretty(f.h)} mm${kept ? ' → thu hồi ' + pretty(g.remnant.w) + ' × ' + pretty(g.remnant.h) : ' (vào hao phí)'}`;
+      return f ? `${name}: ${pretty(f.w)} × ${pretty(f.h)} mm` : `${name}: 0`;
     };
-    return `${part('right')} · ${part('bottom')}`;
+    return `${part('right')} · ${part('bottom')}` + (remsOf(g).length ? ` → thu hồi ${remText(g)}` : ' (vào hao phí)');
   };
   const sizeText = T => { const s = last?.shrinkMM || 0, cw = T.cw - s, ch = T.ch - s;   // phương án giảm kích thước: hiện kích thước cắt sau khi giảm
     return T.ring ? `Ø${pretty(cw)} / Ø${pretty(T.hole)}` : T.circle ? 'D' + pretty(cw) : pretty(cw) + ' × ' + pretty(ch); };
@@ -2879,11 +2906,11 @@ export function mount(root, ctx = {}) {
     put('np-tb-issued', pretty(res.issuedKG) + ' kg'); put('np-tb-rec', pretty(res.recoveredKG) + ' kg');
     put('np-tb-net', pretty(res.issuedKG - res.recoveredKG) + ' kg'); put('np-tb-tp', pretty(res.finishedKG) + ' kg');
     put('np-waste', res.wastePercent.toFixed(2)); put('np-waste-sub', `Nếu không thu hồi: ${res.wasteFullPercent.toFixed(2)} % · tổng cả trình cắt · đã thử ${full.tried} cách xếp`);
-    const rems = res.groups.filter(g => g.remnant), nRem = rems.reduce((s, g) => s + g.n, 0);
+    const rems = res.groups.filter(g => remsOf(g).length), nRem = rems.reduce((s, g) => s + g.n, 0);
     put('np-remnant-title', `Tấm lẻ thu hồi (≥ ${pretty(res.input.remnantMin)} mm)`);
     put('np-remnant', nRem ? `${pretty(res.recoveredKG)} kg` : 'Không có');
     const lr = res.lastFree.find(f => f.side === 'right'), lb = res.lastFree.find(f => f.side === 'bottom');
-    put('np-remnant-sub', (nRem ? rems.map(g => `${pretty(g.remnant.w)}×${pretty(g.remnant.h)}${g.n > 1 ? ` (×${g.n})` : ''}`).slice(0, 3).join('; ') + (rems.length > 3 ? '…' : '') + ' · ' : '')
+    put('np-remnant-sub', (nRem ? rems.map(g => `${remText(g)}${g.n > 1 ? ` (×${g.n})` : ''}`).slice(0, 3).join('; ') + (rems.length > 3 ? '…' : '') + ' · ' : '')
       + `Tờ cuối dư phải ${lr ? pretty(lr.w) + '×' + pretty(lr.h) : '0'}, dư dưới ${lb ? pretty(lb.w) + '×' + pretty(lb.h) : '0'}`);
     renderPartTable(res);
     put('np-list-count', `${res.types.length} loại · ${pretty(res.pieces)} chi tiết · tính ${(res.ms / 1000).toFixed(1)} s`);
@@ -3058,7 +3085,7 @@ export function mount(root, ctx = {}) {
     const fr = (g, side) => { const f = g.freeStrips.find(x => x.side === side), sh = g.needH ?? g.H;
       if (!f) return '0'; const h = side === 'right' ? sh : f.h - (g.H - sh); return `${Math.round(f.w * 10) / 10} x ${Math.round(h * 10) / 10}`; };
     res.groups.forEach((g, gi) => s2.push([{ v: gi + 1, s: 'int' }, sheetRange(res, gi), { v: g.n, s: 'int' }, needText(g) ? `${g.Wn} x ${g.Hn} (${needText(g)})` : `${g.W} x ${g.H}`, g.remnantStock ? 'Tấm lẻ kho' : 'Khổ chuẩn', g.lot || '',
-      ...res.types.map(T => ({ v: g.counts[T.t], s: 'int' })), { v: Math.round(sheetUse(g) * 1000) / 1000, s: 'dec3' }, { v: Math.round(g.n * sheetUse(g) * 1000) / 1000, s: 'dec3' }, pc(g.usedPercent), pc(g.wastePercent), fr(g, 'right'), fr(g, 'bottom'), g.remnant ? `${g.remnant.w} x ${g.remnant.h}` : '']));
+      ...res.types.map(T => ({ v: g.counts[T.t], s: 'int' })), { v: Math.round(sheetUse(g) * 1000) / 1000, s: 'dec3' }, { v: Math.round(g.n * sheetUse(g) * 1000) / 1000, s: 'dec3' }, pc(g.usedPercent), pc(g.wastePercent), fr(g, 'right'), fr(g, 'bottom'), remsOf(g).map(o => `${o.w} x ${o.h}`).join(' + ')]));
     // 3. toạ độ
     const s3 = [[{ v: 'TOẠ ĐỘ CHI TIẾT (gốc: góc trên-trái tờ, mm)', s: 'title' }], [],
       head(['Kiểu tờ', 'STT', 'NO', 'Mã chi tiết', 'Hình dạng', 'X (mm)', 'Y (mm)', 'Dài cắt (mm)', 'Rộng cắt (mm)', 'Ø lỗ (mm)', 'Xoay 90°'])];
