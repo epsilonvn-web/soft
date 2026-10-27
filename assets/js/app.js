@@ -1297,7 +1297,7 @@ themeSheet.textContent += `
  font-size:16px;font-weight:850;
 }
 .site-header .es-header-mytools-toggle{
- display:grid;place-items:center;flex:0 0 26px;width:26px;min-height:43px;
+ display:grid;place-items:center;flex:0 0 31px;width:31px;min-height:43px;   /* +20 % cho dễ bấm (26 → 31) */
  padding:0;border:0;border-left:1px solid rgba(255,255,255,.25);
  background:transparent;color:inherit;border-radius:0 10px 10px 0;
 }
@@ -1305,7 +1305,7 @@ themeSheet.textContent += `
  background:rgba(255,255,255,.17)
 }
 .site-header .es-header-mytools-toggle[aria-expanded="true"]{background:rgba(255,255,255,.23)}
-.site-header .es-header-mytools-toggle svg{width:17px;height:17px;transition:transform .18s}
+.site-header .es-header-mytools-toggle svg{width:20px;height:20px;transition:transform .18s}
 .site-header .es-header-mytools-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
 .site-header .es-header-mytools a:focus-visible,.site-header .es-header-mytools button:focus-visible{
  outline:3px solid #ffdb00;outline-offset:2px;
@@ -1363,7 +1363,7 @@ body.es-portrait-layout .es-header-mytools{display:none!important}
  }
  body:not(.es-portrait-layout) .site-header .es-header-mytools>.es-header-mytools-link svg{height:16px;width:16px}
  body:not(.es-portrait-layout) .site-header .es-header-mytools-count{min-width:18px;height:18px;font-size:16px;padding:1px 4px}
- body:not(.es-portrait-layout) .site-header .es-header-mytools-toggle{width:22px;flex-basis:22px;min-height:39px}
+ body:not(.es-portrait-layout) .site-header .es-header-mytools-toggle{width:26px;flex-basis:26px;min-height:39px}
  body:not(.es-portrait-layout) .site-header .es-language-picker{order:2;margin-left:0;padding:2px}
  body:not(.es-portrait-layout) .site-header .es-language-btn{min-width:28px;min-height:30px;padding:3px 5px;font-size:16px}
 }
@@ -2114,7 +2114,7 @@ function buildHeaderMyTools(){
  if(!nav || nav.querySelector('#es-header-mytools'))return;
  const area=document.createElement('div');area.id='es-header-mytools';area.className='es-header-mytools';
  area.innerHTML=`<a class="nav-link es-header-mytools-link" id="es-header-mytools-link" data-nav="mytools" href="#/mytools" aria-label="MY TOOLS">${icon('star',18)}<span>MY TOOLS</span><span class="es-header-mytools-count" id="es-header-mytools-count">0</span></a>
-  <button type="button" class="es-header-mytools-toggle" data-header-mytools-toggle aria-expanded="false" aria-controls="es-header-mytools-menu" aria-label="Xổ danh sách MY TOOLS" title="Xổ danh sách MY TOOLS">${icon('chevron-down',17)}</button>
+  <button type="button" class="es-header-mytools-toggle" data-header-mytools-toggle aria-expanded="false" aria-controls="es-header-mytools-menu" aria-label="Xổ danh sách MY TOOLS" title="Xổ danh sách MY TOOLS">${icon('chevron-down',20)}</button>
   <div class="es-header-mytools-menu" id="es-header-mytools-menu" aria-label="Danh sách công cụ đã ghim" hidden></div>`;
  nav.insertBefore(area,nav.querySelector('[data-nav="explore"]'));
  refreshHeaderMyTools();
