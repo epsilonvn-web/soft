@@ -1492,7 +1492,10 @@ function evaluate(ctxs, groups, remnantMin) {
       ? { x1: remnant.at, y1: 0, x2: remnant.at, y2: C.H, seq: -1 } : { x1: 0, y1: remnant.at, x2: C.W, y2: remnant.at, seq: -1 });
     return { n: g.n, si: g.si, W: C.W, H: C.H, lot: C.stock.lot, remnantStock: C.stock.remnant,
       items: g.sheet.items, cuts, counts: g.sheet.counts, strategy: g.sheet.strategy,
-      blocks: g.sheet.blocks, remnant, freeStrips, usedPercent: 100 * netArea / (C.W * C.H) };
+      blocks: g.sheet.blocks, remnant, freeStrips, usedPercent: 100 * netArea / (C.W * C.H),
+      // hao phí riêng của tờ này = (tờ − tấm lẻ thu hồi − thành phẩm trên tờ) / thành phẩm trên tờ
+      wastePercent: (() => { const tp = g.sheet.counts.reduce((s2, c, t) => s2 + c * C.types[t].tpArea, 0);
+        return tp > 0 ? 100 * (C.W * C.H - (remnant ? remnant.w * remnant.h : 0) - tp) / tp : null; })() };
   });
   const last = gs[gs.length - 1];
   const lastFree = last ? Math.max(0, ...last.freeStrips.map(f => f.w * f.h)) : 0;
@@ -1895,6 +1898,16 @@ const CSS = `
 .np details.np-info summary{cursor:pointer;font-weight:800;color:#5c29bf;font-size:16px}
 .np details.np-info .np-row{margin:8px 0 2px}
 .np .np-row.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.np .np-total-bar{display:grid;grid-template-columns:1.5fr repeat(4,minmax(0,1fr));gap:1px;background:#d9c9fb;border:1px solid #d9c9fb;border-radius:13px;overflow:hidden;margin:0 0 10px}
+.np .np-total-bar[hidden]{display:none}
+.np .np-total-bar>div{background:#fff;padding:7px 11px;min-width:0}
+.np .np-tb-main{background:linear-gradient(115deg,#a943f7,#7930e8)!important;color:#fff}
+.np .np-tb-main span{display:block;font-size:13.5px;font-weight:800;letter-spacing:.06em;opacity:.9}
+.np .np-tb-main strong{display:block;font-size:26px;font-weight:900;line-height:1.15}
+.np .np-tb-main small{display:block;font-size:13px;opacity:.88}
+.np .np-tb-cell span{display:block;font-size:13.5px;color:#6a598b;font-weight:700}
+.np .np-tb-cell b{display:block;font-size:18px;color:#2e1b70;font-weight:850;margin-top:3px;overflow-wrap:anywhere}
+@media(max-width:820px){.np .np-total-bar{grid-template-columns:repeat(2,minmax(0,1fr))}.np .np-tb-main{grid-column:1/-1}}
 .np .np-remnant-box{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 12px;padding:9px 12px;border:2px solid #16a374;border-radius:12px;background:linear-gradient(110deg,#e6fbf2,#f4fffa);cursor:text}
 .np .np-remnant-box span{white-space:normal;margin:0}
 .np .np-rb-text{flex:1 1 auto;min-width:0}
@@ -1978,6 +1991,13 @@ export function mount(root, ctx = {}) {
     <p class="np-error" id="np-error" role="alert"></p>
    </section>
    <section class="np-panel" aria-label="Phương án trải phôi">
+    <div class="np-total-bar" id="np-total-bar" hidden>
+     <div class="np-tb-main"><span>HAO PHÍ CHUNG</span><strong id="np-tb-waste">—</strong><small id="np-tb-sub"></small></div>
+     <div class="np-tb-cell"><span>Xuất kho</span><b id="np-tb-issued">—</b></div>
+     <div class="np-tb-cell"><span>Tấm lẻ thu hồi</span><b id="np-tb-rec">—</b></div>
+     <div class="np-tb-cell"><span>Thực tiêu hao</span><b id="np-tb-net">—</b></div>
+     <div class="np-tb-cell"><span>Thành phẩm</span><b id="np-tb-tp">—</b></div>
+    </div>
     <div class="np-plans" id="np-plans" role="group" aria-label="Các phương án phối kết hợp"></div>
     <div class="np-tabs" id="np-tabs" role="tablist" aria-label="Các tờ"></div>
     <div class="np-figure"><div class="np-fig-title" id="np-fig-title">SƠ ĐỒ TRẢI PHÔI</div><div class="np-preview" id="np-preview">Đang lập sơ đồ…</div><div class="np-legend" id="np-legend"></div></div>
@@ -2093,7 +2113,7 @@ export function mount(root, ctx = {}) {
   function invalid(msg) {
     last = null; lastSVG = '';
     $('np-preview').textContent = 'Không thể lập sơ đồ với thông số hiện tại.'; $('np-tabs').innerHTML = ''; $('np-legend').innerHTML = '';
-    $('np-list').hidden = true; $('np-plans').innerHTML = ''; exportsOff(true); full = null;
+    $('np-list').hidden = true; $('np-plans').innerHTML = ''; $('np-total-bar').hidden = true; exportsOff(true); full = null;
     put('np-error', msg); put('np-fig-title', 'SƠ ĐỒ TRẢI PHÔI');
     for (const id of ['np-summary', 'np-strategy', 'np-sheets', 'np-issued', 'np-finished', 'np-waste', 'np-remnant']) put(id, '—');
     for (const id of ['np-proof', 'np-sheets-sub', 'np-issued-sub', 'np-waste-sub', 'np-remnant-sub']) put(id, '');
@@ -2122,7 +2142,7 @@ export function mount(root, ctx = {}) {
     $('np-legend').innerHTML = res.types.filter(T => present.has(T.t)).map(T => `<span>${chip(T)}${T.t + 1}. ${esc(T.name)} ${sizeText(T)} <b>×${g.counts[T.t]}</b></span>`).join('') +
       (anyRot ? '<span><i class="np-chip hatch"></i>Xoay 90°</span>' : '') +
       (g.cuts.some(c => c.seq > 0) ? '<span><i class="np-chip" style="background:#fff7ea;border-color:#d58027"></i>Số = thứ tự nhát chặt chính</span>' : '');
-    put('np-summary', `${sheetRange(res, group)} / ${res.totalSheets}: ${g.items.length} chi tiết · dùng ${g.usedPercent.toFixed(1)} % tờ`);
+    put('np-summary', `${sheetRange(res, group)} / ${res.totalSheets}: ${g.items.length} chi tiết · hao phí tờ ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(2) + ' %'} · dùng ${g.usedPercent.toFixed(1)} % tờ`);
     put('np-strategy', strategyText(g.strategy) + ' · ' + freeText(g));
   }
   function present(res, keepPlan = false) {
@@ -2142,7 +2162,7 @@ export function mount(root, ctx = {}) {
     const multi = new Set(res.groups.map(g => g.W + 'x' + g.H)).size > 1;
     $('np-tabs').innerHTML = res.groups.map((g, gi) => {
       const r = g.freeStrips.find(f => f.side === 'right');
-      return `<button type="button" class="np-tab" role="tab" data-group="${gi}"><b>${sheetRange(res, gi)}${g.n > 1 ? ` · ×${g.n}` : ''}</b><small>${multi || g.remnantStock ? `${g.remnantStock ? 'Lẻ ' : ''}${g.W}×${g.H} · ` : ''}${g.items.length} ct · ${g.usedPercent.toFixed(1)} %${r && r.w >= 1 ? ` · dư phải ${pretty(r.w)}` : ''}${g.remnant ? ' · <span class="np-tab-rem">thu hồi</span>' : ''}</small></button>`;
+      return `<button type="button" class="np-tab" role="tab" data-group="${gi}"><b>${sheetRange(res, gi)}${g.n > 1 ? ` · ×${g.n}` : ''}</b><small>${multi || g.remnantStock ? `${g.remnantStock ? 'Lẻ ' : ''}${g.W}×${g.H} · ` : ''}${g.items.length} ct · hp ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(1) + ' %'}${g.remnant ? ' · <span class="np-tab-rem">thu hồi</span>' : ''}</small></button>`;
     }).join('');
     showGroup(group < res.groups.length ? group : 0);
     const proof = $('np-proof');
@@ -2154,6 +2174,11 @@ export function mount(root, ctx = {}) {
     put('np-issued', pretty(res.issuedKG));
     put('np-issued-sub', `Thực tiêu hao ${pretty(res.issuedKG - res.recoveredKG)} kg` + (res.remnantUsedKG ? ` · gồm ${pretty(res.remnantUsedKG)} kg tấm lẻ kho` : ''));
     put('np-finished', pretty(res.finishedKG));
+    $('np-total-bar').hidden = false;
+    put('np-tb-waste', res.wastePercent.toFixed(2) + ' %');
+    put('np-tb-sub', `${res.totalSheets} tờ · nếu không thu hồi ${res.wasteFullPercent.toFixed(2)} %`);
+    put('np-tb-issued', pretty(res.issuedKG) + ' kg'); put('np-tb-rec', pretty(res.recoveredKG) + ' kg');
+    put('np-tb-net', pretty(res.issuedKG - res.recoveredKG) + ' kg'); put('np-tb-tp', pretty(res.finishedKG) + ' kg');
     put('np-waste', res.wastePercent.toFixed(2)); put('np-waste-sub', `Nếu không thu hồi: ${res.wasteFullPercent.toFixed(2)} % · tổng cả trình cắt · đã thử ${full.tried} cách xếp`);
     const rems = res.groups.filter(g => g.remnant), nRem = rems.reduce((s, g) => s + g.n, 0);
     put('np-remnant-title', `Tấm lẻ thu hồi (≥ ${pretty(res.input.remnantMin)} mm)`);
