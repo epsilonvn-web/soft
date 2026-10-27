@@ -21,6 +21,7 @@ const LIMIT = 1e6, EPS = 1e-7;
 const MAX_TYPES = 200, MAX_PIECES = 20000, MAX_SHEETS = 5000;
 const DEFAULTS = Object.freeze({
   remnantMin: 200,
+  longStripMin: 300,        // chặt sấn: tấm lẻ dải dọc chiều dài tờ (2440 × h) chỉ thu hồi khi h ≥ 300 mm
   dpCostFull: 6e7,          // khối lượng phép tính tối đa cho bảng quy hoạch động đầy đủ / 1 loại
   dpCostPure: 3e8,          // khi vượt -> bảng thu gọn (chỉ bội số thuần)
   pinwheelMsTotal: 2000,    // thời gian tìm kiểu xoay vòng cho các tờ một loại (chia đều các loại)
@@ -28,6 +29,10 @@ const DEFAULTS = Object.freeze({
   maxRectsPieces: 600,      // xếp tự do từng chiếc chỉ chạy khi số chiếc còn lại ≤ ngưỡng này
   tidyTolerance: 100,       // tờ cuối: sơ đồ gọn (theo khối) được ưu tiên nếu phần dư chỉ ngắn hơn ≤ 100 mm
   planMs: 10000,            // thời gian tối đa thử thêm các chiến lược phối kết hợp
+  widthTol: 10,             // phương án tăng khổ: tờ thực tế có thể RỘNG hơn khổ danh nghĩa tối đa 10 mm (người dùng chỉnh)
+  lengthTol: 10,            //                     … và DÀI hơn tối đa 10 mm
+  shrinkTol: 0.5,
+  proposalMs: 7000,         // giới hạn tổng thời gian (từ lúc bắt đầu) dành cho các đề xuất khi "cận"           // phương án giảm kích thước cắt: mỗi chi tiết giảm 0,5 mm (dài / rộng / đường kính) – người dùng duyệt
   altWithin: 1.0,           // phương án thay thế chỉ hiện khi hao phí kém phương án tốt nhất ≤ 1 điểm % VÀ khác biệt thật
 });
 
@@ -525,6 +530,70 @@ function blockPack(C, rem0, region, opt, quota = null) {
 }
 
 /* ======================================================================= */
+/* 4b. XẾP THEO DẢI TỪNG LOẠI (giống thợ: vuông vài hàng trên, tròn so le    */
+/* vài hàng dưới…). Thử mọi cách chia bề rộng tờ cho các loại (số hàng,     */
+/* hướng xoay, so le / thẳng), chọn cách xếp được nhiều nhất trong chiều dài */
+/* vùng đang xét. Chi tiết còn thiếu được chèn khe sau đó.                  */
+/* ======================================================================= */
+function bandPack(C, rem0, region) {
+  const L = region.w, Hh = region.h, s3 = Math.sqrt(3) / 2, eps = 1e-9;
+  const types = C.types.filter(T => rem0[T.t] > 0).sort((a, b) => b.cutArea - a.cutArea).slice(0, 4);
+  const opts = types.map(T => {
+    const list = [{ rows: 0, height: 0, cap: 0 }], need = rem0[T.t];
+    if (T.circle) {
+      if (C.shear) return list;
+      const p = T.A;
+      for (let r = 1; ; r++) {
+        const h = p + (r - 1) * p * s3; if (h > Hh + eps) break;
+        const m0 = Math.floor(L / p + eps), m1 = Math.floor((L - p / 2) / p + eps);
+        list.push({ kind: 'hex', rows: r, height: h, cap: Math.ceil(r / 2) * m0 + Math.floor(r / 2) * Math.max(0, m1) });
+      }
+      for (let r = 1; r * p <= Hh + eps; r++) list.push({ kind: 'grid', rows: r, height: r * p, cap: r * Math.floor(L / p + eps), a: p, b: p });
+    } else {
+      const ors = T.rot ? [[T.A, T.B], [T.B, T.A]] : [[T.A, T.B]];
+      for (const [a, b] of ors) for (let r = 1; r * b <= Hh + eps; r++) list.push({ kind: 'grid', rows: r, height: r * b, cap: r * Math.floor(L / a + eps), a, b });
+    }
+    // bỏ các lựa chọn bị lấn át: đã chứa đủ thì chỉ giữ dải thấp nhất
+    const full = list.filter(o => o.cap >= need).sort((x, y) => x.height - y.height)[0];
+    return list.filter(o => o.cap > 0 || o.rows === 0).filter(o => o.cap < need || o === full);
+  });
+  let best = null, bestScore = 0, combos = 0;
+  const pick = [];
+  const dfs = (k, used, score) => {
+    if (++combos > 200000) return;
+    if (k === types.length) { if (score > bestScore + 1e-6) { bestScore = score; best = pick.slice(); } return; }
+    for (const o of opts[k]) {
+      if (used + o.height > Hh + eps) continue;
+      pick[k] = o;
+      dfs(k + 1, used + o.height, score + Math.min(o.cap, rem0[types[k].t]) * types[k].cutArea);
+    }
+  };
+  dfs(0, 0, 0);
+  const items = [], counts = C.types.map(() => 0);
+  if (!best) return { items, cuts: [], counts, blocks: 0, strategy: 'band' };
+  let y0 = region.y, bands = 0;
+  types.forEach((T, k) => {
+    const o = best[k];
+    if (!o.rows) return;
+    const n = Math.min(o.cap, rem0[T.t]), slots = [];
+    if (o.kind === 'hex') {
+      const p = T.A;
+      for (let r = 0; r < o.rows; r++) {
+        const off = r % 2 ? p / 2 : 0, m = Math.floor((L - off) / p + eps);
+        for (let c = 0; c < m; c++) slots.push({ x: region.x + off + c * p, y: y0 + r * p * s3, w: T.cw, h: T.cw });
+      }
+    } else {
+      const cols = Math.floor(L / o.a + eps);
+      for (let c = 0; c < cols; c++) for (let r = 0; r < o.rows; r++) slots.push({ x: region.x + c * o.a, y: y0 + r * o.b, w: o.a - C.k, h: o.b - C.k });
+    }
+    slots.sort((a, b) => a.x - b.x || a.y - b.y);                      // lấp theo cột từ trái sang -> dồn dư về phải
+    slots.slice(0, n).forEach(p => items.push(tag(T, p)));
+    counts[T.t] += n; y0 += o.height; bands++;
+  });
+  return { items, cuts: [], counts, blocks: bands, strategy: 'band' };
+}
+
+/* ======================================================================= */
 /* 5. XẾP TỰ DO TỪNG CHIẾC (MaxRects) – chỉ laser/plasma, đơn hàng nhỏ      */
 /* ======================================================================= */
 function maxRectsPack(C, rem0, region, opt) {
@@ -775,6 +844,7 @@ function packSheet(C, rem, region, { mode = 'area', needAll = false, full = true
   }
   // dồn tờ cuối (needAll) chạy nhiều lần -> dùng bộ chiến lược rút gọn để nhanh
   for (const o of needAll ? BLOCK_OPTS_FAST : BLOCK_OPTS) cands.push(blockPack(C, rem, region, o, quota));
+  if (!quota && !(C.shear && C.types.some(T => T.circle && rem[T.t] > 0))) cands.push(bandPack(C, rem, region));
   if (!C.shear && !tidy && !quota && total <= (needAll ? 150 : DEFAULTS.maxRectsPieces)) for (const o of FREE_OPTS) cands.push(maxRectsPack(C, rem, region, o));
   const rank = (a, b) => sheetScore(C, b, mode) - sheetScore(C, a, mode) || a.blocks - b.blocks;
   let pool = cands.filter(c => !must || c.counts.every((v, t) => v >= must[t])).sort(rank);
@@ -884,8 +954,14 @@ function remnantOf(C, items, remnantMin) {
   const usedL = Math.min(C.W, ceil1(maxR + C.e)), usedH = Math.min(C.H, ceil1(maxB + C.e));
   const opts = [];
   const remL = r6(C.W - usedL), remH = r6(C.H - usedH);
+  // Dạng tấm lẻ đẹp (quy tắc xưởng):
+  //  • Dải NGANG tờ (cắt theo chiều dài, giữ nguyên bề rộng tờ, vd. L × 2000 / L × 1220): luôn được, cạnh ngắn ≥ ngưỡng thu hồi.
+  //  • Dải DỌC theo chiều dài tờ (giữ nguyên chiều dài, vd. 6000 × h / 2440 × h):
+  //      laser / plasma: KHÔNG thu hồi (tấm 6000 × 500 không dùng được – ưu tiên khổ 2 m);
+  //      chặt sấn: chỉ thu hồi khi h ≥ ranh giới dải dài (mặc định 300 mm); hẹp hơn thì ưu tiên cắt dải ngang (vd. 1220 × 400).
   if (Math.min(remL, C.H) >= remnantMin - EPS && remL > EPS) opts.push({ side: 'right', at: usedL, w: remL, h: C.H });
-  if (Math.min(remH, C.W) >= remnantMin - EPS && remH > EPS) opts.push({ side: 'bottom', at: usedH, w: C.W, h: remH });
+  const longMin = C.shear ? Math.max(remnantMin, C.longStripMin ?? DEFAULTS.longStripMin) : Infinity;
+  if (Math.min(remH, C.W) >= longMin - EPS && remH > EPS) opts.push({ side: 'bottom', at: usedH, w: C.W, h: remH });
   opts.sort((a, b) => b.w * b.h - a.w * a.h);
   const free = [];
   if (C.W - maxR > EPS) free.push({ side: 'right', w: r6(C.W - maxR), h: C.H });
@@ -900,7 +976,7 @@ function compactLast(C, groups, remnantMin, mode) {
   const area = best.rem ? best.rem.w * best.rem.h : 0;
   let bestArea = area;
   const needArea = C.types.reduce((s, T) => s + need[T.t] * T.lbArea, 0);
-  for (const axis of ['w', 'h']) {
+  for (const axis of C.shear ? ['w', 'h'] : ['w']) {             // laser: chỉ dồn theo chiều dài (tấm lẻ giữ nguyên khổ rộng)
     const full = axis === 'w' ? C.WW : C.HH, other = axis === 'w' ? C.HH : C.WW;
     // chỉ tìm trong khoảng [cận diện tích, độ dài đang dùng] – không cần thử dài hơn sơ đồ hiện có
     const cur = g.sheet.items.reduce((m, p) => Math.max(m, axis === 'w' ? p.x + p.w : p.y + p.h), 0) - C.e + C.k;
@@ -1242,18 +1318,104 @@ function finalizeLast(ctxs, groups, mode) {
 }
 
 /* ======================================================================= */
+/* 10b. PHỐI HỢP ÍT TỜ NHẤT                                                 */
+/* Xếp tham từng tờ (lấp đầy tờ đầu) có khi tốn thêm 1 tờ. Khi số tờ còn    */
+/* hơn cận dưới, máy làm như kỹ sư: dựng sẵn nhiều sơ đồ tờ khác nhau (mỗi  */
+/* sơ đồ một cách phối các loại), rồi tìm k sơ đồ cộng lại đủ số lượng từng  */
+/* loại. Bớt chi tiết khỏi một sơ đồ chặt suốt vẫn chặt suốt được.          */
+/* ======================================================================= */
+function coverPlan(C, demand, k, deadline) {
+  const types = C.types.filter(T => demand[T.t] > 0);
+  if (!types.length || types.length > 8) return null;
+  const pats = new Map();
+  const add = cand => {
+    if (!cand || !sum(cand.counts)) return;
+    const key = cand.counts.join(',');
+    const ex = pats.get(key);
+    if (!ex || cand.blocks < ex.blocks) pats.set(key, cand);
+  };
+  // các nhu cầu con để sinh sơ đồ: đủ, chia đều k tờ (nhiều mức), bỏ một loại, chỉ hai loại, một loại đầy đủ + loại khác chia đều
+  const subs = [demand.slice()];
+  for (const f of [1, 1.25, 1.5, 2]) subs.push(demand.map(v => Math.min(v, Math.ceil(v * f / k))));
+  for (const T of types) {
+    subs.push(demand.map((v, t) => (t === T.t ? 0 : v)));
+    subs.push(demand.map((v, t) => (t === T.t ? v : Math.ceil(v / k))));
+    subs.push(demand.map((v, t) => (t === T.t ? v : 0)));
+    for (const U of types) if (U.t > T.t && types.length <= 6) subs.push(demand.map((v, t) => (t === T.t || t === U.t ? v : 0)));
+  }
+  for (const sub of subs) {
+    if (Date.now() > deadline) break;
+    for (const cand of packSheet(C, sub, C.full, { all: true }).slice(0, 12)) add(cand);
+  }
+  // bỏ sơ đồ bị lấn át (mọi loại đều ≤ một sơ đồ khác)
+  let list = [...pats.values()];
+  list = list.filter(p => !list.some(q => q !== p && q.counts.every((c, t) => c >= p.counts[t]) && q.counts.some((c, t) => c > p.counts[t])));
+  list.sort((a, b) => sheetScore(C, b, 'area') - sheetScore(C, a, 'area'));
+  const maxC = C.types.map(T => Math.max(0, ...list.map(p => p.counts[T.t])));
+  const maxArea = Math.max(...list.map(p => sheetScore(C, p, 'area')));
+  // tìm k sơ đồ phủ đủ nhu cầu; giữ lời giải dư nhiều nhất (tờ cuối trống nhiều -> tấm lẻ lớn)
+  let best = null, nodes = 0;
+  const pick = [];
+  const dfs = (start, need) => {
+    if (++nodes > 300000 || Date.now() > deadline) return;
+    if (need.every(v => v <= 0)) {
+      const slack = -C.types.reduce((s2, T) => s2 + need[T.t] * T.cutArea, 0);
+      if (!best || slack > best.slack) best = { slack, pick: pick.slice() };
+      return;
+    }
+    const left = k - pick.length;
+    if (!left) return;
+    if (need.some((v, t) => v > left * maxC[t])) return;
+    if (C.types.reduce((s2, T) => s2 + Math.max(0, need[T.t]) * T.cutArea, 0) > left * maxArea + 1e-6) return;
+    for (let i = start; i < list.length; i++) {
+      const p = list[i];
+      if (!p.counts.some((c, t) => c > 0 && need[t] > 0)) continue;
+      pick.push(i);
+      dfs(i, need.map((v, t) => v - p.counts[t]));
+      pick.pop();
+      if (best && nodes > 50000) return;
+    }
+  };
+  dfs(0, demand.slice());
+  if (!best) return null;
+  // chia đúng số lượng: tờ đầy nhất nhận trước, tờ cuối nhận phần còn lại; xếp lại từng tờ cho gọn
+  const chosen = best.pick.map(i => list[i]).sort((a, b) => sheetScore(C, b, 'area') - sheetScore(C, a, 'area'));
+  const need = demand.slice(), sheets = [];
+  for (const p of chosen) {
+    const cnt = p.counts.map((c, t) => Math.min(c, need[t]));
+    cnt.forEach((c, t) => { need[t] -= c; });
+    if (!sum(cnt)) continue;
+    let sheet = cnt.every((c, t) => c === p.counts[t]) ? p : packSheet(C, cnt, C.full, { needAll: true });
+    if (!sheet) {                                            // không xếp lại được thì bớt chi tiết khỏi sơ đồ gốc (vẫn hợp lệ)
+      const keep = cnt.slice(), items = [...p.items].sort((a, b) => a.x - b.x || a.y - b.y).filter(it => keep[it.t]-- > 0);
+      sheet = { ...p, items, counts: cnt, cuts: C.shear ? [] : p.cuts };
+      if (C.shear) sheet.cuts = [];
+    }
+    sheets.push(sheet);
+  }
+  if (need.some(v => v > 0)) return null;
+  const groups = [];
+  for (const sh of sheets) { const g = groups[groups.length - 1]; if (g && sameSheet(g.sheet, sh)) g.n++; else groups.push({ n: 1, sheet: sh }); }
+  return groups;
+}
+
+/* ======================================================================= */
 /* 11. GIAO DIỆN CHUNG CỦA LÕI TÍNH                                         */
 /* Mỗi lần đổi số liệu: chạy lại TỪ ĐẦU, thử nhiều cách phối kết hợp, giữ   */
 /* các phương án tốt nhất khác nhau để người dùng chọn.                     */
 /* ======================================================================= */
 const STRATEGY_LABEL = {
   area: 'Lấp kín từng tờ', big: 'Chi tiết lớn trước', small: 'Chi tiết nhỏ trước',
-  even: 'Phối đều các loại trên mọi tờ', look: 'Mở đầu khác', mixed: 'Kết hợp khổ từng tờ', last: 'Tờ cuối khổ nhỏ hơn',
+  even: 'Phối đều các loại trên mọi tờ', cover: 'Phối hợp ít tờ nhất', look: 'Mở đầu khác', mixed: 'Kết hợp khổ từng tờ', last: 'Tờ cuối khổ nhỏ hơn',
 };
 export function calculateNestingPro(input) {
   const t0 = Date.now();
   const i = { ...input };
   if (i.remnantMin == null) i.remnantMin = DEFAULTS.remnantMin;
+  for (const [key, lab] of [['widthTol', 'rộng'], ['lengthTol', 'dài']])
+    if (i[key] != null && !(Number.isFinite(i[key]) && i[key] >= 0 && i[key] <= 200)) fail(`Tăng khổ ${lab} cho phép phải từ 0 đến 200 mm.`);
+  if (i.shrinkTol != null && !(Number.isFinite(i.shrinkTol) && i.shrinkTol >= 0 && i.shrinkTol <= 3)) fail('Giảm kích thước cho phép phải từ 0 đến 3 mm.');
+  if (i.longStripMin != null && !(Number.isFinite(i.longStripMin) && i.longStripMin >= 0 && i.longStripMin <= LIMIT)) fail('Ranh giới dải dài không hợp lệ.');
   for (const key of ['thickness', 'gap', 'margin', 'density', 'remnantMin'])
     if (!Number.isFinite(i[key]) || i[key] < 0 || i[key] > LIMIT) fail('Thông số không hợp lệ: ' + key);
   if (!['laser', 'shear'].includes(i.cutMethod)) fail('Phương pháp cắt không hợp lệ.');
@@ -1265,7 +1427,7 @@ export function calculateNestingPro(input) {
     const limit = s.limit == null ? (s.remnant ? 1 : Infinity) : s.limit;
     if (!Number.isInteger(limit) && limit !== Infinity || limit < 0) fail(`Kho phôi dòng ${idx + 1}: số tờ phải là số nguyên.`);
     if (W - 2 * i.margin <= 0 || H - 2 * i.margin <= 0) fail(`Kho phôi dòng ${idx + 1}: chừa mép vượt kích thước tấm.`);
-    return { idx, W, H, limit, remnant: !!s.remnant, lot: String(s.lot || '').slice(0, 60) };
+    return { idx, W, H, limit, remnant: !!s.remnant, lot: String(s.lot || '').slice(0, 60), ...(s.nominalH ? { nominalH: Math.min(s.nominalH, H) } : {}), ...(s.nominalW ? { nominalW: Math.min(s.nominalW, W) } : {}) };
   }).filter(s => s.limit > 0);
   if (!stocks.length) fail('Nhập ít nhất một khổ phôi.');
   if (stocks.length > 40) fail('Tối đa 40 dòng kho phôi.');
@@ -1278,9 +1440,9 @@ export function calculateNestingPro(input) {
     if (!['rect', 'circle', 'ring'].includes(p.shape)) fail('Hình dạng chi tiết không hợp lệ.');
     p.allowanceIn = p.allowanceIn ?? 0;
     const dims = p.shape === 'rect' ? [p.partW, p.partH] : p.shape === 'ring' ? [p.diameter, p.inner] : [p.diameter];
-    if (dims.some(v => !Number.isFinite(v) || v <= 0 || v > LIMIT) || !Number.isFinite(p.allowance) || p.allowance < 0 ||
+    if (dims.some(v => !Number.isFinite(v) || v <= 0 || v > LIMIT) || !Number.isFinite(p.allowance) || p.allowance < -5 || dims.some(v => v + p.allowance <= 0) ||
         !Number.isFinite(p.allowanceIn) || p.allowanceIn < 0 || !Number.isInteger(p.qty))
-      fail(`Kiểm tra kích thước, dư gia công và số lượng của chi tiết "${p.name}".`);
+      fail(`Kiểm tra kích thước, dư gia công (cho phép âm tới −5 mm khi người dùng chủ động giảm kích thước cắt) và số lượng của chi tiết "${p.name}".`);
     if (p.shape === 'ring' && (p.inner >= p.diameter || p.inner - p.allowanceIn <= 0))
       fail(`Vành khuyên "${p.name}": Ø trong phải nhỏ hơn Ø ngoài và lớn hơn dư gia công Ø trong.`);
     if (p.shape !== 'rect' && i.cutMethod === 'shear') fail(`Chặt sấn chỉ xếp chi tiết chữ nhật – "${p.name}" là chi tiết tròn/vành khuyên, hãy chuyển sang Laser / Plasma.`);
@@ -1291,6 +1453,7 @@ export function calculateNestingPro(input) {
 
   const maxW = Math.max(...stocks.map(s => s.W)), maxH = Math.max(...stocks.map(s => s.H));
   const base = prepareTypes(i, maxW, maxH);
+  base.longStripMin = i.longStripMin ?? DEFAULTS.longStripMin;
   base.maxCutArea = Math.max(...base.types.map(T => T.cutArea));
   const demand = base.types.map(T => T.qty);
   for (const T of base.types) if (!stocks.some(s => fitsStock(T, s.W, s.H, base.k, base.e)))
@@ -1336,6 +1499,7 @@ export function calculateNestingPro(input) {
       const tag = (groups, key) => groups && groups.map(g => ({ ...g, si }));
       const run = (key, mode, extra) => {
         if (late() && plans.length) return null;
+        if (i._noEnlarge && key !== 'area' && key !== 'even') return null;   // lượt thử tăng khổ: chỉ các chiến lược chính cho nhanh
         const g = planAll(C, rem, mode, C.stock.limit, extra);
         if (!g) return null;
         const groups = tag(polish(C, g, mode));
@@ -1358,6 +1522,16 @@ export function calculateNestingPro(input) {
           seen.add(key); tries++;
           run('look', 'area', { first: cand });
         }
+      }
+      // còn hơn cận dưới -> tìm phối hợp ít tờ hơn (như kỹ sư ướm từng tờ cho vừa đủ số lượng)
+      const minK = Math.min(...plans.filter(p => p.single === si).map(p => p.totalSheets));
+      const lbK = sheetLowerBound(C, rem);
+      // (kể cả khi đã bằng số tờ tốt nhất: tìm phối hợp dồn dư về tờ cuối để có tấm lẻ thu hồi lớn hơn)
+      for (let kk = lbK; kk <= minK && !(late() && i._noEnlarge); kk++) {
+        const g = coverPlan(C, rem, kk, t0 + DEFAULTS.planMs);
+        if (!g) continue;
+        finish(tag(compactLast(C, g, 0, 'area')), `${STRATEGY_LABEL.cover} · khổ ${size}`, si);
+        break;
       }
       if (std.length > 1) {
         const last = finalizeLast(ctxs, greedy, 'area');
@@ -1420,6 +1594,55 @@ export function calculateNestingPro(input) {
     shown.push(p);
     if (shown.length >= 3) break;
   }
+  // PHƯƠNG ÁN 2 – TĂNG KHỔ PHÔI: tờ thực tế thường rộng hơn khổ danh nghĩa (vd. 2000 → 2050). Thử lại toàn bộ với bề rộng
+  // + widthTol; nếu tiết kiệm rõ rệt thì đưa ra phương án riêng, ghi rõ bề rộng tờ cần có – người dùng chấp nhận mới dùng.
+  // ĐỀ XUẤT KHI "CẬN" – máy chỉ tính theo barem, các điều chỉnh sau đưa ra để NGƯỜI DÙNG DUYỆT, máy không tự chọn:
+  //  • Tăng khổ phôi: tờ thực tế thường lớn hơn khổ danh nghĩa (vd. rộng 2000 → 2050) – thử rộng, dài, cả hai.
+  //  • Giảm kích thước cắt: mỗi chi tiết giảm shrinkTol (mặc định 0,5 mm) theo dài / rộng / đường kính.
+  //  • Kết hợp cả hai khi mỗi cách riêng đều có lợi.
+  // Ghi đúng số mm cần tăng; thành phẩm và xuất kho vẫn tính theo số liệu danh nghĩa.
+  const enlarged = [];
+  const tolW = i.widthTol == null ? DEFAULTS.widthTol : i.widthTol, tolL = i.lengthTol == null ? DEFAULTS.lengthTol : i.lengthTol;
+  const shrink = i.shrinkTol == null ? DEFAULTS.shrinkTol : i.shrinkTol;
+  if (!i._noEnlarge && (tolW > 0 || tolL > 0 || shrink > 0)) {
+    const netB = kg(best.issuedArea - best.recoveredArea);
+    const sheetKG = kg(Math.max(...stocks.filter(x => !x.remnant).map(x => x.W * x.H), 0));
+    const trial = (dL, dW, sh) => {
+      if (Date.now() - t0 > DEFAULTS.proposalMs) return null;           // hết thời gian cho đề xuất – giữ phương án đã có
+      try {
+        const sub = calculateNestingPro({ ...input, _noEnlarge: true,
+          parts: sh > 0 ? input.parts.map(p => ({ ...p, allowance: (p.allowance || 0) - sh })) : input.parts,
+          stocks: stocks.map(x => x.remnant ? { W: x.W, H: x.H, limit: x.limit === Infinity ? null : x.limit, remnant: true, lot: x.lot }
+            : { W: x.W + dL, H: x.H + dW, nominalW: x.W, nominalH: x.H, limit: x.limit === Infinity ? null : x.limit, lot: x.lot }) });
+        const q = sub.plans[0];
+        const needL = Math.max(0, ...q.groups.map(g => g.needW ? g.needW - g.Wn : 0)), needR = Math.max(0, ...q.groups.map(g => g.needH ? g.needH - g.Hn : 0));
+        const save = netB - (q.issuedKG - q.recoveredKG);
+        if (!(needL > 0 || needR > 0 || sh > 0) || (dL + dW > 0 && !(needL > 0 || needR > 0))) return null;
+        if (!(q.totalSheets < best.totalSheets || save >= 0.01 * sheetKG)) return null;
+        const what = [needL ? `dài +${needL} mm` : '', needR ? `rộng +${needR} mm` : ''].filter(Boolean).join(', ');
+        const need = q.groups.filter(g => g.needW || g.needH).map(g => `${g.needW ?? g.Wn} × ${g.needH ?? g.Hn}`);
+        const label = [what ? `Tăng khổ ${what}` : '', sh > 0 ? `Giảm ${sh} mm mỗi chi tiết` : ''].filter(Boolean).join(' + ');
+        const reason = [what ? `tăng khổ ${what} (tờ thực tế ≥ ${[...new Set(need)].join(' / ')} mm)` : '',
+          sh > 0 ? `giảm kích thước cắt ${sh} mm mỗi chi tiết (dài / rộng hoặc đường kính)` : ''].filter(Boolean).join(' + ');
+        return { ...q, label, enlargeMM: Math.max(needL, needR), enlargeL: needL, enlargeW: needR, shrinkMM: sh > 0 ? sh : 0,
+          lowerBound: null, proven: false, save, effort: needL + needR + sh * 10,
+          reason: `${reason[0].toUpperCase()}${reason.slice(1)} · tiết kiệm ${Math.round(save * 10) / 10} kg${q.totalSheets < best.totalSheets ? ` · bớt ${best.totalSheets - q.totalSheets} tờ` : ''}` };
+      } catch (err) { if (!(err instanceof UserError)) throw err; return null; }
+    };
+    // thứ tự ưu tiên khi thời gian có hạn: tăng rộng → giảm kích thước → tăng dài → cả hai
+    const w = tolW > 0 ? trial(0, tolW, 0) : null;
+    const sh = shrink > 0 ? trial(0, 0, shrink) : null;
+    const l = tolL > 0 ? trial(tolL, 0, 0) : null;
+    const both = w && l ? trial(tolL, tolW, 0) : null;
+    const grow = [w, l, both].filter(Boolean).sort((a, b) => b.save - a.save || a.effort - b.effort)[0];
+    const combo = grow && sh ? trial(grow.enlargeL ? tolL : 0, grow.enlargeW ? tolW : 0, shrink) : null;
+    // mỗi KIỂU điều chỉnh một đề xuất (người dùng chọn cách chấp nhận được): tăng khổ, giảm kích thước;
+    // kết hợp chỉ đưa ra khi tiết kiệm hơn hẳn từng cách riêng
+    if (grow) enlarged.push(grow);
+    if (sh) enlarged.push(sh);
+    if (combo && combo.save > Math.max(grow?.save ?? 0, sh?.save ?? 0) + 0.5) enlarged.push(combo);
+    enlarged.sort((a, b) => a.effort - b.effort);                         // can thiệp ít trước
+  }
   const out = shown.map((p, rank) => {
     let lowerBound = null;
     if (p.single != null && !pre.length) {
@@ -1448,7 +1671,7 @@ export function calculateNestingPro(input) {
         allowance: p.allowance, allowanceIn: p.allowanceIn, inHoles: T.qty - sheetDemand[T.t],
         pureCount: mainCtx.pure[T.t].items.length, barem: baremStd[T.t] };
     }),
-    plans: out, invalid, tried: plans.length, pieces, ms: Date.now() - t0,
+    plans: out.concat(enlarged.map((e, k) => ({ ...e, rank: out.length + k }))), invalid, tried: plans.length, pieces, ms: Date.now() - t0,
   };
 }
 
@@ -1491,28 +1714,45 @@ function sheetLowerBound(C, demand) {
 function evaluate(ctxs, groups, remnantMin) {
   let totalSheets = 0, issuedArea = 0, recoveredArea = 0, blocks = 0;
   const gs = groups.map(g => {
-    const C = ctxs[g.si];
-    const { remnant, freeStrips } = remnantOf(C, g.sheet.items, remnantMin);
-    totalSheets += g.n; blocks += g.sheet.blocks * g.n; issuedArea += g.n * C.W * C.H;
+    const C = ctxs[g.si], items = g.sheet.items;
+    // Khổ DANH NGHĨA (kho, tính xuất kho / thu hồi / hao phí) và khổ THỰC TẾ CẦN (phương án tăng khổ – để vẽ, xuất DXF)
+    const Wn = C.stock.nominalW ?? C.W, Hn = C.stock.nominalH ?? C.H;
+    let maxR = 0, maxB = 0;
+    for (const p of items) { maxR = Math.max(maxR, p.x + p.w); maxB = Math.max(maxB, p.y + p.h); }
+    const needW = C.W > Wn && Math.ceil(maxR + C.e - 1e-6) > Wn ? Math.ceil(maxR + C.e - 1e-6) : null;
+    const needH = C.H > Hn && Math.ceil(maxB + C.e - 1e-6) > Hn ? Math.ceil(maxB + C.e - 1e-6) : null;
+    const Wd = needW ?? Wn, Hd = needH ?? Hn;
+    const { remnant } = remnantOf({ ...C, W: Wn, H: Hn }, items, remnantMin);       // tấm lẻ theo khổ danh nghĩa
+    const { freeStrips } = remnantOf({ ...C, W: Wd, H: Hd }, items, 0);             // dư phải / dư dưới theo tờ thực tế cần
+    totalSheets += g.n; blocks += g.sheet.blocks * g.n; issuedArea += g.n * Wn * Hn;
     if (remnant) recoveredArea += g.n * remnant.w * remnant.h;
-    const netArea = g.sheet.items.reduce((s, p) => s + (p.circle ? Math.PI * (p.w ** 2 - (p.hole || 0) ** 2) / 4 : p.w * p.h), 0);
-    const cuts = g.sheet.cuts.slice();
-    if (C.shear && remnant) cuts.push(remnant.side === 'right'                        // nhát tách tấm lẻ
-      ? { x1: remnant.at, y1: 0, x2: remnant.at, y2: C.H, seq: -1 } : { x1: 0, y1: remnant.at, x2: C.W, y2: remnant.at, seq: -1 });
-    return { n: g.n, si: g.si, W: C.W, H: C.H, lot: C.stock.lot, remnantStock: C.stock.remnant,
-      items: g.sheet.items, cuts, counts: g.sheet.counts, strategy: g.sheet.strategy,
-      blocks: g.sheet.blocks, remnant, freeStrips, usedPercent: 100 * netArea / (C.W * C.H),
+    const netArea = items.reduce((s, p) => s + (p.circle ? Math.PI * (p.w ** 2 - (p.hole || 0) ** 2) / 4 : p.w * p.h), 0);
+    let cuts = g.sheet.cuts.slice();
+    if (C.shear && remnant) {
+      // chặt sấn: nhát tách tấm lẻ chạy suốt tờ là NHÁT 1, các nhát khác lùi số; bỏ nhát trùng đường tách
+      const v = remnant.side === 'right', at = remnant.at;
+      cuts = cuts.filter(c => !(v ? Math.abs(c.x1 - at) < 1.5 && Math.abs(c.x2 - at) < 1.5 : Math.abs(c.y1 - at) < 1.5 && Math.abs(c.y2 - at) < 1.5))
+        .map(c => (c.seq > 0 ? { ...c, seq: c.seq + 1 } : c));
+      let n = 0; cuts = cuts.map(c => (c.seq > 0 ? { ...c, seq: ++n + 1 } : c));
+      cuts.unshift(v ? { x1: at, y1: 0, x2: at, y2: Hd, seq: 1, rem: true } : { x1: 0, y1: at, x2: Wd, y2: at, seq: 1, rem: true });
+    }
+    const tp = g.sheet.counts.reduce((s2, c, t) => s2 + c * C.types[t].tpArea, 0);
+    return { n: g.n, si: g.si, W: Wd, H: Hd, Wn, Hn, needW, needH, lot: C.stock.lot, remnantStock: C.stock.remnant,
+      items, cuts, counts: g.sheet.counts, strategy: g.sheet.strategy,
+      blocks: g.sheet.blocks, remnant, freeStrips, usedPercent: 100 * netArea / (Wn * Hn),
       // hao phí riêng của tờ này = (tờ − tấm lẻ thu hồi − thành phẩm trên tờ) / thành phẩm trên tờ
-      wastePercent: (() => { const tp = g.sheet.counts.reduce((s2, c, t) => s2 + c * C.types[t].tpArea, 0);
-        return tp > 0 ? 100 * (C.W * C.H - (remnant ? remnant.w * remnant.h : 0) - tp) / tp : null; })() };
+      wastePercent: tp > 0 ? 100 * (Wn * Hn - (remnant ? remnant.w * remnant.h : 0) - tp) / tp : null };
   });
   const last = gs[gs.length - 1];
   const lastFree = last ? Math.max(0, ...last.freeStrips.map(f => f.w * f.h)) : 0;
   return { groups: gs, totalSheets, issuedArea, recoveredArea, blocks, lastFree };
 }
-/** Thứ tự: thép thực tiêu hao (xuất − tấm lẻ thu hồi) ít nhất = hao phí thấp nhất → ít tờ → xếp khít → sơ đồ gọn. */
+/** Thứ tự (đã chốt): đủ số lượng → ÍT TỜ nhất → tấm lẻ thu hồi lớn nhất (= thép thực tiêu hao ít nhất) → xếp khít → sơ đồ gọn.
+ *  Khác khổ (số tờ không so được với nhau): thép thực tiêu hao ít nhất trước. */
 function better(a, b) {
   const net = p => p.issuedArea - p.recoveredArea;
+  const sameSize = a.single != null && a.single === b.single;
+  if (sameSize && a.totalSheets !== b.totalSheets) return a.totalSheets < b.totalSheets;
   if (Math.abs(net(a) - net(b)) > 1) return net(a) < net(b);
   if (a.totalSheets !== b.totalSheets) return a.totalSheets < b.totalSheets;
   if (Math.abs(a.lastFree - b.lastFree) > 1) return a.lastFree > b.lastFree;
@@ -1560,7 +1800,7 @@ class DxfWriter {
     g(0, 'TABLE'); g(2, 'LAYER'); g(70, this.layers.length);
     for (const [name, color] of this.layers) { g(0, 'LAYER'); g(2, name); g(70, 0); g(62, color); g(6, 'CONTINUOUS'); }
     g(0, 'ENDTAB');
-    g(0, 'TABLE'); g(2, 'STYLE'); g(70, 1); g(0, 'STYLE'); g(2, 'STANDARD'); g(70, 0); g(40, 0); g(41, 1); g(50, 0); g(71, 0); g(42, 2.5); g(3, 'txt'); g(4, ''); g(0, 'ENDTAB');
+    g(0, 'TABLE'); g(2, 'STYLE'); g(70, 1); g(0, 'STYLE'); g(2, 'STANDARD'); g(70, 0); g(40, 0); g(41, 1); g(50, 0); g(71, 0); g(42, 2.5); g(3, 'arial.ttf'); g(4, '');   // font Arial: hiện đúng tiếng Việt trong AutoCAD g(0, 'ENDTAB');
     g(0, 'ENDSEC'); g(0, 'SECTION'); g(2, 'ENTITIES');
     return head.concat(this.out, ['0', 'ENDSEC', '0', 'EOF']).join('\r\n') + '\r\n';
   }
@@ -1576,23 +1816,23 @@ function dxfPart(d, layer, p, ox, oy, H) {
 /** DXF cho máy cắt: một kiểu tờ. */
 export function cutDXF(res, gi) {
   const g = res.groups[gi], d = new DxfWriter([['CAT', 7]]);
-  for (const p of g.items) dxfPart(d, 'CAT', p, 0, 0, g.H);
+  for (const p of g.items) dxfPart(d, 'CAT', p, 0, 0, g.needH ?? g.H);   // tăng khổ: vẽ đúng bề rộng tờ thực tế cần
   return d.toString();
 }
 /** DXF cutting plan chuẩn dự án – tất cả kiểu tờ trong một bản vẽ, xếp từ trên xuống. */
 export function planDXF(res, info = {}) {
   const d = new DxfWriter([['VIEN_TAM', 5], ['CHI_TIET', 7], ['SO_HIEU', 1], ['SURPLUS', 3], ['THUOC_DO', 4], ['KHUNG_TEN', 2], ['NHAT_CHAT', 30]]);
   const i = res.input, t = i.thickness;
-  const maxW = Math.max(...res.groups.map(g => g.W)), maxH = Math.max(...res.groups.map(g => g.H));
+  const maxW = Math.max(...res.groups.map(g => g.W)), maxH = Math.max(...res.groups.map(g => g.needH ?? g.H));
   const th = Math.max(20, Math.round(maxH / 45));                    // chiều cao chữ chung
   let first = 1, oy = 0;
   res.groups.forEach((g, gi) => {
-    const W = g.W, H = g.H, last = first + g.n - 1, range = first === last ? `${first}` : `${first}-${last}`;
+    const W = g.W, H = g.needH ?? g.H, last = first + g.n - 1, range = first === last ? `${first}` : `${first}-${last}`;
     oy -= H + 6 * th;                                                // chừa chỗ tiêu đề phía trên
     const by = oy;                                                   // đáy tờ
     // tiêu đề
     d.text('KHUNG_TEN', 0, by + H + 3.6 * th, th * 1.3, `CUTTING PLAN: PLATE ${t} - SHEET ${range}${g.n > 1 ? ` (x${g.n})` : ''}${g.remnantStock ? ' - REMNANT STOCK' : ''}`);
-    d.text('KHUNG_TEN', 0, by + H + 1.9 * th, th, `TOTAL USED: ${g.items.length} PCS   SIZE: ${W} x ${H} x ${t} mm   PLATE SERI.NO: ${g.lot || '................'}`);
+    d.text('KHUNG_TEN', 0, by + H + 1.9 * th, th, `TOTAL USED: ${g.items.length} PCS   SIZE: ${g.Wn ?? W} x ${g.Hn ?? H} x ${t} mm${g.needW || g.needH ? `   (ENLARGED -> SHEET >= ${W} x ${H})` : ''}   PLATE SERI.NO: ${g.lot || '................'}`);
     // tờ
     d.rect('VIEN_TAM', 0, by, W, H);
     // phần dư mép tờ: CHỈ GHI CHÚ kích thước (giữ lại hay bỏ do người dùng quyết định)
@@ -1806,10 +2046,10 @@ const pretty = n => {
   if (!Number.isFinite(n)) return '—';
   return (Math.round(n * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 2 });
 };
-const parseNum = (raw, label, { integer = false, positive = false } = {}) => {
+const parseNum = (raw, label, { integer = false, positive = false, minus = 0 } = {}) => {
   const txt = String(raw ?? '').replaceAll(',', '').trim();
   const v = txt === '' ? NaN : Number(txt);
-  if (!Number.isFinite(v) || v < 0 || v > LIMIT || (positive && v <= 0)) throw Error(`${label}: số không hợp lệ.`);
+  if (!Number.isFinite(v) || v < -minus || v > LIMIT || (positive && v <= 0)) throw Error(`${label}: số không hợp lệ.`);
   if (integer && !Number.isInteger(v)) throw Error(`${label}: phải là số nguyên.`);
   return v;
 };
@@ -1825,21 +2065,22 @@ const STRATEGY = {
 const strategyText = s => (STRATEGY[s.replace(/\+(fill|hole)/g, '')] || s) + (s.includes('+fill') ? ' + chèn khe' : '') + (s.includes('+hole') ? ' + chèn lỗ vành khuyên' : '');
 
 function drawSheet(res, gi) {
-  const i = res.input, g = res.groups[gi], sheetW = g.W, sheetH = g.H, SW = 1080, inset = 11, plotW = SW - 2 * inset;
+  const i = res.input, g = res.groups[gi], sheetW = g.W, sheetH = g.needH ?? g.H, cut = g.H - sheetH, SW = 1080, inset = 11, plotW = SW - 2 * inset;
   const SH = Math.round(Math.min(600, Math.max(300, plotW * sheetH / sheetW + 24)));
   const plotH = SH - 24, scale = Math.min(plotW / sheetW, plotH / sheetH);
   const W = sheetW * scale, H = sheetH * scale, x0 = inset + (plotW - W) / 2, y0 = 12 + (plotH - H) / 2;
   const pt = n => Number(n).toFixed(2);
   let body = '';
   // phần dư mép tờ: luôn ghi kích thước; dải được thu hồi (≥ ngưỡng) tô xanh, dải dưới ngưỡng ghi "hao phí"
-  for (const f of g.freeStrips || []) {
+  for (const f0 of g.freeStrips || []) {
+    const f = f0.side === 'bottom' ? { ...f0, h: f0.h - cut } : { ...f0, h: sheetH };
     if (Math.min(f.w, f.h) < 50) continue;                         // dải quá hẹp: chỉ ghi số, không vẽ khung
-    const kept = g.remnant && g.remnant.side === f.side, z = kept ? g.remnant : f;   // tấm lẻ: kích thước theo nhát tách
+    const kept = g.remnant && g.remnant.side === f.side, z = kept ? { ...g.remnant, h: f.side === 'right' ? sheetH : g.remnant.h } : f;   // tấm lẻ: kích thước theo nhát tách
     const fx = f.side === 'right' ? x0 + (sheetW - z.w) * scale : x0, fy = f.side === 'right' ? y0 : y0 + (sheetH - z.h) * scale;
     const fw = z.w * scale, fh = z.h * scale;
     body += kept ? `<rect x="${pt(fx)}" y="${pt(fy)}" width="${pt(fw)}" height="${pt(fh)}" fill="#e3f8eb" stroke="#169a70" stroke-width="1.6"/>`
       : `<rect x="${pt(fx)}" y="${pt(fy)}" width="${pt(fw)}" height="${pt(fh)}" fill="#fbf6ee" stroke="#c49a5a" stroke-width="1" stroke-dasharray="6 4"/>`;
-    const label = `${kept ? 'TẤM LẺ THU HỒI' : f.side === 'right' ? 'DƯ PHẢI' : 'DƯ DƯỚI'} ${pretty(z.w)} × ${pretty(z.h)}`, fsz = Math.min(18, fh * 0.5, fw / label.length * 1.7);
+    const label = `${kept ? 'TẤM LẺ THU HỒI' : f.side === 'right' ? 'DƯ PHẢI' : 'DƯ DƯỚI'} ${pretty(z.w)} × ${pretty(kept ? g.remnant.h : z.h)}`, fsz = Math.min(18, fh * 0.5, fw / label.length * 1.7);
     if (fsz >= 9) body += `<text x="${pt(fx + fw / 2)}" y="${pt(fy + fh / 2 + fsz * 0.35)}" font-size="${pt(fsz)}" fill="${kept ? '#147451' : '#8a5a12'}" font-weight="700" font-family="Arial,sans-serif" text-anchor="middle">${label}</text>`;
   }
   const m = i.margin * scale;
@@ -1868,7 +2109,7 @@ function drawSheet(res, gi) {
   if (i.cutMethod === 'shear') {
     const main = g.cuts.filter(c => c.seq > 0);
     for (const c of g.cuts) {
-      const color = c.seq === -1 ? '#169a70' : '#d58027', w = c.seq === 0 ? 0.9 : 1.6;
+      const color = c.rem || c.seq === -1 ? '#169a70' : '#d58027', w = c.seq === 0 ? 0.9 : c.rem ? 2.2 : 1.6;
       body += `<line x1="${pt(x0 + c.x1 * scale)}" y1="${pt(y0 + c.y1 * scale)}" x2="${pt(x0 + c.x2 * scale)}" y2="${pt(y0 + c.y2 * scale)}" stroke="${color}" stroke-width="${w}"${c.seq === 0 ? ' stroke-dasharray="4 3"' : ''}/>`;
     }
     if (main.length <= 80) for (const c of main) {
@@ -1878,7 +2119,7 @@ function drawSheet(res, gi) {
   }
   const defs = `<defs><pattern id="np-rot" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#1d1652" stroke-opacity=".22" stroke-width="1.4"/></pattern></defs>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SW} ${SH}" role="img" aria-label="Sơ đồ ${sheetRange(res, gi)}, ${g.items.length} chi tiết" preserveAspectRatio="xMidYMid meet">${defs}<rect width="${SW}" height="${SH}" fill="#faf7ff"/><rect x="${pt(x0)}" y="${pt(y0)}" width="${pt(W)}" height="${pt(H)}" fill="#f1ebfd" stroke="#793afa" stroke-width="2"/>${body}</svg>`;
-  const title = `${sheetRange(res, gi).toUpperCase()} · ${g.remnantStock ? 'TẤM LẺ KHO' : 'TẤM'} ${pretty(sheetW)} × ${pretty(sheetH)} × ${pretty(i.thickness)} mm${g.lot ? ' · ' + g.lot : ''}`;
+  const title = `${sheetRange(res, gi).toUpperCase()} · ${g.remnantStock ? 'TẤM LẺ KHO' : 'TẤM'} ${pretty(g.Wn ?? sheetW)} × ${pretty(g.Hn ?? sheetH)} × ${pretty(i.thickness)} mm${needText(g) ? ` · ${needText(g).toUpperCase()}` : ''}${g.lot ? ' · ' + g.lot : ''}`;
   const download = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SW} ${SH + 40}"><rect width="${SW}" height="${SH + 40}" fill="#faf7ff"/><text x="${SW / 2}" y="27" fill="#675295" font-size="20" text-anchor="middle" font-weight="700" font-family="Arial,sans-serif">${esc(title)} (×${g.n})</text><svg x="0" y="38" width="${SW}" height="${SH}" viewBox="0 0 ${SW} ${SH}">${svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '')}</svg></svg>`;
   return { svg, download, title };
 }
@@ -2006,6 +2247,23 @@ const CSS = `
 .np .np-est{color:#8a5a12;font-style:normal}
 .np td.np-k{color:#4a1fa8;font-weight:900}
 .np td.dev-up{color:#a3500a;font-weight:800}.np td.dev-down{color:#0f6e56;font-weight:800}
+.np .is-margin input{border:2px solid #16a374;background:#f2fdf8;font-weight:850;color:#0d6b4c}
+.np .is-margin span{color:#0d6b4c}
+.np .np-strip-rule{margin:-4px 0 12px}.np .np-strip-rule [hidden]{display:none}
+.np .np-strip-rule .np-cap span{font-size:14.5px;color:#0d6b4c}
+.np .np-tol-box{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:9px 12px;border:2px solid #e6a23c;border-radius:12px;background:#fff8ec;cursor:text}
+.np .np-tol-box span{white-space:normal;margin:0}
+.np .np-tol-box .np-rb-text b{color:#8a4b06}.np .np-tol-box .np-rb-text small{color:#8a5a12}
+.np .np-tol-box .np-rb-input input{border-color:#e6a23c;color:#8a4b06}.np .np-tol-box .np-rb-input small{color:#8a4b06}
+.np .np-tol2{gap:8px!important}
+.np .np-tol2 label{display:flex;flex-direction:column;align-items:center;margin:0}
+.np .np-tol2 label small{font-size:12.5px!important;font-weight:800}
+.np .np-tol2 input{width:62px!important;flex:0 0 62px!important;font-size:19px!important}
+.np .np-plan.is-enlarge{border-color:#e6a23c;background:#fff8ec}
+.np .np-plan.is-enlarge.is-active{border-color:#c2410c;box-shadow:0 0 0 3px #e6a23c33}
+.np .np-plan.is-enlarge b{color:#a3500a}
+.np .np-enlarge-warn{margin:0 0 8px;padding:7px 11px;border-radius:10px;background:#fff1dc;color:#8a4b06;font-weight:750;font-size:15px}
+.np .np-enlarge-warn[hidden]{display:none}
 .np .np-remnant-box{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 12px;padding:9px 12px;border:2px solid #16a374;border-radius:12px;background:linear-gradient(110deg,#e6fbf2,#f4fffa);cursor:text}
 .np .np-remnant-box span{white-space:normal;margin:0}
 .np .np-rb-text{flex:1 1 auto;min-width:0}
@@ -2035,8 +2293,8 @@ const CSS = `
 `;
 
 const DEFAULT_STATE = {
-  thickness: '20', gap: '3', margin: '10', remnantMin: '200', density: '7850', cutMethod: 'laser', material: 0,
-  thick: { laser: '20', shear: '3' }, gaps: { laser: '3', shear: '0' }, margins: { laser: '10', shear: '0' },
+  thickness: '20', gap: '3', margin: '0', remnantMin: '200', longStripMin: '300', widthTol: '10', lengthTol: '10', shrinkTol: '0.5', density: '7850', cutMethod: 'laser', material: 0,
+  thick: { laser: '20', shear: '3' }, gaps: { laser: '3', shear: '0' }, margins: { laser: '0', shear: '0' },   // chừa mép mặc định 0: bề rộng tôn thực tế thường > khổ danh nghĩa (anh xác nhận)
   stocks: {
     laser: [{ kind: 'std', W: '6000', H: '2000', qty: '', lot: '' }],
     shear: [{ kind: 'std', W: '2440', H: '1220', qty: '', lot: '' }],
@@ -2044,22 +2302,26 @@ const DEFAULT_STATE = {
   info: { project: '', drawingNo: '', material: '', drawnBy: '' },
   barem: '', stdSource: 'table', squareCaps: { laser: '15', shear: '14' },
   parts: [
-    { name: 'BM1', shape: 'rect', partW: '490', partH: '555', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '30', rotate: true },
-    { name: 'BM2', shape: 'rect', partW: '300', partH: '200', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '60', rotate: true },
-    { name: 'D310', shape: 'circle', partW: '300', partH: '300', diameter: '310', inner: '', allowance: '5', allowanceIn: '5', qty: '12', rotate: true },
-    { name: 'VK900', shape: 'ring', partW: '300', partH: '300', diameter: '900', inner: '640', allowance: '5', allowanceIn: '5', qty: '4', rotate: true },
+    { name: 'CT1', shape: 'rect', partW: '490', partH: '555', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '30', rotate: true },
+    { name: 'CT2', shape: 'rect', partW: '300', partH: '200', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '60', rotate: true },
+    { name: 'CT3', shape: 'circle', partW: '300', partH: '300', diameter: '310', inner: '', allowance: '5', allowanceIn: '5', qty: '12', rotate: true },
+    { name: 'CT4', shape: 'ring', partW: '300', partH: '300', diameter: '900', inner: '640', allowance: '5', allowanceIn: '5', qty: '4', rotate: true },
   ],
 };
 const ALLOW_DEFAULT = { rect: '0', circle: '5', ring: '5' };
 const PRESETS = { laser: [[6000, 2000], [3000, 1500], [2500, 1250]], shear: [[2440, 1220], [3000, 1500], [6000, 2000]] };
 let savedState = null;
 /** Phần tờ thực sử dụng (đơn vị TẤM): 1 − tấm lẻ thu hồi / diện tích tờ. Không thu hồi = 1 tấm. Ví dụ thu hồi 2 m trên tờ 6 m: 4/6 = 0,667 tấm. */
-const sheetUse = g => g.remnant ? 1 - (g.remnant.w * g.remnant.h) / (g.W * g.H) : 1;
+const sheetUse = g => g.remnant ? 1 - (g.remnant.w * g.remnant.h) / ((g.Wn ?? g.W) * (g.Hn ?? g.H)) : 1;
+/** Phần tăng khổ của tờ (phương án tăng khổ): "dài +3, rộng +6" */
+const growText = g => [g.needW ? `dài +${g.needW - g.Wn}` : '', g.needH ? `rộng +${g.needH - g.Hn}` : ''].filter(Boolean).join(', ');
+const needText = g => (g.needW || g.needH) ? `cần tờ ≥ ${g.W} × ${g.H}` : '';
+const sizeOf = g => `${g.Wn ?? g.W}×${g.Hn ?? g.H}${growText(g) ? ` (${growText(g)})` : ''}`;
 const fmtTam = v => { const r = Math.round(v * 1000) / 1000; return Number.isInteger(r) ? String(r) : r.toFixed(3); };   // dấu chấm thập phân như các số khác
 /** Tổng xuất kho quy đổi theo tấm, tách theo khổ: "1,403 tấm 6000×2000". */
 const useBySize = res => {
   const m = new Map();
-  res.groups.forEach(g => { const k = (g.remnantStock ? 'tấm lẻ ' : '') + g.W + '×' + g.H; m.set(k, (m.get(k) || 0) + g.n * sheetUse(g)); });
+  res.groups.forEach(g => { const k = (g.remnantStock ? 'tấm lẻ ' : '') + (g.Wn ?? g.W) + '×' + (g.Hn ?? g.H); m.set(k, (m.get(k) || 0) + g.n * sheetUse(g)); });
   return [...m].map(([k, v]) => `${fmtTam(v)} tấm ${k}`).join(' + ');
 };
 
@@ -2139,9 +2401,17 @@ export function mount(root, ctx = {}) {
     <div class="np-methods"><h3>Phương pháp cắt</h3><div class="np-toggle" role="group" aria-label="Phương pháp cắt">
      <button type="button" data-cut="laser">Laser / Plasma</button><button type="button" data-cut="shear">Chặt sấn</button></div>
      <p class="np-hint" id="np-cut-hint"></p></div>
-    <div class="np-row three">${fld('thickness', 'Dày (mm)', st.thickness)}${fld('gap', 'Mạch cắt (mm)', st.gap, 'is-kerf')}${fld('margin', 'Chừa mép (mm)', st.margin)}</div>
+    <div class="np-row three">${fld('thickness', 'Dày (mm)', st.thickness)}${fld('gap', 'Mạch cắt (mm)', st.gap, 'is-kerf')}${fld('margin', 'Chừa mép (mm)', st.margin, 'is-margin')}</div>
     <label class="np-remnant-box"><span class="np-rb-text"><b>Ngưỡng thu hồi tấm lẻ</b><small>Dải dư có cạnh ngắn ≥ ngưỡng được thu hồi, nhỏ hơn tính vào hao phí</small></span>
      <span class="np-rb-input"><input name="remnantMin" value="${esc(st.remnantMin)}" inputmode="decimal" autocomplete="off" aria-label="Ngưỡng thu hồi tấm lẻ (mm)"><small>mm</small></span></label>
+    <div class="np-strip-rule" id="np-strip-rule">
+     <p class="np-hint" id="np-strip-laser">Laser / plasma: tấm lẻ luôn giữ nguyên khổ rộng tờ (cắt theo chiều dài, vd. 1800 × 2000); dải dọc chiều dài như 6000 × 500 không thu hồi.</p>
+     <label class="np-cap" id="np-strip-shear"><span>Chặt sấn: dải dài (2440 × h) thu hồi khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
+    </div>
+    <div class="np-tol-box"><span class="np-rb-text"><b>Đề xuất khi "cận"</b><small>Tờ thực tế thường lớn hơn khổ danh nghĩa; chi tiết giảm 0,5 mm thường chấp nhận được. Nếu điều chỉnh nhỏ mà tiết kiệm rõ, máy đưa đề xuất để người dùng duyệt. 0 = tắt.</small></span>
+     <span class="np-rb-input np-tol2"><label><small>Dài +</small><input name="lengthTol" value="${esc(st.lengthTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép tăng khổ dài (mm)"></label>
+      <label><small>Rộng +</small><input name="widthTol" value="${esc(st.widthTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép tăng khổ rộng (mm)"></label>
+      <label><small>Chi tiết −</small><input name="shrinkTol" value="${esc(st.shrinkTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép giảm kích thước chi tiết (mm)"></label><small>mm</small></span></div>
     <div class="np-section">Kho phôi <small>Số tờ trống = không giới hạn</small></div>
     <div class="np-stock-head"><span>Loại</span><span>Dài (mm)</span><span>Rộng (mm)</span><span>Số tờ</span><span>Mã lô / seri</span><span></span></div>
     <div id="np-stocks"></div>
@@ -2171,6 +2441,7 @@ export function mount(root, ctx = {}) {
      <div class="np-tb-cell"><span>Thành phẩm</span><b id="np-tb-tp">—</b></div>
     </div>
     <div class="np-plans" id="np-plans" role="group" aria-label="Các phương án phối kết hợp"></div>
+    <p class="np-enlarge-warn" id="np-enlarge-warn" hidden></p>
     <div class="np-tabs" id="np-tabs" role="tablist" aria-label="Các tờ"></div>
     <div class="np-figure"><div class="np-fig-title" id="np-fig-title">SƠ ĐỒ TRẢI PHÔI</div><div class="np-preview" id="np-preview">Đang lập sơ đồ…</div><div class="np-legend" id="np-legend"></div></div>
     <div class="np-caption"><strong class="np-summary" id="np-summary">—</strong><span class="np-proof" id="np-proof"></span></div>
@@ -2230,7 +2501,7 @@ export function mount(root, ctx = {}) {
     put('np-count', `${st.parts.length} loại · ${total.toLocaleString('vi-VN')} chiếc`);
   }
   function collect() {
-    for (const k of ['thickness', 'gap', 'margin', 'remnantMin']) st[k] = val(k);
+    for (const k of ['thickness', 'gap', 'margin', 'remnantMin', 'longStripMin', 'widthTol', 'lengthTol', 'shrinkTol']) st[k] = val(k);
     st.info = { project: val('project'), drawingNo: val('drawingNo'), material: val('matName'), drawnBy: val('drawnBy') };
     stocks().forEach((s, j) => { s.W = val(`sW${j}`); s.H = val(`sH${j}`); s.qty = val(`sQ${j}`); s.lot = val(`sL${j}`); });
     st.parts.forEach((p, t) => {
@@ -2249,6 +2520,7 @@ export function mount(root, ctx = {}) {
     if (catalog) $('np-mat-list').value = st.material >= 4 ? String(st.material) : '';
     for (const k of ['thickness', 'gap', 'margin']) root.querySelector(`[name="${k}"]`).value = st[k];
     root.querySelector('[name="gap"]').closest('label').querySelector('span').textContent = st.cutMethod === 'shear' ? 'Khe hở (mm)' : 'Mạch cắt (mm)';
+    $('np-strip-laser').hidden = st.cutMethod === 'shear'; $('np-strip-shear').hidden = st.cutMethod !== 'shear';
     put('np-cut-hint', st.cutMethod === 'shear' ? 'Nhát chặt chạy suốt · chỉ chữ nhật · phần dư là chữ nhật'
       : 'Xếp tự do chữ nhật, tròn, vành khuyên · xoay vòng, so le, chèn khe, chèn lỗ');
     renderStocks();
@@ -2264,8 +2536,8 @@ export function mount(root, ctx = {}) {
     const parts = st.parts.map((p, t) => {
       const lab = `Chi tiết ${t + 1}`, qtyRaw = String(p.qty).trim();
       if (!qtyRaw || Number(qtyRaw.replaceAll(',', '')) === 0) return null;
-      const name = String(p.name || '').trim() || `CT${t + 1}`;
-      const base = { name, shape: p.shape, rotate: p.rotate !== false, allowance: parseNum(p.allowance || '0', `${lab} – dư gia công`),
+      const name = String(p.name || '').trim() || `CT${t + 1}`;   // mã chỉ để nhận diện – quy cách mới là điều người dùng quan tâm
+      const base = { name, shape: p.shape, rotate: p.rotate !== false, allowance: parseNum(p.allowance || '0', `${lab} – dư gia công`, { minus: 5 }),
         qty: parseNum(p.qty, `${lab} – số lượng`, { integer: true }) };
       if (p.shape === 'rect') return { ...base, partW: parseNum(p.partW, `${lab} – dài TP`, { positive: true }), partH: parseNum(p.partH, `${lab} – rộng TP`, { positive: true }) };
       const d = { ...base, diameter: parseNum(p.diameter, `${lab} – Ø ngoài TP`, { positive: true }) };
@@ -2275,7 +2547,7 @@ export function mount(root, ctx = {}) {
     return {
       cutMethod: st.cutMethod, density, stocks: stockList,
       thickness: parseNum(st.thickness, 'Dày', { positive: true }), gap: parseNum(st.gap, st.cutMethod === 'shear' ? 'Khe hở' : 'Mạch cắt'),
-      margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), parts,
+      margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), longStripMin: parseNum(st.longStripMin || '0', 'Ranh giới dải dài'), widthTol: parseNum(st.widthTol || '0', 'Cho phép tăng khổ rộng'), lengthTol: parseNum(st.lengthTol || '0', 'Cho phép tăng khổ dài'), shrinkTol: parseNum(st.shrinkTol || '0', 'Cho phép giảm kích thước'), parts,
     };
   }
   function status(msg = '', busy = false) {
@@ -2296,14 +2568,16 @@ export function mount(root, ctx = {}) {
   /** Dư phải, dư dưới luôn ghi kích thước; dải được thu hồi đánh dấu ✓, dải còn lại ghi "vào hao phí". */
   const freeText = g => {
     const part = side => {
-      const f = (g.freeStrips || []).find(x => x.side === side), name = side === 'right' ? 'Dư phải' : 'Dư dưới';
+      const f0 = (g.freeStrips || []).find(x => x.side === side), name = side === 'right' ? 'Dư phải' : 'Dư dưới';
+      const sh = g.needH ?? g.H, f = !f0 ? null : side === 'right' ? { ...f0, h: sh } : { ...f0, h: f0.h - (g.H - sh) };   // tăng khổ: theo bề rộng thực tế cần
       if (!f) return `${name}: 0`;
       const kept = g.remnant && g.remnant.side === side;
       return `${name}: ${pretty(f.w)} × ${pretty(f.h)} mm${kept ? ' → thu hồi ' + pretty(g.remnant.w) + ' × ' + pretty(g.remnant.h) : ' (vào hao phí)'}`;
     };
     return `${part('right')} · ${part('bottom')}`;
   };
-  const sizeText = T => T.ring ? `Ø${pretty(T.cw)} / Ø${pretty(T.hole)}` : T.circle ? 'D' + pretty(T.cw) : pretty(T.cw) + ' × ' + pretty(T.ch);
+  const sizeText = T => { const s = last?.shrinkMM || 0, cw = T.cw - s, ch = T.ch - s;   // phương án giảm kích thước: hiện kích thước cắt sau khi giảm
+    return T.ring ? `Ø${pretty(cw)} / Ø${pretty(T.hole)}` : T.circle ? 'D' + pretty(cw) : pretty(cw) + ' × ' + pretty(ch); };
   const chip = T => { const [fill, edge] = colorOf(T.t); return `<i class="np-chip${T.ring ? ' ring' : T.circle ? ' round' : ''}" style="background:${fill};border-color:${edge}"></i>`; };
   function showGroup(gi) {
     if (!last) return;
@@ -2323,8 +2597,8 @@ export function mount(root, ctx = {}) {
     full = res;
     if (!keepPlan || planIdx >= res.plans.length) planIdx = 0;
     // chỉ hiện thẻ khi có phương án thay thế khác biệt thật; mặc định luôn mở phương án hao phí thấp nhất
-    $('np-plans').innerHTML = res.plans.length < 2 ? '' : res.plans.map((p, k) => `<button type="button" class="np-plan" data-plan="${k}">
-        <b>${k === 0 ? '★ Phương án tốt nhất' : 'Phương án khác ' + k}</b><big>${p.totalSheets} tờ · ${p.wastePercent.toFixed(2)} %</big>
+    $('np-plans').innerHTML = res.plans.length < 2 ? '' : res.plans.map((p, k) => `<button type="button" class="np-plan${p.enlargeMM || p.shrinkMM ? ' is-enlarge' : ''}" data-plan="${k}">
+        <b>${k === 0 ? '★ Phương án tốt nhất' : p.enlargeMM && p.shrinkMM ? '⚠ Đề xuất kết hợp – cần duyệt' : p.enlargeMM ? '⚠ Đề xuất tăng khổ – cần duyệt' : p.shrinkMM ? '⚠ Đề xuất giảm kích thước – cần duyệt' : 'Phương án khác ' + k}</b><big>${p.totalSheets} tờ · ${p.wastePercent.toFixed(2)} %</big>
         <small>${esc(p.reason)}</small><small>Thu hồi ${pretty(p.recoveredKG)} kg · ${p.kinds} kiểu tờ</small></button>`).join('');
     showPlan(planIdx);
   }
@@ -2404,17 +2678,23 @@ export function mount(root, ctx = {}) {
     const res = { ...full, ...full.plans[k] };
     last = res;
     root.querySelectorAll('[data-plan]').forEach(b => { const yes = Number(b.dataset.plan) === k; b.classList.toggle('is-active', yes); b.setAttribute('aria-pressed', String(yes)); });
-    const multi = new Set(res.groups.map(g => g.W + 'x' + g.H)).size > 1;
+    const multi = new Set(res.groups.map(g => sizeOf(g))).size > 1 || res.groups.some(g => g.needW || g.needH);
+    const warn = $('np-enlarge-warn');
+    warn.hidden = !(res.enlargeMM || res.shrinkMM);
+    if (res.enlargeMM || res.shrinkMM) warn.textContent = '⚠ ' + [
+      res.enlargeMM ? `Dùng tờ thực tế lớn hơn khổ danh nghĩa (${[res.enlargeL ? 'dài +' + res.enlargeL + ' mm' : '', res.enlargeW ? 'rộng +' + res.enlargeW + ' mm' : ''].filter(Boolean).join(', ')}) – đo tờ trước khi cắt: ${[...new Set(res.groups.filter(g => g.needW || g.needH).map(needText))].join(' / ')} mm` : '',
+      res.shrinkMM ? `Giảm kích thước cắt ${res.shrinkMM} mm mỗi chi tiết (dài / rộng hoặc đường kính) – kiểm tra dung sai trước khi duyệt` : '',
+    ].filter(Boolean).join('. ') + '. Xuất kho và thành phẩm vẫn tính theo số liệu danh nghĩa.';
     $('np-tabs').innerHTML = res.groups.map((g, gi) => {
       const r = g.freeStrips.find(f => f.side === 'right');
-      return `<button type="button" class="np-tab" role="tab" data-group="${gi}"><b>${sheetRange(res, gi)}${g.n > 1 ? ` · ×${g.n}` : ''}</b><small>${multi || g.remnantStock ? `${g.remnantStock ? 'Lẻ ' : ''}${g.W}×${g.H} · ` : ''}${g.items.length} ct · hp ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(1) + ' %'}${g.remnant ? ` · <span class="np-tab-rem">sử dụng ${fmtTam(sheetUse(g))} tấm</span>` : ''}</small></button>`;
+      return `<button type="button" class="np-tab" role="tab" data-group="${gi}"><b>${sheetRange(res, gi)}${g.n > 1 ? ` · ×${g.n}` : ''}</b><small>${multi || g.remnantStock ? `${g.remnantStock ? 'Lẻ ' : ''}${sizeOf(g)} · ` : ''}${g.items.length} ct · hp ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(1) + ' %'}${g.remnant ? ` · <span class="np-tab-rem">sử dụng ${fmtTam(sheetUse(g))} tấm</span>` : ''}</small></button>`;
     }).join('');
     showGroup(group < res.groups.length ? group : 0);
     const proof = $('np-proof');
     proof.textContent = res.lowerBound == null ? '' : res.proven ? '✓ Số tờ tối thiểu – đã chứng minh' : `Cận dưới ${res.lowerBound} tờ · phương án hơn cận dưới ${res.totalSheets - res.lowerBound} tờ`;
     proof.classList.toggle('gap', res.lowerBound != null && !res.proven);
     const bySize = new Map();
-    res.groups.forEach(g => { const kk = (g.remnantStock ? 'lẻ ' : '') + g.W + '×' + g.H; bySize.set(kk, (bySize.get(kk) || 0) + g.n); });
+    res.groups.forEach(g => { const kk = (g.remnantStock ? 'lẻ ' : '') + sizeOf(g); bySize.set(kk, (bySize.get(kk) || 0) + g.n); });
     put('np-sheets', String(res.totalSheets)); put('np-sheets-sub', [...bySize].map(([kk, n]) => `${n} tờ ${kk}`).join(' · '));
     put('np-issued', pretty(res.issuedKG));
     put('np-issued-sub', `Thực tiêu hao ${pretty(res.issuedKG - res.recoveredKG)} kg` + (res.remnantUsedKG ? ` · gồm ${pretty(res.remnantUsedKG)} kg tấm lẻ kho` : ''));
@@ -2481,7 +2761,11 @@ export function mount(root, ctx = {}) {
     const tab = e.target.closest('[data-group]'); if (tab) { showGroup(Number(tab.dataset.group)); return; }
     const pl = e.target.closest('[data-plan]'); if (pl && full) { group = 0; showPlan(Number(pl.dataset.plan)); return; }
     const del = e.target.closest('[data-del]');
-    if (del && st.parts.length > 1) { collect(); st.parts.splice(Number(del.dataset.del), 1); renderParts(); collect(); schedule(); return; }
+    if (del && st.parts.length > 1) {
+      collect(); st.parts.splice(Number(del.dataset.del), 1);
+      st.parts.forEach((p, k) => { if (/^CT\d+$/.test(String(p.name).trim())) p.name = `CT${k + 1}`; });   // mã tự đặt: đánh lại số
+      renderParts(); collect(); schedule(); return;
+    }
     const sdel = e.target.closest('[data-sdel]');
     if (sdel && stocks().length > 1) { collect(); stocks().splice(Number(sdel.dataset.sdel), 1); renderStocks(); collect(); schedule(); return; }
     const pre = e.target.closest('[data-preset]');
@@ -2532,7 +2816,8 @@ export function mount(root, ctx = {}) {
   });
   on($('np-add'), 'click', () => {
     collect();
-    st.parts.push({ name: `CT${st.parts.length + 1}`, shape: 'rect', partW: '', partH: '', diameter: '', inner: '', allowance: '0', allowanceIn: '5', qty: '1', rotate: true });
+    let no = st.parts.length + 1; while (st.parts.some(p => String(p.name).trim() === `CT${no}`)) no++;
+    st.parts.push({ name: `CT${no}`, shape: 'rect', partW: '', partH: '', diameter: '', inner: '', allowance: '0', allowanceIn: '5', qty: '1', rotate: true });
     renderParts(); collect();
     root.querySelector(`[name="partW${st.parts.length - 1}"]`)?.focus();
   });
@@ -2552,7 +2837,7 @@ export function mount(root, ctx = {}) {
   on($('np-dxf-cut'), 'click', () => {
     if (!last) return;
     const files = last.groups.map((g, gi) => ({
-      name: `${fileTag()}_${sheetRange(last, gi).replace(/\s|–/g, '-')}${g.n > 1 ? `_x${g.n}` : ''}_${g.W}x${g.H}x${last.input.thickness}.dxf`,
+      name: `${fileTag()}_${sheetRange(last, gi).replace(/\s|–/g, '-')}${g.n > 1 ? `_x${g.n}` : ''}_${g.W}x${g.needH ?? g.H}x${last.input.thickness}.dxf`,
       data: cutDXF(last, gi),
     }));
     downloadBlob?.(new Blob([zipFiles(files)], { type: 'application/zip' }), `${fileTag()}_DXF_may_cat.zip`);
@@ -2572,7 +2857,7 @@ export function mount(root, ctx = {}) {
     const title = `${matName()} ${i.thickness} mm – ${i.cutMethod === 'shear' ? 'chặt sấn' : 'laser / plasma'}`;
     const shapeOf = T => T.ring ? 'Vành khuyên' : T.circle ? 'Tròn' : 'Chữ nhật';
     const tpOf = T => T.ring ? `Ø${T.tpW} / Ø${T.tpIn}` : T.circle ? `D${T.tpW}` : `${T.tpW} x ${T.tpH}`;
-    const cutOf = T => T.ring ? `Ø${T.cw} / Ø${T.hole}` : T.circle ? `D${T.cw}` : `${T.cw} x ${T.ch}`;
+    const sh = res.shrinkMM || 0, cutOf = T => T.ring ? `Ø${T.cw - sh} / Ø${T.hole}` : T.circle ? `D${T.cw - sh}` : `${T.cw - sh} x ${T.ch - sh}`;
     // 1. danh sách chi tiết + hao phí tiêu chuẩn / thực tế
     const s1 = [[{ v: `THÔNG TIN CẮT – ${title}`, s: 'title' }], [{ v: `${st.info.project ? 'Dự án: ' + st.info.project + ' · ' : ''}Phương án: ${res.label} · HP THỰC TẾ dùng cho bóc tách, chi phí và thống kê; HP tiêu chuẩn chỉ để tham chiếu (kiểm soát, báo giá) · HP thực tế = HP tiêu chuẩn × K, với K = (xuất kho − thu hồi − Σ TP) / Σ (TP × HP tiêu chuẩn) = ${alloc.K == null ? '—' : alloc.K.toFixed(4)}`, s: 'note' }],
       head(['NO', 'Mã chi tiết', 'Hình dạng', 'Thành phẩm (mm)', 'Kích thước cắt (mm)', 'Số lượng', 'KL TP / chiếc (kg)', 'KL TP (kg)']).concat(
@@ -2597,8 +2882,9 @@ export function mount(root, ctx = {}) {
     // 2. sơ đồ từng tờ
     const s2 = [[{ v: `SƠ ĐỒ CẮT TỪNG TỜ – ${title}`, s: 'title' }], [{ v: `Mạch cắt ${i.gap} mm · chừa mép ${i.margin} mm · thu hồi tấm lẻ khi cạnh ngắn ≥ ${i.remnantMin} mm`, s: 'note' }],
       head(['Kiểu tờ', 'Tờ số', 'Số tờ', 'Khổ (mm)', 'Nguồn phôi', 'Mã lô / seri', ...res.types.map(T => `${T.t + 1}. ${T.name}`), 'Sử dụng (tấm / tờ)', 'Sử dụng cả nhóm (tấm)', 'Lấp đầy (%)', 'Hao phí tờ (%)', 'Dư phải (mm)', 'Dư dưới (mm)', 'Tấm lẻ thu hồi (mm)'])];
-    const fr = (g, side) => { const f = g.freeStrips.find(x => x.side === side); return f ? `${Math.round(f.w * 10) / 10} x ${Math.round(f.h * 10) / 10}` : '0'; };
-    res.groups.forEach((g, gi) => s2.push([{ v: gi + 1, s: 'int' }, sheetRange(res, gi), { v: g.n, s: 'int' }, `${g.W} x ${g.H}`, g.remnantStock ? 'Tấm lẻ kho' : 'Khổ chuẩn', g.lot || '',
+    const fr = (g, side) => { const f = g.freeStrips.find(x => x.side === side), sh = g.needH ?? g.H;
+      if (!f) return '0'; const h = side === 'right' ? sh : f.h - (g.H - sh); return `${Math.round(f.w * 10) / 10} x ${Math.round(h * 10) / 10}`; };
+    res.groups.forEach((g, gi) => s2.push([{ v: gi + 1, s: 'int' }, sheetRange(res, gi), { v: g.n, s: 'int' }, needText(g) ? `${g.Wn} x ${g.Hn} (${needText(g)})` : `${g.W} x ${g.H}`, g.remnantStock ? 'Tấm lẻ kho' : 'Khổ chuẩn', g.lot || '',
       ...res.types.map(T => ({ v: g.counts[T.t], s: 'int' })), { v: Math.round(sheetUse(g) * 1000) / 1000, s: 'dec3' }, { v: Math.round(g.n * sheetUse(g) * 1000) / 1000, s: 'dec3' }, pc(g.usedPercent), pc(g.wastePercent), fr(g, 'right'), fr(g, 'bottom'), g.remnant ? `${g.remnant.w} x ${g.remnant.h}` : '']));
     // 3. toạ độ
     const s3 = [[{ v: 'TOẠ ĐỘ CHI TIẾT (gốc: góc trên-trái tờ, mm)', s: 'title' }], [],
@@ -2609,7 +2895,9 @@ export function mount(root, ctx = {}) {
     const s4 = [[{ v: `TỔNG HỢP ĐỊNH MỨC – ${title}`, s: 'title' }], [], head(['Hạng mục', 'Giá trị', 'Ghi chú']),
       ['Dự án', st.info.project || '', ''], ['Số bản vẽ', st.info.drawingNo || '', ''], ['Vật liệu', matName(), `${i.density} kg/m³`],
       ['Chiều dày', { v: i.thickness, s: 'dec' }, 'mm'], ['Phương pháp cắt', i.cutMethod === 'shear' ? 'Chặt sấn' : 'Laser / Plasma', `mạch cắt ${i.gap} mm · chừa mép ${i.margin} mm`],
-      ['Phương án', res.label, ''], ['Số tờ xuất', { v: res.totalSheets, s: 'int' }, [...new Set(res.groups.map(g => `${g.W}×${g.H}`))].join(', ')],
+      ['Phương án', res.label, ''], ['Số tờ xuất', { v: res.totalSheets, s: 'int' }, [...new Set(res.groups.map(g => sizeOf(g)))].join(', ')],
+      ...(res.shrinkMM ? [['Giảm kích thước cắt', { v: res.shrinkMM, s: 'dec' }, 'mm mỗi chi tiết (dài / rộng hoặc đường kính) – người dùng duyệt']] : []),
+      ...(res.enlargeMM ? [['Tăng khổ phôi', res.label.split(' + ')[0].replace('Tăng khổ ', ''), `${[...new Set(res.groups.filter(g => g.needW || g.needH).map(needText))].join(' / ')} mm; xuất kho vẫn tính theo khổ danh nghĩa – người dùng duyệt`]] : []),
       ['Xuất kho quy đổi (sử dụng)', useBySize(res), 'tấm · có thu hồi thì = 1 − tấm lẻ / tờ'],
       ['Khối lượng xuất kho', r2(res.issuedKG), 'kg'], ['Tấm lẻ thu hồi', r2(res.recoveredKG), `kg · ngưỡng ≥ ${i.remnantMin} mm`],
       ['Thép thực tiêu hao', r2(res.issuedKG - res.recoveredKG), 'kg'], ['Khối lượng thành phẩm', r2(res.finishedKG), 'kg (phủ bì, vành khuyên trừ lỗ)'],
