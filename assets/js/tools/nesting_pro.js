@@ -425,14 +425,24 @@ function buildBlock(C, T, R, o) {
   bw = Math.min(bw, R.w); bh = Math.min(bh, R.h);
   // KHỐI THIẾU CHIẾC: chỗ của các chiếc bớt đi nằm TRONG khung khối thành ô trống dùng được
   // (vd. khối 3 × 3 chỉ lấy 8 chiếc -> trống 1 ô vừa 3 mặt bích). Chỉ nhận khi vẫn chặt suốt được.
-  let hole = null;
+  // có thể có nhiều ô trống (mỗi cột / hàng bị bớt một đoạn): gom các chiếc bị bớt theo cột, mỗi cột một ô;
+  // thêm từng ô nếu vẫn chặt suốt được cùng các chiếc giữ lại và các ô đã nhận.
+  const holes = [];
   if (removed.length) {
-    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-    for (const p of removed) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x + p.w + k); y1 = Math.max(y1, p.y + p.h + k); }
-    x1 = Math.min(x1, R.x + bw); y1 = Math.min(y1, R.y + bh);
-    const h = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
-    const clash = raw.some(p => p.x < h.x + h.w - EPS && p.x + p.w + k > h.x + EPS && p.y < h.y + h.h - EPS && p.y + p.h + k > h.y + EPS);
-    if (h.w > EPS && h.h > EPS && !clash && guillotineOK([...raw, { x: h.x, y: h.y, w: h.w - k, h: h.h - k }], k)) hole = h;
+    const groupsBy = new Map();
+    for (const p of removed) { const key = Math.round(o.order === 'x' ? p.x : p.y); if (!groupsBy.has(key)) groupsBy.set(key, []); groupsBy.get(key).push(p); }
+    const accepted = [];
+    for (const list of groupsBy.values()) {
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      for (const p of list) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x + p.w + k); y1 = Math.max(y1, p.y + p.h + k); }
+      x1 = Math.min(x1, R.x + bw); y1 = Math.min(y1, R.y + bh);
+      const h = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+      if (!(h.w > EPS && h.h > EPS)) continue;
+      const hit = q => q.x < h.x + h.w - EPS && q.x + q.w + k > h.x + EPS && q.y < h.y + h.h - EPS && q.y + q.h + k > h.y + EPS;
+      if (raw.some(hit) || accepted.some(q => hit({ x: q.x, y: q.y, w: q.w - k, h: q.h - k }))) continue;
+      const pseudo = [...raw, ...accepted, h].map(q => (q === h || accepted.includes(q) ? { x: q.x, y: q.y, w: q.w - k, h: q.h - k } : q));
+      if (guillotineOK(pseudo, k)) { accepted.push(h); holes.push(h); }
+    }
   }
   // xén các nhát nội bộ vào khung bao (giao của sơ đồ chặt suốt với một hình chữ nhật vẫn chặt suốt)
   const xMax = R.x + bw - k, yMax = R.y + bh - k, inner = [];
@@ -441,7 +451,7 @@ function buildBlock(C, T, R, o) {
     if (c.x1 === c.x2 ? c.x1 < xMax - EPS && y2 - y1 > EPS : c.y1 < yMax - EPS && x2 - x1 > EPS)
       inner.push({ x1, y1, x2, y2, seq: 0 });
   }
-  return { items: raw.map(p => tag(T, p)), cuts: inner, bw, bh, hole };
+  return { items: raw.map(p => tag(T, p)), cuts: inner, bw, bh, holes };
 }
 
 /** Ước lượng nhanh diện tích lấp được của ô R nếu chỉ dùng MỘT loại (loại tốt nhất còn chi tiết). */
@@ -521,7 +531,7 @@ function blockPack(C, rem0, region, opt, quota = null) {
     const b = buildBlock(C, best.T, R, best.o);
     if (!b.items.length) continue;
     items.push(...b.items); rem[best.T.t] -= b.items.length; counts[best.T.t] += b.items.length; blocks++;
-    if (b.hole) free.push(b.hole);                                  // ô trống trong khối thiếu chiếc
+    for (const h of b.holes || []) free.push(h);                     // các ô trống trong khối thiếu chiếc
     const { bw, bh } = b, k = C.k;
     let mode = opt.rule === 'look' && opt.split === 'look' ? best.mode : opt.split;
     if (mode === 'look') mode = 'max';
