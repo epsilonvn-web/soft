@@ -662,7 +662,7 @@ function dxfWriter(layers) {
       p(0, 'TABLE'); p(2, 'LAYER'); p(70, layers.length);
       for (const [name, color] of layers) { p(0, 'LAYER'); p(2, name); p(70, 0); p(62, color); p(6, 'CONTINUOUS'); }
       p(0, 'ENDTAB');
-      p(0, 'TABLE'); p(2, 'STYLE'); p(70, 1); p(0, 'STYLE'); p(2, 'STANDARD'); p(70, 0); p(40, 0); p(41, 1); p(50, 0); p(71, 0); p(42, 2.5); p(3, 'arial.ttf'); p(4, '');   // font Arial: hiện đúng tiếng Việt trong AutoCAD p(0, 'ENDTAB');
+      p(0, 'TABLE'); p(2, 'STYLE'); p(70, 1); p(0, 'STYLE'); p(2, 'STANDARD'); p(70, 0); p(40, 0); p(41, 1); p(50, 0); p(71, 0); p(42, 2.5); p(3, 'arial.ttf'); p(4, ''); p(0, 'ENDTAB');   // font Arial: hiện đúng tiếng Việt trong AutoCAD
       p(0, 'ENDSEC'); p(0, 'SECTION'); p(2, 'ENTITIES');
       return h.concat(out, ['0', 'ENDSEC', '0', 'EOF']).join('\r\n') + '\r\n';
     },

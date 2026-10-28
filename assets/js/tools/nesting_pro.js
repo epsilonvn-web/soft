@@ -12,7 +12,11 @@
  *  - Tấm lẻ thu hồi khi cạnh ngắn ≥ ngưỡng (mặc định 200 mm, TÙY CHỈNH); dưới ngưỡng tính vào hao phí.
  *  - Phần dư mép mỗi tờ (dư phải, dư dưới) luôn được ghi kích thước, dù to hay nhỏ.
  *  - Mỗi lần đổi số liệu chạy lại từ đầu, thử nhiều cách phối kết hợp, đưa ra các phương án khác nhau để chọn.
- *  - Thứ tự xếp hạng: đủ số lượng → thép thực tiêu hao ít nhất → ít tờ → xếp khít → sơ đồ gọn (ít khối).
+ *  - Thứ tự xếp hạng (chốt 28/10/2026): đủ số lượng → ít tờ → ÍT TẤM LẺ (bớt 1 tấm lẻ khi hao phí tăng ≤ 2 điểm %, chỉnh được)
+ *    → tấm lẻ lớn nhất → hao phí thấp nhất → sơ đồ gọn. Dồn dư về tờ cuối để gom thành một tấm lẻ.
+ *  - Bán thành phẩm (BTP, chỉ thép tấm): thư viện tối đa 5 mã mỗi chiều dày (mác dùng lẫn); thợ tích mã được ghép (thứ tự trong
+ *    master data chỉ để hiển thị – mã đứng đầu thường được tích nhất); lấp phần dư mép tờ để tấm lẻ về 0;
+ *    hao phí tính BTP như một chi tiết trong đơn hàng; giới hạn số lượng theo tồn kho BTP.
  *  - Chặt sấn: chỉ chữ nhật, mọi sơ đồ phải tách được bằng nhát chặt chạy suốt (kiểm tra độc lập).
  *  - Laser/plasma: chữ nhật + tròn, được xếp không chặt suốt (xoay vòng, so le, xếp tự do).
  * Bản quyền © Epsilon Lab.
@@ -34,6 +38,9 @@ const DEFAULTS = Object.freeze({
   lengthTol: 10,            //                     … và DÀI hơn tối đa 10 mm
   shrinkTol: 0.5,
   proposalMs: 7000,         // giới hạn tổng thời gian (từ lúc bắt đầu) dành cho các đề xuất khi "cận"           // phương án giảm kích thước cắt: mỗi chi tiết giảm 0,5 mm (dài / rộng / đường kính) – người dùng duyệt
+  remTol: 2,                // bớt được 1 tấm lẻ thì chấp nhận hao phí cao hơn tối đa 2 điểm % (anh chốt 28/10/2026)
+  tailMs: 2500,             // thời gian tìm phương án dồn dư về tờ cuối (mỗi khổ)
+  semiMax: 5,               // BTP: tối đa 5 mã mỗi chiều dày (anh chốt 28/10/2026 – nhiều mã thì quản lý BTP phức tạp)
   altWithin: 1.0,           // phương án thay thế chỉ hiện khi hao phí kém phương án tốt nhất ≤ 1 điểm % VÀ khác biệt thật
 });
 
@@ -340,6 +347,7 @@ function tag(T, p) {
   const o = { t: T.t, x: p.x, y: p.y, w: p.w, h: p.h, circle: T.circle,
     rot: !T.circle && Math.abs(p.w - T.cw) > 1e-6 };
   if (T.ring) { o.ring = true; o.hole = T.hole; }
+  if (T.semi) o.semi = true;
   return o;
 }
 
@@ -1451,7 +1459,9 @@ function guillotineKnap(C, weights, region) {
 /* sơ đồ một cách phối các loại), rồi tìm k sơ đồ cộng lại đủ số lượng từng  */
 /* loại. Bớt chi tiết khỏi một sơ đồ chặt suốt vẫn chặt suốt được.          */
 /* ======================================================================= */
-function coverPlan(C, demand, k, deadline) {
+/** Dựng sẵn nhiều sơ đồ tờ khác nhau (mỗi sơ đồ một cách phối các loại) – dùng chung cho
+ *  "phối hợp ít tờ nhất" và "dồn dư về tờ cuối". Trả danh sách sơ đồ không bị lấn át, đầy trước. */
+function sheetPatterns(C, demand, k, deadline) {
   const types = C.types.filter(T => demand[T.t] > 0);
   if (!types.length || types.length > 8) return null;
   const pats = new Map();
@@ -1489,6 +1499,11 @@ function coverPlan(C, demand, k, deadline) {
   let list = [...pats.values()];
   list = list.filter(p => !list.some(q => q !== p && q.counts.every((c, t) => c >= p.counts[t]) && q.counts.some((c, t) => c > p.counts[t])));
   list.sort((a, b) => sheetScore(C, b, 'area') - sheetScore(C, a, 'area'));
+  return list;
+}
+function coverPlan(C, demand, k, deadline) {
+  const list = sheetPatterns(C, demand, k, deadline);
+  if (!list || !list.length) return null;
   const maxC = C.types.map(T => Math.max(0, ...list.map(p => p.counts[T.t])));
   const maxArea = Math.max(...list.map(p => sheetScore(C, p, 'area')));
   // tìm k sơ đồ phủ đủ nhu cầu; giữ lời giải dư nhiều nhất (tờ cuối trống nhiều -> tấm lẻ lớn)
@@ -1538,6 +1553,160 @@ function coverPlan(C, demand, k, deadline) {
 }
 
 /* ======================================================================= */
+/* 10c. DỒN DƯ VỀ TỜ CUỐI (đã chốt 28/10/2026)                              */
+/* Cùng số tờ, MỘT tấm lẻ tốt hơn hai tấm lẻ: k − 1 tờ đầu xếp ĐẦY theo các  */
+/* sơ đồ tốt nhất, tờ cuối nhận phần còn lại -> phần dư gom về một tấm lẻ   */
+/* lớn ở tờ cuối (đúng cách thợ xếp tay: tờ 2 nhồi 15 chiếc, tờ 3 dư 680).   */
+/* ======================================================================= */
+/** Bớt chi tiết khỏi sơ đồ cho không vượt nhu cầu (bớt chi tiết khỏi sơ đồ chặt suốt vẫn chặt suốt). */
+function trimPattern(C, p, cap) {
+  if (p.counts.every((c, t) => c <= cap[t])) return p;
+  const keep = cap.slice();
+  const items = [...p.items].sort((a, b) => a.x - b.x || a.y - b.y).filter(it => keep[it.t]-- > 0);
+  const counts = p.counts.map((c, t) => Math.min(c, cap[t]));
+  return { ...p, items, counts, cuts: C.shear ? [] : p.cuts };
+}
+function tailPlan(C, demand, k, deadline) {
+  if (k < 2) return null;
+  const pats = sheetPatterns(C, demand, k, deadline);
+  if (!pats || !pats.length) return null;
+  const area = p => C.types.reduce((s, T) => s + p.counts[T.t] * T.cutArea, 0);
+  const seen = new Set(), list = [];
+  for (const p0 of pats) {
+    const p = trimPattern(C, p0, demand), key = p.counts.join(',');
+    if (!sum(p.counts) || seen.has(key)) continue;
+    seen.add(key); list.push({ p, a: area(p) });
+  }
+  list.sort((x, y) => y.a - x.a);
+  list.length = Math.min(list.length, 40);
+  const maxA = list.length ? list[0].a : 0, TOP = 12, sols = [];
+  let nodes = 0;
+  const pick = [];
+  // chọn k − 1 sơ đồ (được lặp), tổng ≤ nhu cầu, diện tích lớn nhất – giữ TOP lời giải để thử xếp tờ cuối
+  const dfs = (start, need, got) => {
+    if (++nodes > 200000 || Date.now() > deadline) return;
+    const left = k - 1 - pick.length;
+    if (sols.length >= TOP && got + left * maxA <= sols[sols.length - 1].got + 1e-6) return;
+    if (!left) {
+      sols.push({ got, pick: pick.slice() });
+      sols.sort((x, y) => y.got - x.got);
+      if (sols.length > TOP) sols.pop();
+      return;
+    }
+    for (let i = start; i < list.length; i++) {
+      const { p, a } = list[i];
+      if (p.counts.some((c, t) => c > need[t])) continue;
+      pick.push(i);
+      dfs(i, need.map((v, t) => v - p.counts[t]), got + a);
+      pick.pop();
+    }
+  };
+  dfs(0, demand.slice(), 0);
+  for (const sol of sols) {
+    if (Date.now() > deadline + 1500) break;
+    const need = demand.slice();
+    for (const i of sol.pick) list[i].p.counts.forEach((c, t) => { need[t] -= c; });
+    const sheets = sol.pick.map(i => list[i].p);
+    if (sum(need)) {
+      const last = packSheet(C, need, C.full, { mode: 'area', needAll: true });
+      if (!last) continue;
+      sheets.push(last);
+    }
+    const groups = [];
+    for (const sh of sheets) { const g = groups[groups.length - 1]; if (g && sameSheet(g.sheet, sh)) g.n++; else groups.push({ n: 1, sheet: sh }); }
+    return compactLast(C, groups, 0, 'area');
+  }
+  return null;
+}
+
+/* ======================================================================= */
+/* 10d. BÁN THÀNH PHẨM (BTP) – LẤP PHẦN DƯ ĐỂ TẤM LẺ VỀ 0 (đã chốt 28/10/2026) */
+/* Thư viện tối đa 5 mã mỗi chiều dày (mác dùng lẫn); thợ tích mã được ghép, */
+/* máy tự tính số lượng (thứ tự master data chỉ để hiển thị). Sau            */
+/* khi xếp đơn hàng, phần dư mép mỗi tờ (dư phải, dư dưới – kể cả dưới ngưỡng */
+/* thu hồi) được lấp bằng BTP; phần còn lại nếu đủ ngưỡng vẫn là tấm lẻ.      */
+/* Hao phí tính BTP như một chi tiết trong đơn hàng. Chỉ áp dụng thép tấm.    */
+/* Lấp theo kiểu chặt suốt (dải dư tách bằng một nhát suốt, trong dải xếp     */
+/* chặt suốt) -> dùng được cho cả chặt sấn lẫn laser; laser thêm BTP tròn.    */
+/* ======================================================================= */
+/** Bớt BTP vượt số lượng cho phép (capLeft = còn được lấp, chia cho n tờ giống nhau). */
+function semiTrim(r, capLeft, n) {
+  const keep = capLeft.map(c => (c === Infinity ? Infinity : Math.floor(c / n)));
+  const items = [...r.items].sort((a, b) => a.x - b.x || a.y - b.y).filter(it => keep[it.t]-- > 0);
+  return { items };
+}
+/** Lấp một vùng (toạ độ quy đổi như C.full: rộng/cao đã cộng mạch k) bằng các mã BTP được tích – chọn cách lấp nhiều
+ *  diện tích thành phẩm nhất; bằng nhau thì ít loại BTP hơn (dễ quản lý). */
+function semiFillRegion(C, region, semis, capLeft, n) {
+  if (!(region.w > EPS && region.h > EPS)) return null;
+  let best = null;
+  const consider = r => {
+    if (!r || !r.items.length) return;
+    const sc = r.items.reduce((s, it) => s + C.types[it.t].tpArea, 0), kinds = new Set(r.items.map(x => x.t)).size;
+    if (!best || sc > best.sc + 1e-6 || (Math.abs(sc - best.sc) <= 1e-6 && kinds < best.kinds)) best = { items: r.items, sc, kinds };
+  };
+  const ok = T => capLeft[T.t] === Infinity || capLeft[T.t] >= n;
+  const rects = semis.filter(T => !T.circle && ok(T));
+  const sets = rects.length > 1 ? [rects, ...rects.map(T => [T])] : rects.map(T => [T]);   // phối các mã / từng mã riêng
+  for (const set of sets) {
+    const weights = C.types.map(() => 0);
+    set.forEach(T => { weights[T.t] = T.tpArea; });
+    const r = guillotineKnap(C, weights, region);
+    if (r) consider(semiTrim(r, capLeft, n));
+  }
+  if (!C.shear) for (const T of semis.filter(T => T.circle && ok(T))) {          // BTP tròn: chỉ laser / plasma
+    const phys = { x: region.x, y: region.y, w: region.w - C.k, h: region.h - C.k };
+    if (phys.w + EPS < T.cw || phys.h + EPS < T.cw) continue;
+    const plan = bestCirclePlan(phys, T.cw, C.k);
+    const limit = capLeft[T.t] === Infinity ? Infinity : Math.floor(capLeft[T.t] / n);
+    consider({ items: circleLayout(phys, T.cw, C.k, plan, limit).map(q => tag(T, q)) });
+  }
+  return best;
+}
+/** Lấp phần dư mép một tờ. Hai cách tách giống tấm lẻ: (A) dải phải suốt chiều rộng tờ trước, rồi dải dưới;
+ *  (B) dải dưới suốt chiều dài tờ trước, rồi dải phải. Chọn cách lấp được nhiều hơn. */
+function semiFillSheet(C, items, semis, capLeft, n) {
+  if (!items.length) return null;
+  let maxR = 0, maxB = 0;
+  for (const p of items) { maxR = Math.max(maxR, p.x + p.w); maxB = Math.max(maxB, p.y + p.h); }
+  const { W, H, e, k } = C, xr = maxR + k, yb = maxB + k;
+  const opts = [
+    [{ x: xr, y: e, w: W - e - maxR, h: C.HH }, { x: e, y: yb, w: maxR - e + k, h: H - e - maxB }],
+    [{ x: e, y: yb, w: C.WW, h: H - e - maxB }, { x: xr, y: e, w: W - e - maxR, h: maxB - e + k }],
+  ];
+  let best = null;
+  for (const regs of opts) {
+    const left = capLeft.slice(), add = [];
+    let sc = 0;
+    for (const reg of regs) {
+      const r = semiFillRegion(C, reg, semis, left, n);
+      if (!r) continue;
+      r.items.forEach(it => { if (left[it.t] !== Infinity) left[it.t] -= n; });
+      add.push(...r.items); sc += r.sc;
+    }
+    if (add.length && (!best || sc > best.sc + 1e-6)) best = { items: add, sc };
+  }
+  return best;
+}
+/** Tạo phương án \"lấp BTP\" từ một phương án đã đánh giá. Tờ có tấm lẻ được lấp trước (khi BTP có giới hạn số lượng). */
+function applySemis(ctxsX, plan, semis, caps) {
+  const capLeft = caps.slice();
+  const order = plan.groups.map((g, gi) => ({ gi, r: g.remnants.reduce((s, o) => s + o.w * o.h, 0) })).sort((a, b) => b.r - a.r);
+  const out = plan.groups.map(g => ({ n: g.n, si: g.si, sheet: { items: g.items, cuts: g.cuts.filter(c => !c.rem), counts: ctxsX[g.si].types.map((_, t) => g.counts[t] || 0), blocks: g.blocks, strategy: g.strategy } }));
+  let any = false;
+  for (const { gi } of order) {
+    const g = out[gi], C = ctxsX[g.si];
+    const f = semiFillSheet(C, g.sheet.items, semis, capLeft, g.n);
+    if (!f) continue;
+    any = true;
+    const counts = g.sheet.counts.slice();
+    f.items.forEach(it => { counts[it.t]++; if (capLeft[it.t] !== Infinity) capLeft[it.t] -= g.n; });
+    g.sheet = { items: g.sheet.items.concat(f.items), cuts: C.shear ? [] : g.sheet.cuts, counts, blocks: g.sheet.blocks + 1, strategy: g.sheet.strategy + '+btp' };
+  }
+  return any ? out : null;
+}
+
+/* ======================================================================= */
 /* 11. GIAO DIỆN CHUNG CỦA LÕI TÍNH                                         */
 /* Mỗi lần đổi số liệu: chạy lại TỪ ĐẦU, thử nhiều cách phối kết hợp, giữ   */
 /* các phương án tốt nhất khác nhau để người dùng chọn.                     */
@@ -1545,7 +1714,7 @@ function coverPlan(C, demand, k, deadline) {
 const STRATEGY_LABEL = {
   'guillotine-dp': 'Chặt suốt tối ưu nhiều loại',
   area: 'Lấp kín từng tờ', big: 'Chi tiết lớn trước', small: 'Chi tiết nhỏ trước',
-  even: 'Phối đều các loại trên mọi tờ', cover: 'Phối hợp ít tờ nhất', look: 'Mở đầu khác', mixed: 'Kết hợp khổ từng tờ', last: 'Tờ cuối khổ nhỏ hơn',
+  even: 'Phối đều các loại trên mọi tờ', cover: 'Phối hợp ít tờ nhất', look: 'Mở đầu khác', mixed: 'Kết hợp khổ từng tờ', last: 'Tờ cuối khổ nhỏ hơn', tail: 'Dồn dư về tờ cuối',
 };
 export function calculateNestingPro(input) {
   const t0 = Date.now();
@@ -1554,6 +1723,7 @@ export function calculateNestingPro(input) {
   for (const [key, lab] of [['widthTol', 'rộng'], ['lengthTol', 'dài']])
     if (i[key] != null && !(Number.isFinite(i[key]) && i[key] >= 0 && i[key] <= 200)) fail(`Tăng khổ ${lab} cho phép phải từ 0 đến 200 mm.`);
   if (i.shrinkTol != null && !(Number.isFinite(i.shrinkTol) && i.shrinkTol >= 0 && i.shrinkTol <= 3)) fail('Giảm kích thước cho phép phải từ 0 đến 3 mm.');
+  if (i.remTol != null && !(Number.isFinite(i.remTol) && i.remTol >= 0 && i.remTol <= 100)) fail('Dung sai hao phí để bớt tấm lẻ phải từ 0 đến 100 điểm %.');
   if (i.longStripMin != null && !(Number.isFinite(i.longStripMin) && i.longStripMin >= 0 && i.longStripMin <= LIMIT)) fail('Ranh giới dải dài không hợp lệ.');
   for (const key of ['thickness', 'gap', 'margin', 'density', 'remnantMin'])
     if (!Number.isFinite(i[key]) || i[key] < 0 || i[key] > LIMIT) fail('Thông số không hợp lệ: ' + key);
@@ -1589,6 +1759,22 @@ export function calculateNestingPro(input) {
   }
   if (pieces > MAX_PIECES) fail(`Tổng số chi tiết vượt ${MAX_PIECES.toLocaleString('vi-VN')} chiếc.`);
   i.parts = parts;
+  // BÁN THÀNH PHẨM: các mã được tích, cùng chiều dày (mác dùng lẫn), tối đa 5 mã; chặt sấn chỉ lấp BTP chữ nhật
+  const semiIn = (Array.isArray(i.semis) ? i.semis : []).filter(Boolean);
+  if (semiIn.length > DEFAULTS.semiMax) fail(`Bán thành phẩm: tối đa ${DEFAULTS.semiMax} mã cho một chiều dày.`);
+  const semiSkipped = [];
+  const semiParts = semiIn.map((b, j) => {
+    const name = String(b.code || '').trim().slice(0, 40) || `BTP${j + 1}`;
+    if (!['rect', 'circle'].includes(b.shape)) fail(`Bán thành phẩm "${name}": hình dạng phải là chữ nhật hoặc tròn.`);
+    const dims = b.shape === 'rect' ? [b.partW, b.partH] : [b.diameter];
+    const allowance = b.allowance ?? 0;
+    if (dims.some(v => !Number.isFinite(v) || v <= 0 || v > LIMIT) || !Number.isFinite(allowance) || allowance < 0 || dims.some(v => v + allowance <= 0))
+      fail(`Bán thành phẩm "${name}": kiểm tra kích thước và dư gia công.`);
+    if (b.maxQty != null && !(Number.isInteger(b.maxQty) && b.maxQty >= 0)) fail(`Bán thành phẩm "${name}": số lượng tối đa phải là số nguyên ≥ 0.`);
+    if (b.shape === 'circle' && i.cutMethod === 'shear') { semiSkipped.push(`${name} (tròn – chặt sấn không cắt được)`); return null; }
+    return { name, code: name, shape: b.shape, partW: b.partW, partH: b.partH, diameter: b.diameter, allowance, rotate: b.rotate !== false, qty: 0, maxQty: b.maxQty ?? null,
+      rank: Number.isInteger(b.rank) && b.rank >= 0 ? b.rank : j };
+  }).filter(Boolean);
 
   const maxW = Math.max(...stocks.map(s => s.W)), maxH = Math.max(...stocks.map(s => s.H));
   const base = prepareTypes(i, maxW, maxH);
@@ -1596,6 +1782,10 @@ export function calculateNestingPro(input) {
   base.remnantMinLong = i.remnantMinLong ?? DEFAULTS.remnantMinLong;
   base.maxCutArea = Math.max(...base.types.map(T => T.cutArea));
   const demand = base.types.map(T => T.qty);
+  const nBase = base.types.length;
+  const semiTypes = semiParts.length && i.semiOn !== false ? prepareTypes({ ...i, parts: semiParts }, maxW, maxH).types.map((T, j) =>
+    Object.assign(T, { t: nBase + j, semi: true, rank: semiParts[j].rank, code: semiParts[j].code, cap: semiParts[j].maxQty == null ? Infinity : semiParts[j].maxQty })) : [];
+  const allTypes = base.types.concat(semiTypes), allParts = parts.concat(semiParts);
   for (const T of base.types) if (!stocks.some(s => fitsStock(T, s.W, s.H, base.k, base.e)))
     fail(`Chi tiết "${T.name}" không lọt khổ phôi nào (đã tính dư gia công, mạch cắt và chừa mép).`);
 
@@ -1673,6 +1863,12 @@ export function calculateNestingPro(input) {
         finish(tag(compactLast(C, g, 0, 'area')), `${STRATEGY_LABEL.cover} · khổ ${size}`, si);
         break;
       }
+      // dồn dư về tờ cuối: cùng số tờ tốt nhất, gom phần dư thành MỘT tấm lẻ lớn ở tờ cuối
+      {
+        const bestK = Math.min(...plans.filter(p => p.single === si).map(p => p.totalSheets));
+        const g = Number.isFinite(bestK) ? tailPlan(C, rem, bestK, Date.now() + DEFAULTS.tailMs) : null;
+        if (g) finish(tag(g), `${STRATEGY_LABEL.tail} · khổ ${size}`, si);
+      }
       if (std.length > 1) {
         const last = finalizeLast(ctxs, greedy, 'area');
         if (last !== greedy) finish(last, `${STRATEGY_LABEL.last} · khổ chính ${size}`, null);
@@ -1698,11 +1894,36 @@ export function calculateNestingPro(input) {
     }
     base.types.forEach(T => { if (made[T.t] !== T.qty) throw Error(`Lỗi kiểm tra số lượng: ${T.name} xếp ${made[T.t]} / ${T.qty}.`); });
   }
+  // BÁN THÀNH PHẨM: mỗi phương án có thêm một biến thể lấp BTP vào phần dư; kiểm tra hình học độc lập như mọi phương án
+  if (semiTypes.length) {
+    const ctxsX = ctxs.map(C => ({ ...C, types: allTypes }));
+    const caps = allTypes.map(T => (T.semi ? T.cap : 0));
+    for (const p of plans.slice()) {
+      const groups = applySemis(ctxsX, p, semiTypes, caps);
+      if (!groups) continue;
+      const q = evaluate(ctxsX, groups, i.remnantMin);
+      q.label = p.label + ' + lấp BTP'; q.single = p.single; q.semi = true;
+      const made = allTypes.map(() => 0);
+      for (const g of q.groups) {
+        const errs = verifySheet(ctxsX[g.si], g.items);
+        if (errs.length) throw Error('Lỗi kiểm tra hình học (lấp BTP – lỗi phần mềm): ' + errs[0]);
+        g.counts.forEach((c, t) => { made[t] += c * g.n; });
+      }
+      base.types.forEach(T => { if (made[T.t] !== T.qty) throw Error(`Lỗi kiểm tra số lượng sau lấp BTP: ${T.name} ${made[T.t]} / ${T.qty}.`); });
+      semiTypes.forEach(T => { if (made[T.t] > T.cap) throw Error(`Lỗi: BTP ${T.name} vượt số lượng tối đa.`); });
+      plans.push(q);
+    }
+  }
   // xếp hạng, bỏ phương án trùng, giữ tối đa 6
-  plans.sort((a, b) => (better(a, b) ? -1 : better(b, a) ? 1 : 0));
+  const remTol = i.remTol ?? DEFAULTS.remTol;
+  plans.sort((a, b) => (better(a, b, remTol) ? -1 : better(b, a, remTol) ? 1 : 0));
   const sig = p => p.groups.map(g => `${g.n}:${g.W}x${g.H}:${g.counts.join('.')}`).join('|');
   const kept = [], seenSig = new Set();
   for (const p of plans) { const k = sig(p); if (!seenSig.has(k)) { seenSig.add(k); kept.push(p); } if (kept.length >= 6) break; }
+  // luôn giữ phương án tốt nhất KHÔNG lấp BTP (và ngược lại) để anh so sánh
+  for (const want of [false, true]) if (semiTypes.length && !kept.some(p => !!p.semi === want)) {
+    const p = plans.find(q => !!q.semi === want); if (p) kept.push(p);
+  }
 
   const kg = a => a * i.thickness * i.density / 1e9;
   const finishedArea = base.types.reduce((s, T) => s + T.qty * T.tpArea, 0);
@@ -1712,23 +1933,35 @@ export function calculateNestingPro(input) {
   // trong kho phôi, mặc định 6000 × 2000), cắt hết tờ, không trừ thu hồi: HP = (tờ − n × TP) / (n × TP).
   const bIdx = Math.max(0, ctxs.findIndex(C => !C.stock.remnant)), bCtx = { ...ctxs[bIdx], demand: base.types.map(() => Infinity) };
   const bMs = Math.max(150, Math.min(800, 2500 / rectTypes));
-  const baremStd = base.types.map(T => {
-    const P = bCtx.pure[T.t].items.length && !T.rot ? bCtx.pure[T.t] : purePattern(bCtx, T, bMs);   // đủ sức chứa, không giới hạn bởi số lượng đơn
+  const baremStd = allTypes.map(T => {
+    const P = bCtx.pure[T.t]?.items.length && !T.rot ? bCtx.pure[T.t] : purePattern(bCtx, T, bMs);   // đủ sức chứa, không giới hạn bởi số lượng đơn
     const n = P.items.length, sheet = bCtx.W * bCtx.H;
     return { W: bCtx.W, H: bCtx.H, n, percent: n > 0 ? 100 * (sheet - n * T.tpArea) / (n * T.tpArea) : null, strategy: P.strategy };
   });
   // Thép tấm: chọn hao phí thấp nhất. Chỉ đưa thêm phương án thay thế khi nó KHÁC BIỆT THẬT
   // (dùng khổ khác, ít tờ hơn, ít kiểu tờ hơn – dễ cắt) và hao phí không kém quá altWithin điểm %.
-  const wasteOf = p => 100 * (p.issuedArea - p.recoveredArea - finishedArea) / finishedArea;
+  const wasteOf = wasteOfPlan;
   const sizesOf = p => [...new Set(p.groups.map(g => `${g.remnantStock ? 'lẻ ' : ''}${g.W}×${g.H}`))].sort().join(' + ');
+  const semiN = p => p.groups.reduce((s, g) => s + g.n * g.counts.reduce((s2, c, t) => s2 + (allTypes[t]?.semi ? c : 0), 0), 0);
+  const remWord = p => (p.remCount ? `${p.remCount} tấm lẻ` : 'Không còn tấm lẻ');
   const best = kept[0], shown = [best];
-  best.reason = 'Hao phí thấp nhất';
+  {
+    // so với các phương án cùng số tờ (phương án nhiều tờ hơn có thể "hao phí thấp" nhờ thu hồi nhiều tấm lẻ – không so)
+    const minW = Math.min(...kept.filter(p => p.totalSheets <= best.totalSheets).map(wasteOf)), d = wasteOf(best) - minW;
+    best.reason = [remWord(best), best.semi ? `lấp ${semiN(best)} BTP` : '',
+      d > 0.005 ? `hao phí +${d.toFixed(2)} điểm % để bớt tấm lẻ (cho phép ≤ ${remTol})` : 'hao phí thấp nhất'].filter(Boolean).join(' · ');
+  }
   for (const p of kept.slice(1)) {
-    if (wasteOf(p) - wasteOf(best) > DEFAULTS.altWithin + 1e-9) continue;
+    const otherSemi = !!p.semi !== !!best.semi;
+    if (p.single != null && p.single === best.single && p.totalSheets > best.totalSheets) continue;   // nhiều tờ hơn: không đưa ra
+    if (!otherSemi && wasteOf(p) - wasteOf(best) > DEFAULTS.altWithin + 1e-9) continue;
     const why = [];
+    if (otherSemi) why.push(p.semi ? `Lấp ${semiN(p)} BTP` : 'Không lấp BTP');
+    if (p.remCount !== best.remCount) why.push(remWord(p));
     if (sizesOf(p) !== sizesOf(best)) why.push(`Dùng khổ ${sizesOf(p)}`);
     if (p.totalSheets < best.totalSheets) why.push(`Ít tờ hơn (${p.totalSheets} tờ)`);
     if (p.groups.length < best.groups.length) why.push(`Ít kiểu tờ hơn (${p.groups.length} kiểu) – dễ cắt`);
+    if (wasteOf(p) < wasteOf(best) - 0.005) why.push(`hao phí thấp hơn ${(wasteOf(best) - wasteOf(p)).toFixed(2)} điểm %`);
     if (!why.length || shown.some(q => q.reason === why.join(' · '))) continue;
     p.reason = why.join(' · ');
     shown.push(p);
@@ -1745,7 +1978,8 @@ export function calculateNestingPro(input) {
   const tolW = i.widthTol == null ? DEFAULTS.widthTol : i.widthTol, tolL = i.lengthTol == null ? DEFAULTS.lengthTol : i.lengthTol;
   const shrink = i.shrinkTol == null ? DEFAULTS.shrinkTol : i.shrinkTol;
   if (!i._noEnlarge && (tolW > 0 || tolL > 0 || shrink > 0)) {
-    const netB = kg(best.issuedArea - best.recoveredArea);
+    // so sánh PHẾ LIỆU (xuất − thu hồi − thành phẩm, thành phẩm gồm cả BTP) – không so thép tiêu hao, vì lấp BTP cũng "tiêu hao" thép
+    const netB = kg(best.issuedArea - best.recoveredArea - best.tpArea);
     const sheetKG = kg(Math.max(...stocks.filter(x => !x.remnant).map(x => x.W * x.H), 0));
     const trial = (dL, dW, sh) => {
       if (Date.now() - t0 > DEFAULTS.proposalMs) return null;           // hết thời gian cho đề xuất – giữ phương án đã có
@@ -1756,7 +1990,7 @@ export function calculateNestingPro(input) {
             : { W: x.W + dL, H: x.H + dW, nominalW: x.W, nominalH: x.H, limit: x.limit === Infinity ? null : x.limit, lot: x.lot }) });
         const q = sub.plans[0];
         const needL = Math.max(0, ...q.groups.map(g => g.needW ? g.needW - g.Wn : 0)), needR = Math.max(0, ...q.groups.map(g => g.needH ? g.needH - g.Hn : 0));
-        const save = netB - (q.issuedKG - q.recoveredKG);
+        const save = netB - (q.issuedKG - q.recoveredKG - q.finishedKG);
         if (!(needL > 0 || needR > 0 || sh > 0) || (dL + dW > 0 && !(needL > 0 || needR > 0))) return null;
         if (!(q.totalSheets < best.totalSheets || save >= 0.01 * sheetKG)) return null;
         const what = [needL ? `dài +${needL} mm` : '', needR ? `rộng +${needR} mm` : ''].filter(Boolean).join(', ');
@@ -1783,6 +2017,15 @@ export function calculateNestingPro(input) {
     if (combo && combo.save > Math.max(grow?.save ?? 0, sh?.save ?? 0) + 0.5) enlarged.push(combo);
     enlarged.sort((a, b) => a.effort - b.effort);                         // can thiệp ít trước
   }
+  /** Danh sách loại chi tiết cho một phương án: đơn hàng + BTP đã lấp (số lượng BTP = số đã lấp trong phương án đó). */
+  const typesFor = p => (p?.semi ? allTypes : base.types).map(T => {
+    const q = allParts[T.t];
+    const qty = T.semi ? p.groups.reduce((s, g) => s + g.n * (g.counts[T.t] || 0), 0) : T.qty;
+    return { t: T.t, name: T.name, semi: !!T.semi, semiNo: T.semi ? T.rank : null, code: T.code ?? null, noRotate: T.noRotate, circle: T.circle, ring: T.ring, hole: T.hole, cw: T.cw, ch: T.ch, rot: T.rot, qty, tpArea: T.tpArea,
+      tpW: T.circle ? q.diameter : q.partW, tpH: T.circle ? q.diameter : q.partH, tpIn: T.ring ? q.inner : null,
+      allowance: q.allowance, allowanceIn: q.allowanceIn, inHoles: T.semi ? 0 : T.qty - sheetDemand[T.t],
+      pureCount: mainCtx.pure[T.t]?.items.length ?? null, barem: baremStd[T.t] };
+  });   // giữ đủ mọi loại (res.types[t] tra theo chỉ số t); BTP chưa lấp có qty = 0
   const out = shown.map((p, rank) => {
     let lowerBound = null;
     if (p.single != null && !pre.length) {
@@ -1794,23 +2037,19 @@ export function calculateNestingPro(input) {
       rank, label: p.label, reason: p.reason,
       groups: p.groups.map(g => ({ ...g, items: g.items.map(q => ({ ...q, x: r6(q.x), y: r6(q.y), w: r6(q.w), h: r6(q.h) })) })),
       totalSheets: p.totalSheets, lowerBound, proven: lowerBound != null && p.totalSheets <= lowerBound,
-      issuedKG: kg(p.issuedArea), finishedKG: kg(finishedArea), recoveredKG: kg(p.recoveredArea),
+      issuedKG: kg(p.issuedArea), finishedKG: kg(p.tpArea), recoveredKG: kg(p.recoveredArea),
       remnantUsedKG: kg(p.groups.reduce((s, g) => s + (g.remnantStock ? g.n * g.W * g.H : 0), 0)),
-      wastePercent: 100 * (p.issuedArea - p.recoveredArea - finishedArea) / finishedArea,
-      wasteFullPercent: 100 * (p.issuedArea - finishedArea) / finishedArea,
+      wastePercent: wasteOfPlan(p),
+      wasteFullPercent: 100 * (p.issuedArea - p.tpArea) / p.tpArea,
       lastFree: last.freeStrips, blocks: p.blocks, kinds: p.groups.length,
+      remCount: p.remCount, semi: !!p.semi, semiCount: semiN(p), semiKG: kg(p.tpArea - finishedArea),
+      types: typesFor(p), pieces: pieces + semiN(p),
     };
   });
   return {
     input: i,
     stocks: stocks.map(s => ({ W: s.W, H: s.H, limit: s.limit === Infinity ? null : s.limit, remnant: s.remnant, lot: s.lot })),
-    types: base.types.map(T => {
-      const p = i.parts[T.t];
-      return { t: T.t, name: T.name, noRotate: T.noRotate, circle: T.circle, ring: T.ring, hole: T.hole, cw: T.cw, ch: T.ch, rot: T.rot, qty: T.qty, tpArea: T.tpArea,
-        tpW: T.circle ? p.diameter : p.partW, tpH: T.circle ? p.diameter : p.partH, tpIn: T.ring ? p.inner : null,
-        allowance: p.allowance, allowanceIn: p.allowanceIn, inHoles: T.qty - sheetDemand[T.t],
-        pureCount: mainCtx.pure[T.t].items.length, barem: baremStd[T.t] };
-    }),
+    types: typesFor(null), semiSkipped,
     plans: out.concat(enlarged.map((e, k) => ({ ...e, rank: out.length + k }))), invalid, tried: plans.length, pieces, ms: Date.now() - t0,
   };
 }
@@ -1944,15 +2183,33 @@ function evaluate(ctxs, groups, remnantMin) {
   });
   const last = gs[gs.length - 1];
   const lastFree = last ? Math.max(0, ...last.freeStrips.map(f => f.w * f.h)) : 0;
-  return { groups: gs, totalSheets, issuedArea, recoveredArea, blocks, lastFree };
+  // thành phẩm của phương án (gồm cả bán thành phẩm lấp vào nếu có), số tấm lẻ và tấm lẻ lớn nhất – để xếp hạng
+  const tpArea = gs.reduce((s, g) => s + g.n * g.counts.reduce((s2, c, t) => s2 + c * ctxs[g.si].types[t].tpArea, 0), 0);
+  const remCount = gs.reduce((s, g) => s + g.n * g.remnants.length, 0);
+  const maxRem = Math.max(0, ...gs.flatMap(g => g.remnants.map(o => o.w * o.h)));
+  return { groups: gs, totalSheets, issuedArea, recoveredArea, blocks, lastFree, tpArea, remCount, maxRem };
 }
-/** Thứ tự (đã chốt): đủ số lượng → ÍT TỜ nhất → tấm lẻ thu hồi lớn nhất (= thép thực tiêu hao ít nhất) → xếp khít → sơ đồ gọn.
- *  Khác khổ (số tờ không so được với nhau): thép thực tiêu hao ít nhất trước. */
-function better(a, b) {
-  const net = p => p.issuedArea - p.recoveredArea;
+/** Hao phí / TP (%) của một phương án (đã trừ tấm lẻ thu hồi; thành phẩm gồm cả bán thành phẩm). */
+const wasteOfPlan = p => 100 * (p.issuedArea - p.recoveredArea - p.tpArea) / p.tpArea;
+/**
+ * Thứ tự chọn phương án (đã chốt 28/10/2026):
+ *  ① đủ số lượng từng chi tiết (đã kiểm tra trước khi xếp hạng)
+ *  ② ít tờ nhất (cùng khổ)
+ *  ③ ÍT TẤM LẺ nhất (0 < 1 < 2 …): phương án ít tấm lẻ hơn thắng, trừ khi hao phí của nó cao hơn
+ *     quá remTol điểm % (mặc định 2) – một tấm lẻ thành hai là đánh đổi lớn (quản lý kho, tận dụng)
+ *  ④ tấm lẻ lớn nhất lớn hơn (khi hao phí chênh không quá remTol)
+ *  ⑤ hao phí thấp nhất  ⑥ ít tờ (khác khổ)  ⑦ dư tờ cuối lớn  ⑧ sơ đồ gọn (ít khối)
+ */
+function better(a, b, remTol = DEFAULTS.remTol) {
   const sameSize = a.single != null && a.single === b.single;
   if (sameSize && a.totalSheets !== b.totalSheets) return a.totalSheets < b.totalSheets;
-  if (Math.abs(net(a) - net(b)) > 1) return net(a) < net(b);
+  const wa = wasteOfPlan(a), wb = wasteOfPlan(b);
+  if (a.remCount !== b.remCount) {
+    const fewA = a.remCount < b.remCount, few = fewA ? wa : wb, many = fewA ? wb : wa;
+    return few - many <= remTol + 1e-9 ? fewA : !fewA;
+  }
+  if (Math.abs(a.maxRem - b.maxRem) > 1e4 && Math.abs(wa - wb) <= remTol + 1e-9) return a.maxRem > b.maxRem;
+  if (Math.abs(wa - wb) > 1e-6) return wa < wb;
   if (a.totalSheets !== b.totalSheets) return a.totalSheets < b.totalSheets;
   if (Math.abs(a.lastFree - b.lastFree) > 1) return a.lastFree > b.lastFree;
   return a.blocks < b.blocks;
@@ -1999,7 +2256,7 @@ class DxfWriter {
     g(0, 'TABLE'); g(2, 'LAYER'); g(70, this.layers.length);
     for (const [name, color] of this.layers) { g(0, 'LAYER'); g(2, name); g(70, 0); g(62, color); g(6, 'CONTINUOUS'); }
     g(0, 'ENDTAB');
-    g(0, 'TABLE'); g(2, 'STYLE'); g(70, 1); g(0, 'STYLE'); g(2, 'STANDARD'); g(70, 0); g(40, 0); g(41, 1); g(50, 0); g(71, 0); g(42, 2.5); g(3, 'arial.ttf'); g(4, '');   // font Arial: hiện đúng tiếng Việt trong AutoCAD g(0, 'ENDTAB');
+    g(0, 'TABLE'); g(2, 'STYLE'); g(70, 1); g(0, 'STYLE'); g(2, 'STANDARD'); g(70, 0); g(40, 0); g(41, 1); g(50, 0); g(71, 0); g(42, 2.5); g(3, 'arial.ttf'); g(4, ''); g(0, 'ENDTAB');   // font Arial: hiện đúng tiếng Việt trong AutoCAD
     g(0, 'ENDSEC'); g(0, 'SECTION'); g(2, 'ENTITIES');
     return head.concat(this.out, ['0', 'ENDSEC', '0', 'EOF']).join('\r\n') + '\r\n';
   }
@@ -2154,15 +2411,16 @@ const colName = n => { let s = ''; for (n++; n > 0; n = Math.floor((n - 1) / 26)
  * sheets: [{ name, cols: [độ rộng], rows: [[ô…]] }]; ô = chuỗi | số | { v, s } với s: 'title' | 'head' | 'int' | 'dec' | 'pct' | 'bold' | 'note'.
  */
 export function xlsxBook(sheets) {
-  const ST = { text: 1, title: 2, head: 3, int: 4, dec: 5, pct: 6, bold: 7, note: 8, boldint: 9, bolddec: 10, hlpct: 11, hldec: 12, hlhead: 13, ref: 14, dec3: 15 };
+  const ST = { text: 1, title: 2, head: 3, int: 4, dec: 5, pct: 6, bold: 7, note: 8, boldint: 9, bolddec: 10, hlpct: 11, hldec: 12, hlhead: 13, ref: 14, dec3: 15,
+    semi: 16, semiint: 17, semidec: 18, semipct: 19, semihead: 20 };   // semi*: dòng bán thành phẩm (tô xanh ngọc)
   const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <numFmts count="3"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="0.00&quot; %&quot;"/><numFmt numFmtId="166" formatCode="0.000"/></numFmts>
 <fonts count="5"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="11"/><name val="Arial"/></font><font><b/><sz val="14"/><color rgb="FF4A1FA8"/><name val="Arial"/></font><font><i/><sz val="10"/><color rgb="FF6A6691"/><name val="Arial"/></font><font><sz val="11"/><color rgb="FF7A7496"/><name val="Arial"/></font></fonts>
-<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEDE6FC"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDDF6EA"/><bgColor indexed="64"/></patternFill></fill></fills>
+<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEDE6FC"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDDF6EA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDDF1F2"/><bgColor indexed="64"/></patternFill></fill></fills>
 <borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFB9A8E6"/></left><right style="thin"><color rgb="FFB9A8E6"/></right><top style="thin"><color rgb="FFB9A8E6"/></top><bottom style="thin"><color rgb="FFB9A8E6"/></bottom><diagonal/></border></borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="16">
+<cellXfs count="21">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
 <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>
 <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>
@@ -2179,6 +2437,11 @@ export function xlsxBook(sheets) {
 <xf numFmtId="0" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
 <xf numFmtId="165" fontId="4" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1"/>
 <xf numFmtId="166" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>
+<xf numFmtId="3" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="165" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
 </cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
@@ -2239,6 +2502,11 @@ const hslHex = (h, s, l) => {
   return `#${f(0)}${f(8)}${f(4)}`;
 };
 const colorOf = t => t < COLORS.length ? COLORS[t] : [hslHex((t * 137.5 + 100) % 360, 70, 80), hslHex((t * 137.5 + 100) % 360, 45, 38)];
+/** Bán thành phẩm: bảng màu RIÊNG (xanh ngọc / ô liu / vàng đất) + viền nét đứt – nhìn là biết không thuộc đơn hàng. */
+const SEMI_COLORS = [['#bfe8ea', '#127077'], ['#d9e8c0', '#55701a'], ['#f1e2b0', '#866512']];
+/** Màu BTP theo THỨ TỰ trong thư viện chiều dày đó (ô chọn và sơ đồ cùng màu); từ mã thứ 4 sinh thêm sắc xanh ngọc – ô liu – vàng đất. */
+const semiColor = r => r < SEMI_COLORS.length ? SEMI_COLORS[r] : [hslHex((150 + r * 47) % 120 + 50, 45, 82), hslHex((150 + r * 47) % 120 + 50, 55, 30)];
+const colorOfT = T => (T.semi ? semiColor(T.semiNo ?? 0) : colorOf(T.t));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pretty = n => {
   if (!Number.isFinite(n)) return '—';
@@ -2260,7 +2528,7 @@ const STRATEGY = {
   'pure-grid': 'Một loại – lưới thẳng', 'pure-guillotine': 'Một loại – chia vùng nhiều cấp', 'pure-rotary': 'Một loại – bố trí xoay vòng',
   'pure-staggered': 'Một loại – tròn so le', block: 'Ghép khối chặt suốt', free: 'Ghép tự do từng chiếc',
 };
-const strategyText = s => (STRATEGY[s.replace(/\+(fill|hole)/g, '')] || s) + (s.includes('+fill') ? ' + chèn khe' : '') + (s.includes('+hole') ? ' + chèn lỗ vành khuyên' : '');
+const strategyText = s => (STRATEGY[s.replace(/\+(fill|hole|btp)/g, '')] || s) + (s.includes('+fill') ? ' + chèn khe' : '') + (s.includes('+hole') ? ' + chèn lỗ vành khuyên' : '') + (s.includes('+btp') ? ' + lấp bán thành phẩm' : '');
 
 function drawSheet(res, gi) {
   const i = res.input, g = res.groups[gi], sheetW = g.W, sheetH = g.needH ?? g.H, cut = g.H - sheetH, SW = 1080, inset = 11, plotW = SW - 2 * inset;
@@ -2295,15 +2563,15 @@ function drawSheet(res, gi) {
   if (m >= 3) body += `<rect x="${pt(x0 + m)}" y="${pt(y0 + m)}" width="${pt(W - 2 * m)}" height="${pt(H - 2 * m)}" fill="none" stroke="#ddc9fa" stroke-width="1"/>`;
   let labels = 0;
   for (const p of g.items) {
-    const T = res.types[p.t], [fill, edge] = colorOf(p.t);
+    const T = res.types[p.t], [fill, edge] = colorOfT(T);
     const xx = x0 + p.x * scale, yy = y0 + p.y * scale, ww = p.w * scale, hh = p.h * scale;
     const inner = T.allowance / 2 * scale;
     if (p.circle) {
-      body += `<circle cx="${pt(xx + ww / 2)}" cy="${pt(yy + hh / 2)}" r="${pt(ww / 2)}" fill="${fill}" stroke="${edge}" stroke-width="1"/>`;
+      body += `<circle cx="${pt(xx + ww / 2)}" cy="${pt(yy + hh / 2)}" r="${pt(ww / 2)}" fill="${fill}" stroke="${edge}" stroke-width="${p.semi ? 1.3 : 1}"${p.semi ? ' stroke-dasharray="5 3"' : ''}/>`;
       if (p.ring) body += `<circle cx="${pt(xx + ww / 2)}" cy="${pt(yy + hh / 2)}" r="${pt(p.hole / 2 * scale)}" fill="#f1ebfd" stroke="${edge}" stroke-width="1"/>`;
       if (!p.ring && inner > 1.4 && ww - 2 * inner > 3) body += `<circle cx="${pt(xx + ww / 2)}" cy="${pt(yy + hh / 2)}" r="${pt(ww / 2 - inner)}" fill="none" stroke="${edge}" stroke-opacity=".45" stroke-width=".8"/>`;
     } else {
-      body += `<rect x="${pt(xx)}" y="${pt(yy)}" width="${pt(ww)}" height="${pt(hh)}" fill="${fill}" stroke="${edge}" stroke-width="0.9"/>`;
+      body += `<rect x="${pt(xx)}" y="${pt(yy)}" width="${pt(ww)}" height="${pt(hh)}" fill="${fill}" stroke="${edge}" stroke-width="${p.semi ? 1.3 : 0.9}"${p.semi ? ' stroke-dasharray="5 3"' : ''}/>`;
       if (p.rot) body += `<rect x="${pt(xx)}" y="${pt(yy)}" width="${pt(ww)}" height="${pt(hh)}" fill="url(#np-rot)"/>`;
       if (inner > 1.4 && ww - 2 * inner > 3 && hh - 2 * inner > 3) body += `<rect x="${pt(xx + inner)}" y="${pt(yy + inner)}" width="${pt(ww - 2 * inner)}" height="${pt(hh - 2 * inner)}" fill="none" stroke="${edge}" stroke-opacity=".45" stroke-width=".8"/>`;
     }
@@ -2457,6 +2725,20 @@ const CSS = `
 .np td.dev-up{color:#a3500a;font-weight:800}.np td.dev-down{color:#0f6e56;font-weight:800}
 .np .is-margin input{border:2px solid #16a374;background:#f2fdf8;font-weight:850;color:#0d6b4c}
 .np .is-margin span{color:#0d6b4c}
+.np details.np-semi{border-color:#bfe3e5;background:#f7fcfc}
+.np details.np-semi summary{color:#127077}
+.np .np-semi-list{margin:8px 0 6px;display:grid;gap:6px}
+.np .np-semi-pick{display:flex;align-items:center;gap:9px;border:1px solid #cfe9ea;border-radius:10px;padding:7px 10px;background:#fff;cursor:pointer;font-weight:750;color:#1d3f52}
+.np .np-semi-pick input{width:19px;min-height:19px;flex:none;accent-color:#127077}
+.np .np-semi-pick.is-on{border-color:#127077;background:#eaf7f8}
+.np .np-semi-pick.is-off{opacity:.5;cursor:not-allowed}
+.np .np-semi-no{flex:none;min-width:22px;height:22px;border-radius:50%;background:#127077;color:#fff;font-size:12.5px;display:inline-flex;align-items:center;justify-content:center}
+.np .np-semi-pick small{margin-left:auto;font-weight:650;color:#4d6e78;font-size:13.5px}
+.np .np-semi-tag{display:inline-block;font-size:11px;font-weight:850;font-style:normal;color:#127077;background:#dff3f4;border:1px solid #9fd3d6;border-radius:5px;padding:0 4px;margin-left:5px;vertical-align:1px}
+.np details.np-semi-lib{margin:6px 0 2px}.np details.np-semi-lib summary{font-size:14px;font-weight:750;color:#4d6e78;cursor:pointer}
+.np details.np-semi-lib textarea{width:100%;margin-top:6px;border:1px solid #bfe3e5;border-radius:10px;padding:7px 9px;font:14px/1.4 Consolas,monospace;color:#1d3f52}
+.np tr.np-semi-row td{background:#eaf7f8}
+.np tr.np-semi-head td{background:#d3eef0;color:#0e5a60;font-weight:850;font-size:14px}
 .np .np-strip-rule{margin:-4px 0 12px}.np .np-strip-rule [hidden]{display:none}
 .np .np-strip-rule .np-cap span{font-size:14.5px;color:#0d6b4c}
 .np .np-tol-box{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:9px 12px;border:2px solid #e6a23c;border-radius:12px;background:#fff8ec;cursor:text}
@@ -2508,6 +2790,10 @@ const DEFAULT_STATE = {
     shear: [{ kind: 'std', W: '2440', H: '1220', qty: '', lot: '' }],
   },
   info: { project: '', drawingNo: '', material: '', drawnBy: '' },
+  // BÁN THÀNH PHẨM: thư viện mã theo chiều dày (mác dùng lẫn) – anh bổ sung từ master data sau; chỉ mã cùng chiều dày tờ đang tính được dùng
+  // btpLib: thư viện BTP (TẠM – dán từ Google Sheets cho tới khi có database): mỗi dòng Mã ⇥ Dày ⇥ Kích thước TP [⇥ Dư gia công]
+  // btpPick: mã BTP được tích cho phép ghép cắt cùng đơn hàng (mặc định KHÔNG tích – kỹ thuật chủ động chọn)
+  remTol: '2', btpLib: '', btpPick: {},
   barem: '', stdSource: 'table', squareCaps: { laser: '15', shear: '14' },
   parts: [
     { name: 'CT1', shape: 'rect', partW: '490', partH: '555', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '30', rotate: true },
@@ -2619,6 +2905,7 @@ export function mount(root, ctx = {}) {
      <label class="np-cap" title="Tấm lẻ đủ rộng nhưng quá ngắn (vd. mẩu ở góc khi dư dạng chữ L) khó tận dụng – tính vào hao phí"><span>Tấm lẻ phải dài (cạnh dài) ≥</span><input name="remnantMinLong" value="${esc(st.remnantMinLong)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
      <p class="np-hint" id="np-strip-laser">Laser / plasma: khi chọn phương án, ưu tiên tấm lẻ giữ nguyên khổ rộng tờ (vd. 1800 × 2000) thay vì dải dọc kiểu 6000 × 500. Dải nào ≥ ngưỡng vẫn thu hồi.</p>
      <label class="np-cap" id="np-strip-shear" title="Chỉ để chọn phương án, không phải ngưỡng thu hồi"><span>Chặt sấn: ưu tiên dải dài 2440 × h khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
+     <label class="np-cap" title="Cùng số tờ: phương án ít tấm lẻ hơn được chọn nếu hao phí chỉ cao hơn không quá số điểm % này"><span>Bớt 1 tấm lẻ khi hao phí tăng ≤</span><input name="remTol" value="${esc(st.remTol)}" inputmode="decimal" autocomplete="off"><small>điểm %</small></label>
     </div>
     <div class="np-tol-box"><span class="np-rb-text"><b>Đề xuất khi "cận"</b><small>Tờ thực tế thường lớn hơn khổ danh nghĩa; chi tiết giảm 0,5 mm thường chấp nhận được. Nếu điều chỉnh nhỏ mà tiết kiệm rõ, máy đưa đề xuất để người dùng duyệt. 0 = tắt.</small></span>
      <span class="np-rb-input np-tol2"><label><small>Dài +</small><input name="lengthTol" value="${esc(st.lengthTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép tăng khổ dài (mm)"></label>
@@ -2628,6 +2915,12 @@ export function mount(root, ctx = {}) {
     <div class="np-stock-head"><span>Loại</span><span>Dài (mm)</span><span>Rộng (mm)</span><span>Số tờ</span><span>Mã lô / seri</span><span></span></div>
     <div id="np-stocks"></div>
     <div class="np-presets" id="np-presets"></div>
+    <details class="np-info np-semi" id="np-semi-box" open><summary>Bán thành phẩm <small id="np-semi-status"></small></summary>
+     <div class="np-semi-list" id="np-semis"></div>
+     <p class="np-hint">Tích mã được phép ghép cắt cùng đơn hàng – máy tự tính số lượng để hao phí thấp nhất. Hao phí tính BTP như một chi tiết trong đơn hàng.</p>
+     <details class="np-semi-lib"><summary>Thư viện BTP (tạm, trước khi có database) <small id="np-semi-lib-status"></small></summary>
+      <p class="np-hint">Dán từ Google Sheets / Excel, mỗi dòng: <b>Mã</b> ⇥ <b>Dày</b> ⇥ <b>Kích thước TP</b> [⇥ <b>Dư gia công</b>]. Chữ nhật ghi <code>200x150</code>, tròn ghi <code>D200</code>. Tối đa 5 mã mỗi chiều dày (mác dùng lẫn); xếp mã hay dùng lên đầu. Dư gia công để trống: chữ nhật 0, tròn 5 mm.</p>
+      <textarea id="np-btp-lib" rows="5" spellcheck="false" placeholder="BTP-3-A&#9;3&#9;200x150&#10;BTP-10-D&#9;10&#9;D200&#9;5">${esc(st.btpLib)}</textarea></details></details>
     <details class="np-info np-barem"><summary>Hao phí tiêu chuẩn (tham chiếu) <small id="np-barem-status"></small></summary>
      <div class="np-toggle np-std-src" role="group" aria-label="Nguồn hao phí tiêu chuẩn">
       <button type="button" data-stdsrc="table">Theo bảng công ty</button><button type="button" data-stdsrc="auto">Máy tự tính</button></div>
@@ -2693,6 +2986,47 @@ export function mount(root, ctx = {}) {
     $('np-presets').innerHTML = PRESETS[st.cutMethod].map(([w, h]) => `<button type="button" data-preset="${w}x${h}">＋ ${w} × ${h}</button>`).join('') +
       '<button type="button" class="rem" data-preset="rem">＋ Tấm lẻ kho</button>';
   }
+  /** Đọc thư viện BTP: Mã ⇥ Dày ⇥ Kích thước TP [⇥ Dư]. Bỏ dòng tiêu đề / lỗi; mỗi chiều dày giữ 5 mã đầu.
+   *  Thứ tự dòng chỉ để HIỂN THỊ (mã đứng đầu thường được tích nhất) – không ảnh hưởng thuật toán. */
+  const parseBtpLib = text => {
+    const list = []; let bad = 0, dup = 0, over = 0;
+    for (const line of String(text || '').split(/\r?\n/)) {
+      if (!line.trim()) continue;
+      const c = line.split(/\t|;|\|/).map(x => x.trim());
+      const t = Number(String(c[1] ?? '').replace(',', '.')), size = String(c[2] ?? '').toUpperCase().replace(/\s+/g, '').replace(/[×*]/g, 'X').replace(',', '.');
+      const rect = size.match(/^(\d+(?:\.\d+)?)X(\d+(?:\.\d+)?)$/), round = size.match(/^(?:D|Ø|PHI)(\d+(?:\.\d+)?)$/);
+      if (!(t > 0) && !list.length && !bad) continue;                     // dòng tiêu đề
+      if (!(t > 0) || (!rect && !round)) { bad++; continue; }
+      const allowRaw = String(c[3] ?? '').replace(',', '.').trim(), allowance = allowRaw === '' ? (round ? 5 : 0) : Number(allowRaw);
+      if (!Number.isFinite(allowance) || allowance < 0) { bad++; continue; }
+      const b = round ? { shape: 'circle', diameter: +round[1] } : { shape: 'rect', partW: +rect[1], partH: +rect[2] };
+      b.thickness = t; b.allowance = allowance;
+      b.code = (c[0] || `BTP-${t}-${round ? 'D' + round[1] : rect[1] + 'x' + rect[2]}`).slice(0, 40);
+      b.size = round ? `D${b.diameter}` : `${b.partW} × ${b.partH}`;
+      if (list.some(x => x.code === b.code)) { dup++; continue; }          // trùng mã: giữ dòng đầu
+      if (list.filter(x => x.thickness === t).length >= DEFAULTS.semiMax) { over++; continue; }
+      list.push(b);
+    }
+    return { list, bad, dup, over };
+  };
+  let btpCache = { text: null, parsed: null };
+  const btpLib = () => { if (btpCache.text !== st.btpLib) btpCache = { text: st.btpLib, parsed: parseBtpLib(st.btpLib) }; return btpCache.parsed; };
+  const curThick = () => Number(String(st.thickness).replace(',', '.'));
+  /** Chỉ hiện các mã BTP cùng chiều dày tờ đang tính; chặt sấn không cắt được BTP tròn. */
+  function renderSemis() {
+    const t = curThick(), lib = btpLib(), mine = lib.list.filter(b => b.thickness === t);
+    $('np-semis').innerHTML = mine.length ? mine.map((b, j) => {
+      const off = b.shape === 'circle' && st.cutMethod === 'shear', on = !off && !!st.btpPick[b.code];
+      const [fill, edge] = semiColor(j);
+      return `<label class="np-semi-pick${on ? ' is-on' : ''}${off ? ' is-off' : ''}"${off ? ' title="Chặt sấn không cắt được chi tiết tròn"' : ''}>
+        <input type="checkbox" data-bpick="${esc(b.code)}"${on ? ' checked' : ''}${off ? ' disabled' : ''}>
+        <b class="np-semi-no" title="Thứ tự trong master data – mã đứng đầu thường được tích nhất">${j + 1}</b><i class="np-chip${b.shape === 'circle' ? ' round' : ''}" style="background:${fill};border-color:${edge};border-style:dashed"></i>${esc(b.code)}
+        <small>${b.size}${b.allowance ? ` · dư ${b.allowance}` : ''}${off ? ' · không dùng cho chặt sấn' : ''}</small></label>`;
+    }).join('') : `<p class="np-hint">Chưa có mã BTP cho dày ${esc(st.thickness)} mm – bổ sung trong thư viện bên dưới.</p>`;
+    const picked = mine.filter(b => st.btpPick[b.code] && !(b.shape === 'circle' && st.cutMethod === 'shear')).length;
+    put('np-semi-status', mine.length ? `dày ${st.thickness} mm · ${picked}/${mine.length} mã được ghép` : `dày ${st.thickness} mm · chưa có mã`);
+    put('np-semi-lib-status', `${lib.list.length} mã${lib.bad ? ` · ${lib.bad} dòng lỗi bỏ qua` : ''}${lib.dup ? ` · ${lib.dup} mã trùng bỏ qua` : ''}${lib.over ? ` · ${lib.over} mã vượt ${DEFAULTS.semiMax} mã / chiều dày bỏ qua` : ''}`);
+  }
   function renderParts() {
     $('np-parts').innerHTML = st.parts.map((p, t) => {
       const [fill, edge] = colorOf(t), round = p.shape !== 'rect';
@@ -2716,6 +3050,7 @@ export function mount(root, ctx = {}) {
     for (const k of ['thickness', 'gap', 'margin', 'remnantMin', 'remnantMinLong', 'longStripMin', 'widthTol', 'lengthTol', 'shrinkTol']) st[k] = val(k);
     st.info = { project: val('project'), drawingNo: val('drawingNo'), material: val('matName'), drawnBy: val('drawnBy') };
     stocks().forEach((s, j) => { s.W = val(`sW${j}`); s.H = val(`sH${j}`); s.qty = val(`sQ${j}`); s.lot = val(`sL${j}`); });
+    st.remTol = val('remTol');
     st.parts.forEach((p, t) => {
       p.name = val(`name${t}`); p.qty = val(`qty${t}`); p.allowance = val(`allowance${t}`);
       if (p.shape === 'rect') { p.partW = val(`partW${t}`); p.partH = val(`partH${t}`); }
@@ -2735,7 +3070,7 @@ export function mount(root, ctx = {}) {
     $('np-strip-laser').hidden = st.cutMethod === 'shear'; $('np-strip-shear').hidden = st.cutMethod !== 'shear';
     put('np-cut-hint', st.cutMethod === 'shear' ? 'Nhát chặt chạy suốt · chỉ chữ nhật · phần dư là chữ nhật'
       : 'Xếp tự do chữ nhật, tròn, vành khuyên · xoay vòng, so le, chèn khe, chèn lỗ');
-    renderStocks();
+    renderStocks(); renderSemis();
   }
   function payload() {
     const density = Number(st.density);
@@ -2756,8 +3091,12 @@ export function mount(root, ctx = {}) {
       if (p.shape === 'ring') { d.inner = parseNum(p.inner, `${lab} – Ø trong TP`, { positive: true }); d.allowanceIn = parseNum(p.allowanceIn || '0', `${lab} – dư Ø trong`); }
       return d;
     }).filter(Boolean);
+    // BTP: các mã cùng chiều dày tờ đang tính (mác dùng lẫn) ĐƯỢC TÍCH; số lượng máy tự tính
+    const thick = parseNum(st.thickness, 'Dày', { positive: true });
+    const semis = btpLib().list.filter(b => b.thickness === thick).map((b, rank) => ({ b, rank })).filter(({ b }) => st.btpPick[b.code])
+      .map(({ b, rank }) => ({ rank, code: b.code, shape: b.shape, partW: b.partW, partH: b.partH, diameter: b.diameter, allowance: b.allowance, maxQty: null }));
     return {
-      cutMethod: st.cutMethod, density, stocks: stockList,
+      cutMethod: st.cutMethod, density, stocks: stockList, semis, remTol: parseNum(st.remTol || '0', 'Dung sai hao phí bớt tấm lẻ'),
       thickness: parseNum(st.thickness, 'Dày', { positive: true }), gap: parseNum(st.gap, st.cutMethod === 'shear' ? 'Khe hở' : 'Mạch cắt'),
       margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), longStripMin: parseNum(st.longStripMin || '0', 'Ưu tiên dải dài'), remnantMinLong: parseNum(st.remnantMinLong || '0', 'Tấm lẻ dài tối thiểu'), widthTol: parseNum(st.widthTol || '0', 'Cho phép tăng khổ rộng'), lengthTol: parseNum(st.lengthTol || '0', 'Cho phép tăng khổ dài'), shrinkTol: parseNum(st.shrinkTol || '0', 'Cho phép giảm kích thước'), parts,
     };
@@ -2788,7 +3127,7 @@ export function mount(root, ctx = {}) {
   };
   const sizeText = T => { const s = last?.shrinkMM || 0, cw = T.cw - s, ch = T.ch - s;   // phương án giảm kích thước: hiện kích thước cắt sau khi giảm
     return T.ring ? `Ø${pretty(cw)} / Ø${pretty(T.hole)}` : T.circle ? 'D' + pretty(cw) : pretty(cw) + ' × ' + pretty(ch); };
-  const chip = T => { const [fill, edge] = colorOf(T.t); return `<i class="np-chip${T.ring ? ' ring' : T.circle ? ' round' : ''}" style="background:${fill};border-color:${edge}"></i>`; };
+  const chip = T => { const [fill, edge] = colorOfT(T); return `<i class="np-chip${T.ring ? ' ring' : T.circle ? ' round' : ''}" style="background:${fill};border-color:${edge}"></i>`; };
   function showGroup(gi) {
     if (!last) return;
     group = Math.max(0, Math.min(gi, last.groups.length - 1));
@@ -2797,10 +3136,11 @@ export function mount(root, ctx = {}) {
     put('np-fig-title', pic.title + (g.n > 1 ? ` · ×${g.n} tờ giống nhau` : ''));
     root.querySelectorAll('[data-group]').forEach(b => { const yes = Number(b.dataset.group) === group; b.classList.toggle('is-active', yes); b.setAttribute('aria-selected', String(yes)); });
     const present = new Set(g.items.map(p => p.t)), anyRot = g.items.some(p => p.rot);
-    $('np-legend').innerHTML = res.types.filter(T => present.has(T.t)).map(T => `<span>${chip(T)}${T.t + 1}. ${esc(T.name)} ${sizeText(T)} <b>×${g.counts[T.t]}</b></span>`).join('') +
+    $('np-legend').innerHTML = res.types.filter(T => present.has(T.t)).map(T => `<span>${chip(T)}${T.t + 1}. ${esc(T.name)}${T.semi ? '<i class="np-semi-tag">BTP</i>' : ''} ${sizeText(T)} <b>×${g.counts[T.t]}</b></span>`).join('') +
       (anyRot ? '<span><i class="np-chip hatch"></i>Xoay 90°</span>' : '') +
       (g.cuts.some(c => c.seq > 0) ? '<span><i class="np-chip" style="background:#fff7ea;border-color:#d58027"></i>Số = thứ tự nhát chặt chính</span>' : '');
-    put('np-summary', `${sheetRange(res, group)} / ${res.totalSheets}: ${g.items.length} chi tiết · hao phí tờ ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(2) + ' %'}${g.remnant ? ` · sử dụng: ${fmtTam(sheetUse(g))} tấm` : ''} · lấp đầy ${g.usedPercent.toFixed(1)} %`);
+    const gSemi = g.items.filter(p => p.semi).length;
+    put('np-summary', `${sheetRange(res, group)} / ${res.totalSheets}: ${g.items.length - gSemi} chi tiết${gSemi ? ` + ${gSemi} BTP` : ''} · hao phí tờ ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(2) + ' %'}${g.remnant ? ` · sử dụng: ${fmtTam(sheetUse(g))} tấm` : ''} · lấp đầy ${g.usedPercent.toFixed(1)} %`);
     put('np-strategy', strategyText(g.strategy) + ' · ' + freeText(g));
   }
   function present(res, keepPlan = false) {
@@ -2809,7 +3149,7 @@ export function mount(root, ctx = {}) {
     // chỉ hiện thẻ khi có phương án thay thế khác biệt thật; mặc định luôn mở phương án hao phí thấp nhất
     $('np-plans').innerHTML = res.plans.length < 2 ? '' : res.plans.map((p, k) => `<button type="button" class="np-plan${p.enlargeMM || p.shrinkMM ? ' is-enlarge' : ''}" data-plan="${k}">
         <b>${k === 0 ? '★ Phương án tốt nhất' : p.enlargeMM && p.shrinkMM ? '⚠ Đề xuất kết hợp – cần duyệt' : p.enlargeMM ? '⚠ Đề xuất tăng khổ – cần duyệt' : p.shrinkMM ? '⚠ Đề xuất giảm kích thước – cần duyệt' : 'Phương án khác ' + k}</b><big>${p.totalSheets} tờ · ${p.wastePercent.toFixed(2)} %</big>
-        <small>${esc(p.reason)}</small><small>Thu hồi ${pretty(p.recoveredKG)} kg · ${p.kinds} kiểu tờ</small></button>`).join('');
+        <small>${esc(p.reason)}</small><small>Thu hồi ${pretty(p.recoveredKG)} kg${p.semiCount ? ` · BTP ${p.semiCount} ct (${pretty(p.semiKG)} kg)` : ''} · ${p.kinds} kiểu tờ</small></button>`).join('');
     showPlan(planIdx);
   }
   let baremCache = { text: null, parsed: null };
@@ -2834,12 +3174,12 @@ export function mount(root, ctx = {}) {
     return a.value != null ? { ...a, source: st.stdSource === 'table' ? 'new' : 'auto' } : { value: null, capped: false, source: 'none' };
   }); };
   const stdLines = (res, onlyNew) => { const std = stdOf(res); return res.types.map((T, k) => ({ T, s: std[k] }))
-    .filter(({ T, s }) => typeKey(T) && s.value != null && (!onlyNew || s.source === 'new'))
+    .filter(({ T, s }) => T.qty > 0 && typeKey(T) && s.value != null && (!onlyNew || s.source === 'new'))
     .map(({ T, s }) => `${typeKey(T)}\t${s.value.toFixed(1)}%`); };
   /** Chi tiết chưa có trong bảng: hiện danh sách + nút bổ sung vào bảng / sao chép để dán vào Google Sheets. */
   function renderMissing(res) {
     const std = stdOf(res), box = $('np-missing');
-    const miss = st.stdSource === 'table' ? res.types.filter((T, k) => std[k].source !== 'table') : [];
+    const miss = st.stdSource === 'table' ? res.types.filter((T, k) => std[k].source !== 'table' && T.qty > 0) : [];
     if (!miss.length) { box.hidden = true; box.innerHTML = ''; return; }
     const b0 = miss.find(T => T.barem)?.barem;
     box.hidden = false;
@@ -2872,15 +3212,19 @@ export function mount(root, ctx = {}) {
     renderMissing(res);
     const alloc = allocateWaste(res, stdOf(res));
     const pc = v => v == null ? '—' : v.toFixed(2) + ' %';
+    const semiRows = res.types.filter(T => T.semi);                     // mọi mã được tích (kể cả máy không dùng – ghi 0)
+    const semiHead = semiRows.length ? `<tr class="np-semi-head"><td colspan="9">BÁN THÀNH PHẨM – nhập kho BTP · ${semiRows.map(T => `${esc(T.name)}: ${pretty(T.qty)} chiếc`).join(' · ')} · ${pretty(res.semiKG)} kg</td></tr>` : '';
     $('np-list-body').innerHTML = res.types.map((T, k) => {
+      const lead = T.semi && T === semiRows[0] ? semiHead : '';
+      if (T.semi && !T.qty) return `${lead}<tr class="np-semi-row"><td>${T.t + 1}</td><td>${chip(T)} ${esc(T.name)}<i class="np-semi-tag">BTP</i></td><td class="num">${T.circle ? 'D' + pretty(T.tpW) : pretty(T.tpW) + ' × ' + pretty(T.tpH)}</td><td class="num">${sizeText(T)}</td><td class="num"><small>lấp dư</small></td><td class="num">0</td><td class="num np-col-hole"></td><td colspan="2"><small>Máy không dùng mã này trong phương án – lấp mã khác ít hao phí hơn</small></td></tr>`;
       const made = res.groups.reduce((s, g) => s + g.counts[T.t] * g.n, 0), a = alloc[k];
       const tp = T.ring ? `Ø${pretty(T.tpW)} / Ø${pretty(T.tpIn)}` : T.circle ? 'D' + pretty(T.tpW) : pretty(T.tpW) + ' × ' + pretty(T.tpH);
       const dev = a.actual == null ? '' : a.actual > a.std + 0.005 ? 'dev-up' : a.actual < a.std - 0.005 ? 'dev-down' : '';
-      return `<tr><td>${T.t + 1}</td><td>${chip(T)} ${esc(T.name)}${T.noRotate ? ' <small>(không xoay)</small>' : ''}</td>
+      return `${lead}<tr${T.semi ? ' class="np-semi-row"' : ''}><td>${T.t + 1}</td><td>${chip(T)} ${esc(T.name)}${T.semi ? '<i class="np-semi-tag" title="Bán thành phẩm – nhập kho BTP">BTP</i>' : ''}${T.noRotate ? ' <small>(không xoay)</small>' : ''}</td>
        <td class="num">${tp}</td><td class="num">${sizeText(T)}</td>
-       <td class="num">${pretty(T.qty)}</td><td class="num ${made === T.qty ? 'ok' : ''}">${pretty(made)}${made === T.qty ? ' ✓' : ''}</td><td class="num np-col-hole">${T.inHoles ? pretty(T.inHoles) : ''}</td>
+       <td class="num">${T.semi ? '<small>lấp dư</small>' : pretty(T.qty)}</td><td class="num ${made === T.qty ? 'ok' : ''}">${pretty(made)}${made === T.qty ? ' ✓' : ''}</td><td class="num np-col-hole">${T.inHoles ? pretty(T.inHoles) : ''}</td>
        <td class="num np-ref" title="${stdTip(T, a)}">${a.source === 'none' ? '<i class="np-est">? <sup>nhập tay</sup></i>' : a.source === 'new' ? `<i class="np-est">${pc(a.std)} <sup>mới</sup></i>` : pc(a.std)}${a.capped ? ' <sup class="np-cap-tag">≤' + capOf() + '</sup>' : ''}</td><td class="num np-real ${dev}" title="Lệch ${(a.actual - a.std).toFixed(2)} điểm % so với tiêu chuẩn">${pc(a.actual)}</td></tr>`;
-    }).join('') + `<tr class="np-total"><td colspan="4">TỔNG</td><td class="num">${pretty(res.pieces)}</td><td class="num">${pretty(res.pieces)}</td><td class="num np-col-hole">${pretty(res.types.reduce((s, T) => s + T.inHoles, 0)) || ''}</td><td class="num np-k">${alloc.K == null ? '' : 'K = ' + alloc.K.toFixed(3)}</td><td class="num np-real">${res.wastePercent.toFixed(2)} %</td></tr>`;
+    }).join('') + `<tr class="np-total"><td colspan="4">TỔNG</td><td class="num">${pretty(res.types.reduce((s, T) => s + (T.semi ? 0 : T.qty), 0))}</td><td class="num">${pretty(res.pieces)}</td><td class="num np-col-hole">${pretty(res.types.reduce((s, T) => s + T.inHoles, 0)) || ''}</td><td class="num np-k">${alloc.K == null ? '' : 'K = ' + alloc.K.toFixed(3)}</td><td class="num np-real">${res.wastePercent.toFixed(2)} %</td></tr>`;
     $('np-list').classList.toggle('no-hole', !res.types.some(T => T.ring));
   }
   function showPlan(k) {
@@ -2911,14 +3255,15 @@ export function mount(root, ctx = {}) {
     put('np-finished', pretty(res.finishedKG));
     $('np-total-bar').hidden = false;
     put('np-tb-waste', res.wastePercent.toFixed(2) + ' %');
-    put('np-tb-sub', `${res.totalSheets} tờ · nếu không thu hồi ${res.wasteFullPercent.toFixed(2)} %`);
+    const semiText = res.types.filter(T => T.semi && T.qty).map(T => `${T.name} × ${pretty(T.qty)}`).join(', ');
+    put('np-tb-sub', `${res.totalSheets} tờ · nếu không thu hồi ${res.wasteFullPercent.toFixed(2)} %${res.semiCount ? ` · gồm BTP ${semiText} (${pretty(res.semiKG)} kg)` : ''}`);
     put('np-tb-use', useBySize(res));
     put('np-tb-issued', pretty(res.issuedKG) + ' kg'); put('np-tb-rec', pretty(res.recoveredKG) + ' kg');
     put('np-tb-net', pretty(res.issuedKG - res.recoveredKG) + ' kg'); put('np-tb-tp', pretty(res.finishedKG) + ' kg');
     put('np-waste', res.wastePercent.toFixed(2)); put('np-waste-sub', `Nếu không thu hồi: ${res.wasteFullPercent.toFixed(2)} % · tổng cả trình cắt · đã thử ${full.tried} cách xếp`);
     const rems = res.groups.filter(g => remsOf(g).length), nRem = rems.reduce((s, g) => s + g.n, 0);
     put('np-remnant-title', `Tấm lẻ thu hồi (≥ ${pretty(res.input.remnantMin)} mm)`);
-    put('np-remnant', nRem ? `${pretty(res.recoveredKG)} kg` : 'Không có');
+    put('np-remnant', nRem ? `${pretty(res.recoveredKG)} kg · ${nRem} tấm` : 'Không có');
     const lr = res.lastFree.find(f => f.side === 'right'), lb = res.lastFree.find(f => f.side === 'bottom');
     put('np-remnant-sub', (nRem ? rems.map(g => `${remText(g)}${g.n > 1 ? ` (×${g.n})` : ''}`).slice(0, 3).join('; ') + (rems.length > 3 ? '…' : '') + ' · ' : '')
       + `Tờ cuối dư phải ${lr ? pretty(lr.w) + '×' + pretty(lr.h) : '0'}, dư dưới ${lb ? pretty(lb.w) + '×' + pretty(lb.h) : '0'}`);
@@ -2954,10 +3299,14 @@ export function mount(root, ctx = {}) {
     collect();
     if (INFO.includes(e.target.name)) return;                     // khung tên không ảnh hưởng phương án
     if (e.target.name === 'squareCap') { st.squareCaps[st.cutMethod] = e.target.value; savedState = structuredClone(st); baremStatus(); if (last) renderPartTable(last); return; }
+    if (e.target.name === 'thickness') renderSemis();               // đổi chiều dày: hiện mã BTP của chiều dày đó
     schedule();
   });
   on(root, 'change', e => {
     if (e.target.matches('[data-rot]')) { collect(); schedule(); return; }
+    if (e.target.matches('[data-bpick]')) {
+      collect(); st.btpPick[e.target.dataset.bpick] = e.target.checked; savedState = structuredClone(st); renderSemis(); schedule(); return;
+    }
     if (e.target.matches('[data-skind]')) { collect(); stocks()[Number(e.target.dataset.skind)].kind = e.target.value; renderStocks(); collect(); schedule(); return; }
     if (e.target.matches('[data-shape]')) {
       collect();
@@ -3024,6 +3373,9 @@ export function mount(root, ctx = {}) {
     st.barem = $('np-barem').value; savedState = structuredClone(st);
     baremStatus(); if (last) renderPartTable(last);
   });
+  on($('np-btp-lib'), 'input', () => {
+    st.btpLib = $('np-btp-lib').value; savedState = structuredClone(st); renderSemis(); schedule();
+  });
   on($('np-add'), 'click', () => {
     collect();
     let no = st.parts.length + 1; while (st.parts.some(p => String(p.name).trim() === `CT${no}`)) no++;
@@ -3074,18 +3426,29 @@ export function mount(root, ctx = {}) {
         ['HP tiêu chuẩn – tham chiếu (%)', 'KL xuất theo tiêu chuẩn (kg)', 'Hệ số K'].map(v => ({ v, s: 'head' })),
         ['HP THỰC TẾ (%)', 'KL XUẤT THỰC TẾ (kg)'].map(v => ({ v, s: 'hlhead' })), [{ v: 'Chênh lệch (kg)', s: 'head' }, { v: 'Ghi chú', s: 'head' }])];
     let sTP = 0, sStd = 0, sAct = 0, stdAll = true;
+    const SEMI_S = { int: 'semiint', dec: 'semidec', ref: 'semidec', hldec: 'semidec', hlpct: 'semipct' };
+    const semiRow = row => row.map(c => (c && typeof c === 'object' ? { ...c, s: SEMI_S[c.s] || 'semi' } : { v: c ?? '', s: 'semi' }));
+    let semiHeadDone = false;
     res.types.forEach((T, k) => {
+      if (T.semi && !T.qty) return;
       const a = alloc[k]; sTP += a.tpKG; sAct += a.issuedKG; sStd += a.stdIssuedKG;
-      s1.push([{ v: T.t + 1, s: 'int' }, T.name, shapeOf(T), tpOf(T), cutOf(T), { v: T.qty, s: 'int' }, r2(kgOf(T.tpArea)), r2(a.tpKG),
+      if (T.semi && !semiHeadDone) { semiHeadDone = true; s1.push([{ v: '', s: 'semihead' }, { v: 'BÁN THÀNH PHẨM – nhập kho BTP (máy tự tính số lượng)', s: 'semihead' }]); }
+      (T.semi ? (row => s1.push(semiRow(row))) : (row => s1.push(row)))([{ v: T.t + 1, s: 'int' }, T.name, shapeOf(T), tpOf(T), cutOf(T), { v: T.qty, s: 'int' }, r2(kgOf(T.tpArea)), r2(a.tpKG),
         a.std == null ? '' : { v: Math.round(a.std * 100) / 100, s: 'ref' }, r2(a.stdIssuedKG), alloc.K == null ? '' : { v: Math.round(alloc.K * 10000) / 10000, s: 'dec' },
         { v: Math.round(a.actual * 100) / 100, s: 'hlpct' }, { v: Math.round(a.issuedKG * 100) / 100, s: 'hldec' },
         a.stdIssuedKG == null ? '' : r2(a.issuedKG - a.stdIssuedKG),
-        [a.source === 'new' ? `HP tiêu chuẩn TÍNH MỚI (1 chi tiết / tờ ${T.barem.W}×${T.barem.H}: ${T.barem.n} chiếc / tờ) – cần bổ sung vào bảng`
+        [T.semi ? 'BÁN THÀNH PHẨM – nhập kho BTP' : '', a.source === 'new' ? `HP tiêu chuẩn TÍNH MỚI (1 chi tiết / tờ ${T.barem.W}×${T.barem.H}: ${T.barem.n} chiếc / tờ) – cần bổ sung vào bảng`
           : a.source === 'auto' ? `HP tiêu chuẩn máy tính: 1 chi tiết / tờ ${T.barem.W}×${T.barem.H}, ${T.barem.n} chiếc / tờ`
           : a.source === 'none' ? 'Không lọt tờ khổ chuẩn – tạm dùng hao phí chung, cần nhập tay' : 'HP tiêu chuẩn theo bảng công ty',
          a.capped ? `khổ vuông: giới hạn ${capOf()} %` : '',
          T.inHoles ? `${T.inHoles} chiếc chèn trong lỗ vành` : ''].filter(Boolean).join('; ')]);
     });
+    // 5. bán thành phẩm – dạng NHẬT KÝ (mỗi mã một dòng) để sau này nạp vào database thống kê theo tháng
+    const semiLog = res.types.filter(T => T.semi && T.qty);
+    const s5 = [[{ v: `BÁN THÀNH PHẨM ĐÃ LẤP – ${title}`, s: 'title' }], [{ v: 'Mỗi dòng một mã BTP – giữ nguyên cột để nạp database thống kê theo tháng', s: 'note' }],
+      head(['Ngày lập', 'Dự án', 'Số bản vẽ', 'Phương án', 'Mã BTP', 'Dày (mm)', 'Vật liệu', 'Hình dạng', 'Thành phẩm (mm)', 'Kích thước cắt (mm)', 'Số lượng', 'KL / chiếc (kg)', 'KL (kg)']),
+      ...semiLog.map(T => [stamp(), st.info.project || '', st.info.drawingNo || '', res.label, T.name, { v: i.thickness, s: 'dec' }, matName(), shapeOf(T), tpOf(T), cutOf(T),
+        { v: T.qty, s: 'int' }, r2(kgOf(T.tpArea)), r2(T.qty * kgOf(T.tpArea))])];
     s1.push([{ v: '', s: 'bold' }, { v: 'TỔNG', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: '', s: 'bold' }, { v: res.pieces, s: 'boldint' }, { v: '', s: 'bold' },
       { v: Math.round(sTP * 100) / 100, s: 'bolddec' }, { v: '', s: 'bold' }, stdAll ? { v: Math.round(sStd * 100) / 100, s: 'bolddec' } : { v: '', s: 'bold' },
       alloc.K == null ? { v: '', s: 'bold' } : { v: Math.round(alloc.K * 10000) / 10000, s: 'bolddec' }, { v: Math.round(res.wastePercent * 100) / 100, s: 'hlpct' }, { v: Math.round(sAct * 100) / 100, s: 'hldec' }, stdAll ? { v: Math.round((sAct - sStd) * 100) / 100, s: 'bolddec' } : { v: '', s: 'bold' }, { v: '', s: 'bold' }]);
@@ -3110,7 +3473,9 @@ export function mount(root, ctx = {}) {
       ...(res.enlargeMM ? [['Tăng khổ phôi', res.label.split(' + ')[0].replace('Tăng khổ ', ''), `${[...new Set(res.groups.filter(g => g.needW || g.needH).map(needText))].join(' / ')} mm; xuất kho vẫn tính theo khổ danh nghĩa – người dùng duyệt`]] : []),
       ['Xuất kho quy đổi (sử dụng)', useBySize(res), 'tấm · có thu hồi thì = 1 − tấm lẻ / tờ'],
       ['Khối lượng xuất kho', r2(res.issuedKG), 'kg'], ['Tấm lẻ thu hồi', r2(res.recoveredKG), `kg · ngưỡng ≥ ${i.remnantMin} mm`],
-      ['Thép thực tiêu hao', r2(res.issuedKG - res.recoveredKG), 'kg'], ['Khối lượng thành phẩm', r2(res.finishedKG), 'kg (phủ bì, vành khuyên trừ lỗ)'],
+      ['Thép thực tiêu hao', r2(res.issuedKG - res.recoveredKG), 'kg'], ['Khối lượng thành phẩm', r2(res.finishedKG), `kg (phủ bì, vành khuyên trừ lỗ${res.semiCount ? '; gồm bán thành phẩm' : ''})`],
+      ...(res.semiCount ? [['Bán thành phẩm lấp phần dư', { v: res.semiCount, s: 'int' }, `chiếc · ${pretty(res.semiKG)} kg · ${res.types.filter(T => T.semi && T.qty).map(T => `${T.name} × ${T.qty}`).join(', ')} – nhập kho BTP`]] : []),
+      ['Số tấm lẻ thu hồi', { v: res.remCount ?? 0, s: 'int' }, `quy tắc: bớt 1 tấm lẻ khi hao phí tăng ≤ ${i.remTol ?? 2} điểm %`],
       ['HAO PHÍ CHUNG / TP', pc(res.wastePercent), '(xuất − thu hồi − TP) / TP'], ['Hao phí nếu không thu hồi', pc(res.wasteFullPercent), ''],
       ['Số tờ tối thiểu', res.lowerBound == null ? '' : res.proven ? 'Đã chứng minh' : `Cận dưới ${res.lowerBound} tờ`, ''],
       ['Nguồn HP tiêu chuẩn', st.stdSource === 'table' ? `Bảng công ty (${barem().map.size} kích thước)` : 'Máy tự tính (1 chi tiết / tờ khổ chuẩn)',
@@ -3123,6 +3488,7 @@ export function mount(root, ctx = {}) {
       { name: 'Sơ đồ từng tờ', cols: [8, 10, 8, 14, 12, 14, ...res.types.map(() => 11), 12, 13, 10, 12, 16, 16, 18], rows: s2, freeze: 3 },
       { name: 'Toạ độ', cols: [8, 7, 6, 22, 12, 11, 11, 12, 12, 10, 9], rows: s3, freeze: 3 },
       { name: 'Tổng hợp', cols: [28, 24, 44], rows: s4 },
+      ...(semiLog.length ? [{ name: 'Bán thành phẩm', cols: [11, 18, 16, 30, 18, 9, 14, 11, 16, 16, 10, 13, 12], rows: s5, freeze: 3 }] : []),
     ]);
     downloadBlob?.(new Blob([book], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `${fileTag()}_thong_tin_cat.xlsx`);
     ctx.showToast?.('Đã tạo file Excel thông tin cắt.');
@@ -3145,6 +3511,6 @@ export function mount(root, ctx = {}) {
       console.warn('Nesting PRO catalog:', err);
     }
   }
-  renderParts(); syncUI(); baremStatus(); compute(); void loadCatalog();
+  renderParts(); renderSemis(); syncUI(); baremStatus(); compute(); void loadCatalog();
   return () => { disposed = true; clearTimeout(timer); serial++; worker?.terminate(); worker = null; };
 }
