@@ -2126,7 +2126,7 @@ export function calculateNestingPro(input) {
   const wasteOf = wasteOfPlan;
   const sizesOf = p => [...new Set(p.groups.map(g => `${g.remnantStock ? 'lẻ ' : ''}${g.W}×${g.H}`))].sort().join(' + ');
   const semiN = p => p.groups.reduce((s, g) => s + g.n * g.counts.reduce((s2, c, t) => s2 + (allTypes[t]?.semi ? c : 0), 0), 0);
-  const remWord = p => (p.remCount ? `${p.remCount} tấm lẻ` : 'Không còn tấm lẻ');
+  const remWord = p => (p.remCount ? `${p.remCount} tấm lẻ` : p.semi ? 'Không còn tấm lẻ' : 'Không có tấm lẻ (dư nhỏ rải các tờ)');
   const best = kept[0], shown = [best];
   {
     // so với các phương án cùng số tờ (phương án nhiều tờ hơn có thể "hao phí thấp" nhờ thu hồi nhiều tấm lẻ – không so)
@@ -2374,6 +2374,8 @@ function evaluate(ctxs, groups, remnantMin) {
 }
 /** Hao phí / TP (%) của một phương án (đã trừ tấm lẻ thu hồi; thành phẩm gồm cả bán thành phẩm). */
 const wasteOfPlan = p => 100 * (p.issuedArea - p.recoveredArea - p.tpArea) / p.tpArea;
+/** Phế liệu thực (mm²): tôn xuất − thành phẩm − MỘT tấm lẻ lớn nhất (tấm lẻ nhỏ khác coi như phế – dồn dư về 1 tấm). */
+const scrapOfPlan = p => p.issuedArea - p.tpArea - p.maxRem;
 /**
  * Thứ tự chọn phương án (anh chốt 28/10/2026 – đúng cho MỌI trường hợp, thay quy tắc dung sai 2 điểm % ngày 28/10):
  *  ① đủ số lượng từng chi tiết (đã kiểm tra trước khi xếp hạng)
@@ -2387,7 +2389,16 @@ const wasteOfPlan = p => 100 * (p.issuedArea - p.recoveredArea - p.tpArea) / p.t
 function better(a, b) {
   const sameSize = a.single != null && a.single === b.single;
   if (sameSize && a.totalSheets !== b.totalSheets) return a.totalSheets < b.totalSheets;
-  if (a.remCount !== b.remCount) return a.remCount < b.remCount;
+  if (a.remCount !== b.remCount) {
+    // 0 tấm lẻ mà KHÔNG nhờ lấp BTP = phần dư bị rải nhỏ dưới ngưỡng khắp các tờ -> phế liệu; so phế liệu thực
+    // (xuất − thành phẩm − tấm lẻ lớn nhất). Cùng số tờ thì phương án có 1 tấm lẻ luôn ít phế hơn -> thắng.
+    const zero = a.remCount === 0 ? a : b.remCount === 0 ? b : null;
+    if (zero && !zero.semi) {
+      const sa = scrapOfPlan(a), sb = scrapOfPlan(b);
+      if (Math.abs(sa - sb) > 1e3) return sa < sb;
+    }
+    return a.remCount < b.remCount;
+  }
   if (Math.abs(a.maxRem - b.maxRem) > 1e4) return a.maxRem > b.maxRem;
   const wa = wasteOfPlan(a), wb = wasteOfPlan(b);
   if (Math.abs(wa - wb) > 1e-6) return wa < wb;
@@ -2994,6 +3005,7 @@ const CSS = `
 .np .np-semi-tag{display:inline-block;font-size:11px;font-weight:850;font-style:normal;color:#127077;background:#dff3f4;border:1px solid #9fd3d6;border-radius:5px;padding:0 4px;margin-left:5px;vertical-align:1px}
 .np details.np-semi-lib{margin:6px 0 2px}.np details.np-semi-lib summary{font-size:14px;font-weight:750;color:#4d6e78;cursor:pointer}
 .np details.np-semi-lib textarea{width:100%;margin-top:6px;border:1px solid #bfe3e5;border-radius:10px;padding:7px 9px;font:14px/1.4 Consolas,monospace;color:#1d3f52}
+.np .np-list-stock{padding:0 16px 10px;font-weight:800;color:#2e1b70;font-size:15px}
 .np tr.np-semi-row td{background:#eaf7f8}
 .np tr.np-semi-head td{background:#d3eef0;color:#0e5a60;font-weight:850;font-size:14px}
 .np .np-strip-rule{margin:-4px 0 12px}.np .np-strip-rule [hidden]{display:none}
@@ -3215,7 +3227,7 @@ export function mount(root, ctx = {}) {
      <button class="np-export" type="button" id="np-pdf" disabled title="Sơ đồ cắt khổ A3 ngang, mỗi kiểu tờ một trang – in xưởng, mở không cần CAD">↓ PDF sơ đồ cắt</button></span></div>
     <div class="np-status" id="np-status" role="status" aria-live="polite"></div>
     <div class="np-missing" id="np-missing" role="status" hidden></div>
-    <div class="np-list" id="np-list" hidden><div class="np-list-title"><span>DANH SÁCH CHI TIẾT ĐÃ XẾP</span><small id="np-list-count"></small></div>
+    <div class="np-list" id="np-list" hidden><div class="np-list-title"><span>DANH SÁCH CHI TIẾT ĐÃ XẾP</span><small id="np-list-count"></small></div><div class="np-list-stock" id="np-list-stock"></div>
      <div class="np-scroll"><table><thead><tr><th>NO</th><th>Mã chi tiết</th><th class="num">Thành phẩm (mm)</th><th class="num">Kích thước cắt (mm)</th><th class="num">Yêu cầu</th><th class="num">Đã xếp</th><th class="num np-col-hole">Trong lỗ</th><th class="num np-ref">HP tiêu chuẩn<br><small>tham chiếu</small></th><th class="num np-real">HP thực tế</th></tr></thead><tbody id="np-list-body"></tbody></table></div></div>
    </section>
   </div>
@@ -3529,6 +3541,11 @@ export function mount(root, ctx = {}) {
       + `Tờ cuối dư phải ${lr ? pretty(lr.w) + '×' + pretty(lr.h) : '0'}, dư dưới ${lb ? pretty(lb.w) + '×' + pretty(lb.h) : '0'}`);
     renderPartTable(res);
     put('np-list-count', `${res.types.length} loại · ${pretty(res.pieces)} chi tiết · tính ${(res.ms / 1000).toFixed(1)} s`);
+    // vật liệu / mác, chiều dày, khổ thép × số tờ (gộp theo khổ; tấm lẻ kho ghi riêng)
+    const stockBy = new Map();
+    for (const g of res.groups) { const k = `${g.remnantStock ? 'tấm lẻ ' : ''}${pretty(g.W)} × ${pretty(g.H)}`; stockBy.set(k, (stockBy.get(k) || 0) + g.n); }
+    put('np-list-stock', [matName() || 'Vật liệu chưa ghi', `dày ${pretty(res.input.thickness)} mm`,
+      [...stockBy].map(([k, n]) => `khổ ${k} mm × ${n} tờ`).join(' + '), stockBy.size > 1 ? `tổng ${res.totalSheets} tờ` : ''].filter(Boolean).join(' · '));
     $('np-list').hidden = false; exportsOff(false);
     put('np-error', ''); status('');
   }
