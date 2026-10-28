@@ -2483,6 +2483,82 @@ if (typeof document === 'undefined' && typeof self !== 'undefined' && typeof sel
 }
 
 /* ========================================================================= */
+/* XUẤT PDF SƠ ĐỒ CẮT (khổ A3 ngang, in xưởng) – không cần thư viện ngoài.    */
+/* Mỗi trang dựng thành SVG rồi vẽ ra ảnh JPEG độ phân giải cao (200 dpi) bằng */
+/* trình duyệt -> chữ tiếng Việt hiển thị đúng như trên màn hình (font Arial   */
+/* của máy). PDF là bản xem / in; bản vẽ vector 1:1 dùng DXF.                  */
+/* ========================================================================= */
+const PDF_PAGE = { w: 1680, h: 1188, ptW: 1190.55, ptH: 841.89, dpi: 200 };   // A3 ngang: 420 × 297 mm (khung SVG 4 đơn vị / mm)
+/** Vẽ một trang SVG (đã có width/height) ra JPEG. */
+async function pdfRaster(svg) {
+  const pxW = Math.round(420 / 25.4 * PDF_PAGE.dpi), pxH = Math.round(297 / 25.4 * PDF_PAGE.dpi);
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+  try {
+    const img = new Image();
+    await new Promise((ok, no) => { img.onload = ok; img.onerror = () => no(Error('Không dựng được trang PDF.')); img.src = url; });
+    const cv = document.createElement('canvas'); cv.width = pxW; cv.height = pxH;
+    const c = cv.getContext('2d'); c.fillStyle = '#ffffff'; c.fillRect(0, 0, pxW, pxH); c.drawImage(img, 0, 0, pxW, pxH);
+    const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.9));
+    if (!blob) throw Error('Trình duyệt không tạo được ảnh trang PDF.');
+    return { data: new Uint8Array(await blob.arrayBuffer()), pxW, pxH };
+  } finally { URL.revokeObjectURL(url); }
+}
+/** Ghép các trang ảnh JPEG thành file PDF 1.4 (mỗi trang một ảnh phủ kín khổ A3 ngang). */
+function pdfBytes(pages, title = '') {
+  const enc = new TextEncoder(), parts = [], offs = [];
+  let len = 0;
+  const put = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
+  const obj = (n, body) => { offs[n] = len; put(`${n} 0 obj\n`); body(); put('\nendobj\n'); };
+  const n = pages.length, pageObj = k => 4 + k * 3;
+  put('%PDF-1.4\n%\xe2\xe3\xcf\xd3\n');
+  obj(1, () => put('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2, () => put(`<< /Type /Pages /Count ${n} /Kids [${pages.map((_, k) => `${pageObj(k)} 0 R`).join(' ')}] >>`));
+  const ascii = String(title).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, c => (c === 'đ' ? 'd' : 'D')).replace(/[^\x20-\x7e]/g, '').replace(/[()\\]/g, '');
+  obj(3, () => put(`<< /Title (${ascii}) /Producer (Epsilon Lab Cutting Plan) >>`));
+  pages.forEach((p, k) => {
+    const pg = pageObj(k), content = `q ${PDF_PAGE.ptW} 0 0 ${PDF_PAGE.ptH} 0 0 cm /Im0 Do Q`;
+    obj(pg, () => put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PDF_PAGE.ptW} ${PDF_PAGE.ptH}] /Resources << /XObject << /Im0 ${pg + 2} 0 R >> >> /Contents ${pg + 1} 0 R >>`));
+    obj(pg + 1, () => put(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`));
+    obj(pg + 2, () => { put(`<< /Type /XObject /Subtype /Image /Width ${p.pxW} /Height ${p.pxH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.data.length} >>\nstream\n`); put(p.data); put('\nendstream'); });
+  });
+  const total = 4 + n * 3, xref = len;
+  put(`xref\n0 ${total}\n0000000000 65535 f \n`);
+  for (let i = 1; i < total; i++) put(`${String(offs[i]).padStart(10, '0')} 00000 n \n`);
+  put(`trailer\n<< /Size ${total} /Root 1 0 R /Info 3 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  const out = new Uint8Array(len); let o = 0;
+  for (const b of parts) { out.set(b, o); o += b.length; }
+  return out;
+}
+/** Khung trang A3: tiêu đề, dòng phụ, số trang, khung viền; body = nội dung SVG (toạ độ khung 1680 × 1188). */
+function pdfPageSVG({ title, sub, page, pages, body, foot = '' }) {
+  const { w, h } = PDF_PAGE, F = 'font-family="Arial,Helvetica,sans-serif"';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="#ffffff"/>`
+    + `<rect x="24" y="24" width="${w - 48}" height="${h - 48}" fill="none" stroke="#5c47b3" stroke-width="2"/>`
+    + `<text x="48" y="74" font-size="34" font-weight="700" fill="#2e1b70" ${F}>${esc(title)}</text>`
+    + `<text x="48" y="110" font-size="21" fill="#4a4470" ${F}>${esc(sub)}</text>`
+    + `<text x="${w - 48}" y="74" font-size="22" text-anchor="end" fill="#4a4470" ${F}>Trang ${page} / ${pages}</text>`
+    + `<line x1="24" y1="128" x2="${w - 24}" y2="128" stroke="#5c47b3" stroke-width="1.5"/>`
+    + body
+    + `<text x="48" y="${h - 40}" font-size="17" fill="#7a7496" ${F}>${esc(foot)}</text>`
+    + `<text x="${w - 48}" y="${h - 40}" font-size="17" text-anchor="end" fill="#7a7496" ${F}>Epsilon Lab – Cutting Plan</text></svg>`;
+}
+/** Nhúng một SVG con (có viewBox) vào ô (x, y, w, h) của trang, giữ tỷ lệ X/Y. */
+function pdfEmbed(svg, x, y, w, h) {
+  const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 100 100';
+  return `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet">${svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')}</svg>`;
+}
+/** Hàng chú giải: [{fill, edge, text, dash, round}] xếp nhiều cột từ (x, y). */
+function pdfLegend(rows, x, y, colW = 520, perCol = 6) {
+  const F = 'font-family="Arial,Helvetica,sans-serif"';
+  return rows.map((r, k) => {
+    const cx = x + Math.floor(k / perCol) * colW, cy = y + (k % perCol) * 32;
+    const chip = r.round ? `<circle cx="${cx + 13}" cy="${cy - 7}" r="10" fill="${r.fill}" stroke="${r.edge}" stroke-width="1.5"${r.dash ? ' stroke-dasharray="4 2"' : ''}/>`
+      : `<rect x="${cx}" y="${cy - 17}" width="26" height="20" rx="3" fill="${r.fill}" stroke="${r.edge}" stroke-width="1.5"${r.dash ? ' stroke-dasharray="4 2"' : ''}/>`;
+    return chip + `<text x="${cx + 36}" y="${cy}" font-size="19" fill="#1d1652" ${F}>${esc(r.text)}</text>`;
+  }).join('');
+}
+
+/* ========================================================================= */
 /* GIAO DIỆN                                                                 */
 /* ========================================================================= */
 const { setText, downloadBlob } = globalThis.EpsilonSoftShared || {};
@@ -2955,7 +3031,8 @@ export function mount(root, ctx = {}) {
      <button class="np-export" type="button" id="np-dxf-cut" disabled title="Mỗi kiểu tờ một file, chỉ đường bao cắt – đưa vào CypCut / phần mềm máy cắt">↓ DXF máy cắt (.zip)</button>
      <button class="np-export" type="button" id="np-dxf-plan" disabled title="Bản vẽ cutting plan chuẩn dự án">↓ DXF cutting plan</button>
      <button class="np-export" type="button" id="np-csv" disabled title="Danh sách chi tiết + hao phí tiêu chuẩn / thực tế, sơ đồ từng tờ, toạ độ, tổng hợp">↓ Excel thông tin cắt</button>
-     <button class="np-export" type="button" id="np-svg" disabled>↓ SVG tờ này</button></span></div>
+     <button class="np-export" type="button" id="np-svg" disabled>↓ SVG tờ này</button>
+     <button class="np-export" type="button" id="np-pdf" disabled title="Sơ đồ cắt khổ A3 ngang, mỗi kiểu tờ một trang – in xưởng, mở không cần CAD">↓ PDF sơ đồ cắt</button></span></div>
     <div class="np-status" id="np-status" role="status" aria-live="polite"></div>
     <div class="np-missing" id="np-missing" role="status" hidden></div>
     <div class="np-list" id="np-list" hidden><div class="np-list-title"><span>DANH SÁCH CHI TIẾT ĐÃ XẾP</span><small id="np-list-count"></small></div>
@@ -3105,7 +3182,7 @@ export function mount(root, ctx = {}) {
     const box = $('np-status'); box.textContent = msg;
     if (busy) box.insertAdjacentHTML('beforeend', '<span class="np-spin" aria-hidden="true"></span>');
   }
-  const exportsOff = off => { for (const id of ['np-csv', 'np-svg', 'np-dxf-cut', 'np-dxf-plan']) $(id).disabled = off; };
+  const exportsOff = off => { for (const id of ['np-csv', 'np-svg', 'np-dxf-cut', 'np-dxf-plan', 'np-pdf']) $(id).disabled = off; };
   function invalid(msg) {
     $('np-missing').hidden = true;
     last = null; lastSVG = '';
@@ -3395,6 +3472,41 @@ export function mount(root, ctx = {}) {
     if (!lastSVG) return;
     downloadBlob?.(new Blob([lastSVG], { type: 'image/svg+xml;charset=utf-8' }), `${fileTag()}_${sheetRange(last, group).replace(/\s|–/g, '-')}.svg`);
     ctx.showToast?.('Đã tạo sơ đồ SVG.');
+  });
+  /** PDF sơ đồ cắt: mỗi kiểu tờ một trang A3 ngang – tiêu đề, sơ đồ đúng tỷ lệ, chú giải, số liệu tờ và tổng trình cắt. */
+  async function nestingPDF(res) {
+    const i = res.input, W = PDF_PAGE.w, H = PDF_PAGE.h, F = 'font-family="Arial,Helvetica,sans-serif"';
+    const method = i.cutMethod === 'shear' ? 'chặt sấn' : 'laser / plasma';
+    const title = `SƠ ĐỒ CẮT – ${matName()} ${pretty(i.thickness)} mm – ${method}`.replace(/\s+/g, ' ');
+    const sub = [st.info.project ? 'Dự án: ' + st.info.project : '', st.info.drawingNo ? 'Số bản vẽ: ' + st.info.drawingNo : '',
+      `Phương án: ${res.label}`, `Ngày: ${stamp()}`, st.info.drawnBy ? 'Người lập: ' + st.info.drawnBy : ''].filter(Boolean).join(' · ');
+    const semiTxt = res.semiCount ? ` · gồm BTP ${res.types.filter(T => T.semi && T.qty).map(T => `${T.name} × ${T.qty}`).join(', ')}` : '';
+    const foot = `Tổng ${res.totalSheets} tờ · xuất kho ${pretty(res.issuedKG)} kg · tấm lẻ thu hồi ${pretty(res.recoveredKG)} kg · thành phẩm ${pretty(res.finishedKG)} kg${semiTxt} · hao phí / TP ${res.wastePercent.toFixed(2)} %`;
+    const pages = [];
+    for (let gi = 0; gi < res.groups.length; gi++) {
+      const g = res.groups[gi], pic = drawSheet(res, gi), nSemi = g.items.filter(p => p.semi).length;
+      const legend = res.types.filter(T => g.counts[T.t] > 0).map(T => { const [fill, edge] = colorOfT(T);
+        return { fill, edge, round: T.circle, dash: T.semi, text: `${T.t + 1}. ${T.name}${T.semi ? ' (BTP)' : ''} – ${sizeText(T)} × ${g.counts[T.t]}` }; });
+      const legRows = Math.min(6, Math.max(1, legend.length)), legY = H - 70 - legRows * 32, statY = legY - 70;
+      const body = `<text x="48" y="172" font-size="26" font-weight="700" fill="#5c29bf" ${F}>${esc(pic.title)}${g.n > 1 ? ` · ×${g.n} TỜ GIỐNG NHAU` : ''}</text>`
+        + pdfEmbed(pic.svg, 48, 188, W - 96, statY - 188 - 34)
+        + `<text x="48" y="${statY}" font-size="21" font-weight="700" fill="#2e1b70" ${F}>${esc(`${g.items.length - nSemi} chi tiết${nSemi ? ` + ${nSemi} BTP` : ''} · hao phí tờ ${g.wastePercent == null ? '—' : g.wastePercent.toFixed(2) + ' %'}${remsOf(g).length ? ` · sử dụng ${fmtTam(sheetUse(g))} tấm` : ''} · lấp đầy ${g.usedPercent.toFixed(1)} %`)}</text>`
+        + `<text x="48" y="${statY + 30}" font-size="19" fill="#4a4470" ${F}>${esc(strategyText(g.strategy) + ' · ' + freeText(g))}</text>`
+        + pdfLegend(legend, 48, legY + 20, 520, 6);
+      pages.push(await pdfRaster(pdfPageSVG({ title, sub, page: gi + 1, pages: res.groups.length, body, foot })));
+    }
+    return pdfBytes(pages, `${title} ${st.info.drawingNo || ''}`);
+  }
+  on($('np-pdf'), 'click', async () => {
+    if (!last) return;
+    const btn = $('np-pdf'), res = last;
+    btn.disabled = true; status('Đang dựng PDF sơ đồ cắt…', true);
+    try {
+      const pdf = await nestingPDF(res);
+      downloadBlob?.(new Blob([pdf], { type: 'application/pdf' }), `${fileTag()}_so_do_cat.pdf`);
+      ctx.showToast?.(`Đã tạo PDF sơ đồ cắt (${res.groups.length} trang A3).`);
+    } catch (err) { put('np-error', 'Không tạo được PDF: ' + err.message); }
+    finally { btn.disabled = !last; status(''); }
   });
   on($('np-dxf-cut'), 'click', () => {
     if (!last) return;

@@ -571,6 +571,82 @@ if (typeof document === 'undefined' && typeof self !== 'undefined' && typeof sel
 
 
 /* ========================================================================= */
+/* XUẤT PDF SƠ ĐỒ CẮT (khổ A3 ngang, in xưởng) – không cần thư viện ngoài.    */
+/* Mỗi trang dựng thành SVG rồi vẽ ra ảnh JPEG độ phân giải cao (200 dpi) bằng */
+/* trình duyệt -> chữ tiếng Việt hiển thị đúng như trên màn hình (font Arial   */
+/* của máy). PDF là bản xem / in; bản vẽ vector 1:1 dùng DXF.                  */
+/* ========================================================================= */
+const PDF_PAGE = { w: 1680, h: 1188, ptW: 1190.55, ptH: 841.89, dpi: 200 };   // A3 ngang: 420 × 297 mm (khung SVG 4 đơn vị / mm)
+/** Vẽ một trang SVG (đã có width/height) ra JPEG. */
+async function pdfRaster(svg) {
+  const pxW = Math.round(420 / 25.4 * PDF_PAGE.dpi), pxH = Math.round(297 / 25.4 * PDF_PAGE.dpi);
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+  try {
+    const img = new Image();
+    await new Promise((ok, no) => { img.onload = ok; img.onerror = () => no(Error('Không dựng được trang PDF.')); img.src = url; });
+    const cv = document.createElement('canvas'); cv.width = pxW; cv.height = pxH;
+    const c = cv.getContext('2d'); c.fillStyle = '#ffffff'; c.fillRect(0, 0, pxW, pxH); c.drawImage(img, 0, 0, pxW, pxH);
+    const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.9));
+    if (!blob) throw Error('Trình duyệt không tạo được ảnh trang PDF.');
+    return { data: new Uint8Array(await blob.arrayBuffer()), pxW, pxH };
+  } finally { URL.revokeObjectURL(url); }
+}
+/** Ghép các trang ảnh JPEG thành file PDF 1.4 (mỗi trang một ảnh phủ kín khổ A3 ngang). */
+function pdfBytes(pages, title = '') {
+  const enc = new TextEncoder(), parts = [], offs = [];
+  let len = 0;
+  const put = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
+  const obj = (n, body) => { offs[n] = len; put(`${n} 0 obj\n`); body(); put('\nendobj\n'); };
+  const n = pages.length, pageObj = k => 4 + k * 3;
+  put('%PDF-1.4\n%\xe2\xe3\xcf\xd3\n');
+  obj(1, () => put('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2, () => put(`<< /Type /Pages /Count ${n} /Kids [${pages.map((_, k) => `${pageObj(k)} 0 R`).join(' ')}] >>`));
+  const ascii = String(title).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, c => (c === 'đ' ? 'd' : 'D')).replace(/[^\x20-\x7e]/g, '').replace(/[()\\]/g, '');
+  obj(3, () => put(`<< /Title (${ascii}) /Producer (Epsilon Lab Cutting Plan) >>`));
+  pages.forEach((p, k) => {
+    const pg = pageObj(k), content = `q ${PDF_PAGE.ptW} 0 0 ${PDF_PAGE.ptH} 0 0 cm /Im0 Do Q`;
+    obj(pg, () => put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PDF_PAGE.ptW} ${PDF_PAGE.ptH}] /Resources << /XObject << /Im0 ${pg + 2} 0 R >> >> /Contents ${pg + 1} 0 R >>`));
+    obj(pg + 1, () => put(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`));
+    obj(pg + 2, () => { put(`<< /Type /XObject /Subtype /Image /Width ${p.pxW} /Height ${p.pxH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.data.length} >>\nstream\n`); put(p.data); put('\nendstream'); });
+  });
+  const total = 4 + n * 3, xref = len;
+  put(`xref\n0 ${total}\n0000000000 65535 f \n`);
+  for (let i = 1; i < total; i++) put(`${String(offs[i]).padStart(10, '0')} 00000 n \n`);
+  put(`trailer\n<< /Size ${total} /Root 1 0 R /Info 3 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  const out = new Uint8Array(len); let o = 0;
+  for (const b of parts) { out.set(b, o); o += b.length; }
+  return out;
+}
+/** Khung trang A3: tiêu đề, dòng phụ, số trang, khung viền; body = nội dung SVG (toạ độ khung 1680 × 1188). */
+function pdfPageSVG({ title, sub, page, pages, body, foot = '' }) {
+  const { w, h } = PDF_PAGE, F = 'font-family="Arial,Helvetica,sans-serif"';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="#ffffff"/>`
+    + `<rect x="24" y="24" width="${w - 48}" height="${h - 48}" fill="none" stroke="#5c47b3" stroke-width="2"/>`
+    + `<text x="48" y="74" font-size="34" font-weight="700" fill="#2e1b70" ${F}>${esc(title)}</text>`
+    + `<text x="48" y="110" font-size="21" fill="#4a4470" ${F}>${esc(sub)}</text>`
+    + `<text x="${w - 48}" y="74" font-size="22" text-anchor="end" fill="#4a4470" ${F}>Trang ${page} / ${pages}</text>`
+    + `<line x1="24" y1="128" x2="${w - 24}" y2="128" stroke="#5c47b3" stroke-width="1.5"/>`
+    + body
+    + `<text x="48" y="${h - 40}" font-size="17" fill="#7a7496" ${F}>${esc(foot)}</text>`
+    + `<text x="${w - 48}" y="${h - 40}" font-size="17" text-anchor="end" fill="#7a7496" ${F}>Epsilon Lab – Cutting Plan</text></svg>`;
+}
+/** Nhúng một SVG con (có viewBox) vào ô (x, y, w, h) của trang, giữ tỷ lệ X/Y. */
+function pdfEmbed(svg, x, y, w, h) {
+  const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 100 100';
+  return `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet">${svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')}</svg>`;
+}
+/** Hàng chú giải: [{fill, edge, text, dash, round}] xếp nhiều cột từ (x, y). */
+function pdfLegend(rows, x, y, colW = 520, perCol = 6) {
+  const F = 'font-family="Arial,Helvetica,sans-serif"';
+  return rows.map((r, k) => {
+    const cx = x + Math.floor(k / perCol) * colW, cy = y + (k % perCol) * 32;
+    const chip = r.round ? `<circle cx="${cx + 13}" cy="${cy - 7}" r="10" fill="${r.fill}" stroke="${r.edge}" stroke-width="1.5"${r.dash ? ' stroke-dasharray="4 2"' : ''}/>`
+      : `<rect x="${cx}" y="${cy - 17}" width="26" height="20" rx="3" fill="${r.fill}" stroke="${r.edge}" stroke-width="1.5"${r.dash ? ' stroke-dasharray="4 2"' : ''}/>`;
+    return chip + `<text x="${cx + 36}" y="${cy}" font-size="19" fill="#1d1652" ${F}>${esc(r.text)}</text>`;
+  }).join('');
+}
+
+/* ========================================================================= */
 /* GIAO DIỆN                                                                 */
 /* ========================================================================= */
 const COLORS = [['#afa2eb', '#5c47b3'], ['#9bcffc', '#326bab'], ['#f6c58f', '#b06a12'], ['#a6e3c8', '#1f7a55'], ['#f4b2c6', '#a3365a']];
@@ -623,6 +699,28 @@ function drawBars(res) {
   });
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Epsilon Soft Thép hình PRO-MAX – sơ đồ cắt ${res.totalBars} cây thép">${'<rect width="' + W + '" height="' + H + '" fill="#faf7ff"/>' + g}</svg>`;
   return svg;
+}
+
+/** Chú giải chi tiết có trong các kiểu cắt: màu, tên, dài cắt, số chiếc. */
+function barsLegend(res, groups = res.groups) {
+  const cnt = new Map();
+  for (const b of groups) for (const t of b.pieces) cnt.set(t, (cnt.get(t) || 0) + b.n);
+  return [...cnt.keys()].sort((a, b) => a - b).map(t => { const [fill, edge] = colorOf(res.parts[t].color ?? t);
+    return { fill, edge, dash: res.parts[t].splice === 'B', text: `${res.parts[t].name || 'CT' + (t + 1)} – dài cắt ${pretty(res.cutL[t])} × ${pretty(cnt.get(t))}` }; });
+}
+const barsTotals = res => `${res.totalBars} cây · xuất kho ${pretty(res.issuedKG)} kg · cây lẻ thu hồi ${pretty(res.recoveredKG)} kg`
+  + `${res.recovered.length ? ` (${res.recovered.length} cây: ${res.recovered.slice(0, 6).map(pretty).join('; ')}${res.recovered.length > 6 ? '…' : ''} mm)` : ''}`
+  + ` · thành phẩm ${pretty(res.finishedKG)} kg · hao phí / TP ${res.wastePercent.toFixed(2)} %`;
+/** SVG tải về (mở nhanh bằng trình duyệt, không cần CAD): tiêu đề + sơ đồ cắt + chú giải + số liệu. */
+function barsSVGFile(res, meta = {}) {
+  const fig = drawBars(res), [, fw, fh] = fig.match(/viewBox="0 0 (\S+) (\S+)"/).map(Number), F = 'font-family="Arial,Helvetica,sans-serif"';
+  const leg = barsLegend(res), per = Math.ceil(leg.length / 2) || 1, top = 96, legY = top + fh + 40, H = legY + per * 32 + 50;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${fw}" height="${H}" viewBox="0 0 ${fw} ${H}"><rect width="${fw}" height="${H}" fill="#ffffff"/>`
+    + `<text x="20" y="38" font-size="24" font-weight="700" fill="#2e1b70" ${F}>${esc(`SƠ ĐỒ CẮT THÉP HÌNH ${meta.spec || ''} – CÂY ${pretty(res.input.stockL)} mm`.replace(/\s+/g, ' '))}</text>`
+    + `<text x="20" y="68" font-size="15" fill="#4a4470" ${F}>${esc([meta.planLabel, `mạch cưa ${pretty(res.input.kerf)} mm`, meta.date].filter(Boolean).join(' · '))}</text>`
+    + pdfEmbed(fig, 0, top - 14, fw, fh)
+    + `<text x="20" y="${legY - 10}" font-size="15" font-weight="700" fill="#2e1b70" ${F}>${esc(barsTotals(res))}</text>`
+    + `<g transform="translate(20 ${legY + 18}) scale(0.8)">${pdfLegend(leg, 0, 0, 640, per)}</g></svg>`;
 }
 
 /* ========================================================================= */
@@ -1066,7 +1164,7 @@ export function mount(root, ctx = {}) {
     <div class="bp-splice" id="bp-splice" hidden></div>
     <div class="bp-figure"><div class="bp-head" id="bp-head">SƠ ĐỒ CẮT</div><div id="bp-figure"></div></div>
     <div class="bp-caption"><strong class="bp-summary" id="bp-summary">—</strong><span class="bp-proof" id="bp-proof"></span></div>
-    <div class="bp-caption"><p class="bp-strategy" id="bp-strategy">—</p><span><button class="bp-export" type="button" id="bp-csv" disabled title="Danh sách chi tiết cắt, sơ đồ cắt từng cây, tổng hợp định mức">↓ Excel danh sách cắt</button> <button class="bp-export" type="button" id="bp-export" disabled title="Sơ đồ trải phôi 1:1 mm, mở bằng AutoCAD">↓ DXF sơ đồ trải phôi</button></span></div>
+    <div class="bp-caption"><p class="bp-strategy" id="bp-strategy">—</p><span><button class="bp-export" type="button" id="bp-csv" disabled title="Danh sách chi tiết cắt, sơ đồ cắt từng cây, tổng hợp định mức">↓ Excel danh sách cắt</button> <button class="bp-export" type="button" id="bp-export" disabled title="Sơ đồ trải phôi 1:1 mm, mở bằng AutoCAD">↓ DXF sơ đồ trải phôi</button> <button class="bp-export" type="button" id="bp-svg" disabled title="Sơ đồ cắt mở nhanh bằng trình duyệt, không cần CAD">↓ SVG sơ đồ</button> <button class="bp-export" type="button" id="bp-pdf" disabled title="Sơ đồ cắt khổ A3 ngang – in xưởng">↓ PDF sơ đồ cắt</button></span></div>
     <div class="bp-cut-list" id="bp-cut-list" hidden>
       <div class="bp-cut-title"><span>DANH SÁCH CHI TIẾT CẦN CẮT</span><small id="bp-cut-count"></small></div>
       <div class="bp-cut-scroll"><table class="bp-cut-table"><thead><tr><th>STT</th><th>Mã chi tiết</th><th class="bp-num">Dài TP (mm)</th><th class="bp-num">Dư gia công (mm)</th><th class="bp-num">Số lượng</th></tr></thead><tbody id="bp-cut-body"></tbody></table></div>
@@ -1196,14 +1294,14 @@ export function mount(root, ctx = {}) {
     };
   }
   function invalid(msg) {
-    last = null; lastSVG = ''; $('bp-figure').textContent = ''; $('bp-export').disabled = true; $('bp-csv').disabled = true; $('bp-cut-list').hidden = true; $('bp-cut-body').replaceChildren(); $('bp-plans').innerHTML = ''; $('bp-splice').hidden = true; plans = []; current = null;
+    last = null; lastSVG = ''; $('bp-figure').textContent = ''; $('bp-export').disabled = true; $('bp-csv').disabled = true; $('bp-svg').disabled = true; $('bp-pdf').disabled = true; $('bp-cut-list').hidden = true; $('bp-cut-body').replaceChildren(); $('bp-plans').innerHTML = ''; $('bp-splice').hidden = true; plans = []; current = null;
     put('bp-error', msg); for (const id of ['bp-summary', 'bp-proof', 'bp-strategy', 'bp-issued', 'bp-finished', 'bp-waste', 'bp-remnant']) put(id, '—');
     put('bp-proof', '');
   }
   function present(res, plan = current) {
     last = res;
     const svg = drawBars(res);
-    $('bp-figure').innerHTML = svg; lastSVG = svg; $('bp-export').disabled = false; $('bp-csv').disabled = false;
+    $('bp-figure').innerHTML = svg; lastSVG = svg; $('bp-export').disabled = false; $('bp-csv').disabled = false; $('bp-svg').disabled = false; $('bp-pdf').disabled = false;
     put('bp-head', `SƠ ĐỒ CẮT ${st.spec || ''} – CÂY ${pretty(res.input.stockL)} mm`);
     put('bp-summary', `${res.totalBars} cây ${pretty(res.input.stockL / 1000)} m` + (plan ? ` · ${plan.label}${plan.splices ? ` – ${plan.splices} mối nối` : ''}` : ''));
     put('bp-proof', res.proven ? '✓ Số cây tối thiểu – đã chứng minh'
@@ -1447,6 +1545,41 @@ export function mount(root, ctx = {}) {
     const blob = new Blob([barsDXF(last, exportMeta())], { type: 'application/dxf' });
     if (downloadBlob) downloadBlob(blob, `${fileBase()}_so_do_trai_phoi.dxf`);
     ctx.showToast?.('Đã tạo DXF sơ đồ trải phôi.');
+  }, ctx.signal ? { signal: ctx.signal } : undefined);
+  $('bp-svg').addEventListener('click', () => {
+    if (!last) return;
+    const blob = new Blob([barsSVGFile(last, exportMeta())], { type: 'image/svg+xml;charset=utf-8' });
+    if (downloadBlob) downloadBlob(blob, `${fileBase()}_so_do_cat.svg`);
+    ctx.showToast?.('Đã tạo sơ đồ cắt SVG.');
+  }, ctx.signal ? { signal: ctx.signal } : undefined);
+  /** PDF sơ đồ cắt: A3 ngang, tối đa 8 kiểu cắt mỗi trang; mỗi trang có chú giải chi tiết của trang đó, chân trang là tổng trình cắt. */
+  async function barsPDF(res, meta) {
+    const W = PDF_PAGE.w, H = PDF_PAGE.h, PER = 8, F = 'font-family="Arial,Helvetica,sans-serif"', chunks = [];
+    for (let k = 0; k < res.groups.length; k += PER) chunks.push(res.groups.slice(k, k + PER));
+    const title = `SƠ ĐỒ CẮT THÉP HÌNH ${meta.spec || ''} – CÂY ${pretty(res.input.stockL)} mm`.replace(/\s+/g, ' ');
+    const sub = [meta.planLabel ? 'Phương án: ' + meta.planLabel : '', `mạch cưa ${pretty(res.input.kerf)} mm`, res.input.trim ? `cắt đầu cây ${pretty(res.input.trim)} mm` : '', `Ngày: ${meta.date}`].filter(Boolean).join(' · ');
+    const pages = [];
+    for (let c = 0; c < chunks.length; c++) {
+      const part = { ...res, groups: chunks[c] }, leg = barsLegend(res, chunks[c]);
+      const rows = Math.min(6, Math.max(1, leg.length)), legY = H - 70 - rows * 32;
+      const first = res.groups.indexOf(chunks[c][0]) + 1, lastK = first + chunks[c].length - 1;
+      const body = `<text x="48" y="172" font-size="24" font-weight="700" fill="#5c29bf" ${F}>${esc(`KIỂU CẮT ${first}${lastK > first ? '–' + lastK : ''} / ${res.groups.length} · ${chunks[c].reduce((s, b) => s + b.n, 0)} cây`)}</text>`
+        + pdfEmbed(drawBars(part), 48, 190, W - 96, legY - 190 - 50)
+        + pdfLegend(leg, 48, legY + 6, 520, 6);
+      pages.push(await pdfRaster(pdfPageSVG({ title, sub, page: c + 1, pages: chunks.length, body, foot: 'Tổng: ' + barsTotals(res) })));
+    }
+    return pdfBytes(pages, title);
+  }
+  $('bp-pdf').addEventListener('click', async () => {
+    if (!last) return;
+    const btn = $('bp-pdf'), res = last;
+    btn.disabled = true;
+    try {
+      const pdf = await barsPDF(res, exportMeta());
+      if (downloadBlob) downloadBlob(new Blob([pdf], { type: 'application/pdf' }), `${fileBase()}_so_do_cat.pdf`);
+      ctx.showToast?.('Đã tạo PDF sơ đồ cắt.');
+    } catch (err) { put('bp-error', 'Không tạo được PDF: ' + err.message); }
+    finally { btn.disabled = !last; }
   }, ctx.signal ? { signal: ctx.signal } : undefined);
   updateReferenceWeight();
   compute();
