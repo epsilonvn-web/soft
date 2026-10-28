@@ -813,6 +813,33 @@ class SpotHeap {
   }
   get size() { return this.a.length; }
 }
+/**
+ * TRƯỢT VỊ TRÍ (chèn khe – bổ sung 29/10/2026): chữ nhật q đặt tại (x, y) bị vướng thì đề xuất 2 vị trí mới –
+ * trượt XUỐNG vừa qua mọi vật vướng, và trượt SANG PHẢI vừa qua mọi vật vướng. Với phôi tròn tính đúng điểm tiếp xúc
+ * (không dùng khung bao). Nhờ đó tìm được ô kẹp giữa hai vật khác nhau – vd. khe dọc bên phải hàng tròn so le,
+ * dưới vòng tròn hàng giữa: x lấy từ tròn hàng dưới, y lấy từ tròn hàng giữa.
+ */
+function slideSpots(C, idx, q) {
+  const k = C.k, tol = 1e-6;
+  const hits = idx.near(q.x - k, q.y - k, q.x + q.w + k, q.y + q.h + k);
+  let down = -Infinity, right = -Infinity;
+  for (const p of hits) {
+    if (p.circle) {
+      const cx = p.x + p.w / 2, cy = p.y + p.h / 2, R = p.w / 2 + k;
+      const dx = Math.max(0, q.x - cx, cx - (q.x + q.w)), dy = Math.max(0, q.y - cy, cy - (q.y + q.h));
+      if (Math.hypot(dx, dy) >= R - tol) continue;
+      if (dx < R) down = Math.max(down, cy + Math.sqrt(R * R - dx * dx));
+      if (dy < R) right = Math.max(right, cx + Math.sqrt(R * R - dy * dy));
+    } else {
+      if (q.x + q.w + k <= p.x + tol || p.x + p.w + k <= q.x + tol || q.y + q.h + k <= p.y + tol || p.y + p.h + k <= q.y + tol) continue;
+      down = Math.max(down, p.y + p.h + k); right = Math.max(right, p.x + p.w + k);
+    }
+  }
+  const out = [];
+  if (down > q.y + tol && down + q.h <= C.H - C.e + tol) out.push([q.x, down + 1e-6]);
+  if (right > q.x + tol && right + q.w <= C.W - C.e + tol) out.push([right + 1e-6, q.y]);
+  return out;
+}
 function gapFill(C, cand, rem, budgetMax = 6e5) {
   const left = rem.map((v, t) => v - cand.counts[t]);
   if (!sum(left)) return cand;
@@ -834,6 +861,7 @@ function gapFill(C, cand, rem, budgetMax = 6e5) {
         budget--;
         const q = T.circle ? { x: x - w / 2, y: y - w / 2, w, h, circle: true } : { x, y, w, h, circle: false };
         if (freeAt(C, idx, q)) { spot = q; break; }
+        if (!T.circle && budget > 0) for (const sp of slideSpots(C, idx, q)) heap.push(sp);   // vướng: trượt xuống / sang phải
       }
       if (!spot) continue;
       const it = tag(T, spot); items.push(it); idx.add(it); left[T.t]--; counts[T.t]++; added++;
