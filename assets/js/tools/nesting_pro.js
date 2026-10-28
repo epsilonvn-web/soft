@@ -12,7 +12,8 @@
  *  - Tấm lẻ thu hồi khi cạnh ngắn ≥ ngưỡng (mặc định 200 mm, TÙY CHỈNH); dưới ngưỡng tính vào hao phí.
  *  - Phần dư mép mỗi tờ (dư phải, dư dưới) luôn được ghi kích thước, dù to hay nhỏ.
  *  - Mỗi lần đổi số liệu chạy lại từ đầu, thử nhiều cách phối kết hợp, đưa ra các phương án khác nhau để chọn.
- *  - Thứ tự xếp hạng (chốt 28/10/2026): đủ số lượng → ít tờ → ÍT TẤM LẺ (bớt 1 tấm lẻ khi hao phí tăng ≤ 2 điểm %, chỉnh được)
+ *  - Thứ tự xếp hạng (chốt 29/10/2026 – đúng cho MỌI trường hợp): đủ số lượng → ÍT TỜ → DỒN DƯ VỀ 1 TẤM (ít tấm lẻ hơn luôn thắng,
+ *    không đổi chác theo hao phí – hao phí cộng từ nhiều tấm lẻ nhỏ là con số ảo)
  *    → tấm lẻ lớn nhất → hao phí thấp nhất → sơ đồ gọn. Dồn dư về tờ cuối để gom thành một tấm lẻ.
  *  - Bán thành phẩm (BTP, chỉ thép tấm): thư viện tối đa 5 mã mỗi chiều dày (mác dùng lẫn); thợ tích mã được ghép (thứ tự trong
  *    master data chỉ để hiển thị – mã đứng đầu thường được tích nhất); lấp phần dư mép tờ để tấm lẻ về 0;
@@ -38,7 +39,6 @@ const DEFAULTS = Object.freeze({
   lengthTol: 10,            //                     … và DÀI hơn tối đa 10 mm
   shrinkTol: 0.5,
   proposalMs: 7000,         // giới hạn tổng thời gian (từ lúc bắt đầu) dành cho các đề xuất khi "cận"           // phương án giảm kích thước cắt: mỗi chi tiết giảm 0,5 mm (dài / rộng / đường kính) – người dùng duyệt
-  remTol: 2,                // bớt được 1 tấm lẻ thì chấp nhận hao phí cao hơn tối đa 2 điểm % (anh chốt 28/10/2026)
   tailMs: 2500,             // thời gian tìm phương án dồn dư về tờ cuối (mỗi khổ)
   semiMax: 5,               // BTP: tối đa 5 mã mỗi chiều dày (anh chốt 28/10/2026 – nhiều mã thì quản lý BTP phức tạp)
   altWithin: 1.0,           // phương án thay thế chỉ hiện khi hao phí kém phương án tốt nhất ≤ 1 điểm % VÀ khác biệt thật
@@ -1459,6 +1459,86 @@ function guillotineKnap(C, weights, region) {
 /* sơ đồ một cách phối các loại), rồi tìm k sơ đồ cộng lại đủ số lượng từng  */
 /* loại. Bớt chi tiết khỏi một sơ đồ chặt suốt vẫn chặt suốt được.          */
 /* ======================================================================= */
+/**
+ * SƠ ĐỒ THEO DẢI CÓ GIỚI HẠN SỐ LƯỢNG (kiểu thợ xếp tay, học từ barem inox 304 – 29/10/2026):
+ * tờ = các dải chạy suốt chiều dài (hoặc chiều rộng) tờ, mỗi dải một chiều cao, trong dải xếp nối tiếp các chi tiết
+ * thấp hơn dải (được xoay). Khác quy hoạch động không giới hạn ở chỗ: số chiếc mỗi loại ≤ cap – nhờ đó sinh được
+ * sơ đồ PHỐI ĐỀU các loại theo tỷ lệ đơn hàng (vd. 9 GS + 5 FS A + 3 FS B / tờ × 7 tờ), không chỉ sơ đồ lấp kín nhất.
+ * Luôn chặt suốt được (nhát suốt tách dải, rồi nhát suốt trong dải).
+ */
+function stripPatterns(C, cap, deadline, transpose = false) {
+  const types = C.types.filter(T => !T.circle && cap[T.t] > 0);
+  if (!types.length || types.length > 6) return [];
+  const LEN = transpose ? C.HH : C.WW, WID = transpose ? C.WW : C.HH;
+  // hướng đặt của mỗi loại: [chiều dọc dải (chiếm chiều dài), chiều ngang dải (chiếm chiều cao)] – đã cộng mạch k
+  const ori = T => (T.rot ? [[T.A, T.B], [T.B, T.A]] : [transpose ? [T.B, T.A] : [T.A, T.B]]);
+  const heights = [...new Set(types.flatMap(T => ori(T).map(o => o[1])))].filter(h => h <= WID + EPS).sort((a, b) => a - b);
+  const area = v => types.reduce((s, T, n) => s + v[n] * T.cutArea, 0);
+  // 1) các cách lấp MỘT dải chiều cao h (vector số chiếc, không bị lấn át)
+  const strips = [];
+  for (const h of heights) {
+    const len = types.map(T => Math.min(...ori(T).filter(o => o[1] <= h + EPS).map(o => o[0]), Infinity));
+    const lim = types.map((T, n) => (len[n] === Infinity ? 0 : Math.min(cap[T.t], Math.floor(LEN / len[n] + 1e-9))));
+    const found = [], v = types.map(() => 0);
+    const rec = (n, used) => {
+      if (found.length > 4000) return;
+      if (n === types.length) { if (v.some(x => x)) found.push({ h, v: v.slice(), len: used }); return; }
+      for (let c = lim[n]; c >= 0; c--) {
+        const add = c ? c * len[n] : 0;                                   // loại không vừa dải: len = ∞, chỉ c = 0
+        if (used + add > LEN + EPS) continue;
+        v[n] = c; rec(n + 1, used + add);
+      }
+      v[n] = 0;
+    };
+    rec(0, 0);
+    // giữ vector không bị lấn át, và chỉ dải mà chi tiết cao nhất đúng bằng h (tránh trùng)
+    const ok = found.filter(f => types.some((T, n) => f.v[n] && Math.abs(Math.min(...ori(T).filter(o => o[1] <= h + EPS && o[0] === len[n]).map(o => o[1])) - h) < EPS));
+    const nd = ok.filter(f => !ok.some(g => g !== f && g.v.every((x, n) => x >= f.v[n]) && g.v.some((x, n) => x > f.v[n])));
+    nd.forEach(f => { f.a = area(f.v); f.len = len; });
+    nd.sort((a, b) => b.a - a.a);
+    strips.push(...nd.slice(0, 60));
+  }
+  if (!strips.length) return [];
+  // 2) chọn các dải xếp chồng (tổng chiều cao ≤ WID, tổng số chiếc ≤ cap), giữ nhiều phương án tờ tốt nhất
+  strips.sort((a, b) => b.a / b.h - a.a / a.h);
+  const bestDens = strips[0].a / strips[0].h, TOP = 25, outs = [];
+  let nodes = 0;
+  const pick = [], tot = types.map(() => 0);
+  const dfs = (start, usedH, got) => {
+    if (++nodes > 150000 || Date.now() > deadline) return;
+    if (outs.length >= TOP && got + (WID - usedH) * bestDens <= outs[outs.length - 1].got + 1e-6) return;
+    if (pick.length) {
+      outs.push({ got, pick: pick.slice() }); outs.sort((a, b) => b.got - a.got); if (outs.length > TOP) outs.pop();
+    }
+    for (let i = start; i < strips.length; i++) {
+      const s2 = strips[i];
+      if (usedH + s2.h > WID + EPS || s2.v.some((x, n) => tot[n] + x > cap[types[n].t])) continue;
+      pick.push(s2); s2.v.forEach((x, n) => { tot[n] += x; });
+      dfs(i, usedH + s2.h, got + s2.a);
+      pick.pop(); s2.v.forEach((x, n) => { tot[n] -= x; });
+    }
+  };
+  dfs(0, 0, 0);
+  // 3) dựng toạ độ: dải từ trên xuống (theo chiều cao giảm dần cho gọn), trong dải từ trái sang phải
+  return outs.map(o => {
+    const items = [], counts = C.types.map(() => 0);
+    let off = 0;
+    for (const s2 of o.pick.slice().sort((a, b) => b.h - a.h)) {
+      let at = 0;
+      types.forEach((T, n) => {
+        const o2 = ori(T).filter(q => q[1] <= s2.h + EPS && q[0] === s2.len[n]).sort((a, b) => b[1] - a[1])[0];
+        for (let c = 0; c < s2.v[n]; c++) {
+          const [pl, ph] = o2, x = transpose ? off : at, y = transpose ? at : off;
+          const w = (transpose ? ph : pl) - C.k, h = (transpose ? pl : ph) - C.k;
+          items.push(tag(T, { x: C.e + x, y: C.e + y, w, h })); counts[T.t]++;
+          at += pl;
+        }
+      });
+      off += s2.h;
+    }
+    return { items, cuts: [], counts, blocks: o.pick.length, strategy: 'block' };
+  });
+}
 /** Dựng sẵn nhiều sơ đồ tờ khác nhau (mỗi sơ đồ một cách phối các loại) – dùng chung cho
  *  "phối hợp ít tờ nhất" và "dồn dư về tờ cuối". Trả danh sách sơ đồ không bị lấn át, đầy trước. */
 function sheetPatterns(C, demand, k, deadline) {
@@ -1494,6 +1574,17 @@ function sheetPatterns(C, demand, k, deadline) {
   for (const sub of subs) {
     if (Date.now() > deadline) break;
     for (const cand of packSheet(C, sub, C.full, { all: true }).slice(0, 12)) add(cand);
+  }
+  // sơ đồ theo dải, giới hạn số chiếc theo tỷ lệ đơn hàng chia cho m tờ (m quanh k): kiểu thợ phối đều các loại
+  if (!types.some(T => T.circle)) {
+    const caps = [demand.slice()];
+    for (const m of [k - 1, k, k + 1, k - 2]) if (m >= 1) for (const f of [1, 1.15]) caps.push(demand.map(v => Math.min(v, Math.ceil(v * f / m))));
+    const seenCap = new Set();
+    for (const cap of caps) {
+      const key = cap.join(','); if (seenCap.has(key)) continue; seenCap.add(key);
+      if (Date.now() > deadline) break;
+      for (const tr of [false, true]) for (const cand of stripPatterns(C, cap, Math.min(deadline, Date.now() + 400), tr)) add(cand);
+    }
   }
   // bỏ sơ đồ bị lấn át (mọi loại đều ≤ một sơ đồ khác)
   let list = [...pats.values()];
@@ -1723,7 +1814,6 @@ export function calculateNestingPro(input) {
   for (const [key, lab] of [['widthTol', 'rộng'], ['lengthTol', 'dài']])
     if (i[key] != null && !(Number.isFinite(i[key]) && i[key] >= 0 && i[key] <= 200)) fail(`Tăng khổ ${lab} cho phép phải từ 0 đến 200 mm.`);
   if (i.shrinkTol != null && !(Number.isFinite(i.shrinkTol) && i.shrinkTol >= 0 && i.shrinkTol <= 3)) fail('Giảm kích thước cho phép phải từ 0 đến 3 mm.');
-  if (i.remTol != null && !(Number.isFinite(i.remTol) && i.remTol >= 0 && i.remTol <= 100)) fail('Dung sai hao phí để bớt tấm lẻ phải từ 0 đến 100 điểm %.');
   if (i.longStripMin != null && !(Number.isFinite(i.longStripMin) && i.longStripMin >= 0 && i.longStripMin <= LIMIT)) fail('Ranh giới dải dài không hợp lệ.');
   for (const key of ['thickness', 'gap', 'margin', 'density', 'remnantMin'])
     if (!Number.isFinite(i[key]) || i[key] < 0 || i[key] > LIMIT) fail('Thông số không hợp lệ: ' + key);
@@ -1915,8 +2005,7 @@ export function calculateNestingPro(input) {
     }
   }
   // xếp hạng, bỏ phương án trùng, giữ tối đa 6
-  const remTol = i.remTol ?? DEFAULTS.remTol;
-  plans.sort((a, b) => (better(a, b, remTol) ? -1 : better(b, a, remTol) ? 1 : 0));
+  plans.sort((a, b) => (better(a, b) ? -1 : better(b, a) ? 1 : 0));
   const sig = p => p.groups.map(g => `${g.n}:${g.W}x${g.H}:${g.counts.join('.')}`).join('|');
   const kept = [], seenSig = new Set();
   for (const p of plans) { const k = sig(p); if (!seenSig.has(k)) { seenSig.add(k); kept.push(p); } if (kept.length >= 6) break; }
@@ -1949,7 +2038,7 @@ export function calculateNestingPro(input) {
     // so với các phương án cùng số tờ (phương án nhiều tờ hơn có thể "hao phí thấp" nhờ thu hồi nhiều tấm lẻ – không so)
     const minW = Math.min(...kept.filter(p => p.totalSheets <= best.totalSheets).map(wasteOf)), d = wasteOf(best) - minW;
     best.reason = [remWord(best), best.semi ? `lấp ${semiN(best)} BTP` : '',
-      d > 0.005 ? `hao phí +${d.toFixed(2)} điểm % để bớt tấm lẻ (cho phép ≤ ${remTol})` : 'hao phí thấp nhất'].filter(Boolean).join(' · ');
+      d > 0.005 ? 'dồn dư về 1 tấm' : 'hao phí thấp nhất'].filter(Boolean).join(' · ');
   }
   for (const p of kept.slice(1)) {
     const otherSemi = !!p.semi !== !!best.semi;
@@ -2192,23 +2281,21 @@ function evaluate(ctxs, groups, remnantMin) {
 /** Hao phí / TP (%) của một phương án (đã trừ tấm lẻ thu hồi; thành phẩm gồm cả bán thành phẩm). */
 const wasteOfPlan = p => 100 * (p.issuedArea - p.recoveredArea - p.tpArea) / p.tpArea;
 /**
- * Thứ tự chọn phương án (đã chốt 28/10/2026):
+ * Thứ tự chọn phương án (anh chốt 29/10/2026 – đúng cho MỌI trường hợp, thay quy tắc dung sai 2 điểm % ngày 28/10):
  *  ① đủ số lượng từng chi tiết (đã kiểm tra trước khi xếp hạng)
- *  ② ít tờ nhất (cùng khổ)
- *  ③ ÍT TẤM LẺ nhất (0 < 1 < 2 …): phương án ít tấm lẻ hơn thắng, trừ khi hao phí của nó cao hơn
- *     quá remTol điểm % (mặc định 2) – một tấm lẻ thành hai là đánh đổi lớn (quản lý kho, tận dụng)
- *  ④ tấm lẻ lớn nhất lớn hơn (khi hao phí chênh không quá remTol)
+ *  ② ÍT TỜ nhất (cùng khổ) – 7 tờ luôn hơn 8 tờ, dù 8 tờ có "hao phí %" thấp hơn nhờ thu hồi nhiều tấm lẻ
+ *  ③ ÍT TẤM LẺ nhất (0 < 1 < 2 …) – phần dư phải DỒN VỀ 1 TẤM; diện tích cộng từ nhiều tấm lẻ nhỏ thua xa
+ *     một tấm lẻ, nên không so hao phí ở bước này
+ *  ④ tấm lẻ lớn nhất (diện tích MỘT tấm, không cộng dồn) lớn hơn
  *  ⑤ hao phí thấp nhất  ⑥ ít tờ (khác khổ)  ⑦ dư tờ cuối lớn  ⑧ sơ đồ gọn (ít khối)
+ *  Khác khổ (số tờ không so trực tiếp được): ③ → ④ → hao phí.
  */
-function better(a, b, remTol = DEFAULTS.remTol) {
+function better(a, b) {
   const sameSize = a.single != null && a.single === b.single;
   if (sameSize && a.totalSheets !== b.totalSheets) return a.totalSheets < b.totalSheets;
+  if (a.remCount !== b.remCount) return a.remCount < b.remCount;
+  if (Math.abs(a.maxRem - b.maxRem) > 1e4) return a.maxRem > b.maxRem;
   const wa = wasteOfPlan(a), wb = wasteOfPlan(b);
-  if (a.remCount !== b.remCount) {
-    const fewA = a.remCount < b.remCount, few = fewA ? wa : wb, many = fewA ? wb : wa;
-    return few - many <= remTol + 1e-9 ? fewA : !fewA;
-  }
-  if (Math.abs(a.maxRem - b.maxRem) > 1e4 && Math.abs(wa - wb) <= remTol + 1e-9) return a.maxRem > b.maxRem;
   if (Math.abs(wa - wb) > 1e-6) return wa < wb;
   if (a.totalSheets !== b.totalSheets) return a.totalSheets < b.totalSheets;
   if (Math.abs(a.lastFree - b.lastFree) > 1) return a.lastFree > b.lastFree;
@@ -2869,7 +2956,7 @@ const DEFAULT_STATE = {
   // BÁN THÀNH PHẨM: thư viện mã theo chiều dày (mác dùng lẫn) – anh bổ sung từ master data sau; chỉ mã cùng chiều dày tờ đang tính được dùng
   // btpLib: thư viện BTP (TẠM – dán từ Google Sheets cho tới khi có database): mỗi dòng Mã ⇥ Dày ⇥ Kích thước TP [⇥ Dư gia công]
   // btpPick: mã BTP được tích cho phép ghép cắt cùng đơn hàng (mặc định KHÔNG tích – kỹ thuật chủ động chọn)
-  remTol: '2', btpLib: '', btpPick: {},
+  btpLib: '', btpPick: {},
   barem: '', stdSource: 'table', squareCaps: { laser: '15', shear: '14' },
   parts: [
     { name: 'CT1', shape: 'rect', partW: '490', partH: '555', diameter: '310', inner: '', allowance: '0', allowanceIn: '5', qty: '30', rotate: true },
@@ -2981,7 +3068,6 @@ export function mount(root, ctx = {}) {
      <label class="np-cap" title="Tấm lẻ đủ rộng nhưng quá ngắn (vd. mẩu ở góc khi dư dạng chữ L) khó tận dụng – tính vào hao phí"><span>Tấm lẻ phải dài (cạnh dài) ≥</span><input name="remnantMinLong" value="${esc(st.remnantMinLong)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
      <p class="np-hint" id="np-strip-laser">Laser / plasma: khi chọn phương án, ưu tiên tấm lẻ giữ nguyên khổ rộng tờ (vd. 1800 × 2000) thay vì dải dọc kiểu 6000 × 500. Dải nào ≥ ngưỡng vẫn thu hồi.</p>
      <label class="np-cap" id="np-strip-shear" title="Chỉ để chọn phương án, không phải ngưỡng thu hồi"><span>Chặt sấn: ưu tiên dải dài 2440 × h khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
-     <label class="np-cap" title="Cùng số tờ: phương án ít tấm lẻ hơn được chọn nếu hao phí chỉ cao hơn không quá số điểm % này"><span>Bớt 1 tấm lẻ khi hao phí tăng ≤</span><input name="remTol" value="${esc(st.remTol)}" inputmode="decimal" autocomplete="off"><small>điểm %</small></label>
     </div>
     <div class="np-tol-box"><span class="np-rb-text"><b>Đề xuất khi "cận"</b><small>Tờ thực tế thường lớn hơn khổ danh nghĩa; chi tiết giảm 0,5 mm thường chấp nhận được. Nếu điều chỉnh nhỏ mà tiết kiệm rõ, máy đưa đề xuất để người dùng duyệt. 0 = tắt.</small></span>
      <span class="np-rb-input np-tol2"><label><small>Dài +</small><input name="lengthTol" value="${esc(st.lengthTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép tăng khổ dài (mm)"></label>
@@ -3131,7 +3217,6 @@ export function mount(root, ctx = {}) {
     for (const k of ['thickness', 'gap', 'margin', 'remnantMin', 'remnantMinLong', 'longStripMin', 'widthTol', 'lengthTol', 'shrinkTol']) st[k] = val(k);
     st.info = { project: val('project'), drawingNo: val('drawingNo'), material: val('matName'), drawnBy: val('drawnBy') };
     stocks().forEach((s, j) => { s.W = val(`sW${j}`); s.H = val(`sH${j}`); s.qty = val(`sQ${j}`); s.lot = val(`sL${j}`); });
-    st.remTol = val('remTol');
     st.parts.forEach((p, t) => {
       p.name = val(`name${t}`); p.qty = val(`qty${t}`); p.allowance = val(`allowance${t}`);
       if (p.shape === 'rect') { p.partW = val(`partW${t}`); p.partH = val(`partH${t}`); }
@@ -3177,7 +3262,7 @@ export function mount(root, ctx = {}) {
     const semis = btpLib().list.filter(b => b.thickness === thick).map((b, rank) => ({ b, rank })).filter(({ b }) => st.btpPick[b.code])
       .map(({ b, rank }) => ({ rank, code: b.code, shape: b.shape, partW: b.partW, partH: b.partH, diameter: b.diameter, allowance: b.allowance, maxQty: null }));
     return {
-      cutMethod: st.cutMethod, density, stocks: stockList, semis, remTol: parseNum(st.remTol || '0', 'Dung sai hao phí bớt tấm lẻ'),
+      cutMethod: st.cutMethod, density, stocks: stockList, semis,
       thickness: parseNum(st.thickness, 'Dày', { positive: true }), gap: parseNum(st.gap, st.cutMethod === 'shear' ? 'Khe hở' : 'Mạch cắt'),
       margin: parseNum(st.margin, 'Chừa mép'), remnantMin: parseNum(st.remnantMin, 'Ngưỡng thu hồi tấm lẻ'), longStripMin: parseNum(st.longStripMin || '0', 'Ưu tiên dải dài'), remnantMinLong: parseNum(st.remnantMinLong || '0', 'Tấm lẻ dài tối thiểu'), widthTol: parseNum(st.widthTol || '0', 'Cho phép tăng khổ rộng'), lengthTol: parseNum(st.lengthTol || '0', 'Cho phép tăng khổ dài'), shrinkTol: parseNum(st.shrinkTol || '0', 'Cho phép giảm kích thước'), parts,
     };
@@ -3591,7 +3676,7 @@ export function mount(root, ctx = {}) {
       ['Khối lượng xuất kho', r2(res.issuedKG), 'kg'], ['Tấm lẻ thu hồi', r2(res.recoveredKG), `kg · ngưỡng ≥ ${i.remnantMin} mm`],
       ['Thép thực tiêu hao', r2(res.issuedKG - res.recoveredKG), 'kg'], ['Khối lượng thành phẩm', r2(res.finishedKG), `kg (phủ bì, vành khuyên trừ lỗ${res.semiCount ? '; gồm bán thành phẩm' : ''})`],
       ...(res.semiCount ? [['Bán thành phẩm lấp phần dư', { v: res.semiCount, s: 'int' }, `chiếc · ${pretty(res.semiKG)} kg · ${res.types.filter(T => T.semi && T.qty).map(T => `${T.name} × ${T.qty}`).join(', ')} – nhập kho BTP`]] : []),
-      ['Số tấm lẻ thu hồi', { v: res.remCount ?? 0, s: 'int' }, `quy tắc: bớt 1 tấm lẻ khi hao phí tăng ≤ ${i.remTol ?? 2} điểm %`],
+      ['Số tấm lẻ thu hồi', { v: res.remCount ?? 0, s: 'int' }, 'quy tắc: ít tờ nhất → dồn dư về 1 tấm'],
       ['HAO PHÍ CHUNG / TP', pc(res.wastePercent), '(xuất − thu hồi − TP) / TP'], ['Hao phí nếu không thu hồi', pc(res.wasteFullPercent), ''],
       ['Số tờ tối thiểu', res.lowerBound == null ? '' : res.proven ? 'Đã chứng minh' : `Cận dưới ${res.lowerBound} tờ`, ''],
       ['Nguồn HP tiêu chuẩn', st.stdSource === 'table' ? `Bảng công ty (${barem().map.size} kích thước)` : 'Máy tự tính (1 chi tiết / tờ khổ chuẩn)',
