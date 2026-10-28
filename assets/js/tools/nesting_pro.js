@@ -840,6 +840,52 @@ function slideSpots(C, idx, q) {
   if (right > q.x + tol && right + q.w <= C.W - C.e + tol) out.push([right + 1e-6, q.y]);
   return out;
 }
+/**
+ * XẾP NGAY NGẮN (29/10/2026): các chi tiết chèn khe cùng kích thước, cùng hướng, đứng liền nhau thành hàng (hoặc cột)
+ * nhưng lệch nhau do trượt áp sát cung tròn -> kéo cả hàng về CÙNG MỘT cao độ (cột: cùng một hoành độ) – lấy vị trí
+ * thấp nhất (phải nhất) của hàng để không phải đẩy chi tiết nào lên vướng cung tròn. Chỉ áp dụng khi mọi chiếc dời
+ * đều hợp lệ (đủ mạch, trong mép); không được thì giữ nguyên.
+ */
+function alignAdded(C, items, added) {
+  const k = C.k, tol = 0.5, isAdded = new Set(added);
+  const rects = added.filter(p => !p.circle);
+  const moveOK = (p, q) => {
+    const idx = makeIndex(Math.max(100, ...items.map(o => Math.max(o.w, o.h))) + k);
+    for (const o of items) if (o !== p) idx.add(o);
+    return freeAt(C, idx, q);
+  };
+  for (const axis of ['row', 'col']) {
+    const along = axis === 'row' ? 'x' : 'y', size = axis === 'row' ? 'w' : 'h', cross = axis === 'row' ? 'y' : 'x', csize = axis === 'row' ? 'h' : 'w';
+    const groups = new Map();
+    for (const p of rects) { const key = `${p.w.toFixed(3)}x${p.h.toFixed(3)}`; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(p); }
+    for (const list of groups.values()) {
+      list.sort((a, b) => a[along] - b[along]);
+      const chains = [];
+      for (const p of list) {
+        const c = chains.find(ch => { const t = ch[ch.length - 1]; return Math.abs(p[along] - (t[along] + t[size] + k)) <= tol && p[cross] < t[cross] + t[csize] && t[cross] < p[cross] + p[csize]; });
+        if (c) c.push(p); else chains.push([p]);
+      }
+      for (const ch of chains) {
+        if (ch.length < 2) continue;
+        const target = Math.max(...ch.map(p => p[cross]));
+        if (ch.every(p => Math.abs(p[cross] - target) < 1e-6)) continue;
+        const moved = ch.map(p => ({ ...p, [cross]: target }));
+        // thử dời từng chiếc trên tờ đã dời các chiếc trước
+        const saved = items.slice();
+        let ok = true;
+        ch.forEach((p, n) => {
+          if (!ok) return;
+          const i = items.indexOf(p);
+          if (!moveOK(p, moved[n])) { ok = false; return; }
+          items[i] = moved[n];
+        });
+        if (!ok) { items.splice(0, items.length, ...saved); continue; }
+        moved.forEach((q, n) => { const i = added.indexOf(ch[n]); if (i >= 0) added[i] = q; isAdded.add(q); });
+      }
+    }
+  }
+  return items;
+}
 function gapFill(C, cand, rem, budgetMax = 6e5) {
   const left = rem.map((v, t) => v - cand.counts[t]);
   if (!sum(left)) return cand;
@@ -869,6 +915,7 @@ function gapFill(C, cand, rem, budgetMax = 6e5) {
     }
   }
   if (!added) return cand;
+  alignAdded(C, items, items.slice(cand.items.length));                // hàng chèn khe: thẳng hàng, ngay ngắn
   return { ...cand, items, counts, blocks: cand.blocks + 1, strategy: cand.strategy + '+fill' };
 }
 
