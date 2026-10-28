@@ -12,7 +12,7 @@
  *  - Tấm lẻ thu hồi khi cạnh ngắn ≥ ngưỡng (mặc định 200 mm, TÙY CHỈNH); dưới ngưỡng tính vào hao phí.
  *  - Phần dư mép mỗi tờ (dư phải, dư dưới) luôn được ghi kích thước, dù to hay nhỏ.
  *  - Mỗi lần đổi số liệu chạy lại từ đầu, thử nhiều cách phối kết hợp, đưa ra các phương án khác nhau để chọn.
- *  - Thứ tự xếp hạng (chốt 29/10/2026 – đúng cho MỌI trường hợp): đủ số lượng → ÍT TỜ → DỒN DƯ VỀ 1 TẤM (ít tấm lẻ hơn luôn thắng,
+ *  - Thứ tự xếp hạng (chốt 28/10/2026 – đúng cho MỌI trường hợp): đủ số lượng → ÍT TỜ → DỒN DƯ VỀ 1 TẤM (ít tấm lẻ hơn luôn thắng,
  *    không đổi chác theo hao phí – hao phí cộng từ nhiều tấm lẻ nhỏ là con số ảo)
  *    → tấm lẻ lớn nhất → hao phí thấp nhất → sơ đồ gọn. Dồn dư về tờ cuối để gom thành một tấm lẻ.
  *  - Bán thành phẩm (BTP, chỉ thép tấm): thư viện tối đa 5 mã mỗi chiều dày (mác dùng lẫn); thợ tích mã được ghép (thứ tự trong
@@ -814,7 +814,7 @@ class SpotHeap {
   get size() { return this.a.length; }
 }
 /**
- * TRƯỢT VỊ TRÍ (chèn khe – bổ sung 29/10/2026): chữ nhật q đặt tại (x, y) bị vướng thì đề xuất 2 vị trí mới –
+ * TRƯỢT VỊ TRÍ (chèn khe – bổ sung 28/10/2026): chữ nhật q đặt tại (x, y) bị vướng thì đề xuất 2 vị trí mới –
  * trượt XUỐNG vừa qua mọi vật vướng, và trượt SANG PHẢI vừa qua mọi vật vướng. Với phôi tròn tính đúng điểm tiếp xúc
  * (không dùng khung bao). Nhờ đó tìm được ô kẹp giữa hai vật khác nhau – vd. khe dọc bên phải hàng tròn so le,
  * dưới vòng tròn hàng giữa: x lấy từ tròn hàng dưới, y lấy từ tròn hàng giữa.
@@ -841,7 +841,7 @@ function slideSpots(C, idx, q) {
   return out;
 }
 /**
- * XẾP NGAY NGẮN (29/10/2026): các chi tiết chèn khe cùng kích thước, cùng hướng, đứng liền nhau thành hàng (hoặc cột)
+ * XẾP NGAY NGẮN (28/10/2026): các chi tiết chèn khe cùng kích thước, cùng hướng, đứng liền nhau thành hàng (hoặc cột)
  * nhưng lệch nhau do trượt áp sát cung tròn -> kéo cả hàng về CÙNG MỘT cao độ (cột: cùng một hoành độ) – lấy vị trí
  * thấp nhất (phải nhất) của hàng để không phải đẩy chi tiết nào lên vướng cung tròn. Chỉ áp dụng khi mọi chiếc dời
  * đều hợp lệ (đủ mạch, trong mép); không được thì giữ nguyên.
@@ -972,6 +972,25 @@ function packSheet(C, rem, region, { mode = 'area', needAll = false, full = true
   if (!C.shear && !tidy && !quota && total <= (needAll ? 150 : DEFAULTS.maxRectsPieces)) for (const o of FREE_OPTS) cands.push(maxRectsPack(C, rem, region, o));
   const rank = (a, b) => sheetScore(C, b, mode) - sheetScore(C, a, mode) || a.blocks - b.blocks;
   let pool = cands.filter(c => !must || c.counts.every((v, t) => v >= must[t])).sort(rank);
+  // CHỪA KHE ĐỂ CHÈN (28/10/2026 – ca tròn D365 ×25 + thanh 510×68 trên 3000×1500): tờ còn thiếu vài chiếc thì thử xếp khối
+  // với loại chữ nhật đông nhất BỚT 1–6 chiếc – khối chữ nhật gọn lại, phôi tròn sắp đều, chừa đúng các khe sát cung tròn –
+  // rồi chèn khe phần còn thiếu. Thợ làm y như vậy: xếp khối chính trước, nhét thanh vào khe sau.
+  if (!C.shear && !quota && pool.length && sum(pool[0].counts) < total && total - sum(pool[0].counts) <= 12) {
+    const rt = C.types.filter(T => !T.circle && rem[T.t] > 1).sort((a, b) => rem[b.t] - rem[a.t])[0];
+    if (rt) {
+      const extra = [];
+      for (let d = 1; d <= Math.min(6, rem[rt.t] - 1); d++) {
+        const r2 = rem.slice(); r2[rt.t] -= d;
+        for (const o of BLOCK_OPTS_FAST) { const c = blockPack(C, r2, region, o, null); if (c && sum(c.counts)) extra.push(c); }
+      }
+      const seenX = new Set();
+      const top = extra.sort(rank).filter(c => { const k = c.counts.join(','); if (seenX.has(k)) return false; seenX.add(k); return true; }).slice(0, 4)
+        .map(c => withRegion(C, region, () => gapFill(C, c, rem, 2e5)));
+      const bestN = sum(pool[0].counts);
+      for (const c of top) if (sum(c.counts) > bestN) pool.push(c);
+      pool.sort(rank);
+    }
+  }
   // chèn khe chỉ áp dụng cho laser/plasma, khi tờ còn chi tiết chưa xếp; vùng phải là tờ đủ chiều
   // (dồn tờ cuối: bỏ qua nếu diện tích còn trống chắc chắn không đủ cho số chi tiết còn thiếu)
   const roomOK = c => !needAll || C.types.reduce((s2, T) => s2 + (rem[T.t] - c.counts[T.t]) * T.lbArea, 0)
@@ -1535,7 +1554,7 @@ function guillotineKnap(C, weights, region) {
 /* loại. Bớt chi tiết khỏi một sơ đồ chặt suốt vẫn chặt suốt được.          */
 /* ======================================================================= */
 /**
- * SƠ ĐỒ THEO DẢI CÓ GIỚI HẠN SỐ LƯỢNG (kiểu thợ xếp tay, học từ barem inox 304 – 29/10/2026):
+ * SƠ ĐỒ THEO DẢI CÓ GIỚI HẠN SỐ LƯỢNG (kiểu thợ xếp tay, học từ barem inox 304 – 28/10/2026):
  * tờ = các dải chạy suốt chiều dài (hoặc chiều rộng) tờ, mỗi dải một chiều cao, trong dải xếp nối tiếp các chi tiết
  * thấp hơn dải (được xoay). Khác quy hoạch động không giới hạn ở chỗ: số chiếc mỗi loại ≤ cap – nhờ đó sinh được
  * sơ đồ PHỐI ĐỀU các loại theo tỷ lệ đơn hàng (vd. 9 GS + 5 FS A + 3 FS B / tờ × 7 tờ), không chỉ sơ đồ lấp kín nhất.
@@ -2356,7 +2375,7 @@ function evaluate(ctxs, groups, remnantMin) {
 /** Hao phí / TP (%) của một phương án (đã trừ tấm lẻ thu hồi; thành phẩm gồm cả bán thành phẩm). */
 const wasteOfPlan = p => 100 * (p.issuedArea - p.recoveredArea - p.tpArea) / p.tpArea;
 /**
- * Thứ tự chọn phương án (anh chốt 29/10/2026 – đúng cho MỌI trường hợp, thay quy tắc dung sai 2 điểm % ngày 28/10):
+ * Thứ tự chọn phương án (anh chốt 28/10/2026 – đúng cho MỌI trường hợp, thay quy tắc dung sai 2 điểm % ngày 28/10):
  *  ① đủ số lượng từng chi tiết (đã kiểm tra trước khi xếp hạng)
  *  ② ÍT TỜ nhất (cùng khổ) – 7 tờ luôn hơn 8 tờ, dù 8 tờ có "hao phí %" thấp hơn nhờ thu hồi nhiều tấm lẻ
  *  ③ ÍT TẤM LẺ nhất (0 < 1 < 2 …) – phần dư phải DỒN VỀ 1 TẤM; diện tích cộng từ nhiều tấm lẻ nhỏ thua xa
