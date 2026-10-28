@@ -3072,7 +3072,7 @@ const DEFAULT_STATE = {
   ],
 };
 const ALLOW_DEFAULT = { rect: '0', circle: '5', ring: '5' };
-const PRESETS = { laser: [[6000, 2000], [3000, 1500], [2500, 1250]], shear: [[2440, 1220], [3000, 1500], [6000, 2000]] };
+const PRESETS = { laser: [[6000, 2000], [3000, 1500], [2440, 1220]], shear: [[2440, 1220], [3000, 1500], [6000, 2000]] };
 let savedState = null;
 /** Phần tờ thực sử dụng (đơn vị TẤM): 1 − tấm lẻ thu hồi / diện tích tờ. Không thu hồi = 1 tấm. Ví dụ thu hồi 2 m trên tờ 6 m: 4/6 = 0,667 tấm. */
 const remsOf = g => g.remnants || (g.remnant ? [g.remnant] : []);
