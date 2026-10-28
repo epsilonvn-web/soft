@@ -3107,14 +3107,18 @@ export function mount(root, ctx = {}) {
   function renderParts() {
     $('np-parts').innerHTML = st.parts.map((p, t) => {
       const [fill, edge] = colorOf(t), round = p.shape !== 'rect';
-      const dims = p.shape === 'rect' ? fld(`partW${t}`, 'Dài TP (mm)', p.partW) + fld(`partH${t}`, 'Rộng TP (mm)', p.partH) + fld(`allowance${t}`, 'Dư gia công (mm)', p.allowance, 'is-allow')
-        : p.shape === 'circle' ? fld(`diameter${t}`, 'D TP (mm)', p.diameter) + fld(`allowance${t}`, 'Dư Ø (mm)', p.allowance, 'is-allow') + '<span></span>'
-        : fld(`diameter${t}`, 'Ø ngoài TP', p.diameter) + fld(`inner${t}`, 'Ø trong TP', p.inner) + fld(`allowance${t}`, 'Dư Ø ngoài', p.allowance, 'is-allow');
+      // Hàng 1: tên, hình dạng, dư gia công · Hàng 2: kích thước + SỐ LƯỢNG (nhập liền một mạch: kích thước → số lượng)
+      const qty = fld(`qty${t}`, 'Số lượng', p.qty);
+      const allow = p.shape === 'rect' ? fld(`allowance${t}`, 'Dư gia công (mm)', p.allowance, 'is-allow')
+        : fld(`allowance${t}`, p.shape === 'ring' ? 'Dư Ø ngoài' : 'Dư Ø (mm)', p.allowance, 'is-allow');
+      const dims = p.shape === 'rect' ? fld(`partW${t}`, 'Dài TP (mm)', p.partW) + fld(`partH${t}`, 'Rộng TP (mm)', p.partH) + qty
+        : p.shape === 'circle' ? fld(`diameter${t}`, 'D TP (mm)', p.diameter) + qty + '<span></span>'
+        : fld(`diameter${t}`, 'Ø ngoài TP', p.diameter) + fld(`inner${t}`, 'Ø trong TP', p.inner) + qty;
       const extra = p.shape === 'ring' ? `<div class="np-row three">${fld(`allowanceIn${t}`, 'Dư Ø trong', p.allowanceIn, 'is-allow')}<span></span><span></span></div>` : '';
       return `<div class="np-part" data-part="${t}"><div class="np-part-head"><i class="${round ? 'round' : ''}" style="background:${fill};border-color:${edge}${p.shape === 'ring' ? ';box-shadow:inset 0 0 0 4px #fff' : ''}"></i>Chi tiết ${t + 1}
        <label class="np-rot${round ? ' is-off' : ''}" title="Bỏ chọn khi vật liệu có chiều cán / vân không được xoay"><input type="checkbox" data-rot="${t}" ${p.rotate !== false ? 'checked' : ''} ${round ? 'disabled' : ''}>Cho xoay 90°</label>
        ${st.parts.length > 1 ? `<button type="button" class="np-del" data-del="${t}" aria-label="Xóa chi tiết ${t + 1}">✕ Xóa</button>` : ''}</div>
-       <div class="np-row p1">${txt(`name${t}`, 'Tên / mã', p.name)}<label><span>Hình dạng</span><select class="np-shape" data-shape="${t}"><option value="rect"${p.shape === 'rect' ? ' selected' : ''}>Chữ nhật</option><option value="circle"${p.shape === 'circle' ? ' selected' : ''}>Tròn</option><option value="ring"${p.shape === 'ring' ? ' selected' : ''}>Vành khuyên</option></select></label>${fld(`qty${t}`, 'Số lượng', p.qty)}</div>
+       <div class="np-row p1">${txt(`name${t}`, 'Tên / mã', p.name)}<label><span>Hình dạng</span><select class="np-shape" data-shape="${t}"><option value="rect"${p.shape === 'rect' ? ' selected' : ''}>Chữ nhật</option><option value="circle"${p.shape === 'circle' ? ' selected' : ''}>Tròn</option><option value="ring"${p.shape === 'ring' ? ' selected' : ''}>Vành khuyên</option></select></label>${allow}</div>
        <div class="np-row three">${dims}</div>${extra}</div>`;
     }).join('');
     countLine();
