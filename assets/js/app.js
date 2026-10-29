@@ -1950,6 +1950,16 @@ themeSheet.textContent += '\n\n/* Epsilon Blue Soft / Nesting 2D - wider real sh
 themeSheet.textContent += "\n/* Final layout fit for laptop/desktop. */\n@media(min-width:1081px){\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell{grid-template-columns:304px minmax(0,1fr)}\n .es-app-layout.es-is-collapsed,body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n}\n@media(orientation:landscape) and (min-width:721px){\n .es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{min-height:275px!important}\n}\n";
 
 themeSheet.textContent += `
+/* Shared tool-page spacing: bring all desktop tools closer to the site header.
+   Compact both the APP shell and tool page top padding by approximately 50%.
+   Leave the homepage/catalog and mobile/tablet layout unchanged. */
+@media (min-width:1081px){
+ body:not(.es-catalog-mode) .es-app-layout.shell{padding-top:8px}
+ body:not(.es-catalog-mode) .tool-page{padding-top:10px}
+}
+@media (min-width:1081px) and (max-height:900px){
+ body:not(.es-catalog-mode) .tool-page{padding-top:4px}
+}
 /* All tool pages: compact My tools checkbox on the breadcrumb row. */
 .tool-page .es-tool-topline{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 14px;margin-bottom:12px}
 .tool-page .es-tool-topline>.breadcrumbs{margin:0;min-width:0;gap:4px 8px}
@@ -1962,6 +1972,89 @@ themeSheet.textContent += `
 .es-free-tool .es-free-desc{margin:0 0 13px;color:#5a6c94;font-size:16px;line-height:1.35}
 .es-free-tool .es-free-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:600px){.tool-page .es-tool-topline{gap:8px}.tool-page .es-tool-pin{gap:6px;padding:6px 8px}}
+`;
+
+themeSheet.textContent += `
+/* 2026-10-29: User approved returning the global VI/EN selector to the far right of header. */
+.site-header .header-inner>.es-language-picker{
+ display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;
+ margin:0 0 0 2px;padding:3px;border:1px solid rgba(255,255,255,.44);
+ border-radius:11px;background:rgba(29,11,127,.27);white-space:nowrap;
+}
+.site-header .header-inner>.es-language-picker>.es-language-btn{
+ appearance:none;min-width:38px;min-height:36px;padding:5px 8px;
+ border:0;border-radius:8px;background:transparent;color:#fff;
+ font-size:16px;font-weight:800;line-height:1.2;
+}
+.site-header .header-inner>.es-language-picker>.es-language-btn[aria-pressed="true"]{
+ background:#fff;color:#4d21c7;box-shadow:0 2px 7px rgba(41,7,96,.25);
+}
+.site-header .header-inner>.es-language-picker>.es-language-btn:hover:not([aria-pressed="true"]){background:rgba(255,255,255,.17)}
+.site-header .header-inner>.es-language-picker>.es-language-btn:focus-visible{outline:3px solid #ffdc08;outline-offset:2px}
+/* Preserve a single readable navigation row at medium desktop widths. */
+@media(min-width:1081px) and (max-width:1710px){
+ .site-header .brand-divider,.site-header .header-tagline{display:none!important}
+}
+/* Keep brand + selector on the first row when the existing nav wraps on narrower desktops. */
+@media(min-width:1081px) and (max-width:1190px){
+ .site-header .header-inner>.es-language-picker{order:2;margin-left:auto}
+}
+/* Landscape tablets keep all header controls accessible at 16px, without horizontal clipping. */
+@media(max-width:1060px) and (orientation:landscape){
+ body:not(.es-portrait-layout) .site-header .header-inner{flex-wrap:wrap;gap:5px;padding-block:6px}
+ body:not(.es-portrait-layout) .site-header .header-inner>.es-language-picker{order:2;margin-left:auto}
+ body:not(.es-portrait-layout) .site-header .main-nav{
+  order:3;flex:0 0 100%;width:100%;margin-left:0;justify-content:space-between;
+ }
+}
+/* In portrait, the site uses the bottom rail, but language switching remains in the header. */
+body.es-portrait-layout .site-header .header-inner>.es-language-picker{order:2;margin-left:auto}
+@media(max-width:390px){
+ body.es-portrait-layout .site-header .header-inner>.es-language-picker{padding:2px;gap:1px}
+ body.es-portrait-layout .site-header .header-inner>.es-language-picker>.es-language-btn{min-width:34px;min-height:34px;padding:4px 5px;font-size:16px}
+}
+`;
+
+
+// 2026-10-29: Keep the approved complete header identity readable on narrow screens.
+// The brand image already contains the logo + wordmark: resize the whole lockup,
+// and allow the *existing* tagline to wrap instead of hiding or duplicating content.
+themeSheet.textContent += `
+@media (min-width:1081px) and (max-width:1710px){
+ .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;column-gap:13px;row-gap:5px;min-height:0;padding-block:7px}
+ .site-header .header-inner>.brand{order:0;flex:0 0 auto}
+ .site-header .es-header-lockup{width:clamp(285px,21vw,340px);height:auto;max-height:66px}
+ .site-header .brand-divider{display:block!important;order:1;flex:0 0 1px;height:31px;margin-left:2px}
+ .site-header .header-tagline{display:block!important;order:1;flex:0 1 auto;font-size:16px;line-height:1.3;white-space:nowrap}
+ .site-header .header-inner>.es-language-picker{order:2;margin-left:auto}
+ .site-header .main-nav{order:3;display:flex;flex:0 0 100%;width:100%;margin-left:0;justify-content:space-between;gap:5px}
+}
+@media (max-width:1080px) and (orientation:landscape){
+ body:not(.es-portrait-layout) .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:5px;padding-block:6px}
+ body:not(.es-portrait-layout) .site-header .header-inner>.brand{order:0;flex:0 0 auto}
+ body:not(.es-portrait-layout) .site-header .es-header-lockup{width:clamp(225px,31vw,305px);height:auto;max-height:62px}
+ body:not(.es-portrait-layout) .site-header .brand-divider{display:block!important;order:1;flex:0 0 1px;height:30px;margin-left:2px}
+ body:not(.es-portrait-layout) .site-header .header-tagline{display:block!important;order:1;flex:0 1 auto;font-size:16px;line-height:1.3;white-space:nowrap}
+ body:not(.es-portrait-layout) .site-header .header-inner>.es-language-picker{order:2;margin-left:auto}
+ body:not(.es-portrait-layout) .site-header .main-nav{order:3;flex:0 0 100%;width:100%;margin:0;justify-content:space-between;gap:5px}
+}
+body.es-portrait-layout .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;gap:5px 9px;padding-block:7px;min-height:0}
+body.es-portrait-layout .site-header .header-inner>.brand{order:0;flex:0 0 auto}
+body.es-portrait-layout .site-header .es-header-lockup{width:clamp(210px,41vw,305px);height:auto;max-height:62px}
+body.es-portrait-layout .site-header .brand-divider{display:none!important}
+body.es-portrait-layout .site-header .header-tagline{display:block!important;order:3;flex:0 0 100%;font-size:16px;line-height:1.25;white-space:normal;margin:0;text-align:left}
+body.es-portrait-layout .site-header .header-inner>.es-language-picker{order:1;margin-left:auto}
+@media (max-width:760px){
+ body:not(.es-portrait-layout) .site-header .header-inner{display:flex;flex-wrap:wrap;gap:5px 9px}
+ body:not(.es-portrait-layout) .site-header .brand-divider{display:none!important}
+ body:not(.es-portrait-layout) .site-header .header-tagline{display:block!important;order:2;flex:0 0 100%;white-space:normal;font-size:16px;line-height:1.25}
+ body:not(.es-portrait-layout) .site-header .header-inner>.es-language-picker{order:1;margin-left:auto}
+ body.es-portrait-layout .site-header .es-header-lockup{width:clamp(185px,57vw,246px);max-height:54px}
+}
+@media (max-width:350px){
+ body.es-portrait-layout .site-header .es-header-lockup{width:clamp(175px,55vw,195px)}
+ body.es-portrait-layout .site-header .header-inner{column-gap:5px}
+}
 `;
 
 const DEFINITIONS = Object.freeze([
@@ -2124,6 +2217,7 @@ const ES_EN_TEXT=Object.freeze({
  'danh muc cong cu':'Tool categories','ngon ngu giao dien':'Interface language',
  'tuy chon ngon ngu duoc luu tren trinh duyet nay.':'Your language choice is saved in this browser.',
  'chuyen doi giua tieng viet va tieng anh.':'Switch between Vietnamese and English.',
+ 'chon vi hoac en o goc phai header de doi ngon ngu.':'Select VI or EN in the top-right header to switch languages.',
  'van phong va ky thuat mien phi; co khi la nhom chuyen nganh.':'Office and engineering are free; mechanical tools are specialist tools.',
  'chua co he thong tai khoan hoac thu phi.':'Account and payment features are not available yet.',
  'he thong tai khoan dang duoc phat trien.':'Account features are in development.',
@@ -2207,10 +2301,17 @@ function esSetLanguage(next){
  if(heroLayer && !heroLayer.hidden){heroLayer.innerHTML=esHeroDialogContent(heroLayer.dataset.mode||'about');heroLayer.querySelector('[data-es-hero-close]')?.focus();}
 }
 function esLanguagePickerHtml(){
- return `<div class="es-settings-language" role="group" aria-label="Language / Ngôn ngữ">
+ return `<div class="es-language-picker" role="group" aria-label="Language / Ngôn ngữ">
    <button type="button" class="es-language-btn" data-es-lang="vi">VI</button>
    <button type="button" class="es-language-btn" data-es-lang="en">EN</button>
   </div>`;
+}
+// Place the existing language switch at the far right of the global header.
+// Use the same data-es-lang delegated handler, language state, and localStorage key.
+function mountHeaderLanguagePicker(){
+ const header=document.querySelector('.site-header .header-inner');
+ if(!header || header.querySelector('.es-language-picker'))return;
+ header.insertAdjacentHTML('beforeend',esLanguagePickerHtml());
 }
 
 function readPreferences(){
@@ -2955,7 +3056,7 @@ function settingsHtml(){
  return `<div class="es-static-page es-preferences-page">
  <section class="es-static-intro"><span class="es-static-intro-icon">${icon('settings',30)}</span><div><h1>Cài đặt</h1><p>Tùy chọn hiển thị trên thiết bị này.</p></div></section>
  <section class="tool-box es-preferences-card"><h2 class="tool-box-heading">${icon('settings',20)} Ngôn ngữ giao diện</h2>
-  <p>Chuyển đổi giữa tiếng Việt và tiếng Anh.</p>${esLanguagePickerHtml()}
+  <p>Chọn VI hoặc EN ở góc phải header để đổi ngôn ngữ.</p>
   <p class="es-settings-note">Tùy chọn ngôn ngữ được lưu trên trình duyệt này.</p>
  </section>
  <section class="tool-box"><h2 class="tool-box-heading">${icon('shield',20)} Dữ liệu cá nhân</h2><p>My tools và tùy chọn ngôn ngữ hiện được lưu trong trình duyệt. Chưa có đồng bộ tài khoản hoặc Google Drive.</p></section>
@@ -3102,7 +3203,7 @@ async function safeNavigate(){
   main.innerHTML='<section class="startup-panel" role="alert"><h1>Không thể hiển thị trang</h1><p>Vui lòng kiểm tra assets/js/app.js và các tệp trong assets/data/, sau đó tải lại trang.</p></section>';
  }
 }
-readPreferences();hydrateIcons();prepareHeaderNavigation();buildHeaderMyTools();buildHeaderCategoryMenus();buildSidebarShell();buildAppDialog();mountFooterActions();esUpdateLanguageButtons();esTranslateRegion(document.body);
+readPreferences();hydrateIcons();prepareHeaderNavigation();buildHeaderMyTools();buildHeaderCategoryMenus();mountHeaderLanguagePicker();buildSidebarShell();buildAppDialog();mountFooterActions();esUpdateLanguageButtons();esTranslateRegion(document.body);
 function esUpdatePortraitLayout(){
  const portrait=window.innerWidth < window.innerHeight;
  const previous=document.body.classList.contains('es-portrait-layout');
