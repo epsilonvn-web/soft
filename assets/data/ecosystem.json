@@ -3,8 +3,8 @@
   "groups": [
     {
       "id": "edu",
-      "name": "Epsilon Edu",
-      "nameEn": "Epsilon Edu",
+      "name": "Epsilon Blue Edu",
+      "nameEn": "Epsilon Blue Edu",
       "description": "Chương trình học tập từ Lớp 1 đến Lớp 9 và các ứng dụng giáo dục của Epsilon.",
       "descriptionEn": "Grade 1–9 learning programs and Epsilon education apps.",
       "icon": "book",
@@ -91,15 +91,6 @@
           "url": "https://epsilon-class-9.pages.dev/"
         }
       ]
-    },
-    {
-      "id": "lab",
-      "name": "Epsilon Lab",
-      "nameEn": "Epsilon Lab",
-      "description": "Phần mềm, tiện ích và giải pháp kỹ thuật của hệ sinh thái Epsilon.",
-      "descriptionEn": "Engineering software and technical tools in the Epsilon ecosystem.",
-      "icon": "gear",
-      "products": []
     }
   ]
 }
