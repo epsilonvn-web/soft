@@ -51,6 +51,7 @@ const DEFAULTS = Object.freeze({
   proposalMs: 7000,         // giới hạn tổng thời gian (từ lúc bắt đầu) dành cho các đề xuất khi "cận"           // phương án giảm kích thước cắt: mỗi chi tiết giảm 0,5 mm (dài / rộng / đường kính) – người dùng duyệt
   tailMs: 2500,             // thời gian tìm phương án dồn dư về tờ cuối (mỗi khổ)
   semiMax: 5,               // BTP: tối đa 5 mã mỗi chiều dày (anh chốt 28/10/2026 – nhiều mã thì quản lý BTP phức tạp)
+  interlockRegionMs: 1500,  // đa giác một loại: thời gian thử chia tờ thành 2–3 vùng răng lược
   circleStripMs: 600,       // tờ cuối toàn phôi tròn nhiều cỡ: thời gian tìm sơ đồ xen kẽ ngắn nhất
   altWithin: 1.0,           // phương án thay thế chỉ hiện khi hao phí kém phương án tốt nhất ≤ 1 điểm % VÀ khác biệt thật
 });
@@ -460,6 +461,155 @@ function placeInterlock(C, T, plan, sx, startB) {
   if (items.length) { fill(xmax + k, e, W, H); fill(e, ybot + k, xmax, H); }
   return items;
 }
+/* ---------- Răng lược GHÉP 2–3 VÙNG (sửa 29/10/2026 – ca DG730×175.6 trên 6000 × 2000) ----------
+ * Một kiểu răng lược chạy suốt tờ để lại dải dư cuối hàng không đủ một chiếc (máy cũ: 105 chiếc).
+ * Thợ làm: các hàng nằm ngang dừng sớm, phần cuối tờ xếp CỘT răng lược (chi tiết xoay 90°), hàng trên cùng có
+ * thể chạy suốt → 107 chiếc. Máy làm y như vậy: chia tờ bằng 1–2 đường thẳng thành 2–3 vùng chữ nhật, mỗi vùng
+ * xếp răng lược nằm ngang hoặc xoay 90° (khoảng hở giữa các vùng = mạch cắt), thử mọi vị trí chia, giữ cách
+ * nhiều chiếc nhất. Mọi sơ đồ vẫn qua kiểm tra đa giác thật như trước. */
+/** Các biến thể răng lược: danh sách hàng {y, ang, off} tính từ mép trên vùng (off: lệch ngang trong một chu kỳ). */
+function interlockVariants(plans, k, maxH) {
+  const out = [];
+  for (const plan of plans) {
+    const per = plan.w + k, n = plan.cycle.length;
+    for (const startB of n > 1 ? [false, true] : [false])
+      for (let s = 0; s < 16; s++) {
+        let ang = startB ? plan.cycle[0].ang : (n > 1 ? plan.cycle[n - 1].ang : plan.base), idx = startB ? 1 % n : 0, y = 0, ox = per * s / 16;
+        const rows = [];
+        while (y + plan.h <= maxH + 1e-9) {
+          rows.push({ y, ang, off: ((ox % per) + per) % per });
+          const st = plan.cycle[idx]; idx = (idx + 1) % n; y += st.dy; ox += st.dx; ang = st.ang;
+        }
+        if (rows.length) out.push({ plan, per, rows });
+      }
+  }
+  return out;
+}
+/** Số chiếc của biến thể v trong vùng RW × RH (vùng tính tới mép chi tiết, chưa cộng mạch). */
+function variantCount(v, RW, RH) {
+  let n = 0;
+  const { w, h } = v.plan;
+  for (const r of v.rows) {
+    if (r.y + h > RH + 1e-9) break;
+    if (RW - r.off - w >= -1e-9) n += Math.floor((RW - r.off - w) / v.per + 1e-9) + 1;
+  }
+  return n;
+}
+/** Tốt nhất trong vùng RW × RH: kind 0 = hàng nằm ngang, kind 1 = cả sơ đồ xoay 90° (cột). Trả { n, v } . */
+function bestIn(V, kind, RW, RH) {
+  let best = { n: 0, v: null };
+  if (RW <= 0 || RH <= 0) return best;
+  const [a, b] = kind ? [RH, RW] : [RW, RH];
+  for (const v of V) { const n = variantCount(v, a, b); if (n > best.n) best = { n, v }; }
+  return best;
+}
+/** Dựng toạ độ biến thể v trong vùng (rx, ry, RW, RH); kind 1: dựng trong vùng ảo RH × RW rồi xoay cả vùng 90°. */
+function placeVariant(T, v, kind, rx, ry, RW, RH, out) {
+  const { w, h } = v.plan, [VW, VH] = kind ? [RH, RW] : [RW, RH];
+  for (const r of v.rows) {
+    if (r.y + h > VH + 1e-9) break;
+    for (let x = r.off; x + w <= VW + 1e-9; x += v.per) {
+      let p = { x, y: r.y, w, h, ang: r.ang };
+      if (kind) p = { x: VH - (r.y + h), y: x, w: h, h: w, ang: (r.ang + 90) % 360 };   // xoay vùng 90°: (u, v) → (VH − v, u)
+      out.push({ t: T.t, x: rx + p.x, y: ry + p.y, w: p.w, h: p.h, ang: p.ang, poly: true, rot: p.ang % 180 !== 0 });
+    }
+  }
+}
+/**
+ * Chia vùng làm việc (đã trừ mép) thành 2–3 vùng, mỗi vùng một kiểu răng lược (ngang / xoay 90°).
+ *  A. một nhát dọc hoặc ngang: [vùng 1 | vùng 2];
+ *  B. dải trên (hoặc dải trái) chạy suốt + phần còn lại chia đôi theo chiều kia.
+ * Trả { n, items } tốt nhất tìm được trong hạn thời gian.
+ */
+function interlockRegions(C, T, plans, deadline) {
+  const { e, k } = C, W = C.W - 2 * e, H = C.H - 2 * e;
+  const V = interlockVariants(plans, k, Math.max(W, H));
+  const kinds = T.rot ? [0, 1] : [0];
+  const q = v => Math.round(v * 10) / 10;
+  // vị trí chia có nghĩa: mép dưới các hàng / mép phải các chiếc của mọi biến thể (đọc theo cả hai hướng)
+  const cutsOf = (L, alongRows) => {
+    const s = new Set();
+    for (const v of V) {
+      // làm tròn LÊN 1 mm: vùng rộng hơn cần ≤ 1 mm (vẫn chứa đủ chiếc), bớt hàng trăm vị trí chia gần trùng nhau
+      if (alongRows) for (const r of v.rows) { const y = Math.ceil(r.y + v.plan.h - 1e-6); if (y < L) s.add(y); }
+      else for (const r of v.rows.slice(0, 2)) for (let x = r.off + v.plan.w; x < L; x += v.per) s.add(Math.ceil(x - 1e-6));
+    }
+    return s;
+  };
+  const xs = [...new Set([...cutsOf(W, false), ...cutsOf(W, true)])].filter(x => x > 0 && x < W).sort((a, b) => a - b);
+  const ys = [...new Set([...cutsOf(H, true), ...cutsOf(H, false)])].filter(y => y > 0 && y < H).sort((a, b) => a - b);
+  // BẢNG ĐẾM NHANH: mọi vùng thử đều có cạnh thuộc tập Ws (rộng) × Hs (cao) → đếm trước một lần cho từng biến thể:
+  //  số chiếc mỗi hàng chỉ phụ thuộc chiều dọc hàng, số hàng chỉ phụ thuộc chiều ngang hàng → cộng dồn theo hàng.
+  const Ws = [...new Set([W, ...xs, ...xs.map(x => q(W - x - k))])].filter(v => v > 0);
+  const Hs = [...new Set([H, ...ys, ...ys.map(y => q(H - y - k))])].filter(v => v > 0);
+  const wi = new Map(Ws.map((v, n) => [v, n])), hi = new Map(Hs.map((v, n) => [v, n]));
+  const tables = kinds.map(kind => {
+    const along = kind ? Hs : Ws, across = kind ? Ws : Hs;
+    return V.map(v => {
+      const R = v.rows.length, pre = new Int32Array(along.length * (R + 1)), rf = new Int16Array(across.length);
+      along.forEach((A, ai) => {
+        let n = 0;
+        v.rows.forEach((r, ri) => { if (A - r.off - v.plan.w >= -1e-9) n += Math.floor((A - r.off - v.plan.w) / v.per + 1e-9) + 1; pre[ai * (R + 1) + ri + 1] = n; });
+      });
+      across.forEach((L, ci) => { let c = 0; while (c < R && v.rows[c].y + v.plan.h <= L + 1e-9) c++; rf[ci] = c; });
+      return { R, pre, rf };
+    });
+  });
+  const T0 = tables[0], T1 = kinds.length > 1 ? tables[1] : null;
+  // cột: số chiếc tốt nhất của mọi vùng rộng Ws[·] × cao Hs[ci];  hàng: vùng rộng Ws[ai] × cao Hs[·] (ghi nhớ)
+  const colMemo = new Map(), rowMemo = new Map();
+  const colAt = ci => {
+    let out = colMemo.get(ci); if (out) return out;
+    out = new Int32Array(Ws.length);
+    for (const t of T0) { const r = t.rf[ci], R1 = t.R + 1; for (let ai = 0; ai < Ws.length; ai++) { const c = t.pre[ai * R1 + r]; if (c > out[ai]) out[ai] = c; } }
+    if (T1) for (const t of T1) { const R1 = t.R + 1, base = ci * R1; for (let ai = 0; ai < Ws.length; ai++) { const c = t.pre[base + t.rf[ai]]; if (c > out[ai]) out[ai] = c; } }
+    colMemo.set(ci, out); return out;
+  };
+  const rowAt = ai => {
+    let out = rowMemo.get(ai); if (out) return out;
+    out = new Int32Array(Hs.length);
+    for (const t of T0) { const R1 = t.R + 1, base = ai * R1; for (let ci = 0; ci < Hs.length; ci++) { const c = t.pre[base + t.rf[ci]]; if (c > out[ci]) out[ci] = c; } }
+    if (T1) for (const t of T1) { const r = t.rf[ai], R1 = t.R + 1; for (let ci = 0; ci < Hs.length; ci++) { const c = t.pre[ci * R1 + r]; if (c > out[ci]) out[ci] = c; } }
+    rowMemo.set(ai, out); return out;
+  };
+  const fit = (RW, RH) => { let b = { n: 0 }; for (const kd of kinds) { const o = bestIn(V, kd, RW, RH); if (o.n > b.n) b = { ...o, kind: kd }; } return b; };
+  // cùng số chiếc: ưu tiên sơ đồ dừng sớm nhất bên phải (dư dồn về một dải phải – giống thợ để cột xoay ở cuối tờ)
+  const build = parts => { const items = []; for (const p of parts) { if (p.w <= 0 || p.h <= 0) continue; const b = fit(p.w, p.h); if (b.n) placeVariant(T, b.v, b.kind, e + p.x, e + p.y, p.w, p.h, items); } return items; };
+  // điểm phụ: cột xoay 90° nằm phía phải (cuối tờ) như thợ quen làm – trừ một lượng rất nhỏ theo vị trí cột
+  const reach = items => items.reduce((m, p) => Math.max(m, p.x + p.w), 0) - 1e-4 * items.reduce((s2, p) => s2 + (p.rot ? p.x : 0), 0) / Math.max(1, items.length);
+  let best = { n: 0, parts: null, reach: Infinity }, ties = 0;
+  const consider = (n, mk) => {
+    if (!n || n < best.n) return;
+    if (n === best.n) { if (++ties > 400) return; const parts = mk(), r = reach(build(parts)); if (r < best.reach - 1e-9) best = { n, parts, reach: r }; return; }
+    const parts = mk(); best = { n, parts, reach: reach(build(parts)) }; ties = 0;
+  };
+  const iW = wi.get(W), iH = hi.get(H);
+  const xI = xs.map(x => wi.get(x)), xC = xs.map(x => wi.get(q(W - x - k)));
+  const yI = ys.map(y => hi.get(y)), yC = ys.map(y => hi.get(q(H - y - k)));
+  consider(colAt(iH)[iW], () => [{ x: 0, y: 0, w: W, h: H }]);
+  // A. một nhát
+  { const col = colAt(iH); xs.forEach((x, j) => consider(col[xI[j]] + col[xC[j]], () => [{ x: 0, y: 0, w: x, h: H }, { x: x + k, y: 0, w: q(W - x - k), h: H }])); }
+  { const row = rowAt(iW); ys.forEach((y, j) => consider(row[yI[j]] + row[yC[j]], () => [{ x: 0, y: 0, w: W, h: y }, { x: 0, y: y + k, w: W, h: q(H - y - k) }])); }
+  // B. dải suốt + phần còn lại chia đôi
+  for (let j = 0; j < ys.length && Date.now() < deadline; j++) {
+    const y = ys[j], h2 = q(H - y - k), top = colAt(yI[j])[iW], col = colAt(yC[j]);
+    for (let m = 0; m < xs.length; m++) {
+      const x = xs[m];
+      consider(top + col[xI[m]] + col[xC[m]], () => [{ x: 0, y: 0, w: W, h: y }, { x: 0, y: y + k, w: x, h: h2 }, { x: x + k, y: y + k, w: q(W - x - k), h: h2 }]);
+    }
+  }
+  for (let m = 0; m < xs.length && Date.now() < deadline; m++) {
+    const x = xs[m], w2 = q(W - x - k), left = rowAt(xI[m])[iH], row = rowAt(xC[m]);
+    for (let j = 0; j < ys.length; j++) {
+      const y = ys[j];
+      consider(left + row[yI[j]] + row[yC[j]], () => [{ x: 0, y: 0, w: x, h: H }, { x: x + k, y: 0, w: w2, h: y }, { x: x + k, y: y + k, w: w2, h: q(H - y - k) }]);
+    }
+  }
+  if (!best.parts) return { n: 0, items: [] };
+  const items = build(best.parts);
+  return { n: items.length, items };
+}
+const REGION_MEMO = new Map();
 /** Tờ một loại đa giác: thử các kiểu răng lược, giữ kiểu nhiều chiếc nhất đã qua kiểm tra đa giác thật. */
 function interlockPattern(C, T) {
   if (C.shear || !T.poly) return null;
@@ -474,6 +624,25 @@ function interlockPattern(C, T) {
         const items = placeInterlock(C, T, plan, per * s / 16, startB);
         if (!best || items.length > best.items.length) best = { items, plan };
       }
+  }
+  // chia tờ thành 2–3 vùng răng lược (ngang / xoay 90°) – nhiều chiếc hơn thì dùng, sau khi qua kiểm tra đa giác thật
+  {
+    // ghi nhớ theo hình học + khổ: một lần tính chạy lại lõi nhiều lượt (thử tăng khổ, barem…) với cùng chi tiết
+    const key = [T.cw, T.ch, T.rot, C.W, C.H, C.k, C.e, T.poly.pts.length, sum(T.poly.pts.map(([x, y], n) => x * (n + 1) + y * (n + 7)))].join('|');
+    let rg = REGION_MEMO.get(key);
+    if (!rg) {
+      // biên hàng lấy bảo thủ nhưng vẫn có thể sai vài phần trăm mm ở cung tròn → sai thì nới khoảng hàng 0,2 mm, thử lại
+      for (let tries = 0; tries < 4; tries++) {
+        const pl = plans.map(pn => ({ ...pn, cycle: pn.cycle.map(c => ({ ...c, dy: c.dy + 0.2 * tries })) }));
+        rg = interlockRegions(C, T, pl, Date.now() + DEFAULTS.interlockRegionMs);
+        if (!rg.n || !verifySheet(C, rg.items).length) break;
+        rg = { n: 0, items: [] };
+      }
+      if (REGION_MEMO.size > 50) REGION_MEMO.clear();
+      REGION_MEMO.set(key, rg);
+    }
+    rg = { n: rg.n, items: rg.items.map(p => ({ ...p, t: T.t })) };
+    if (rg.n > (best ? best.items.length : 0) && !verifySheet(C, rg.items).length) return { items: rg.items, plan: null };   // kiểm tra lại lần cuối
   }
   if (!best || !best.items.length) return null;
   // kiểm tra lại bằng đa giác thật; sai thì nới khoảng hàng 0,2 mm và thử lại (tối đa 5 lần)
