@@ -1984,7 +1984,7 @@ const DEFINITIONS = Object.freeze([
  {id:'image-studio',name:'Image Studio',sub:'Chỉnh sửa ảnh và chữ ký',group:'office',dir:'office',icon:'image',tone:'tone-mint',file:'image-studio.js'},
  {id:'money-words',name:'Đọc số tiền bằng chữ',sub:'Đọc số tiền Việt – Anh',group:'office',dir:'office',icon:'file',tone:'tone-blue',file:'money-words.js'},
  {id:'notes',name:'Ghi chú nhanh',sub:'Ghi và lưu ghi chú nhanh',group:'office',dir:'office',icon:'notes',tone:'tone-orange',file:'notes.js'},
- {id:'material-handbook',name:'Vật liệu',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'database',tone:'tone-mint',file:'material-handbook.js'},
+ {id:'material-handbook',name:'Vật liệu kỹ thuật',sub:'Tra cứu đặc tính, ứng dụng và tiêu chuẩn vật liệu kỹ thuật',group:'handbook',dir:'handbook',icon:'database',tone:'tone-mint',file:'material-handbook.js'},
  {id:'bearing-handbook',name:'Ổ đỡ',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'gear',tone:'tone-blue',file:'bearing-handbook.js'},
  {id:'bolt-handbook',name:'Bu lông',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'settings',tone:'tone-orange',file:'bolt-handbook.js'},
  {id:'tolerance-handbook',name:'Dung sai',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'ruler',tone:'tone-violet',file:'tolerance-handbook.js'}
