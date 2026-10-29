@@ -1950,14 +1950,18 @@ themeSheet.textContent += '\n\n/* Epsilon Blue Soft / Nesting 2D - wider real sh
 themeSheet.textContent += "\n/* Final layout fit for laptop/desktop. */\n@media(min-width:1081px){\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell{grid-template-columns:304px minmax(0,1fr)}\n .es-app-layout.es-is-collapsed,body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n}\n@media(orientation:landscape) and (min-width:721px){\n .es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{min-height:275px!important}\n}\n";
 
 themeSheet.textContent += `
-/* Compact Office pages: one navigation line, one brief explanation, no extra title/access label. */
-.es-free-tool .es-free-topline{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;margin-bottom:4px}
-.es-free-tool .es-free-topline .breadcrumbs{margin:0;min-width:0}
-.es-free-tool .es-free-topline .es-tool-actions{margin-left:auto;flex-shrink:0}
-.es-free-tool .es-free-topline .es-tool-actions .button{min-height:40px;padding:7px 12px}
+/* All tool pages: compact My tools checkbox on the breadcrumb row. */
+.tool-page .es-tool-topline{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 14px;margin-bottom:12px}
+.tool-page .es-tool-topline>.breadcrumbs{margin:0;min-width:0;gap:4px 8px}
+.tool-page .es-tool-topline>.breadcrumbs>span:last-child{min-width:0;overflow-wrap:anywhere}
+.tool-page .es-tool-pin{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:6px 11px;border:1px solid #cdb8fb;border-radius:10px;background:#fff;color:#5a20db;font-size:16px;font-weight:750;line-height:1.25;white-space:nowrap;cursor:pointer;user-select:none}
+.tool-page .es-tool-pin:hover{background:#f6f1ff;border-color:#a789f3}
+.tool-page .es-tool-pin:has(input:checked){background:#f1ebff;border-color:#a789f3}
+.tool-page .es-tool-pin:focus-within{box-shadow:0 0 0 3px #7542ff21}
+.tool-page .es-tool-pin input{width:18px;height:18px;margin:0;flex-shrink:0;accent-color:#6b2ce7;cursor:pointer}
 .es-free-tool .es-free-desc{margin:0 0 13px;color:#5a6c94;font-size:16px;line-height:1.35}
 .es-free-tool .es-free-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(max-width:600px){.es-free-tool .es-free-topline{align-items:flex-start}.es-free-tool .es-free-topline .es-tool-actions{margin-left:auto}}
+@media(max-width:600px){.tool-page .es-tool-topline{gap:8px}.tool-page .es-tool-pin{gap:6px;padding:6px 8px}}
 `;
 
 const DEFINITIONS = Object.freeze([
@@ -2233,7 +2237,7 @@ function togglePin(id){
  favorites.pinned=had?favorites.pinned.filter(x=>x!==id):[...favorites.pinned,id];
  savePreferences();showToast(esLanguage==='en'?(had?`Unpinned ${ES_EN_TEXT[normalize(t.name)]||t.name}`:`Pinned ${ES_EN_TEXT[normalize(t.name)]||t.name} to My tools`):(had?`Đã bỏ ghim ${t.name}`:`Đã thêm ${t.name} vào My tools`));
  const active=document.querySelector('.page-home');if(active)renderGroupCards();
- const btn=document.querySelector('.tool-page [data-pin]');if(btn&&btn.dataset.pin===id){btn.innerHTML=`${icon('star')} ${isPinned(id)?'Đã thêm vào My tools':'Thêm vào My tools'}`;btn.setAttribute('aria-pressed',String(isPinned(id)));esTranslateRegion(btn);}
+ document.querySelectorAll('.tool-page input[data-tool-pin]').forEach(control=>{if(control.dataset.toolPin===id)control.checked=isPinned(id);});
 }
 function preferredTools(){
  // My tools is opt-in only: visits must never add a tool automatically.
@@ -3004,11 +3008,12 @@ async function populateEcosystem(token){
 function relatedHtml(toolId){return `<section class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Công cụ liên quan</h2><div class="related-tools">${DEFINITIONS.filter(t=>!t.planned&&t.id!==toolId).slice(0,4).map(t=>`<a href="#/tool/${t.id}"><span class="tool-tile ${t.tone}">${icon(t.icon,21)}</span><span class="related-tool-name">${t.name}</span>${icon('arrow',16)}</a>`).join('')}</div></section>`;}
 function toolHtml(t){
  const g=GROUPS.find(g=>g.id===t.group);
+ const topline=`<div class="es-tool-topline"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/category/${t.group}">${escapeHTML(g?.name||'Công cụ')}</a><span>›</span><span>${escapeHTML(t.name)}</span></nav><label class="es-tool-pin"><input type="checkbox" data-tool-pin="${t.id}"${isPinned(t.id)?' checked':''}><span>My tools</span></label></div>`;
  if(t.group==='office'||t.group==='technical'||t.group==='handbook'){
   // These tool groups use a compact host row; the module owns its visible heading.
-  return `<div class="tool-page es-free-tool"><div class="es-free-topline"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/category/${t.group}">${escapeHTML(g?.name||'Công cụ')}</a><span>›</span><span>${escapeHTML(t.name)}</span></nav><div class="es-tool-actions"><button type="button" class="button button-outline" data-pin="${t.id}" aria-pressed="${isPinned(t.id)}">${icon('star')} ${isPinned(t.id)?'Đã thêm vào My tools':'Thêm vào My tools'}</button></div></div><h1 class="es-free-sr-only">${escapeHTML(t.name)}</h1>${t.group==='office'?'<p class="es-free-desc">'+escapeHTML(t.sub)+'</p>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div>${t.group==='handbook'?'':`<div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div>`}</div>`;
+  return `<div class="tool-page es-free-tool">${topline}<h1 class="es-free-sr-only">${escapeHTML(t.name)}</h1>${t.group==='office'?'<p class="es-free-desc">'+escapeHTML(t.sub)+'</p>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div>${t.group==='handbook'?'':`<div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div>`}</div>`;
  }
- return `<div class="tool-page"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/category/${t.group}">${escapeHTML(g?.name||'Công cụ')}</a><span>›</span><span>${t.name}</span></nav><div class="tool-heading"><div class="tool-heading-icon ${t.tone}">${icon(t.icon,37)}</div><div>${t.guide?`<div class="es-tool-title"><h1>${t.name}</h1><button type="button" class="es-guide-btn" data-tool-guide aria-expanded="false" aria-controls="es-tool-guide" hidden>${icon('book',18)} Hướng dẫn sử dụng</button></div>`:`<h1>${t.name}</h1><p>${escapeHTML(t.sub)}</p>`}</div><div class="es-tool-actions"><button type="button" class="button button-outline" data-pin="${t.id}" aria-pressed="${isPinned(t.id)}">${icon('star')} ${isPinned(t.id)?'Đã thêm vào My tools':'Thêm vào My tools'}</button></div></div>${t.guide?'<section class="tool-box es-tool-guide" id="es-tool-guide" hidden aria-label="Hướng dẫn sử dụng"></section>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div><div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div></div>`;
+ return `<div class="tool-page">${topline}<div class="tool-heading"><div class="tool-heading-icon ${t.tone}">${icon(t.icon,37)}</div><div>${t.guide?`<div class="es-tool-title"><h1>${t.name}</h1><button type="button" class="es-guide-btn" data-tool-guide aria-expanded="false" aria-controls="es-tool-guide" hidden>${icon('book',18)} Hướng dẫn sử dụng</button></div>`:`<h1>${t.name}</h1><p>${escapeHTML(t.sub)}</p>`}</div></div>${t.guide?'<section class="tool-box es-tool-guide" id="es-tool-guide" hidden aria-label="Hướng dẫn sử dụng"></section>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div><div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div></div>`;
 }
 function navActive(active){
  closeHeaderMyTools();
@@ -3211,6 +3216,14 @@ document.addEventListener('click',event=>{
   main.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===displayMode));return;
  }
  if(event.target.closest('[data-retry-system]')){void populateEcosystem(currentRoute);return;}
+});
+document.addEventListener('change',event=>{
+ const control=event.target;
+ if(!(control instanceof HTMLInputElement)||!control.matches('.tool-page input[data-tool-pin]'))return;
+ const id=control.dataset.toolPin;
+ if(control.checked!==isPinned(id))togglePin(id);
+ control.checked=isPinned(id);
+ renderSidebar();
 });
 document.addEventListener('input',event=>{
  if(event.target.id==='tool-search')applySearch(event.target.value);
