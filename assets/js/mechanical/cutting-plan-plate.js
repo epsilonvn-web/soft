@@ -3461,9 +3461,14 @@ const CSS = `
 .np .np-strip-rule{margin:-4px 0 12px}.np .np-strip-rule [hidden]{display:none}
 .np .np-strip-rule .np-cap span{font-size:16px;color:#0d6b4c}
 /* De xuat khi can: label tren / input duoi, ba o bang nhau tren toan bo be rong. */
-.np .np-tol-box{display:grid;gap:7px;margin:0 0 12px;padding:10px 12px 12px;border:2px solid #e6a23c;border-radius:12px;background:#fff8ec}
+.np .np-tol-box{margin:0 0 12px;padding:8px 12px;border:2px solid #e6a23c;border-radius:12px;background:#fff8ec}
+.np .np-tol-content{display:grid;gap:7px;margin-top:8px}
+.np details.np-fold>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer}
+.np details.np-fold>summary::-webkit-details-marker{display:none}
+.np details.np-fold>summary::after{content:'';width:8px;height:8px;flex:none;margin-left:auto;margin-right:2px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.np details.np-fold[open]>summary::after{transform:translateY(2px) rotate(225deg)}
 .np .np-tol-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
-.np .np-tol-heading b{font-size:17px;color:#8a4b06;font-weight:850;line-height:1.25}
+.np .np-tol-heading b{flex:1;min-width:0;font-size:17px;color:#8a4b06;font-weight:850;line-height:1.25}
 .np .np-tol-unit{flex:none;color:#8a4b06;background:#fff;border:1px solid #efc57e;border-radius:7px;padding:2px 8px;font-size:16px;font-weight:800;line-height:1.3}
 .np .np-tol-hint{margin:0;color:#8a5a12;font-size:16px;line-height:1.38;font-weight:600}
 .np .np-tol-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end;min-width:0}
@@ -3671,7 +3676,7 @@ export function mount(root, ctx = {}) {
     <div class="np-imp" id="np-imp" role="region" aria-label="Kết quả nhập file" hidden></div>
     <div class="np-methods"><h3>Phương pháp cắt</h3><div class="np-toggle" role="group" aria-label="Phương pháp cắt">
      <button type="button" data-cut="laser">Laser / Plasma</button><button type="button" data-cut="shear">Chặt sấn</button></div>
-     <p class="np-hint" id="np-cut-hint"></p></div>
+    </div>
     <div class="np-row three">${fld('thickness', 'Dày (mm)', st.thickness)}${fld('gap', 'Mạch cắt (mm)', st.gap, 'is-kerf')}${fld('margin', 'Chừa mép (mm)', st.margin, 'is-margin')}</div>
     <label class="np-remnant-box"><span class="np-rb-text"><b>Ngưỡng thu hồi tấm lẻ</b><small>Dải dư có cạnh ngắn ≥ ngưỡng được thu hồi (dọc hay ngang đều vậy), nhỏ hơn tính vào hao phí</small></span>
      <span class="np-rb-input"><input name="remnantMin" value="${esc(st.remnantMin)}" inputmode="decimal" autocomplete="off" aria-label="Ngưỡng thu hồi tấm lẻ (mm)"><small>mm</small></span></label>
@@ -3680,20 +3685,22 @@ export function mount(root, ctx = {}) {
      <p class="np-hint" id="np-strip-laser">Laser / plasma: khi chọn phương án, ưu tiên tấm lẻ giữ nguyên khổ rộng tờ (vd. 1800 × 2000) thay vì dải dọc kiểu 6000 × 500. Dải nào ≥ ngưỡng vẫn thu hồi.</p>
      <label class="np-cap" id="np-strip-shear" title="Chỉ để chọn phương án, không phải ngưỡng thu hồi"><span>Chặt sấn: ưu tiên dải dài 2440 × h khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
     </div>
-    <div class="np-tol-box" role="group" aria-labelledby="np-tol-heading">
-     <div class="np-tol-heading"><b id="np-tol-heading">Đề xuất khi "cận"</b><span class="np-tol-unit">mm</span></div>
+    <details class="np-tol-box np-fold">
+     <summary class="np-tol-heading"><b id="np-tol-heading">Đề xuất khi "cận"</b><span class="np-tol-unit">mm</span></summary>
+     <div class="np-tol-content">
      <p class="np-tol-hint">Tờ thực tế thường lớn hơn khổ danh nghĩa; chi tiết giảm 0,5 mm thường chấp nhận được. Nếu điều chỉnh nhỏ mà tiết kiệm rõ, máy đưa đề xuất để người dùng duyệt. 0 = tắt.</p>
      <div class="np-tol-fields">
       <label><span>Dài +</span><input name="lengthTol" value="${esc(st.lengthTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép tăng khổ dài (mm)"></label>
       <label><span>Rộng +</span><input name="widthTol" value="${esc(st.widthTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép tăng khổ rộng (mm)"></label>
       <label><span>Chi tiết −</span><input name="shrinkTol" value="${esc(st.shrinkTol)}" inputmode="decimal" autocomplete="off" aria-label="Cho phép giảm kích thước chi tiết (mm)"></label>
      </div>
-    </div>
+     </div>
+    </details>
     <div class="np-section">Kho phôi <small>Số tờ trống = không giới hạn</small></div>
     <div class="np-stock-head"><span>Loại</span><span>Dài (mm)</span><span>Rộng (mm)</span><span>Số tờ</span><span>Mã lô / seri</span><span></span></div>
     <div id="np-stocks"></div>
     <div class="np-presets" id="np-presets"></div>
-    <details class="np-info np-semi" id="np-semi-box" open><summary>Bán thành phẩm <small id="np-semi-status"></small></summary>
+    <details class="np-info np-semi np-fold" id="np-semi-box"><summary>Bán thành phẩm <small id="np-semi-status"></small></summary>
      <div class="np-semi-list" id="np-semis"></div>
      <p class="np-hint">Tích mã được phép ghép cắt cùng đơn hàng – máy tự tính số lượng để hao phí thấp nhất. Hao phí tính BTP như một chi tiết trong đơn hàng.</p>
      <details class="np-semi-lib"><summary>Thư viện BTP (tạm, trước khi có database) <small id="np-semi-lib-status"></small></summary>
@@ -3736,9 +3743,9 @@ export function mount(root, ctx = {}) {
      <button class="np-export" type="button" id="np-svg" disabled>↓ SVG tờ này</button>
      <button class="np-export" type="button" id="np-pdf" disabled title="Sơ đồ cắt khổ A3 ngang, mỗi kiểu tờ một trang – in xưởng, mở không cần CAD">↓ PDF sơ đồ cắt</button></span></div>
     <div class="np-status" id="np-status" role="status" aria-live="polite"></div>
-    <div class="np-missing" id="np-missing" role="status" hidden></div>
     <div class="np-list" id="np-list" hidden><div class="np-list-title"><span>DANH SÁCH CHI TIẾT ĐÃ XẾP</span><small id="np-list-count"></small></div><div class="np-list-stock" id="np-list-stock"></div>
      <div class="np-scroll"><table><thead><tr><th>NO</th><th>Mã chi tiết</th><th class="num">Thành phẩm (mm)</th><th class="num">Kích thước cắt (mm)</th><th class="num">Yêu cầu</th><th class="num">Đã xếp</th><th class="num np-col-hole">Trong lỗ</th><th class="num np-ref">HP tiêu chuẩn<br><small>tham chiếu</small></th><th class="num np-real">HP thực tế</th></tr></thead><tbody id="np-list-body"></tbody></table></div></div>
+    <div class="np-missing" id="np-missing" role="status" hidden></div>
    </section>
   </div>
   <section class="np-results" aria-label="Kết quả">
@@ -3868,8 +3875,6 @@ export function mount(root, ctx = {}) {
     for (const k of ['thickness', 'gap', 'margin']) root.querySelector(`[name="${k}"]`).value = st[k];
     root.querySelector('[name="gap"]').closest('label').querySelector('span').textContent = st.cutMethod === 'shear' ? 'Khe hở (mm)' : 'Mạch cắt (mm)';
     $('np-strip-laser').hidden = st.cutMethod === 'shear'; $('np-strip-shear').hidden = st.cutMethod !== 'shear';
-    put('np-cut-hint', st.cutMethod === 'shear' ? 'Nhát chặt chạy suốt · chỉ chữ nhật · phần dư là chữ nhật'
-      : 'Xếp tự do chữ nhật, tròn, vành khuyên · xoay vòng, so le, chèn khe, chèn lỗ');
     renderStocks(); renderSemis();
   }
   function payload() {
@@ -4065,7 +4070,7 @@ export function mount(root, ctx = {}) {
     put('np-tb-waste', res.wastePercent.toFixed(2) + ' %');
     const semiText = res.types.filter(T => T.semi && T.qty).map(T => `${T.name} × ${pretty(T.qty)}`).join(', ');
     put('np-tb-sub', `${res.totalSheets} tờ · nếu không thu hồi ${res.wasteFullPercent.toFixed(2)} %${res.semiCount ? ` · gồm BTP ${semiText} (${pretty(res.semiKG)} kg)` : ''}`);
-    put('np-tb-use', useBySize(res));
+    put('np-tb-use', `${fmtTam(res.groups.reduce((total, g) => total + g.n * sheetUse(g), 0))} tấm`);
     put('np-tb-issued', pretty(res.issuedKG) + ' kg'); put('np-tb-rec', pretty(res.recoveredKG) + ' kg');
     put('np-tb-net', pretty(res.issuedKG - res.recoveredKG) + ' kg'); put('np-tb-tp', pretty(res.finishedKG) + ' kg');
     put('np-waste', res.wastePercent.toFixed(2)); put('np-waste-sub', `Nếu không thu hồi: ${res.wasteFullPercent.toFixed(2)} % · tổng cả trình cắt · đã thử ${full.tried} cách xếp`);
