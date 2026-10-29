@@ -117,6 +117,13 @@ export async function loadMaterialDatabase(options = {}) {
       throw new Error('Dữ liệu vật liệu thiếu ID, tên mác hoặc có ID bị trùng.');
     }
     ids.add(item.id);
+    if (item.conditions) {
+      const codes = arr(item.conditions).map(c=>c?.code);
+      if (!codes.length || codes.some(c=>typeof c!=='string'||!c) || new Set(codes).size!==codes.length ||
+          !codes.includes(item.defaultConditionCode) || arr(item.conditions).some(c=>!c.mechanical || !Array.isArray(c.mechanical.cases))) {
+        throw new Error(`Các trạng thái của ${item.grade} không hợp lệ.`);
+      }
+    }
     if (!arr(item.mechanical?.cases).length || !arr(item.sourceIds).length) {
       throw new Error(`Vật liệu ${item.grade} thiếu bảng cơ tính hoặc nguồn tham chiếu.`);
     }
@@ -178,7 +185,7 @@ function chemicalRowApplies(row,material,dimensionValue) {
   return (parsed[2]==='≤'?lo<=dimensionValue:lo<dimensionValue) && (parsed[4]==='≤'?dimensionValue<=hi:dimensionValue<hi);
 }
 /** Returns false for unknown / reference-only limiting values, rather than guessing. */
-export function matchSmartMaterial(material,filters={},selectedDimensions={}) {
+export function matchSmartMaterial(material,filters={},selectedDimensions={},selectedForms={}) {
   if (!material || !filters || typeof filters!=='object') return {pass:false,details:[]};
   const entries=Object.entries(filters).filter(([key,criterion])=>SMART_FIELD_BY_ID.has(key)&&smartComplete(criterion));
   const dimensions=Object.fromEntries(entries.filter(([key])=>['t','d'].includes(key)));
@@ -189,7 +196,7 @@ export function matchSmartMaterial(material,filters={},selectedDimensions={}) {
   if (dimOverride && (dimDef?.kind!==dimOverride.kind || !Number.isFinite(dimOverride.value) || dimOverride.value<=0)) return {pass:false,details:[]};
   const ownDimension=selectedDimensions?.[material.id];
   const dimValue=dimOverride ? dimOverride.value : Number.isFinite(ownDimension) ? ownDimension : dimDef?.default;
-  const band=caseFor(material,dimValue);
+  const band=caseFor(material,dimValue,selectedForms?.[material.id]);
   const impactTemp=filters.kvTemp && smartComplete(filters.kvTemp) ? smartNumber(filters.kvTemp.value) : NaN;
   const details=[];
   for (const [key,filter] of entries) {
@@ -294,6 +301,11 @@ const CSS = SEARCH_CSS + `
 .mh-item:hover{border-color:#a5b5ff;background:#f6f7ff}.mh-item[aria-pressed=true]{border-color:#687ce6;background:#eff2ff;box-shadow:inset 3px 0 #435bdf}
 .mh-item-name{font-size:19px;font-weight:850;display:block;color:#1c348a;line-height:1.3}.mh-item-sub{font-size:16px;color:#627296;display:block;line-height:1.4}.mh-item-arrow{color:#5a68ba;font-size:22px;flex-shrink:0}
 .mh-tree{display:flex;flex-direction:column;gap:6px;max-height:740px;overflow-y:auto;min-width:0;scrollbar-width:thin}
+/* Search results are flex children of a height-limited scroller. Never shrink result cards below their text. */
+.mh-tree[data-mh-view="results"] > .mh-tree-leaf{flex:0 0 auto}
+.mh-tree .mh-tree-leaf > span:first-child{min-width:0;flex:1 1 auto;overflow-wrap:anywhere}
+.mh-tree[data-mh-view="results"] .mh-tree-leaf .hbs-snippet{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.4;margin-top:4px}
+
 .mh-tree-node{min-width:0}.mh-tree-node>summary{display:flex;align-items:center;gap:7px;min-height:42px;padding:7px 6px;border:1px solid transparent;border-radius:9px;list-style:none;cursor:pointer;color:#6a43c7;font-size:16px;font-weight:800;line-height:1.4}
 .mh-tree-node>summary::-webkit-details-marker{display:none}.mh-tree-node>summary:hover{background:#f0f4ff;border-color:#e0e7f8}.mh-tree-node>summary:focus-visible{outline:3px solid #9ab4ff;outline-offset:2px}
 .mh-tree-chevron{flex:0 0 7px;width:7px;height:7px;border-right:1.8px solid #8192bb;border-bottom:1.8px solid #8192bb;transform:rotate(-45deg);margin-right:2px}.mh-tree-node[open]>summary>.mh-tree-chevron{transform:rotate(45deg)}
@@ -471,12 +483,25 @@ const CSS = SEARCH_CSS + `
 @media(max-width:480px){.mh .mh-heading h2{font-size:23px}.mh-detail-head h3{font-size:23px}.mh-metrics{gap:7px}.mh-metric{padding:9px}.mh-tab{flex:1 1 calc(50% - 8px);padding:7px}.mh-properties{grid-template-columns:1fr}}
 .mh-condbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;border:1px solid #dfe8fa;background:#fbfcff;border-radius:11px;padding:10px 12px;margin:0 0 12px;font-size:16px;color:#536587}
 .mh-condbar label{display:flex;align-items:center;gap:8px;font-weight:650;color:#1b2b64}.mh-condbar input{width:120px;min-height:40px;border:1px solid #cdd9f2;border-radius:8px;padding:4px 10px;font-size:16px;color:#1b2b64;background:#fff}
-.mh-condbar-warn{color:#a12a43;font-weight:650}
+.mh-condbar select{min-height:40px;min-width:220px;max-width:100%;border:1px solid #cdd9f2;border-radius:8px;padding:4px 10px;font-size:16px;color:#1b2b64;background:#fff}.mh-compare-dimension select{max-width:100%;min-width:210px;min-height:39px;padding:6px 10px;border:1px solid #bfceef;border-radius:9px;background:#fff;color:#233a8a;font-size:16px}.mh-condbar-warn{color:#a12a43;font-weight:650}
+/* Selected delivery condition is as important as the grade and section size. */
+.mh-condbar.mh-has-state{border-color:#c8b9fa;background:linear-gradient(100deg,#f8f5ff 0%,#fbfcff 82%);box-shadow:inset 4px 0 #7958da}
+.mh-condbar .mh-state-field{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 9px;border:1px solid #d9ccfb;background:#f1ecff;border-radius:10px;color:#51339e;font-weight:800}
+.mh-condbar .mh-state-field select{min-width:265px;max-width:100%;border:2px solid #8d76e4;border-radius:9px;background:#fff;color:#332c8e;font-weight:800;box-shadow:0 2px 5px #654cb41a}
+.mh-condbar .mh-state-field select:hover{border-color:#6243c8;background:#fcfaff}
+.mh-condbar .mh-state-field select:focus-visible{outline:3px solid #c0afff;outline-offset:2px}
+.mh-metrics.mh-metrics-hardness{grid-template-columns:minmax(225px,1fr) minmax(280px,2fr)}
+.mh-metrics-hardness .mh-metric{background:#f3f0ff;border-color:#d8cbfa}
+.mh-metrics-hardness .mh-metric strong{color:#5032a8}
+.mh-hardness-summary{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px;border:1px solid #dce5f5;background:#fafcff;border-radius:11px;padding:12px 14px;color:#506182;font-size:16px}
+.mh-hardness-summary strong{font-size:17px;color:#243f97}
+.mh-hardness-summary p{margin:0;font-size:16px;line-height:1.45}
+@container material-handbook (max-width:680px){.mh-metrics.mh-metrics-hardness{grid-template-columns:1fr}.mh-condbar .mh-state-field{width:100%}.mh-condbar .mh-state-field select{flex:1 1 200px;min-width:0}}
 .mh-sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .mh .mh-subtitle{font-size:17px;font-weight:700;margin:18px 0 8px;color:#1b2b64}.mh .mh-note{font-size:16px;color:#536587;margin:8px 0;line-height:1.5}
 .mh-info-wide{grid-column:1/-1}.mh-table th[scope=row]{font-weight:650;text-align:left}
 .mh-book{border:1px solid #e4e9f0;border-radius:11px;padding:10px 14px;margin:16px 0;background:#fcfcfe}.mh-book summary{cursor:pointer;font-weight:700;font-size:16px;color:#1b2b64}.mh-book ul{margin:8px 0;padding-left:20px}
-.mh-table tr.mh-ht-empty td{color:#7483a5}.mh-weld-rating{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;border:1px solid #d7efe3;background:#f1faf6;border-radius:11px;padding:10px 12px;margin:0 0 10px;font-size:16px}.mh-weld-rating[data-rating=limited],.mh-weld-rating[data-rating=difficult]{border-color:#f1d9a8;background:#fff8ea}.mh-weld-rating small{font-size:16px;color:#536587}.mh-table tr.mh-suit-not_recommended td:nth-child(2){color:#a12a43;font-weight:650}.mh-table tr.mh-suit-conditional td:nth-child(2){color:#7a5410;font-weight:650}.mh-table tr.mh-suit-suitable td:nth-child(2){color:#006b56;font-weight:650}.mh-recon{margin:6px 0 10px;padding-left:20px;font-size:16px;color:#3e4f78}.mh-record-id{border-top:1px solid #e4e9f0;padding-top:10px;margin-top:16px!important}
+.mh-table tr.mh-ht-empty td{color:#7483a5}.mh-weld-rating{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;border:1px solid #d7efe3;background:#f1faf6;border-radius:11px;padding:10px 12px;margin:0 0 10px;font-size:16px}.mh-weld-rating[data-rating=limited],.mh-weld-rating[data-rating=conditional],.mh-weld-rating[data-rating=difficult]{border-color:#f1d9a8;background:#fff8ea}.mh-weld-rating small{font-size:16px;color:#536587}.mh-table tr.mh-suit-not_recommended td:nth-child(2){color:#a12a43;font-weight:650}.mh-table tr.mh-suit-conditional td:nth-child(2){color:#7a5410;font-weight:650}.mh-table tr.mh-suit-suitable td:nth-child(2){color:#006b56;font-weight:650}.mh-recon{margin:6px 0 10px;padding-left:20px;font-size:16px;color:#3e4f78}.mh-record-id{border-top:1px solid #e4e9f0;padding-top:10px;margin-top:16px!important}
 .mh .mh-eq-subtitle{font-size:17px;font-weight:700;margin:16px 0 6px;color:#1b2b64}
 .mh-table tr.mh-issue-high th{color:#a12a43}
 `;
@@ -485,6 +510,7 @@ function rangeLabel(c, dimensionLabel) {
   if (!c || !c.from && !c.to) return 'Giá trị tham khảo';
   const start = num(c.from), end = num(c.to);
   const mark = dimensionLabel === 'Đường kính d' ? 'd' : 't';
+  if (mark === 'd' && c.from === 0 && !c.fromInclusive) return `0 < d ${c.toInclusive ? '≤' : '<'} ${end} mm`;
   return `${start} ${c.fromInclusive ? '≤' : '<'} ${mark} ${c.toInclusive ? '≤' : '<'} ${end} mm`;
 }
 function inBand(value, c) {
@@ -501,11 +527,40 @@ function valueText(obj, symbol='') {
 }
 function normalizeSourceLink(source) {
   const link = safeUrl(source?.url);
-  return link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">Mở tài liệu gốc ↗</a>` : `<span>Tài liệu tham khảo người dùng cung cấp, không đính kèm bản sao.</span>`;
+  return link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">Mở tài liệu gốc ↗</a>` : '';
 }
-function caseFor(material, value) {
+function enProductForms(material) {
+  return arr(material?.referenceData?.engineeringLimits?.mechanicalByFormEN10088_2?.forms);
+}
+function selectedEnForm(material, code) {
+  const forms = enProductForms(material);
+  const wanted = code || material?.mechanical?.referenceFormCode || 'C';
+  return forms.find(row => row.code === wanted) || forms[0] || null;
+}
+function caseFor(material, value, formCode) {
+  const selectedForm = selectedEnForm(material, formCode);
+  if (selectedForm && !material?.mechanical?.dimension) {
+    return {
+      yieldMpa:selectedForm.yieldRp02Mpa,
+      tensileMpa:selectedForm.tensileRmMpa,
+      elongationPct:selectedForm.elongationA5Pct,
+      productForm:selectedForm.productForm,
+      formCode:selectedForm.code
+    };
+  }
   const cases = arr(material?.mechanical?.cases);
   return material?.mechanical?.dimension ? (cases.find(row => inBand(value, row)) || null) : (cases[0] || null);
+}
+function materialAtCondition(material, code) {
+  const list = arr(material?.conditions);
+  if (!list.length) return material;
+  const entry = list.find(item => item.code === (code || material.defaultConditionCode)) || list[0];
+  return {...material,
+    selectedConditionCode: entry.code,
+    title: txt(material.title).replace(/\s*\(\+QT\)\s*$/, '') + ' (' + entry.code + ')',
+    condition: entry.label + ' (' + entry.code + ')',
+    mechanical: entry.mechanical || material.mechanical
+  };
 }
 function valueBasis(m, field) {
   if (!m?.mechanical?.dimension || field?.reference != null) return 'Tham khảo theo hãng';
@@ -544,15 +599,15 @@ const SEVERITY_LABEL = Object.freeze({high:'Cao', medium:'Trung bình', low:'Th�
 const editionText = c => EDITION_TEXT[c] || txt(c).replace(/_/g,' ');
 const FORM_LABEL = Object.freeze({cold_rolled_coil_sheet:'Cuộn/tấm cán nguội', hot_rolled_coil_sheet:'Cuộn/tấm cán nóng', quarto_plate:'Tấm dày (quarto)',
   cold_rolled_strip:'Dải cán nguội', hot_rolled_strip:'Dải cán nóng', hot_rolled_plate:'Tấm cán nóng'});
-const WELD_RATING_LABEL = Object.freeze({good:'Tốt', fair:'Khá', limited:'Hạn chế', difficult:'Khó hàn'});
+const WELD_RATING_LABEL = Object.freeze({good:'Tốt', fair:'Khá', limited:'Hạn chế', conditional:'Hàn được – cần lưu ý', difficult:'Khó hàn'});
 const WELD_PROCESS_LABEL = Object.freeze({SMAW:'Hàn hồ quang que (SMAW)', GMAW:'Hàn MIG/MAG (GMAW)', FCAW:'Hàn dây lõi thuốc (FCAW)', SAW:'Hàn hồ quang chìm (SAW)', GTAW:'Hàn TIG (GTAW)'});
 const ENV_LABEL = Object.freeze({indoor_dry:'Trong nhà, khô', outdoor_atmospheric:'Ngoài trời, khí quyển', marine_chloride:'Biển, nước mặn, có clorua', chemical:'Hóa chất (axit, kiềm)',
   food_contact:'Tiếp xúc thực phẩm', low_temperature:'Nhiệt độ thấp', elevated_temperature:'Nhiệt độ cao', wear:'Mài mòn', fatigue_loading:'Tải trọng thay đổi, mỏi'});
 const SUIT_LABEL = Object.freeze({suitable:'Phù hợp', conditional:'Có điều kiện', not_recommended:'Không khuyến cáo'});
 const rangeC = t => htTemperature(t);
 const HT_PROCESS_LABEL = Object.freeze({
-  normalizing:'Thường hóa', soft_annealing:'Ủ mềm', full_annealing:'Ủ hoàn toàn', hardening:'Tôi', tempering:'Ram',
-  quench_and_temper:'Tôi + ram', induction_hardening:'Tôi cao tần', flame_hardening:'Tôi ngọn lửa', carburizing:'Thấm carbon',
+  normalizing:'Thường hóa', soft_annealing:'Ủ mềm', full_annealing:'Ủ hoàn toàn', annealing:'Ủ', hardening:'Tôi', tempering:'Ram',
+  quench_and_temper:'Tôi + ram', shearability_treatment:'Cải thiện khả năng cắt (+S)', induction_hardening:'Tôi cao tần', flame_hardening:'Tôi ngọn lửa', carburizing:'Thấm carbon',
   nitriding:'Thấm nitơ', solution_annealing:'Ủ dung dịch', stress_relieving:'Khử ứng suất', precipitation_hardening:'Hóa bền tiết pha'
 });
 const COOLING_LABEL = Object.freeze({water:'Nước', oil:'Dầu', polymer:'Dung dịch polymer', water_or_oil:'Nước hoặc dầu', air:'Không khí', still_air:'Không khí tĩnh', furnace:'Nguội theo lò', rapid:'Làm nguội nhanh'});
@@ -624,7 +679,7 @@ function materialFields(m, sources) {
     ['Nhóm vật liệu', [group?.title,FAMILY_LABEL[m.family]||folder?.[1]||m.family,...arr(m.categoryPath).map(part=>part?.label)].filter(Boolean).join(' · ')],
     ['Tiêu chuẩn', [m.standard,m.system].filter(Boolean).join(' · ')],
     ['Mô tả', m.description], ['Ứng dụng', arr(m.applications).join(' · ')],
-    ['Sản phẩm / trạng thái', [m.productForm,m.condition].filter(Boolean).join(' · ')],
+    ['Sản phẩm / trạng thái', [m.productForm,m.condition,...arr(m.conditions).map(c=>c.code+' '+c.label)].filter(Boolean).join(' · ')],
     ['Lưu ý', [...arr(m.notes),m.sourceEditionNote].filter(Boolean).join(' · ')]
   ].map(([label,text]) => ({label,text}));
   for (const row of arr(mech.cases)) fields.push({label:'Cơ tính',text:[
@@ -651,7 +706,7 @@ export async function mount(root, ctx = {}) {
   const cleanup = () => { disposeI18n(); stop(); ctx.signal?.removeEventListener('abort', stop); };
   if (ctx.signal?.aborted) { cleanup(); return cleanup; }
   ctx.signal?.addEventListener('abort', stop, { once:true });
-  const state = {db:null, index:[], catalogue:null, selectedId:'en-10025-2-s355j2-hot-rolled-plate', query:'', group:'steel', filterKey:'all', tab:'overview', dimensions:{}, openNodes:new Set(), savedSelection:{}, sidebarCollapsed:false,eqOpen:false,eqCandidateId:'',smartEnabled:false,smartCriteria:{},analysisOpen:false,compareOpen:false,compareIds:['',''],compareGroup:'',comparePicking:0,compareMessage:''};
+  const state = {db:null, index:[], catalogue:null, selectedId:'en-10025-2-s355j2-hot-rolled-plate', query:'', group:'steel', filterKey:'all', tab:'overview', dimensions:{}, conditions:{},forms:{}, openNodes:new Set(), savedSelection:{}, sidebarCollapsed:false,eqOpen:false,eqCandidateId:'',smartEnabled:false,smartCriteria:{},analysisOpen:false,compareOpen:false,compareIds:['',''],compareGroup:'',comparePicking:0,compareMessage:''};
   const toolbar = `<div class="mh-search-workspace"><form class="mh-search-controls" data-hbs-form role="search" autocomplete="off"><button type="button" class="mh-advise-button" data-mh-analysis-toggle aria-pressed="false" title="Mở công cụ tư vấn và phân tích">${'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>'}<span>Tư vấn & phân tích</span></button><button type="submit" class="mh-query-submit" data-hbs-submit>Tìm kiếm</button><div class="mh-query-stack"><div class="mh-search-meta"><label class="mh-smart-check" data-mh-smart-check data-on="false"><input type="checkbox" data-mh-smart-toggle aria-controls="mh-smart-panel"/>Tìm kiếm thông minh</label><span class="mh-scope-line">Tra cứu trong: <strong data-mh-scope-name>Thép</strong></span></div><div class="mh-query-field"><input data-hbs-input type="text" enterkeyhint="search" autocomplete="off" spellcheck="false" maxlength="160" aria-label="Tra cứu vật liệu theo từ khóa" placeholder="VD: S355J2, 304, C45, thép không gỉ…"/><button type="button" data-hbs-clear class="mh-query-clear" aria-label="Xóa nội dung tìm kiếm và các tiêu chí" title="Xóa tìm kiếm" hidden>×</button></div></div></form><div data-hbs-status role="status" aria-live="polite"></div></div>`;
   const analysisCards = [
     ['Trợ lý chọn vật liệu','Đề xuất ứng viên từ yêu cầu chi tiết, tải trọng, môi trường và công nghệ chế tạo.'],
@@ -665,7 +720,10 @@ export async function mount(root, ctx = {}) {
   const scopeMaterials = () => tabMaterials().filter(material=>state.filterKey==='all' || (state.catalogue?.ancestors.get(material.id)||[]).includes(state.filterKey));
   const selected = () => scopeMaterials().find(m=>m.id===state.selectedId);
   const dimension = (m) => state.dimensions[m.id] ?? m.mechanical?.dimension?.default ?? 0;
-  const activeCase = m => caseFor(m, dimension(m));
+  const selectedFormCode = m => state.forms[m.id] || m.mechanical?.referenceFormCode || 'C';
+  const selectedConditionCode = m => state.conditions[m.id] || m.defaultConditionCode;
+  const shown = m => materialAtCondition(m, selectedConditionCode(m));
+  const activeCase = m => caseFor(shown(m), dimension(m), selectedFormCode(m));
   const selectedGroup = () => GROUP_TABS.find(group => group.id === state.group);
   const scopeLabel = () => state.filterKey==='all'?selectedGroup().label:state.catalogue.nodes.get(state.filterKey).label;
   const groupHasData = () => scopeMaterials().length>0;
@@ -754,10 +812,16 @@ export async function mount(root, ctx = {}) {
   }
   function filtered() {
     const ids=new Set(scopeMaterials().map(material=>material.id));
-    const index=state.index.filter(item=>ids.has(item.record.id));
-    let found=searchIndex(index,state.query).map(item=>item.record);
+    // Standard-system tokens describe the PRIMARY standard of the material.
+    // Ignore incidental ASTM/GB/JIS/EN mentions in source citations, notes and comparisons.
+    const systemPattern=/\b(?:ASTM|GB(?:\s*\/\s*T)?|JIS|EN)\b/gi;
+    const systems=[...new Set([...state.query.matchAll(systemPattern)].map(hit=>hit[0].toUpperCase().startsWith('GB')?'GB':hit[0].toUpperCase()))];
+    const standardOnly=systems.length>0;
+    const gradeQuery=standardOnly?state.query.replace(systemPattern,' ').replace(/\s+/g,' ').trim():state.query;
+    const index=state.index.filter(item=>ids.has(item.record.id) && (!standardOnly || systems.every(system=>new RegExp('^'+system+'\\b','i').test(txt(item.record.standard)))));
+    let found=searchIndex(index,gradeQuery).map(item=>item.record);
     if (state.smartEnabled && selectedCriteria().length) {
-      found=found.filter(material=>matchSmartMaterial(material,state.smartCriteria,state.dimensions).pass);
+      found=found.filter(material=>matchSmartMaterial(shown(material),state.smartCriteria,state.dimensions,state.forms).pass);
     }
     return found;
   }
@@ -793,6 +857,16 @@ export async function mount(root, ctx = {}) {
   function applySearch() {
     const hadQuery=Boolean(state.query.trim());
     state.query = $('[data-hbs-input]').value.slice(0,160);
+    // When search explicitly names +N / +QT / +A / +S, open the matching
+    // condition too; never show default +QT under a +N search result.
+    const conditionFilter=state.smartEnabled && smartComplete(state.smartCriteria.condition)
+      ? txt(state.smartCriteria.condition.value).trim() : '';
+    const requestedCode=(conditionFilter || state.query).match(/\+(?:QT|N|A|S)\b/i)?.[0]?.toUpperCase() || '';
+    if(requestedCode) {
+      for(const item of scopeMaterials()) {
+        if(arr(item.conditions).some(c=>c.code===requestedCode)) state.conditions[item.id]=requestedCode;
+      }
+    }
     const candidates = filtered();
     if (!state.compareOpen && !candidates.some(m => m.id === state.selectedId)) { state.selectedId = candidates[0]?.id || ''; state.tab = 'overview'; state.eqOpen=false;state.eqCandidateId=''; }
     if(!state.compareOpen && !state.query.trim() && (state.group!=='all'||state.filterKey!=='all'||hadQuery) && state.selectedId)revealSelection();
@@ -831,7 +905,7 @@ export async function mount(root, ctx = {}) {
     }
     function leaf(id) {
       const m=state.catalogue.byId.get(id);
-      const smartNote=state.smartEnabled&&selectedCriteria().length?matchSmartMaterial(m,state.smartCriteria,state.dimensions).details.slice(0,3).join(' · '):'';
+      const smartNote=state.smartEnabled&&selectedCriteria().length?matchSmartMaterial(shown(m),state.smartCriteria,state.dimensions,state.forms).details.slice(0,3).join(' · '):'';
       const compareSlot=state.compareOpen ? state.compareIds.indexOf(m.id)+1 : 0;
       const isSelected=state.compareOpen ? compareSlot>0 : m.id===selected()?.id;
       const selectionBadge=compareSlot ? `<span class="mh-compare-leaf-tag" data-slot="${compareSlot}">VL${compareSlot}</span>` : '';
@@ -856,12 +930,25 @@ export async function mount(root, ctx = {}) {
   const sourceNames = ids => [...new Set(arr(ids).filter(Boolean).map(sourceName))].join(', ') || '—';
   /** Global viewing condition: one dimension drives cards, mechanical and chemistry. */
   function drawConditionBar(m) {
+    const choices=arr(m.conditions);
+    const stateSelect=choices.length ? `<label class="mh-state-field">Trạng thái vật liệu<select data-mh-material-condition aria-label="Chọn trạng thái cho ${esc(m.grade)}">${choices.map(c=>`<option value="${esc(c.code)}"${selectedConditionCode(m)===c.code?' selected':''}>${esc(c.code)} — ${esc(c.label)}</option>`).join('')}</select></label>` : '';
     const dim = m.mechanical?.dimension;
-    if (!dim) return `<div class="mh-condbar"><span>Bản ghi không chia theo kích thước: số liệu là giá trị tham khảo của hãng cho dạng sản phẩm nêu trong nguồn.</span></div>`;
+    if (!dim) {
+      const forms=enProductForms(m);
+      if (forms.length) {
+        const selected=selectedFormCode(m);
+        const choices=forms.map(f=>`<option value="${esc(f.code)}"${f.code===selected?' selected':''}>${esc(FORM_LABEL[f.productForm] || f.productForm)} (${esc(f.code)})</option>`).join('');
+        return `<div class="mh-condbar">${stateSelect}<label>Dạng sản phẩm (EN)<select data-mh-product-form aria-label="Chọn dạng sản phẩm của ${esc(m.grade)}">${choices}</select></label><span>Thẻ số liệu và bảng cơ tính theo dạng ${esc(selected)} từ dữ liệu Outokumpu. Bảng ASTM được trình bày riêng.</span></div>`;
+      }
+      return `<div class="mh-condbar">${stateSelect}<span>Bản ghi không chia theo kích thước: số liệu là giá trị tham khảo theo dạng sản phẩm nêu trong nguồn.</span></div>`;
+    }
     const rows = arr(m.mechanical.cases).filter(r => Number.isFinite(r.from) && Number.isFinite(r.to));
-    const lo = Math.min(...rows.map(r => r.from)), hi = Math.max(...rows.map(r => r.to));
+    const lo = rows.length ? Math.min(...rows.map(r => r.from)) : null;
+    const hi = rows.length ? Math.max(...rows.map(r => r.to)) : null;
     const value = dimension(m);
-    return `<div class="mh-condbar"><label>${esc(dim.label)} (${esc(dim.unit || 'mm')})<input type="number" data-mh-dimension min="0" step="any" inputmode="decimal" value="${Number.isFinite(value) ? esc(value) : ''}" aria-describedby="mh-condbar-note"></label><span id="mh-condbar-note">Dữ liệu có từ ${esc(num(lo))} đến ${esc(num(hi))} mm. Thẻ số liệu, bảng cơ tính và thành phần đều theo kích thước này.</span>${activeCase(m) ? '' : '<strong class="mh-condbar-warn" role="alert">Ngoài vùng dữ liệu: không suy diễn hay lấy vùng gần nhất.</strong>'}</div>`;
+    const onlyHardness=rows.length>0 && rows.every(r=>r.hardnessHB && !r.yieldMpa && !r.tensileMpa && !r.elongationPct);
+    const dataNote=onlyHardness ? `Trạng thái ${m.selectedConditionCode}: dữ liệu độ cứng HBW tối đa; không có bộ Re/Rm/A tương ứng.` : rows.length ? (dim.kind==='thickness' ? `Cơ tính theo chiều dày từ ${num(lo)} đến ${num(hi)} mm.` : dim.kind==='diameter' ? `Cơ tính theo đường kính ${lo===0?'d > 0':'từ '+num(lo)} đến ${num(hi)} mm.` : `Cơ tính theo kích thước từ ${num(lo)} đến ${num(hi)} mm.`) : 'Chưa có cơ tính theo kích thước cho trạng thái này; không dùng số liệu của trạng thái khác.';
+    return `<div class="mh-condbar${stateSelect?' mh-has-state':''}">${stateSelect}<label>${esc(dim.label)} (${esc(dim.unit || 'mm')})<input type="number" data-mh-dimension min="0" step="any" inputmode="decimal" value="${Number.isFinite(value) ? esc(value) : ''}" aria-describedby="mh-condbar-note"></label><span id="mh-condbar-note">${esc(dataNote)}</span>${rows.length && !activeCase(m) ? '<strong class="mh-condbar-warn" role="alert">Ngoài vùng dữ liệu của trạng thái đã chọn.</strong>' : ''}</div>`;
   }
   function drawOverview(m) {
     const names = arr(m.otherNames);
@@ -882,15 +969,18 @@ export async function mount(root, ctx = {}) {
     return html;
   }
   function drawMechanical(m) {
-    const mech = m.mechanical || {}, dim = mech.dimension, rows = arr(mech.cases), actual = activeCase(m);
+    const mech = m.mechanical || {}, dim = mech.dimension, actual = activeCase(m);
+    const rows = enProductForms(m).length && actual ? [actual] : arr(mech.cases);
     const hasZ = rows.some(r => r.reductionOfAreaPct);
+    const hasHB = rows.some(r => r.hardnessHB);
     const sym = mech.yieldSymbol || 'Re';
     const body = rows.map(row => {
-      const cells = [dim ? rangeLabel(row, dim.label) : 'Giá trị tham khảo của hãng', cellValue(row.yieldMpa), cellValue(row.tensileMpa), cellValue(row.elongationPct)];
+      const cells = [dim ? rangeLabel(row, dim.label) : (row.formCode ? `${FORM_LABEL[row.productForm] || row.productForm} (${row.formCode})` : 'Giá trị tham khảo của hãng'), cellValue(row.yieldMpa), cellValue(row.tensileMpa), cellValue(row.elongationPct)];
       if (hasZ) cells.push(cellValue(row.reductionOfAreaPct));
+      if (hasHB) cells.push(cellValue(row.hardnessHB));
       return tr(cells, dim && row === actual ? 'mh-selected-row' : '');
     });
-    const heads = [dim ? dim.label : 'Phạm vi', sym + ' (MPa)', 'Rm (MPa)', 'A (%)'].concat(hasZ ? ['Z (%)'] : []);
+    const heads = [dim ? dim.label : 'Phạm vi', sym + ' (MPa)', 'Rm (MPa)', 'A (%)'].concat(hasZ ? ['Z (%)'] : [],hasHB ? ['Độ cứng HB'] : []);
     const conds = [
       ['Loại số liệu', kindLabel(mech.status)],
       ['Nguồn', sourceNames(mech.sourceIds)],
@@ -899,10 +989,15 @@ export async function mount(root, ctx = {}) {
       dim?.technicalDefinition ? ['Định nghĩa kích thước', dim.technicalDefinition] : null,
       mech.note ? ['Ghi chú', mech.note] : null
     ].filter(Boolean).map(([k,v]) => tr([k, v]));
+    const hardnessOnly = rows.length > 0 && rows.every(row => row.hardnessHB && !row.yieldMpa && !row.tensileMpa && !row.elongationPct);
+    if (hardnessOnly) {
+      const hbRows = rows.map(row => tr([dim ? rangeLabel(row, dim.label) : 'Theo trạng thái', cellValue(row.hardnessHB)], dim && row === actual ? 'mh-selected-row' : ''));
+      return `${mdTable([dim ? dim.label : 'Phạm vi', 'Độ cứng Brinell HBW'], hbRows, 'Độ cứng theo trạng thái')}<p class="mh-note">"≤" là giới hạn độ cứng tối đa. Nguồn hiện có không công bố Re/Rm/A/KV cho trạng thái này; không sử dụng cơ tính của +QT hoặc +N để thay thế.</p><h4 class="mh-subtitle">Điều kiện thử và nguồn</h4>${mdTable(['Mục','Nội dung'], conds, 'Điều kiện thử và nguồn cơ tính')}`;
+    }
     const imp = mech.impact;
     const impact = imp ? mdTable(['Nhiệt độ thử','KV tối thiểu','Hướng mẫu','Loại số liệu','Ghi chú'], [tr([Number.isFinite(imp.temperatureC) ? num(imp.temperatureC) + ' °C' : '—', Number.isFinite(imp.minJ) ? '≥ ' + num(imp.minJ) + ' J' : '—', ORIENTATION_LABEL[imp.testDirection] || imp.testDirection || '—', kindLabel(imp.kind), imp.note || ''])], 'Yêu cầu thử va đập')
       : '<p class="mh-note">Nguồn hiện có không nêu yêu cầu va đập cho bản ghi này.</p>';
-    return `${mdTable(heads, body, 'Cơ tính theo vùng kích thước')}<p class="mh-note">“≥” là giới hạn tối thiểu, “x–y” là khoảng, “≈” là giá trị tham khảo của hãng.${dim ? ' Dòng tô màu là vùng đang áp dụng.' : ''}</p><h4 class="mh-subtitle">Thử va đập</h4>${impact}${stainlessFormsTable(m)}<h4 class="mh-subtitle">Điều kiện thử và nguồn</h4>${mdTable(['Mục','Nội dung'], conds, 'Điều kiện thử và nguồn cơ tính')}`;
+    return `${rows.length ? mdTable(heads, body, 'Cơ tính theo vùng kích thước') : '<p class="mh-note">Trạng thái này chưa có dữ liệu Re/Rm/A theo kích thước. Không hiển thị cơ tính của trạng thái khác.</p>'}<p class="mh-note">“≥” là giới hạn tối thiểu, “x–y” là khoảng, “≈” là giá trị tham khảo của hãng.${dim ? ' Dòng tô màu là vùng đang áp dụng.' : ''}</p><h4 class="mh-subtitle">Thử va đập</h4>${impact}${stainlessFormsTable(m)}<h4 class="mh-subtitle">Điều kiện thử và nguồn</h4>${mdTable(['Mục','Nội dung'], conds, 'Điều kiện thử và nguồn cơ tính')}`;
   }
   function drawChemistry(m) {
     const chem = m.chemistry || {}, rows = arr(chem.rows), dim = m.mechanical?.dimension, dv = dimension(m);
@@ -1010,62 +1105,32 @@ export async function mount(root, ctx = {}) {
     if (!list.length) return '<div class="hbs-empty"><strong>Chưa có dữ liệu vật lý có nguồn</strong><p>Không điền giá trị chung khi nguồn của mác chưa nêu.</p></div>';
     return `${mdTable(['Tính chất','Giá trị','Loại số liệu','Nguồn'], list.map(p => tr([p.label, p.value, kindLabel(p.kind), sourceName(p.sourceId)])), 'Tính chất vật lý')}<p class="mh-note">Giá trị vật lý dùng tham khảo, không phải số đo của từng lô.</p>`;
   }
-  function bookHistory(m) {
-    const rd = m.referenceData || {}, b = rd.bookStandardData;
-    const parts = [];
-    if (b) {
-      const mech = b.mechanical;
-      if (mech?.cases?.length) {
-        const mark = mech.dimension?.kind === 'diameter' ? 'd' : 't';
-        parts.push(`<h5 class="mh-subtitle">Cơ tính ${esc(b.standardEdition)} · ${esc(b.grade)} (${esc(b.steelNumber || '—')}) · bảng ${esc(mech.sourceTable)}, tr. ${esc(mech.printedPage)}</h5>` +
-          mdTable(['Chiều dày', (mech.yieldSymbol || 'Re') + ' (MPa)', 'Rm (MPa)', 'A (%)'], mech.cases.map(c => tr([bandLabel(c, mark), '≥ ' + num(c.yieldMin), valueText(c.tensile), Number.isFinite(c.elongationMin) ? '≥ ' + num(c.elongationMin) : '—'])), 'Cơ tính tiêu chuẩn cũ'));
-        if (arr(mech.impact).length) parts.push(mdTable(['Chiều dày','Nhiệt độ thử','KV tối thiểu'], mech.impact.map(k => tr([bandLabel(k, mark), num(k.temperatureC) + ' °C', '≥ ' + num(k.minJ) + ' J'])), 'Va đập tiêu chuẩn cũ'));
-      }
-      if (arr(mech?.forms).length) {
-        parts.push(`<h5 class="mh-subtitle">Cơ tính ${esc(b.standardEdition)} · ${esc(b.grade)} · bảng ${esc(mech.sourceTable)}, tr. ${esc(mech.printedPage)}</h5>` +
-          mdTable(['Dạng','Chiều dày','Rp0,2 (MPa)','Rm (MPa)','A (%)'], mech.forms.map(f => tr([`${FORM_LABEL[f.productForm] || f.productForm} (${f.code})`, bandLabel(f.thickness), '≥ ' + num(f.yieldMin), valueText(f.tensile), '≥ ' + num(f.elongationMin)])), 'Cơ tính inox tiêu chuẩn cũ'));
-      }
-      if (b.mechanicalNote) parts.push(`<p class="mh-note">${esc(b.mechanicalNote)}</p>`);
-      const ch = b.chemistry;
-      if (arr(ch?.rows).length) {
-        const rows = ch.rows.map(r => tr([r.element, valueText(r), r.dimension ? bandLabel(r.dimension) : 'Mọi kích thước']));
-        for (const c of arr(ch.combinedLimits)) rows.push(tr([arr(c.elements).join(' + '), '≤ ' + num(c.max), 'Giới hạn tổng']));
-        parts.push(`<h5 class="mh-subtitle">Thành phần ${esc(b.standardEdition)} · bảng ${esc(ch.sourceTable)}, tr. ${esc(ch.printedPage)}</h5>` + mdTable(['Nguyên tố','% khối lượng','Điều kiện'], rows, 'Thành phần tiêu chuẩn cũ'));
-      }
-      if (arr(b.notes).length) parts.push(`<ul>${b.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`);
-    }
-    const hist = rd.engineeringLimits?.historicalHeatAnalysisEN10088_2_1995;
-    if (hist) parts.push(`<h5 class="mh-subtitle">Thành phần ${esc(hist.standardEdition)} (sách, tr. PDF ${esc(hist.pdfPage)})</h5>` + mdTable(['Nguyên tố','% khối lượng'], arr(hist.elements).map(e => tr([e.element, valueText(e)])), 'Thành phần inox tiêu chuẩn cũ'));
-    if (arr(rd.historicalDesignations).length) parts.push(`<h5 class="mh-subtitle">Ký hiệu lịch sử</h5>` + mdTable(['Mác','Số vật liệu','Phiên bản','Quan hệ'], rd.historicalDesignations.map(h => tr([h.grade, h.materialNumber || '—', h.standardEdition || '—', 'Chỉ tham chiếu lịch sử, không phải đồng nhất hay thay thế'])), 'Ký hiệu lịch sử'));
-    if (!parts.length) return '';
-    return `<details class="mh-book"><summary>Dữ liệu lịch sử từ sách ASTM DS67B (2004)</summary><p class="mh-note">${esc(b?.useRestriction || 'Chỉ tra cứu lịch sử; không dùng thay tiêu chuẩn hiện hành.')}</p>${parts.join('')}</details>`;
-  }
+  /** Public-facing provenance only: keep audit notes, historic tables and internal IDs in JSON. */
   function drawSources(m) {
     const mech = m.mechanical || {}, chem = m.chemistry || {}, rd = m.referenceData || {}, lim = rd.engineeringLimits || {};
     const blocks = [
       ['Cơ tính', sourceNames(mech.sourceIds), kindLabel(mech.status)],
       mech.impact ? ['Va đập', sourceNames(mech.impact.testDirectionSourceId ? [mech.impact.testDirectionSourceId] : mech.sourceIds), kindLabel(mech.impact.kind)] : null,
       ['Thành phần', sourceNames(chem.sourceIds), kindLabel(chem.kind)],
-      arr(m.heatTreatment?.routes).length ? ['Nhiệt luyện', sourceNames(arr(m.heatTreatment.routes).map(r => r.sourceId)), arr(m.heatTreatment.routes).some(htHasValues) ? [...new Set(arr(m.heatTreatment.routes).filter(r => r.valueKind).map(r => kindLabel(r.valueKind)))].join(', ') || 'Có số liệu' : 'Chưa có số liệu'] : null,
-      m.welding ? ['Hàn', sourceNames([m.welding.overall?.sourceId, ...arr(m.welding.consumables).map(x => x.sourceId), ...arr(m.welding.preheat).map(x => x.sourceId), m.welding.pwht?.sourceId]), [m.welding.overall?.sourceId, ...arr(m.welding.consumables).map(x => x.sourceId), ...arr(m.welding.preheat).map(x => x.sourceId), m.welding.pwht?.sourceId].some(Boolean) ? 'Có số liệu' : 'Chưa có số liệu'] : null,
-      m.usage ? ['Khuyến cáo sử dụng', sourceNames([...arr(m.usage.recommendedProducts), ...arr(m.usage.environments), ...arr(m.usage.limitations), ...arr(m.usage.notRecommended)].map(x => x.sourceId)), [...arr(m.usage.recommendedProducts), ...arr(m.usage.environments), ...arr(m.usage.limitations), ...arr(m.usage.notRecommended)].some(x => x.sourceId) ? 'Có số liệu' : 'Chưa có số liệu'] : null,
+      arr(m.heatTreatment?.routes).length ? ['Nhiệt luyện', sourceNames(arr(m.heatTreatment.routes).map(r => r.sourceId)), arr(m.heatTreatment.routes).some(htHasValues) ? 'Có dữ liệu tham khảo' : 'Chưa có số liệu'] : null,
+      m.welding ? ['Hàn', sourceNames([m.welding.overall?.sourceId, ...arr(m.welding.consumables).map(x => x.sourceId), ...arr(m.welding.preheat).map(x => x.sourceId), m.welding.pwht?.sourceId]), [m.welding.overall?.sourceId, ...arr(m.welding.consumables).map(x => x.sourceId), ...arr(m.welding.preheat).map(x => x.sourceId), m.welding.pwht?.sourceId].some(Boolean) ? 'Có dữ liệu tham khảo' : 'Chưa có số liệu'] : null,
+      m.usage ? ['Khuyến cáo sử dụng', sourceNames([...arr(m.usage.recommendedProducts), ...arr(m.usage.environments), ...arr(m.usage.limitations), ...arr(m.usage.notRecommended)].map(x => x.sourceId)), [...arr(m.usage.recommendedProducts), ...arr(m.usage.environments), ...arr(m.usage.limitations), ...arr(m.usage.notRecommended)].some(x => x.sourceId) ? 'Có dữ liệu tham khảo' : 'Chưa có số liệu'] : null,
       ['Vật lý', sourceNames(physicalEntries(m).map(p => p.sourceId)), [...new Set(physicalEntries(m).map(p => kindLabel(p.kind)))].join(', ') || 'Chưa có dữ liệu'],
       ...Object.entries(lim).filter(([,v]) => v && v.sourceId && v.sourceId !== 'bringas-method').map(([k,v]) => [k === 'carbonEquivalent' ? 'CEV' : k === 'combinedAlloyLimit' ? 'Giới hạn tổng Cr+Mo+Ni' : k === 'reductionOfArea' ? 'Thắt tỷ đối Z' : k === 'mechanicalByFormEN10088_2' ? 'Cơ tính theo dạng (EN)' : k === 'mechanicalByASTMA240' ? 'Cơ tính theo ASTM A240' : k, sourceName(v.sourceId), kindLabel(v.kind || v.dataKind)])
     ].filter(Boolean).map(r => tr(r));
-    const editions = arr(rd.standardEditionRecords).map(e => tr([e.designation, editionText(e.role), sourceName(e.sourceId), editionText(e.status)]));
+    const editionRows = arr(rd.standardEditionRecords).map(e => {
+      const role = String(e.role || '');
+      const label = role.startsWith('historical_') ? 'Tài liệu lịch sử' :
+        role === 'potential_current_standard_to_review' ? 'Tiêu chuẩn tham khảo' : 'Nguồn hãng / nhà cung cấp';
+      return tr([e.designation || '—', label, sourceName(e.sourceId)]);
+    });
+    const historicalNames = arr(rd.historicalDesignations);
     const used = new Set([...arr(m.sourceIds), ...arr(mech.sourceIds), ...arr(chem.sourceIds), ...arr(m.physical?.sourceIds)]);
-    const sources = arr(state.db.sources).filter(s => used.has(s.id));
-    const reconciliation = arr(rd.sourceReconciliation);
-    const order = {high:0,medium:1,low:2,info:3};
-    const issues = arr(rd.openIssues).slice().sort((a,b) => (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
-    return `<h4 class="mh-section-title">Nguồn theo từng khối số liệu</h4>${mdTable(['Khối số liệu','Nguồn','Loại số liệu'], blocks, 'Nguồn theo từng khối số liệu')}
-      ${m.sourceEditionNote ? `<p class="mh-note"><b>Phiên bản tiêu chuẩn:</b> ${esc(m.sourceEditionNote)}</p>` : ''}
-      ${editions.length ? `<h4 class="mh-section-title">Phiên bản tiêu chuẩn đã ghi nhận</h4>${mdTable(['Tiêu chuẩn','Vai trò','Nguồn','Trạng thái'], editions, 'Phiên bản tiêu chuẩn')}` : ''}
-      <h4 class="mh-section-title">Tài liệu đã tham chiếu</h4><div class="mh-sources">${sources.map(s => `<article class="mh-source"><strong>${esc(s.publisher)} — ${esc(s.title)}</strong><span>${esc(s.note || '')}</span>${normalizeSourceLink(s)}</article>`).join('')}</div>
-      ${issues.length ? `<h4 class="mh-section-title">Điểm cần xác minh (${issues.filter(i => i.status === 'open' && i.severity !== 'info').length})</h4>${mdTable(['Mức','Chủ đề','Nội dung','Việc cần làm'], issues.map(i => tr([SEVERITY_LABEL[i.severity] || i.severity, i.topic, i.findingVi, i.actionVi], i.severity === 'high' ? 'mh-issue-high' : '')), 'Điểm cần xác minh')}` : ''}
-      ${reconciliation.length ? `<h4 class="mh-section-title">Đối soát nguồn</h4><ul class="mh-recon">${reconciliation.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
-      ${bookHistory(m)}
-      <p class="mh-note mh-record-id">Mã bản ghi: ${esc(m.id)} · Nguồn và điều kiện số liệu được liệt kê phía trên.</p>`;
+    const sources = arr(state.db.sources).filter(s => used.has(s.id) && s.id !== 'bringas-method');
+    return `<h4 class="mh-section-title">Nguồn theo nhóm thông số</h4>${mdTable(['Nội dung','Nguồn','Loại số liệu'], blocks, 'Nguồn theo nhóm thông số')}
+      ${editionRows.length ? `<h4 class="mh-section-title">Tiêu chuẩn tham khảo</h4>${mdTable(['Phiên bản','Phân loại','Nguồn'], editionRows, 'Tiêu chuẩn tham khảo')}` : ''}
+      ${historicalNames.length ? `<h4 class="mh-section-title">Ký hiệu trong tiêu chuẩn cũ</h4>${mdTable(['Mác','Số vật liệu','Phiên bản'], historicalNames.map(h => tr([h.grade, h.materialNumber || '—', h.standardEdition || '—'])), 'Ký hiệu trong tiêu chuẩn cũ')}<p class="mh-note">Các ký hiệu này dùng để tra cứu lịch sử, không mặc nhiên là mác thay thế trực tiếp.</p>` : ''}
+      <h4 class="mh-section-title">Tài liệu tham khảo</h4><div class="mh-sources">${sources.map(s => `<article class="mh-source"><strong>${esc(s.publisher)} — ${esc(s.title)}</strong>${normalizeSourceLink(s)}</article>`).join('')}</div>`;
   }
   // The demo database has no reviewed equivalent-grade relations. Suggest only
   // candidates in the same material family; never label them as equivalent.
@@ -1087,17 +1152,17 @@ export async function mount(root, ctx = {}) {
     const candidates = equivalentCandidates(m);
     const candidate = candidates.find(item => item.id === state.eqCandidateId) || null;
     const approved = arr(state.db?.engineeringExtension?.equivalence?.approvedRelations).filter(r => r.fromId === m.id || r.toId === m.id);
-    const intro = `<div class="mh-eq-intro"><h4>Đối chiếu vật liệu</h4><p>Mác gốc đứng đầu. Bên dưới tách riêng ba mức: tương đương đã duyệt, ứng viên trong cơ sở dữ liệu và danh sách cùng nhóm so sánh theo sách.</p></div>`;
+    const intro = `<div class="mh-eq-intro"><h4>Đối chiếu vật liệu</h4><p>Mác gốc đứng đầu. Bên dưới tách riêng ba mức: tương đương đã duyệt, ứng viên trong cơ sở dữ liệu và danh sách mác đối chiếu tham khảo.</p></div>`;
     const caution = `<div class="mh-eq-caution" role="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5m0 4h.01"/></svg><span><b>HB chỉ cung cấp thông tin, phân tích và đề xuất tham khảo.</b> Quyết định lựa chọn, thay thế và sử dụng vật liệu cuối cùng thuộc về người dùng, sau khi xem xét tiêu chuẩn áp dụng và điều kiện sử dụng thực tế.</span></div>`;
     const original = `<div class="mh-eq-line mh-eq-origin"><span class="mh-eq-number">01</span><span class="mh-eq-ident"><strong>${esc(m.grade)} · ${esc(m.materialNumber || '—')}</strong><small>${esc(m.standard)} · ${esc(m.productForm)} · ${esc(m.condition)}</small></span><span class="mh-eq-tag">Vật liệu gốc</span></div>`;
     const approvedHtml = `<h5 class="mh-eq-subtitle">1. Tương đương đã duyệt</h5>${approved.length ? '' : '<p class="mh-note">Chưa có quan hệ tương đương được duyệt cho mác này.</p>'}`;
     const choices = candidates.map((item, index) => `<button type="button" class="mh-eq-line mh-eq-candidate" data-mh-eq-candidate="${esc(item.id)}" aria-pressed="${item.id === candidate?.id}"><span class="mh-eq-number">${String(index + 2).padStart(2,'0')}</span><span class="mh-eq-ident"><strong>${esc(item.grade)} · ${esc(item.materialNumber || '—')}</strong><small>${esc(item.standard)} · ${esc(item.productForm)} · ${esc(item.condition)}</small></span><span class="mh-eq-tag">Cùng phân nhóm · chưa xác nhận</span></button>`).join('');
     const dbHtml = `<h5 class="mh-eq-subtitle">2. Ứng viên trong cơ sở dữ liệu</h5>${candidates.length ? '<p class="mh-note">Chọn một mác để xem bảng đối chiếu số liệu.</p>' : '<p class="mh-note">Chưa có mác khác cùng phân nhóm trong cơ sở dữ liệu.</p>'}`;
     const book = arr(m.referenceData?.comparisonCandidates);
-    const relText = r => r === 'same_standard_sibling_in_book_group' ? 'Cùng tiêu chuẩn, khác cấp' : 'Cùng nhóm so sánh trong sách';
-    const bookHtml = `<h5 class="mh-eq-subtitle">3. Cùng nhóm so sánh theo sách ASTM DS67B (2004)</h5>${book.length ? mdTable(['Tiêu chuẩn','Mác','Số VL / UNS','Quan hệ','Trang'], book.map(c => tr([c.standard, c.grade, c.steelNumber || c.uns || '—', relText(c.relationship), c.printedPage ? 'tr. ' + c.printedPage : '—'])), 'Danh sách cùng nhóm so sánh theo sách') + `<p class="mh-note">${esc(m.referenceData?.comparisonCandidatesNote || '')} Các tiêu chuẩn trong sách là phiên bản trước 2004.</p>` : '<p class="mh-note">Chưa có danh sách từ sách cho mác này.</p>'}`;
+    const relText = r => r === 'same_standard_sibling_in_book_group' ? 'Cùng tiêu chuẩn, khác cấp' : 'Cùng nhóm tham khảo';
+    const bookHtml = `<h5 class="mh-eq-subtitle">3. Các mác đối chiếu tham khảo</h5>${book.length ? mdTable(['Tiêu chuẩn','Mác','Số VL / UNS','Quan hệ'], book.map(c => tr([c.standard, c.grade, c.steelNumber || c.uns || '—', relText(c.relationship)])), 'Danh sách cùng nhóm so sánh theo sách') + `<p class="mh-note">Danh sách giúp đối chiếu tên mác và hệ tiêu chuẩn; không mặc nhiên được phép thay thế.</p>` : '<p class="mh-note">Chưa có mác tham khảo đối chiếu cho vật liệu này.</p>'}`;
     if (candidate && candidate.mechanical?.dimension?.kind && candidate.mechanical.dimension.kind === m.mechanical?.dimension?.kind && caseFor(candidate, dimension(m))) state.dimensions[candidate.id] = dimension(m);
-    const table = candidate ? `<section class="mh-eq-comparison"><h4>Đối chiếu ${esc(m.grade)} ↔ ${esc(candidate.grade)}</h4>${drawComparisonTable(m, candidate, ['Gốc','Ứng viên'])}</section>` : '';
+    const table = candidate ? `<section class="mh-eq-comparison"><h4>Đối chiếu ${esc(m.grade)} ↔ ${esc(candidate.grade)}</h4>${drawComparisonTable(m, shown(candidate), ['Gốc','Ứng viên'])}</section>` : '';
     return `<section class="mh-eq-panel" id="mh-equivalence-panel" aria-label="Đối chiếu vật liệu">${intro}${caution}<div class="mh-eq-list" aria-label="Danh sách đối chiếu">${original}</div>${approvedHtml}${dbHtml}<div class="mh-eq-list">${choices}</div>${table}${bookHtml}</section>`;
   }
 
@@ -1201,9 +1266,12 @@ function compareSlotCard(material,slot) {
   const choosing=state.comparePicking===slot;
   const label=`VL${slot}`;
   const size=material?.mechanical?.dimension;
+  const forms=material ? enProductForms(material) : [];
+  const conditionSelect=arr(material?.conditions).length ? `<label class="mh-compare-dimension">Trạng thái<select data-mh-compare-condition="${slot}" aria-label="Trạng thái của ${label}">${arr(material.conditions).map(c=>`<option value="${esc(c.code)}"${c.code===selectedConditionCode(material)?' selected':''}>${esc(c.code)} — ${esc(c.label)}</option>`).join('')}</select></label>` : '';
+  const formSelect=forms.length ? `<label class="mh-compare-dimension">Dạng sản phẩm (EN)<select data-mh-compare-form="${slot}" aria-label="Chọn dạng sản phẩm của ${label}">${forms.map(f=>`<option value="${esc(f.code)}"${f.code===selectedFormCode(material)?' selected':''}>${esc(FORM_LABEL[f.productForm] || f.productForm)} (${esc(f.code)})</option>`).join('')}</select></label>` : '';
   return `<section class="mh-compare-slot mh-compare-slot-${slot}${choosing?' mh-compare-choosing':''}${material?'':' mh-compare-placeholder'}" data-mh-compare-slot="${slot}" aria-label="${label}">
     <div class="mh-compare-slot-top"><span class="mh-compare-pill mh-compare-pill-${slot}">${label}</span><button type="button" class="mh-compare-change" data-mh-compare-change="${slot}" aria-label="${material?'Đổi':'Chọn'} ${label}">${material?'Đổi '+label:'Chọn '+label}</button></div>
-    ${material?`<strong class="mh-compare-grade">${esc(material.grade)}</strong><p>${esc(material.title)}</p><div class="mh-compare-sub"><span>${esc(material.materialNumber||'—')}</span><span>${esc(material.standard)}</span><span>${esc(material.productForm)}</span><span>${esc(material.condition)}</span></div>${size?`<label class="mh-compare-dimension">${esc(size.label)} (${esc(size.unit||'mm')})<input type="number" data-mh-compare-dimension="${slot}" min="0.001" step="any" inputmode="decimal" value="${esc(dimension(material))}" aria-label="${esc(size.label)} của ${label}"/></label>`:''}`:
+    ${material?`<strong class="mh-compare-grade">${esc(material.grade)}</strong><p>${esc(material.title)}</p><div class="mh-compare-sub"><span>${esc(material.materialNumber||'—')}</span><span>${esc(material.standard)}</span><span>${esc(material.productForm)}</span><span>${esc(material.condition)}</span></div>${size?`<label class="mh-compare-dimension">${esc(size.label)} (${esc(size.unit||'mm')})<input type="number" data-mh-compare-dimension="${slot}" min="0.001" step="any" inputmode="decimal" value="${esc(dimension(material))}" aria-label="${esc(size.label)} của ${label}"/></label>`:''}${formSelect}${conditionSelect}`:
     `<div class="mh-compare-no-material"><strong>Chưa chọn vật liệu</strong><p>${choosing?'Chọn mác tại danh mục bên trái hoặc tìm kiếm phía trên.':'Nhấn Chọn '+label+' để chọn mác tại danh mục.'}</p></div>`}
   </section>`;
 }
@@ -1218,15 +1286,18 @@ function drawComparisonTable(m1,m2,labels=['VL1','VL2']) {
   if(materialGroup(m1)!==materialGroup(m2))return '<div class="mh-compare-wait">Không thể đối chiếu hai vật liệu khác nhóm.</div>';
   const d1=m1.mechanical?.dimension,d2=m2.mechanical?.dimension;
   const sameDimension=(d1?.kind&&d1.kind===d2?.kind&&dimension(m1)===dimension(m2))||(!d1&&!d2);
-  const c1=caseFor(m1,dimension(m1)),c2=caseFor(m2,dimension(m2));
-  const comparable=Boolean(c1&&c2&&sameDimension);
-  const dimNote=!d1&&!d2?'Cả hai chưa có vùng kích thước được khai báo':d1?.kind!==d2?.kind?'Khác loại kích thước; không tính chênh lệch':!sameDimension?'Kích thước đang chọn khác nhau; không tính chênh lệch':!c1||!c2?'Có kích thước ngoài vùng dữ liệu; không tính chênh lệch':'Cùng loại và giá trị kích thước';
+  const c1=activeCase(m1),c2=activeCase(m2);
+  const sameForm=(!enProductForms(m1).length&&!enProductForms(m2).length) ||
+    (enProductForms(m1).length>0&&enProductForms(m2).length>0&&selectedFormCode(m1)===selectedFormCode(m2));
+  const sameCondition=(!m1.selectedConditionCode&&!m2.selectedConditionCode)||m1.selectedConditionCode===m2.selectedConditionCode;
+  const comparable=Boolean(c1&&c2&&sameDimension&&sameForm&&sameCondition);
+  const dimNote=!sameCondition?'Khác trạng thái nhiệt luyện; chỉ đối chiếu các giá trị, không tính chênh lệch':!sameForm?'Khác dạng sản phẩm C/H/P; không tính chênh lệch':!d1&&!d2?'Bảng cơ tính theo dạng sản phẩm nếu có':d1?.kind!==d2?.kind?'Khác loại kích thước; không tính chênh lệch':!sameDimension?'Kích thước đang chọn khác nhau; không tính chênh lệch':!c1||!c2?'Có kích thước ngoài vùng dữ liệu; không tính chênh lệch':'Cùng loại và giá trị kích thước';
   const [l1,l2]=labels;
   const metricRow=(name,key,unit,needSameSymbol=false)=>{
     const a=c1?.[key],b=c2?.[key];
     let remark='Chỉ đối chiếu số liệu';
     if(!a||!b)remark='Thiếu dữ liệu';
-    else if(!comparable)remark='Không cùng điều kiện kích thước';
+    else if(!comparable)remark='Khác trạng thái / kích thước / dạng sản phẩm';
     else if(needSameSymbol&&m1.mechanical?.yieldSymbol!==m2.mechanical?.yieldSymbol)remark='Khác ký hiệu giới hạn chảy';
     else if(Number.isFinite(a.reference)||Number.isFinite(b.reference))remark='Giá trị điển hình, không phải giới hạn';
     else if(Number.isFinite(a.min)&&Number.isFinite(b.min)&&!Number.isFinite(a.max)&&!Number.isFinite(b.max)){
@@ -1248,12 +1319,13 @@ function drawComparisonTable(m1,m2,labels=['VL1','VL2']) {
   const firstRows=[
     comparisonDataRow('Phân nhóm vật liệu',FAMILY_LABEL[m1.family]||m1.family,FAMILY_LABEL[m2.family]||m2.family,'Cùng nhóm vật liệu cấp 1'),
     comparisonDataRow('Tiêu chuẩn',m1.standard,m2.standard),
-    comparisonDataRow('Dạng sản phẩm',m1.productForm,m2.productForm),
+    comparisonDataRow('Dạng sản phẩm',c1?.formCode ? `${FORM_LABEL[c1.productForm] || c1.productForm} (${c1.formCode})` : m1.productForm,c2?.formCode ? `${FORM_LABEL[c2.productForm] || c2.productForm} (${c2.formCode})` : m2.productForm),
     comparisonDataRow('Trạng thái',m1.condition,m2.condition),
     comparisonDataRow('Kích thước',compareSizeLabel(m1),compareSizeLabel(m2),dimNote),
     metricRow('Giới hạn chảy ('+txt(m1.mechanical?.yieldSymbol||'Re')+' / '+txt(m2.mechanical?.yieldSymbol||'Re')+')','yieldMpa','MPa',true),
     metricRow('Độ bền kéo Rm','tensileMpa','MPa'),
     metricRow('Độ giãn dài A','elongationPct','%'),
+    ...(c1?.hardnessHB||c2?.hardnessHB ? [metricRow('Độ cứng HB','hardnessHB','HB')] : []),
     comparisonDataRow('Va đập KV',impactText(m1),impactText(m2),impactComment),
     physicalRow('Mô đun E','youngModulusGpa','GPa'),
     physicalRow('Khối lượng riêng ρ','densityKgM3','kg/m³')
@@ -1275,15 +1347,15 @@ function drawComparison() {
   const instruction=state.comparePicking?`Đang chọn VL${state.comparePicking}: tìm kiếm hoặc chọn mác ở danh mục bên trái (${group?.label||''}).`:first&&second?'Đã chọn hai vật liệu. Nhấn “Đổi VL1” hoặc “Đổi VL2” khi cần chọn lại.':'Chọn vật liệu còn trống từ danh mục bên trái.';
   const message=state.compareMessage||instruction;
   $('[data-mh-detail]').innerHTML=`<div class="mh-compare-head"><div><h3>So sánh vật liệu</h3><p>Chọn hai mác trong cùng nhóm ${esc(group?.label||'vật liệu')}.</p></div><button type="button" class="mh-compare-close" data-mh-compare-close aria-label="Thoát so sánh">× <span>Đóng so sánh</span></button></div>
-    <div class="mh-compare-slots">${compareSlotCard(first,1)}${compareSlotCard(second,2)}</div>
+    <div class="mh-compare-slots">${compareSlotCard(first?shown(first):null,1)}${compareSlotCard(second?shown(second):null,2)}</div>
     <p class="mh-compare-guide" role="status" aria-live="polite">${esc(message)}</p>
-    ${first&&second?drawComparisonTable(first,second):`<div class="mh-compare-wait"><strong>Chưa đủ hai vật liệu để so sánh</strong><p>${esc(instruction)}</p></div>`}
+    ${first&&second?drawComparisonTable(shown(first),shown(second)):`<div class="mh-compare-wait"><strong>Chưa đủ hai vật liệu để so sánh</strong><p>${esc(instruction)}</p></div>`}
     <footer class="mh-footer">Số liệu tham khảo để tra cứu và so sánh vật liệu.</footer>`;
 }
 
   function drawDetail() {
     if (state.compareOpen) {drawComparison();drawList();return;}
-    const m=selected();
+    const m=selected() ? shown(selected()) : null;
     if (!m && !groupHasData()) {
       $('[data-mh-detail]').innerHTML=`<div class="hbs-empty"><strong>${esc(scopeLabel())}</strong><p>Chưa có dữ liệu cho nhóm này. Danh mục sẽ được bổ sung từng bước.</p></div>`;
       drawList();
@@ -1291,18 +1363,22 @@ function drawComparison() {
     }
     if (!m) { $('[data-mh-detail]').innerHTML='<div class="hbs-empty"><strong>Không tìm thấy kết quả phù hợp</strong><p>Kiểm tra từ khóa, hashtag, kích thước và điều kiện thử. Thiếu dữ liệu không được coi là đáp ứng yêu cầu.</p></div>'; drawList(); return; }
     const c=activeCase(m),mech=m.mechanical||{},dim=mech.dimension,impact=mech.impact;
-    const sizeNote=dim?(c?`${dimMark(dim)} = ${num(dimension(m))} mm · vùng ${rangeLabel(c,dim.label)}`:'Ngoài vùng dữ liệu'):'Tham khảo của hãng, không chia kích thước';
+    const sizeNote=dim?(c?`${dimMark(dim)} = ${num(dimension(m))} mm · vùng ${rangeLabel(c,dim.label)}`:'Ngoài vùng dữ liệu'):(c?.formCode ? `Dạng ${c.formCode} · theo bảng EN của Outokumpu` : 'Tham khảo theo dạng sản phẩm');
     const withUnit=(obj,unit)=>{const v=cellValue(obj);return v==='—'?'—':v+' '+unit;};
     const sym=mech.yieldSymbol||'Re';
-    const metrics=metric('Giới hạn chảy '+sym,withUnit(c?.yieldMpa,'MPa'),sizeNote)+
-      metric('Độ bền kéo Rm',withUnit(c?.tensileMpa,'MPa'),sizeNote)+
-      metric('Độ giãn dài A',withUnit(c?.elongationPct,'%'),sizeNote+(mech.tensileTestOrientation?' · mẫu '+(ORIENTATION_SHORT[mech.tensileTestOrientation]||mech.tensileTestOrientation):''))+
-      metric('Va đập KV',impact&&Number.isFinite(impact.minJ)?`≥ ${num(impact.minJ)} J`:'—',impact&&Number.isFinite(impact.temperatureC)?`tại ${num(impact.temperatureC)} °C`+(impact.testDirection?' · mẫu '+(ORIENTATION_SHORT[impact.testDirection]||impact.testDirection):''):'Nguồn hiện có không nêu KV');
+    const hardnessView=arr(mech.cases).length>0 && arr(mech.cases).every(row=>row.hardnessHB && !row.yieldMpa && !row.tensileMpa && !row.elongationPct);
+    const metrics=hardnessView
+      ? metric('Độ cứng Brinell HBW',withUnit(c?.hardnessHB,'HBW'),c?sizeNote:'Kích thước nằm ngoài phạm vi dữ liệu độ cứng')+
+        `<div class="mh-hardness-summary"><strong>Thông số của trạng thái ${esc(m.selectedConditionCode || '')}</strong><p>Re, Rm, A và KV chưa được công bố cho trạng thái này. Không lấy số liệu +QT hoặc +N để thay thế.</p></div>`
+      : metric('Giới hạn chảy '+sym,withUnit(c?.yieldMpa,'MPa'),sizeNote)+
+        metric('Độ bền kéo Rm',withUnit(c?.tensileMpa,'MPa'),sizeNote)+
+        metric('Độ giãn dài A',withUnit(c?.elongationPct,'%'),sizeNote+(mech.tensileTestOrientation?' · mẫu '+(ORIENTATION_SHORT[mech.tensileTestOrientation]||mech.tensileTestOrientation):''))+
+        metric('Va đập KV',impact&&Number.isFinite(impact.minJ)?`≥ ${num(impact.minJ)} J`:'—',impact&&Number.isFinite(impact.temperatureC)?`tại ${num(impact.temperatureC)} °C`+(impact.testDirection?' · mẫu '+(ORIENTATION_SHORT[impact.testDirection]||impact.testDirection):''):'Nguồn hiện có không nêu KV');
     const views={overview:drawOverview,mechanical:drawMechanical,chemistry:drawChemistry,usage:drawUsage,heat:drawHeatTreatment,welding:drawWelding,physical:drawPhysical,sources:drawSources};
     const eqIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h14m-4-4 4 4-4 4M17 17H3m4-4-4 4 4 4"/></svg>';
     const cmpIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg>';
     const chips=[[m.grade,'mh-violet'],[m.materialNumber||'—','mh-slate'],[m.standard,'mh-slate'],[m.condition,''],[m.productForm,''],[FAMILY_LABEL[m.family]||m.family,'']].filter(([t])=>t).map(([t,cls])=>`<span class="mh-chip${cls?' '+cls:''}">${esc(t)}</span>`).join('');
-    $('[data-mh-detail]').innerHTML=`<div class="mh-detail-head"><div><h3>${esc(m.title)}</h3><p>${esc(m.description)}</p></div><div class="mh-detail-actions"><button type="button" class="mh-eq-trigger mh-compare-trigger" data-mh-compare-open aria-label="So sánh vật liệu ${esc(m.grade)} với vật liệu khác" title="So sánh hai vật liệu cùng nhóm">${cmpIcon}<span>So sánh</span></button><button type="button" class="mh-eq-trigger" data-mh-equivalence aria-label="Vật liệu tương đương của ${esc(m.grade)}" aria-pressed="${state.eqOpen}" title="Đối chiếu vật liệu">${eqIcon}<span>VL tương đương</span></button></div></div><div class="mh-chips">${chips}</div>${drawConditionBar(m)}<div class="mh-metrics">${metrics}</div>${state.eqOpen?drawEquivalence(m):`<nav class="mh-tabs" role="tablist" aria-label="Chi tiết vật liệu">${DETAIL_TABS.map(([id,label])=>`<button type="button" class="mh-tab" role="tab" data-mh-tab="${id}" aria-selected="${state.tab===id}">${esc(label)}</button>`).join('')}</nav><div class="mh-content" role="tabpanel">${(views[state.tab]||drawOverview)(m)}</div>`}`;
+    $('[data-mh-detail]').innerHTML=`<div class="mh-detail-head"><div><h3>${esc(m.title)}</h3><p>${esc(m.description)}</p></div><div class="mh-detail-actions"><button type="button" class="mh-eq-trigger mh-compare-trigger" data-mh-compare-open aria-label="So sánh vật liệu ${esc(m.grade)} với vật liệu khác" title="So sánh hai vật liệu cùng nhóm">${cmpIcon}<span>So sánh</span></button><button type="button" class="mh-eq-trigger" data-mh-equivalence aria-label="Vật liệu tương đương của ${esc(m.grade)}" aria-pressed="${state.eqOpen}" title="Đối chiếu vật liệu">${eqIcon}<span>VL tương đương</span></button></div></div><div class="mh-chips">${chips}</div>${drawConditionBar(m)}<div class="mh-metrics${hardnessView?' mh-metrics-hardness':''}">${metrics}</div>${state.eqOpen?drawEquivalence(m):`<nav class="mh-tabs" role="tablist" aria-label="Chi tiết vật liệu">${DETAIL_TABS.map(([id,label])=>`<button type="button" class="mh-tab" role="tab" data-mh-tab="${id}" aria-selected="${state.tab===id}">${esc(label)}</button>`).join('')}</nav><div class="mh-content" role="tabpanel">${(views[state.tab]||drawOverview)(m)}</div>`}`;
     drawList();
   }
   $('[data-hbs-input]').disabled=true;
@@ -1362,6 +1438,37 @@ function drawComparison() {
         const other=compareById(state.compareIds[slot===1?1:0]);
         if(other && other.mechanical?.dimension?.kind===record.mechanical.dimension.kind) state.dimensions[other.id]=next;
         drawDetail();return;
+      }
+      if(evt.target.matches('[data-mh-material-condition]')) {
+        const m=selected();
+        if(m && arr(m.conditions).some(c=>c.code===evt.target.value)) {
+          state.conditions[m.id]=evt.target.value;
+          if(state.smartEnabled&&selectedCriteria().length)applySearch();else drawDetail();
+        }
+        return;
+      }
+      if(evt.target.matches('[data-mh-compare-condition]')) {
+        const slot=Number(evt.target.dataset.mhCompareCondition),m=compareById(state.compareIds[slot-1]);
+        if(m && arr(m.conditions).some(c=>c.code===evt.target.value)) {
+          state.conditions[m.id]=evt.target.value;drawDetail();
+        }
+        return;
+      }
+      if(evt.target.matches('[data-mh-product-form]')) {
+        const m=selected(),forms=m ? enProductForms(m) : [];
+        if (m&&forms.some(f=>f.code===evt.target.value)) {
+          state.forms[m.id]=evt.target.value;
+          if(state.smartEnabled&&selectedCriteria().length)applySearch();else drawDetail();
+        }
+        return;
+      }
+      if(evt.target.matches('[data-mh-compare-form]')) {
+        const slot=Number(evt.target.dataset.mhCompareForm),m=compareById(state.compareIds[slot-1]);
+        if (m&&enProductForms(m).some(f=>f.code===evt.target.value)) {
+          state.forms[m.id]=evt.target.value;
+          drawDetail();
+        }
+        return;
       }
       if(evt.target.matches('[data-mh-dimension]')){
         const m=selected(),v=Number(evt.target.value);
