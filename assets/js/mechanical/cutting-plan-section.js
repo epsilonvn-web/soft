@@ -999,7 +999,6 @@ export const GUIDE = `
 const CSS = `
 .bar-pro{font-size:16px;color:#191c69;min-width:0}.bar-pro *{box-sizing:border-box}
 .bar-pro .bp-sub{font-size:16px;color:#706d99;margin:0 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.bar-pro .bp-pro{display:inline-block;background:linear-gradient(115deg,#a943f7,#7930e8);color:#fff;font-weight:900;font-size:16px;letter-spacing:.08em;border-radius:7px;padding:2px 9px}
 .bar-pro .bp-grid{display:grid;grid-template-columns:minmax(430px,min(39%,555px)) minmax(0,1fr);gap:12px;align-items:stretch}
 .bar-pro .bp-panel{background:#fff;border:1px solid #e4d3ff;border-radius:16px;padding:15px 16px;min-width:0}
 .bar-pro .bp-title{color:#592ac1;font-size:20px;margin:0 0 12px;font-weight:850}
@@ -1175,7 +1174,7 @@ export function mount(root, ctx = {}) {
   const fld = (name, label, val, cls = '') =>
     `<label class="${cls}"><span>${esc(label)}</span><input name="${name}" value="${esc(val)}" inputmode="decimal" autocomplete="off"></label>`;
   root.innerHTML = `<style>${CSS}</style><div class="bar-pro">
-  <p class="bp-sub"><span class="bp-pro">PRO</span>${ctx.hostGuide ? '' : '<button type="button" class="bp-guide-btn" id="bp-guide-btn" aria-expanded="false" aria-controls="bp-guide">📘 Hướng dẫn sử dụng</button>'}</p>
+  ${ctx.hostGuide ? '' : '<p class="bp-sub"><button type="button" class="bp-guide-btn" id="bp-guide-btn" aria-expanded="false" aria-controls="bp-guide">📘 Hướng dẫn sử dụng</button></p>'}
   ${ctx.hostGuide ? '' : `<section class="bp-guide" id="bp-guide" hidden aria-label="Hướng dẫn sử dụng">${GUIDE}</section>`}
   <div class="bp-grid">
    <section class="bp-panel"><h2 class="bp-title">THÉP HÌNH &amp; CHI TIẾT</h2>

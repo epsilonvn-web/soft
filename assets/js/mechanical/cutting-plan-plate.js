@@ -3322,7 +3322,7 @@ const CSS = `
 .np{font-size:16px;color:#191c69;min-width:0}.np *{box-sizing:border-box}
 .np .np-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 12px}
 .np .np-sub{font-size:16px;color:#706d99;margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.np .np-badge{display:inline-block;background:linear-gradient(115deg,#a943f7,#7930e8);color:#fff;font-weight:900;font-size:16px;letter-spacing:.08em;border-radius:7px;padding:2px 9px}
+.tool-heading>.np-header-materials{margin-left:auto;max-width:100%}
 .np .np-materials{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
 .np .np-materials>strong{font-weight:800;margin-right:4px}
 .np .np-materials button,.np .np-toggle button{border:1px solid #dfd3fc;border-radius:11px;background:#fff;color:#2e1b70;min-height:40px;padding:7px 12px;font-weight:750;font-size:16px;white-space:nowrap}
@@ -3653,7 +3653,7 @@ export function mount(root, ctx = {}) {
   const txt = (name, label, val) =>
     `<label><span>${esc(label)}</span><input name="${name}" value="${esc(val ?? '')}" autocomplete="off" maxlength="80"></label>`;
   root.innerHTML = `<style>${CSS}</style><div class="np">
-  <div class="np-top"><p class="np-sub"><span class="np-badge">PRO</span>${ctx.hostGuide ? '' : '<button type="button" class="np-guide-btn" id="np-guide-btn" aria-expanded="false" aria-controls="np-guide">📘 Hướng dẫn sử dụng</button>'}</p>
+  <div class="np-top">${ctx.hostGuide ? '' : '<p class="np-sub"><button type="button" class="np-guide-btn" id="np-guide-btn" aria-expanded="false" aria-controls="np-guide">📘 Hướng dẫn sử dụng</button></p>'}
    <div class="np-materials" role="group" aria-label="Vật liệu"><strong>Vật liệu</strong>
     ${quickMaterialLabels.map((v, k) => `<button type="button" data-mat="${k}" disabled>${v}</button>`).join('')}
     <select class="np-material-list" id="np-mat-list" aria-label="Danh mục khối lượng riêng" disabled><option value="">Đang tải vật liệu…</option></select>
@@ -3750,7 +3750,18 @@ export function mount(root, ctx = {}) {
   </section>
   <p class="np-note">* Thành phẩm tính phủ bì theo đường bao ngoài (vành khuyên trừ lỗ). Hao phí = (Xuất kho − Tấm lẻ thu hồi − Thành phẩm) / Thành phẩm × 100; xuất kho gồm cả tấm lẻ lấy từ kho. Mỗi tờ luôn ghi kích thước dư phải, dư dưới (theo biên chi tiết, chưa trừ mạch cắt); dải dư lớn nhất có cạnh ngắn ≥ ngưỡng được thu hồi bằng một nhát cắt suốt, phần dư nhỏ hơn ngưỡng tính vào hao phí. Mỗi lần đổi số liệu máy chạy lại từ đầu, thử nhiều cách phối kết hợp và đưa ra các phương án khác nhau. Mọi sơ đồ đã qua kiểm tra hình học độc lập: không chồng lấn, đủ mạch cắt, không lấn mép, chi tiết trong lỗ cách mép lỗ đủ mạch cắt, đủ số lượng.</p>
  </div>`;
-  const $ = id => root.querySelector('#' + id);
+  // Keep the material toolbar with the host title, without changing app.js.
+  const materialControls = root.querySelector('.np-materials');
+  const hostHeading = ctx.hostGuide ? root.closest('.tool-page')?.querySelector('.tool-heading') : null;
+  let materialHeader = null;
+  if (hostHeading) {
+    materialHeader = document.createElement('div');
+    materialHeader.className = 'np np-header-materials';
+    hostHeading.insertBefore(materialHeader, hostHeading.querySelector(':scope > .es-tool-actions'));
+    materialHeader.append(materialControls);
+    root.querySelector('.np-top').remove();
+  }
+  const $ = id => root.querySelector('#' + id) || materialControls.querySelector('#' + id);
   const put = (id, text) => (setText ? setText(root, '#' + id, text) : ($(id).textContent = text));
   const val = n => root.querySelector(`[name="${n}"]`)?.value ?? '';
   const stocks = () => st.stocks[st.cutMethod];
@@ -3852,7 +3863,7 @@ export function mount(root, ctx = {}) {
   }
   function syncUI() {
     root.querySelectorAll('[data-cut]').forEach(b => { const yes = b.dataset.cut === st.cutMethod; b.classList.toggle('is-active', yes); b.setAttribute('aria-pressed', String(yes)); });
-    root.querySelectorAll('[data-mat]').forEach(b => { const yes = Number(b.dataset.mat) === st.material; b.classList.toggle('is-active', yes); b.setAttribute('aria-pressed', String(yes)); });
+    materialControls.querySelectorAll('[data-mat]').forEach(b => { const yes = Number(b.dataset.mat) === st.material; b.classList.toggle('is-active', yes); b.setAttribute('aria-pressed', String(yes)); });
     if (catalog) $('np-mat-list').value = st.material >= 4 ? String(st.material) : '';
     for (const k of ['thickness', 'gap', 'margin']) root.querySelector(`[name="${k}"]`).value = st[k];
     root.querySelector('[name="gap"]').closest('label').querySelector('span').textContent = st.cutMethod === 'shear' ? 'Khe hở (mm)' : 'Mạch cắt (mm)';
@@ -4152,6 +4163,8 @@ export function mount(root, ctx = {}) {
       st.thickness = st.thick[st.cutMethod]; st.gap = st.gaps[st.cutMethod]; st.margin = st.margins[st.cutMethod];
       savedState = structuredClone(st); syncUI(); baremStatus(); schedule(); return;
     }
+  });
+  on(materialControls, 'click', e => {
     const mat = e.target.closest('[data-mat]');
     if (mat && catalog) { st.material = Number(mat.dataset.mat); st.density = String(catalog[st.material].density); savedState = structuredClone(st); syncUI(); schedule(); }
   });
@@ -4344,9 +4357,9 @@ export function mount(root, ctx = {}) {
       if (disposed || ctx.signal?.aborted) return;
       if (!Array.isArray(list) || list.length < 4 || !list.every(v => v && typeof v.name === 'string' && Number.isFinite(v.density) && v.density > 0)) throw Error('Danh mục không hợp lệ');
       catalog = list;
-      sel.replaceChildren(new Option(`Danh mục ${list.length} vật liệu`, ''), ...list.map((v, k) => new Option(v.name, String(k))));
+      sel.replaceChildren(new Option('Vật liệu', ''), ...list.map((v, k) => new Option(v.name, String(k))));
       sel.disabled = false;
-      root.querySelectorAll('[data-mat]').forEach((b, k) => { b.disabled = false; b.textContent = list[k].name; });
+      materialControls.querySelectorAll('[data-mat]').forEach((b, k) => { b.disabled = false; b.textContent = list[k].name; });
       if (st.material === -1 && Number(st.density) > 0) { savedState = structuredClone(st); syncUI(); schedule(); return; }   // khối lượng riêng lấy từ file Excel
       if (!Number.isInteger(st.material) || st.material < 0 || st.material >= list.length) st.material = 0;
       st.density = String(list[st.material].density); savedState = structuredClone(st); syncUI(); schedule();
@@ -4514,5 +4527,5 @@ export function mount(root, ctx = {}) {
     else if (t.matches('[data-imp-mm]')) { imp.opts.forceMM = t.checked; analyzeAgain(); }
   });
   renderParts(); renderSemis(); syncUI(); baremStatus(); compute(); void loadCatalog();
-  return () => { disposed = true; clearTimeout(timer); serial++; worker?.terminate(); worker = null; };
+  return () => { disposed = true; clearTimeout(timer); serial++; worker?.terminate(); worker = null; materialHeader?.remove(); };
 }
