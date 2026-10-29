@@ -2016,38 +2016,75 @@ body.es-portrait-layout .site-header .header-inner>.es-language-picker{order:2;m
 `;
 
 
-// 2026-10-29: Keep the approved complete header identity readable on narrow screens.
-// The brand image already contains the logo + wordmark: resize the whole lockup,
-// and allow the *existing* tagline to wrap instead of hiding or duplicating content.
+// 2026-10-29: compact single-row laptop header (user-approved refinement).
+// Do not change navigation labels, dropdowns, language selection or mobile dock.
 themeSheet.textContent += `
-@media (min-width:1081px) and (max-width:1710px){
- .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;column-gap:13px;row-gap:5px;min-height:0;padding-block:7px}
- .site-header .header-inner>.brand{order:0;flex:0 0 auto}
- .site-header .es-header-lockup{width:clamp(285px,21vw,340px);height:auto;max-height:66px}
- .site-header .brand-divider{display:block!important;order:1;flex:0 0 1px;height:31px;margin-left:2px}
- .site-header .header-tagline{display:block!important;order:1;flex:0 1 auto;font-size:16px;line-height:1.3;white-space:nowrap}
- .site-header .header-inner>.es-language-picker{order:2;margin-left:auto}
- .site-header .main-nav{order:3;display:flex;flex:0 0 100%;width:100%;margin-left:0;justify-content:space-between;gap:5px}
+/* Hide the legacy tagline immediately while app.js removes the DOM node. */
+.site-header .header-tagline,.site-header .brand-divider{display:none!important}
+@media (min-width:1320px){
+ .site-header .header-inner{
+  display:grid!important;
+  grid-template-columns:clamp(250px,22.2vw,315px) minmax(0,1fr) auto;
+  grid-template-rows:54px;
+  align-items:center;
+  column-gap:6px;row-gap:0;min-height:0;padding-block:3px;
+ }
+ .site-header .header-inner>.brand{
+  grid-column:1;grid-row:1;align-self:center;justify-self:start;
+  min-width:0;max-width:100%;margin:0;order:initial;
+ }
+ .site-header .es-header-lockup{
+  display:block;width:clamp(250px,22.2vw,315px);max-width:100%;
+  height:auto;max-height:50px;object-fit:contain;
+ }
+ .site-header .main-nav{
+  grid-column:2;grid-row:1;display:flex!important;
+  align-items:center;justify-content:flex-end;
+  min-width:0;width:100%;max-width:100%;margin:0;
+  gap:6px;flex-wrap:nowrap!important;order:initial;flex:none;
+ }
+ .site-header .header-inner>.es-language-picker{
+  grid-column:3;grid-row:1;align-self:center;justify-self:end;
+  margin:0;order:initial;flex:none;
+ }
+ .site-header .main-nav>a.nav-link{min-width:0}
+ .site-header .main-nav>a[data-nav="home"]{min-width:98px;padding-inline:10px}
+ .site-header .main-nav .nav-link{gap:5px;padding-inline:8px}
+ .site-header .es-header-category>.es-header-category-link{padding-inline:7px 3px;gap:5px}
+ .site-header .es-header-category>.es-header-category-toggle{width:26px;flex-basis:26px}
+ .site-header .es-header-mytools>.es-header-mytools-link{padding-inline:8px 3px;gap:5px}
+ .site-header .es-header-mytools-toggle{width:28px;flex-basis:28px}
 }
+/* At intermediate laptop widths, allow 2 compact rows without dropping menu tabs. */
+@media (min-width:1081px) and (max-width:1319px){
+ .site-header .header-inner{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:51px 41px;column-gap:8px;row-gap:2px;
+  min-height:0;padding-block:3px;
+ }
+ .site-header .header-inner>.brand{grid-column:1;grid-row:1;justify-self:start;align-self:center;order:initial}
+ .site-header .es-header-lockup{width:clamp(225px,23vw,290px);max-height:49px}
+ .site-header .header-inner>.es-language-picker{grid-column:2;grid-row:1;justify-self:end;align-self:center;order:initial;margin:0}
+ .site-header .main-nav{
+  grid-column:1 / -1;grid-row:2;display:flex!important;
+  justify-content:flex-start;align-items:center;flex-wrap:nowrap!important;
+  width:100%;min-width:0;gap:6px;margin:0;order:initial;flex:none;
+ }
+}
+/* Keep the existing responsive two-row landscape and portrait navigation. */
 @media (max-width:1080px) and (orientation:landscape){
- body:not(.es-portrait-layout) .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:5px;padding-block:6px}
+ body:not(.es-portrait-layout) .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;column-gap:7px;row-gap:3px;padding-block:4px}
  body:not(.es-portrait-layout) .site-header .header-inner>.brand{order:0;flex:0 0 auto}
- body:not(.es-portrait-layout) .site-header .es-header-lockup{width:clamp(225px,31vw,305px);height:auto;max-height:62px}
- body:not(.es-portrait-layout) .site-header .brand-divider{display:block!important;order:1;flex:0 0 1px;height:30px;margin-left:2px}
- body:not(.es-portrait-layout) .site-header .header-tagline{display:block!important;order:1;flex:0 1 auto;font-size:16px;line-height:1.3;white-space:nowrap}
- body:not(.es-portrait-layout) .site-header .header-inner>.es-language-picker{order:2;margin-left:auto}
- body:not(.es-portrait-layout) .site-header .main-nav{order:3;flex:0 0 100%;width:100%;margin:0;justify-content:space-between;gap:5px}
+ body:not(.es-portrait-layout) .site-header .es-header-lockup{width:clamp(225px,31vw,305px);height:auto;max-height:55px}
+ body:not(.es-portrait-layout) .site-header .header-inner>.es-language-picker{order:1;margin-left:auto}
+ body:not(.es-portrait-layout) .site-header .main-nav{order:3;flex:0 0 100%;width:100%;margin:0;justify-content:flex-start;gap:6px}
 }
-body.es-portrait-layout .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;gap:5px 9px;padding-block:7px;min-height:0}
+body.es-portrait-layout .site-header .header-inner{display:flex;flex-wrap:wrap;align-items:center;gap:5px 9px;padding-block:6px;min-height:0}
 body.es-portrait-layout .site-header .header-inner>.brand{order:0;flex:0 0 auto}
-body.es-portrait-layout .site-header .es-header-lockup{width:clamp(210px,41vw,305px);height:auto;max-height:62px}
-body.es-portrait-layout .site-header .brand-divider{display:none!important}
-body.es-portrait-layout .site-header .header-tagline{display:block!important;order:3;flex:0 0 100%;font-size:16px;line-height:1.25;white-space:normal;margin:0;text-align:left}
+body.es-portrait-layout .site-header .es-header-lockup{width:clamp(210px,41vw,305px);height:auto;max-height:54px}
 body.es-portrait-layout .site-header .header-inner>.es-language-picker{order:1;margin-left:auto}
 @media (max-width:760px){
- body:not(.es-portrait-layout) .site-header .header-inner{display:flex;flex-wrap:wrap;gap:5px 9px}
- body:not(.es-portrait-layout) .site-header .brand-divider{display:none!important}
- body:not(.es-portrait-layout) .site-header .header-tagline{display:block!important;order:2;flex:0 0 100%;white-space:normal;font-size:16px;line-height:1.25}
+ body:not(.es-portrait-layout) .site-header .header-inner{display:flex;flex-wrap:wrap;gap:5px 7px}
  body:not(.es-portrait-layout) .site-header .header-inner>.es-language-picker{order:1;margin-left:auto}
  body.es-portrait-layout .site-header .es-header-lockup{width:clamp(185px,57vw,246px);max-height:54px}
 }
@@ -2056,6 +2093,37 @@ body.es-portrait-layout .site-header .header-inner>.es-language-picker{order:1;m
  body.es-portrait-layout .site-header .header-inner{column-gap:5px}
 }
 `;
+
+
+// Banner program heading: prominent purple label requested by the owner.
+// Visual-only adjustment; the existing banner controls and module logic remain intact.
+themeSheet.textContent += `
+.es-main-banner .es-hero-kicker-left{
+  max-width:100%;min-width:0;min-height:39px;
+  gap:8px;padding:7px 12px;
+  color:#6820c9;
+  background:linear-gradient(112deg,rgba(250,245,255,.97),rgba(240,226,255,.94));
+  border:1px solid #c5a4f8;
+  border-radius:12px;
+  box-shadow:0 3px 10px rgba(86,36,167,.13);
+  font-size:20px;font-weight:900;line-height:1.16;letter-spacing:.08px;
+  white-space:normal;
+}
+.es-main-banner .es-hero-kicker-left>span{min-width:0}
+.es-main-banner .es-hero-kicker-left svg{
+  flex:0 0 18px;width:18px;height:18px;color:#7727e0;
+}
+@media (min-width:721px) and (max-width:1430px){
+  .es-main-banner .es-hero-kicker-left{font-size:18px}
+}
+@media (max-width:720px){
+  .es-main-banner .es-hero-kicker-left{
+    font-size:17px;line-height:1.24;padding:7px 10px;
+  }
+  .es-main-banner .es-hero-kicker-left svg{width:17px;height:17px;flex-basis:17px}
+}
+`;
+
 
 const DEFINITIONS = Object.freeze([
  {id:'calculator',name:'Máy tính khoa học',sub:'Phép tính và hàm toán học',group:'technical',dir:'engineering',icon:'calculator',tone:'tone-blue',file:'calculator.js'},
@@ -2106,6 +2174,8 @@ let esLanguage='vi';
 try { if(localStorage.getItem(ES_LANGUAGE_KEY)==='en') esLanguage='en'; } catch {/* Storage disabled: VI remains available. */}
 const ES_EN_TEXT=Object.freeze({
  'van phong & ky thuat':'OFFICE & ENGINEERING',
+ 'cong cu van phong & ky thuat':'OFFICE & ENGINEERING TOOLS',
+ 'cong cu van phong':'Office Tools',
  'lam viec':'Work',
  'nhanh hon moi ngay.':'smarter every day.',
  'tinh toan · ky thuat · pdf · tien ich':'Calculators · Engineering · PDF · Utilities',
@@ -2234,7 +2304,31 @@ const ES_EN_TEXT=Object.freeze({
  'du lieu ca nhan':'Personal data',
  'my tools va tuy chon ngon ngu hien duoc luu trong trinh duyet. chua co dong bo tai khoan hoac google drive.':'My tools and language settings are saved in this browser. Account and Google Drive synchronization are not available.',
  'chua trien khai':'Not available yet',
- 'dang mo epsilon blue soft...':'Opening Epsilon Blue Soft...'
+ 'dang mo epsilon blue soft...':'Opening Epsilon Blue Soft',
+ 'tra cuu container':'Container Reference',
+ 'kich thuoc, tare, gross, net va tai trong cac hang tau':'Dimensions, tare, gross, net and shipping-line load limits',
+ 'lai suat tien gui va khoan vay':'Deposit and loan interest rates',
+ 'thep tam · dinh muc, so do cat, tam le, xuat dxf · thu nghiem noi bo':'Steel plates · allowances, cutting plans, offcuts, DXF export · internal testing',
+ 'thep hinh · dinh muc, so do cat, cay le, de xuat noi cot · thu nghiem noi bo':'Steel sections · allowances, cutting plans, offcuts, column splices · internal testing',
+ 'tinh ben dam · thu nghiem noi bo':'Beam strength checks · internal testing',
+ 'son epoxy, pu ket cau thep · luong son · wft/dft · dien tich':'Epoxy and PU for steelwork · paint quantity, WFT/DFT and area',
+ 'phoi mau rgb & cmyk':'RGB & CMYK Color Mixer',
+ 'pha mau, chuyen ma va tao bang phoi hai hoa':'Mix colors, convert codes and create matching palettes',
+ 'gop, tach, chinh sua va ky pdf':'Merge, split, edit and sign PDFs',
+ 'tra cuu ngay duong lich, am lich':'Look up solar and lunar dates',
+ 'tao ma qr chuyen khoan':'Create bank transfer QR codes',
+ 'chinh sua anh va chu ky':'Edit images and signatures',
+ 'doc so tien viet – anh':'Amounts in Vietnamese and English',
+ 'ghi va luu ghi chu nhanh':'Write and save quick notes',
+ 'vat lieu ky thuat':'Engineering Materials',
+ 'tra cuu dac tinh, ung dung va tieu chuan vat lieu ky thuat':'Look up material properties, applications and standards',
+ 'o do':'Bearings',
+ 'bu long':'Bolts',
+ 'dung sai':'Tolerances',
+ 'tai lieu va tien ich van phong':'Office documents and utilities',
+ 'tinh toan, do luong va tra cuu ky thuat':'Engineering calculations, measurements and references',
+ 'van phong · ky thuat · co khi · so tay':'Office · Engineering · Mechanical · Handbook',
+ 'mo vat lieu ky thuat':'Open Engineering Materials',
 });
 const esOriginalNodes=new WeakMap();
 const esOriginalAttrs=new WeakMap();
@@ -2295,7 +2389,10 @@ function esSetLanguage(next){
  esUpdateLanguageButtons();
  // Text nodes only: no re-mount, no resets of calculator/history/document tool state.
  esTranslateRegion(document.body);
- renderSidebar();
+ // Regenerate catalog labels/tooltips from original tool metadata when switching VI/EN.
+ // This does not remount or reset any active tool workspace.
+ if(document.getElementById('tool-columns'))renderGroupCards();
+ else renderSidebar();
  if(location.hash.startsWith('#/ecosystem'))void populateEcosystem(currentRoute);
  const heroLayer=document.getElementById('es-hero-dialog-layer');
  if(heroLayer && !heroLayer.hidden){heroLayer.innerHTML=esHeroDialogContent(heroLayer.dataset.mode||'about');heroLayer.querySelector('[data-es-hero-close]')?.focus();}
@@ -2310,7 +2407,11 @@ function esLanguagePickerHtml(){
 // Use the same data-es-lang delegated handler, language state, and localStorage key.
 function mountHeaderLanguagePicker(){
  const header=document.querySelector('.site-header .header-inner');
- if(!header || header.querySelector('.es-language-picker'))return;
+ if(!header)return;
+ // The compact header intentionally has no marketing tagline. Remove its legacy HTML node.
+ header.querySelector('.header-tagline')?.remove();
+ header.querySelector('.brand-divider')?.remove();
+ if(header.querySelector('.es-language-picker'))return;
  header.insertAdjacentHTML('beforeend',esLanguagePickerHtml());
 }
 
@@ -2463,9 +2564,15 @@ function refreshHeaderMyTools(){
  menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon('star',18)} <span>${heading}</span></div><div class="es-header-mytools-items">${list}</div>`;
 }
 function toolCard(t){
- const action=t.planned?`<div class="tool-link"><div class="tool-tile ${t.tone}">${icon(t.icon,27)}</div><div class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small><span class="soon-label">Đang phát triển</span></div></div>`:
- `<a class="tool-link" href="#/tool/${t.id}" aria-label="Mở ${t.name}"><span class="tool-tile ${t.tone}">${icon(t.icon,27)}</span><span class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small></span></a>`;
- return `<article class="tool-card ${t.planned?'is-planned':'is-ready'}" data-card="${t.id}" data-search="${normalize(t.name+' '+t.sub)}">${action}${t.planned?'':`<button class="star-btn" type="button" data-pin="${t.id}" aria-label="${isPinned(t.id)?'Bỏ ghim':'Ghim'} ${t.name}" aria-pressed="${isPinned(t.id)}" title="${isPinned(t.id)?'Bỏ ghim':'Thêm vào My tools'}">${icon('star')}</button>`}</article>`;
+ const translated=esLanguage==='en';
+ const name=escapeHTML(translated?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name);
+ const sub=escapeHTML(translated?(ES_EN_TEXT[normalize(t.sub)]||t.sub):t.sub);
+ const openLabel=translated?'Open ':'Mở ';
+ const pinLabel=translated?(isPinned(t.id)?'Unpin ':'Pin '):(isPinned(t.id)?'Bỏ ghim ':'Ghim ');
+ const pinTitle=translated?(isPinned(t.id)?'Unpin':'Add to My tools'):(isPinned(t.id)?'Bỏ ghim':'Thêm vào My tools');
+ const action=t.planned?`<div class="tool-link"><div class="tool-tile ${t.tone}">${icon(t.icon,27)}</div><div class="tool-names"><b>${name}</b><small title="${sub}">${sub}</small><span class="soon-label">${translated?'In development':'Đang phát triển'}</span></div></div>`:
+ `<a class="tool-link" href="#/tool/${t.id}" aria-label="${openLabel}${name}"><span class="tool-tile ${t.tone}">${icon(t.icon,27)}</span><span class="tool-names"><b>${name}</b><small title="${sub}">${sub}</small></span></a>`;
+ return `<article class="tool-card ${t.planned?'is-planned':'is-ready'}" data-card="${t.id}" data-search="${escapeHTML(normalize([t.name,t.sub,ES_EN_TEXT[normalize(t.name)]||'',ES_EN_TEXT[normalize(t.sub)]||''].join(' ')))}">${action}${t.planned?'':`<button class="star-btn" type="button" data-pin="${t.id}" aria-label="${pinLabel}${name}" aria-pressed="${isPinned(t.id)}" title="${pinTitle}">${icon('star')}</button>`}</article>`;
 }
 // Web-first navigation. All tools keep their existing IDs and mount(root, ctx) APIs.
 const SYSTEM_JSON = 'ecosystem.json';
@@ -2966,7 +3073,7 @@ function applySearch(raw){
 // Keep copy localized through the existing VI/EN presentation layer without touching tool modules.
 const BANNER_CONTENT = Object.freeze({
  main:Object.freeze({
-  eyebrow:'VĂN PHÒNG & KỸ THUẬT',
+  eyebrow:'CÔNG CỤ VĂN PHÒNG & KỸ THUẬT',
   brand:'EPSILON BLUE',branch:'SOFT',
   tagline:'Hỗ trợ công việc hằng ngày. Nhanh gọn và dễ dùng.',
   description:'Tính toán · Kỹ thuật · Xử lý tài liệu · Tiện ích · Và nhiều công cụ hữu ích khác',
@@ -2996,7 +3103,7 @@ function heroBannerHtml(){
  return `<section class="hero es-main-banner" aria-label="Giới thiệu các công cụ Epsilon Blue Soft">
   <div class="hero-copy es-hero-copy-v3">
    <div class="es-hero-kicker-v3">
-    <span class="es-hero-kicker-left">${icon('grid',16)}<span>VĂN PHÒNG & KỸ THUẬT</span></span>
+    <span class="es-hero-kicker-left">${icon('grid',16)}<span>CÔNG CỤ VĂN PHÒNG & KỸ THUẬT</span></span>
     <nav class="es-hero-shortcuts" aria-label="${esLanguage==='en'?'Quick access to Studios':'Mở nhanh công cụ Studio'}">
      <a class="es-hero-shortcut es-hero-shortcut-pdf" href="#/tool/pdf" aria-label="${esLanguage==='en'?'Open PDF Studio':'Mở PDF Studio'}"><span class="es-hero-shortcut-icon">${icon('pdf',16)}</span><span>PDF Studio</span></a>
      <a class="es-hero-shortcut es-hero-shortcut-image" href="#/tool/image-studio" aria-label="${esLanguage==='en'?'Open Image Studio':'Mở Image Studio'}"><span class="es-hero-shortcut-icon">${icon('image',16)}</span><span>Image Studio</span></a>
