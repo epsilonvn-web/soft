@@ -6,7 +6,8 @@
  * Phạm vi: chữ nhật, tròn, vành khuyên (chèn chi tiết vào lỗ), ĐA GIÁC đường bao thật từ DXF (đoạn thẳng + cung);
  *  nhiều khổ + kho tấm lẻ; xuất DXF máy cắt + DXF cutting plan.
  *  - Đa giác (28/10/2026): khối lượng thành phẩm theo đường bao thật; tờ một loại thử kiểu RĂNG LƯỢC (hàng xen kẽ xoay 180°,
- *    lệch ngang để phần nhô cắm vào phần lõm – anh xác nhận thợ xếp phổ biến); tờ ghép nhiều loại tạm xếp theo khung bao.
+ *    lệch ngang để phần nhô cắm vào phần lõm – anh xác nhận thợ xếp phổ biến), chia tờ 2–3 vùng (hàng ngang + cột xoay 90°);
+ *    tờ ghép nhiều loại: đa giác xếp thành KHỐI RĂNG LƯỢC trong ô trống (sửa 29/10/2026, trước đây theo khung bao).
  *    Chỉ laser / plasma; dư gia công đa giác = 0 (CHỜ XÁC NHẬN cách cộng dư cho đường bao bất kỳ).
  * Đầu vào: 3 cách – nhập tay, Excel (form cutting plan 3 sheet), DXF (đường bao chi tiết). Excel / DXF đọc bằng cutting-plan-import.js
  *  (đặt cùng thư mục, chỉ nạp khi bấm nút nhập – thiếu file thì nhập tay vẫn chạy).
@@ -773,6 +774,7 @@ function blockOptions(C, T, R, need) {
     }
     return out;
   }
+  if (T.poly && !C.shear) out.push(...interlockBlockOptions(C, T, R, need));   // đa giác: khối răng lược (ngang / xoay 90°)
   if (T.tb) {
     const tb = T.tb, i = floorIdx(tb.X, R.w), j = floorIdx(tb.Y, R.h);
     if (i < 0 || j < 0) return out;
@@ -801,9 +803,52 @@ function blockOptions(C, T, R, need) {
   return out;
 }
 
+/* ---------- Khối RĂNG LƯỢC cho đa giác trên tờ GHÉP NHIỀU LOẠI (sửa 29/10/2026) ----------
+ * Trước đây tờ ghép nhiều loại xếp đa giác theo khung bao chữ nhật (lưới), bỏ mất phần lồng nhau → hao phí cao.
+ * Nay mỗi ô trống thử thêm khối răng lược (hàng ngang hoặc cột xoay 90°) như tờ một loại; khối thiếu chiếc thì
+ * co ô theo một chiều cho vừa đủ số cần, bớt các chiếc thừa ở cuối. */
+function interlockBlockOptions(C, T, R, need) {
+  const k = C.k, out = [];
+  const cache = T.poly.blk ??= {};
+  const V = cache['V' + k] ??= interlockVariants((T.poly.plans ??= {})[`${k}`] ??= [0, ...(T.rot ? [90] : [])].flatMap(b => interlockPlans(T, b, k)), k, Math.max(C.W, C.H));
+  const RW = R.w - k, RH = R.h - k;
+  if (RW <= 0 || RH <= 0) return out;
+  const key = `${Math.round(RW * 10)}|${Math.round(RH * 10)}|${need}`;
+  if (cache[key]) return cache[key];
+  const extent = (v, kind, w, h, n, order) => {             // khung thật (đã cộng mạch) của khối n chiếc
+    const items = []; placeVariant(T, v, kind, 0, 0, w, h, items);
+    if (items.length > n) { items.sort(order === 'x' ? (p, q) => p.x - q.x || p.y - q.y : (p, q) => p.y - q.y || p.x - q.x); items.splice(n); }
+    let bw = 0, bh = 0; for (const p of items) { bw = Math.max(bw, p.x + p.w + k); bh = Math.max(bh, p.y + p.h + k); }
+    return { bw: Math.min(bw, R.w), bh: Math.min(bh, R.h) };
+  };
+  for (const kind of T.rot ? [0, 1] : [0]) {
+    const b = bestIn(V, kind, RW, RH);
+    if (!b.n) continue;
+    if (need >= b.n) { out.push({ n: b.n, il: { v: b.v, kind, RW, RH }, ...extent(b.v, kind, RW, RH, b.n, 'x'), order: 'x' }); continue; }
+    for (const axis of ['w', 'h']) {                          // co ô theo một chiều cho vừa đủ "need" chiếc
+      let lo = 0, hi = axis === 'w' ? RW : RH, bestV = b.v;
+      for (let s = 0; s < 22 && hi - lo > 0.5; s++) {
+        const mid = (lo + hi) / 2, o = bestIn(V, kind, axis === 'w' ? mid : RW, axis === 'w' ? RH : mid);
+        if (o.n >= need) { hi = mid; bestV = o.v; } else lo = mid;
+      }
+      const w = axis === 'w' ? hi : RW, h = axis === 'w' ? RH : hi, order = axis === 'w' ? 'x' : 'y';
+      out.push({ n: need, il: { v: bestV, kind, RW: w, RH: h }, ...extent(bestV, kind, w, h, need, order), order });
+    }
+  }
+  if (Object.keys(cache).length > 4000) for (const kk of Object.keys(cache)) if (kk[0] !== 'V') delete cache[kk];
+  return (cache[key] = out);
+}
 /** Dựng toạ độ thật cho phương án khối đã chọn; trả items, cuts nội bộ, kích thước bao thật. */
 function buildBlock(C, T, R, o) {
   const k = C.k, raw = [], cuts = C.shear ? [] : null;
+  if (o.il) {                                           // khối răng lược đa giác: toạ độ + hướng xoay từng chiếc
+    const items = [];
+    placeVariant(T, o.il.v, o.il.kind, R.x, R.y, o.il.RW, o.il.RH, items);
+    if (items.length > o.n) { items.sort(o.order === 'x' ? (p, q) => p.x - q.x || p.y - q.y : (p, q) => p.y - q.y || p.x - q.x); items.splice(o.n); }
+    let bw = 0, bh = 0;
+    for (const p of items) { bw = Math.max(bw, p.x + p.w - R.x + k); bh = Math.max(bh, p.y + p.h - R.y + k); }
+    return { items, cuts: [], bw: Math.min(bw, R.w), bh: Math.min(bh, R.h), holes: [] };
+  }
   if (T.circle) {
     const p = bestCirclePlan({ x: R.x, y: R.y, ...o.sub }, T.cw, k);
     raw.push(...circleLayout({ x: R.x, y: R.y, ...o.sub }, T.cw, k, p));
