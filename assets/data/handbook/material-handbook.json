@@ -1,1 +1,4957 @@
-{}
+{
+  "schemaVersion": "1.0.0",
+  "datasetId": "epsilon-blue-soft.material-handbook",
+  "status": "demo_reference_only",
+  "updatedAt": "2026-10-29",
+  "engineeringUse": "NOT_APPROVED_FOR_AUTOMATED_DESIGN",
+  "notes": [
+    "Thư viện tra cứu vật liệu chọn lọc; các thông số có nguồn tham khảo và điều kiện áp dụng.",
+    "Khi sử dụng cho công việc kỹ thuật, cần chọn đúng tiêu chuẩn, sản phẩm, kích thước và trạng thái vật liệu.",
+    "Bảng 2004 của ASTM Bringas chỉ dùng tham khảo phương pháp, không coi các mác so sánh là tương đương tự động.",
+    "Bổ sung thông số có điều kiện, phiên bản và bằng chứng nguồn trong materials[].referenceData (để không phá vỡ schema hiển thị cũ). Các trường mở rộng chưa được render đầy đủ trong material-handbook.js hiện hành."
+  ],
+  "units": {
+    "stress": "MPa",
+    "density": "kg/m3",
+    "elasticModulus": "GPa",
+    "chemistry": "mass_percent",
+    "impactEnergy": "J",
+    "temperature": "°C",
+    "dimension": "mm"
+  },
+  "sources": [
+    {
+      "id": "am-structural",
+      "publisher": "ArcelorMittal",
+      "title": "Hot rolled structural steels — S235JR, S355J2",
+      "type": "manufacturer_catalogue",
+      "url": "https://industry.arcelormittal.com/catalogue/H30/EN",
+      "note": "Giá trị theo bảng công bố của hãng; các phiên bản tiêu chuẩn được dẫn trong trang nguồn cần được xác minh khi áp dụng thực tế."
+    },
+    {
+      "id": "mt-c45",
+      "publisher": "M.T. Acciai",
+      "title": "C45 (EN 10083-2): chemical & mechanical characteristics",
+      "type": "supplier_datasheet",
+      "url": "https://www.mtacciai.com/en/steels/steels-for-quenching-and-temperering/c45",
+      "note": "Cơ tính dùng trạng thái tôi + ram (+QT), theo đường kính mẫu/tiết diện nêu trong nguồn."
+    },
+    {
+      "id": "outo-304",
+      "publisher": "Outokumpu",
+      "title": "Core 304/4301 — Product information",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.outokumpu.com/en/products/product-ranges/core/core-304-4301",
+      "note": "Định danh và ứng dụng; hóa học điển hình, không phải giới hạn thành phần tiêu chuẩn."
+    },
+    {
+      "id": "outo-core",
+      "publisher": "Outokumpu",
+      "title": "Core range datasheet (304/4301)",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.outokumpu.com/en/products/product-ranges/-/media/files/products/core/outokumpu-core-range-datasheet.pdf?modified=20251117111909&revision=025e9931-a1d5-4c8f-8ff5-f881d38916da",
+      "note": "Rp0,2 và A là thông số công bố theo điều kiện/sản phẩm của hãng; dữ liệu vật lý ở 20°C."
+    },
+    {
+      "id": "outo-316",
+      "publisher": "Outokumpu",
+      "title": "Supra 316L/4404 — Product information",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.outokumpu.com/en/products/product-ranges/supra",
+      "note": "Định danh và thành phần hóa học điển hình của sản phẩm 316L/4404."
+    },
+    {
+      "id": "outo-supra",
+      "publisher": "Outokumpu",
+      "title": "Supra range datasheet (316L/4404)",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.outokumpu.com/-/media/files/products/supra/outokumpu-supra-range-datasheet.pdf?modified=20251117111951&revision=7a909396-d1f3-4d36-9c1c-99606be41fd2",
+      "note": "Rp0,2 và A là thông số công bố theo điều kiện/sản phẩm của hãng; dữ liệu vật lý ở 20°C."
+    },
+    {
+      "id": "bauforum-structural",
+      "publisher": "bauforumstahl e.V.",
+      "title": "Structural Steel Environmental Product Declaration — Constructional data",
+      "type": "general_steel_properties",
+      "url": "https://steelconstruction.info/images/6/64/Bauforumstahl_EPD_2018.pdf",
+      "note": "Khối lượng riêng 7850 kg/m³ và E=210000 MPa là tham số điển hình cho thép kết cấu, không phải chứng chỉ từng mác."
+    },
+    {
+      "id": "bringas-method",
+      "publisher": "ASTM International",
+      "title": "Handbook of Comparative World Steel Standards, 3rd ed., J. E. Bringas, 2004",
+      "type": "historical_comparative_reference",
+      "url": null,
+      "note": "Ấn bản 3 (2004) do chủ dự án cung cấp. Dùng để kiểm chứng tên mác, thành phần theo phiên bản tiêu chuẩn lịch sử và quan hệ đối chiếu; không tự coi các mác tương đương hoặc dùng bảng 2004 thay phiên bản tiêu chuẩn hợp đồng. Các trang sách được ghi tại từng bản ghi."
+    },
+    {
+      "id": "marcegaglia-s355j2-2025",
+      "publisher": "Marcegaglia Plates S.p.A.",
+      "title": "S355J2 / 1.0577 Declaration of Performance Rev.1 (2025) – EN 10025-2:2019",
+      "type": "manufacturer_declaration",
+      "url": "https://www.quality.marcegaglia.com/wp-content/uploads/2025/11/1.0577_S355J2-EN-1.pdf",
+      "note": "Declaration of Performance (01/01/2025) dùng hỗ trợ nhận diện mác S355J2/1.0577 và EN 10025-2:2019. Bản PDF có một ô đánh máy 1.0114 không nhất quán với tiêu đề/ô còn lại; không dùng ô đó làm số vật liệu. Không thay thế toàn văn tiêu chuẩn."
+    },
+    {
+      "id": "am-a30",
+      "publisher": "ArcelorMittal",
+      "title": "Hot rolled structural steels A30: properties, fabrication and applications",
+      "type": "manufacturer_catalogue",
+      "url": "https://industry.arcelormittal.com/catalogue/A30/EN",
+      "note": "Thép kết cấu +AR/+N; hàn và ứng dụng. Không quy định một WPS chung."
+    },
+    {
+      "id": "tk-structural",
+      "publisher": "thyssenkrupp Materials Processing Europe",
+      "title": "Hot strip S235JR–S355K2: supply condition, weldability and applications",
+      "type": "manufacturer_catalogue",
+      "url": "https://www.thyssenkrupp-materials-processing-europe.com/en/c-steel/hot-strip/s235jr-s355k2",
+      "note": "Phân biệt +AR và +N; các sản phẩm có thể có điều kiện giao hàng khác nhau."
+    },
+    {
+      "id": "steelconstruction-corrosion",
+      "publisher": "British Constructional Steelwork Association / SteelConstruction.info",
+      "title": "Steel material properties: durability and corrosion protection",
+      "type": "industry_technical_guidance",
+      "url": "https://steelconstruction.info/topics/design/steel-material-properties/",
+      "note": "Bảo vệ chống ăn mòn thép kết cấu bằng sơn/mạ, theo môi trường."
+    },
+    {
+      "id": "ovako-c45-2025",
+      "publisher": "Ovako",
+      "title": "C45 — Steel Navigator material data sheet, revised 30 Jan 2025",
+      "type": "manufacturer_datasheet",
+      "url": "https://steelnavigator.ovako.com/steel-grades/c45/",
+      "note": "Nhiệt luyện và tính chất vật lý điển hình của nhóm sản phẩm C45 do Ovako công bố. Nhiệt độ là khuyến nghị nhà sản xuất, không phải chế độ bắt buộc cho mọi lô."
+    },
+    {
+      "id": "ovako-s355j2-2025",
+      "publisher": "Ovako",
+      "title": "S355J2 — Steel Navigator material data sheet, revised 31 Jan 2025",
+      "type": "manufacturer_datasheet",
+      "url": "https://steelnavigator.ovako.com/steel-grades/s355j2/",
+      "note": "Khả năng hàn và ví dụ S355J2; có nhiều biến thể vật liệu riêng, không gộp bảng cơ tính vào bản ghi ArcelorMittal."
+    },
+    {
+      "id": "welding-institute-steels",
+      "publisher": "Australian Welding Institute",
+      "title": "Weldability of materials: steels",
+      "type": "industry_technical_guidance",
+      "url": "https://welding.org.au/knowledge/weldability-materials-steels/",
+      "note": "Cảnh báo nứt hàn và ảnh hưởng thành phần/thông số hàn; thông tin chung, không phải WPS riêng cho C45."
+    },
+    {
+      "id": "esab-s235-s355",
+      "publisher": "ESAB",
+      "title": "OK 43.32 — rutile electrode for structural steels S235–S355",
+      "type": "manufacturer_filler_datasheet",
+      "url": "https://esab.com/de/eur_de/products-solutions/product/filler-metals/mild-steel/stick-electrodes-smaw/ok-43-32/",
+      "note": "Ví dụ que hàn nhà sản xuất liệt kê cho S235 đến S355, không phải lựa chọn được phê duyệt cho mọi mối hàn/J2."
+    },
+    {
+      "id": "esab-308l",
+      "publisher": "ESAB",
+      "title": "OK Tigrod 308L — AWS ER308L / EN ISO 14343-A W 19 9 L",
+      "type": "manufacturer_filler_datasheet",
+      "url": "https://esab.com/us/nam_en/products-solutions/product/filler-metals/stainless-steel/mig-wires-tig-rods-gmaw-gtaw/ok-tigrod-308l/",
+      "note": "Vật liệu hàn TIG cho inox 18Cr–8Ni; lựa chọn khi áp dụng phải đối chiếu môi trường và WPS."
+    },
+    {
+      "id": "esab-316l",
+      "publisher": "ESAB",
+      "title": "Exaton 316/316L CRYO (GTAW) — AWS ER316L",
+      "type": "manufacturer_filler_datasheet",
+      "url": "https://esab.com/us/nam_en/products-solutions/product/filler-metals/stainless-steel/mig-wires-tig-rods-gmaw-gtaw/exaton-316-316l-cryo-gtaw/",
+      "note": "Ví dụ vật liệu hàn TIG ER316L cho inox 316L; không gán cơ tính mối hàn cho vật liệu nền."
+    },
+    {
+      "id": "outo-corrosion-general",
+      "publisher": "Outokumpu",
+      "title": "What makes stainless steel corrosion resistant?",
+      "type": "manufacturer_technical_guidance",
+      "url": "https://www.outokumpu.com/en/expertise/stainless-basics/corrosion-resistance",
+      "note": "SCC do clorua có thể xảy ra với inox austenitic chuẩn, kể cả 1.4404; môi trường cần đánh giá cụ thể."
+    }
+  ],
+  "materials": [
+    {
+      "id": "en-10025-2-s235jr-hot-rolled-plate",
+      "grade": "S235JR",
+      "title": "Thép kết cấu S235JR",
+      "family": "structural",
+      "system": "EN",
+      "materialNumber": "1.0038",
+      "otherNames": [
+        "S235",
+        "RSt37-2 (tên cũ, chỉ đối chiếu)"
+      ],
+      "standard": "EN 10025-2",
+      "sourceEditionNote": "Bảng hãng viện dẫn EN 10025-2:2004; xác minh phiên bản hiện hành trước tính toán",
+      "productForm": "Tấm / sản phẩm cán nóng",
+      "condition": "As-rolled (cán nóng)",
+      "description": "Thép kết cấu carbon–mangan thông dụng cho chế tạo và kết cấu hàn.",
+      "applications": [
+        "Kết cấu thép",
+        "Khung máy",
+        "Chi tiết kết cấu hàn"
+      ],
+      "mechanical": {
+        "status": "manufacturer_reference",
+        "dimension": {
+          "kind": "thickness",
+          "label": "Chiều dày tấm",
+          "unit": "mm",
+          "default": 10
+        },
+        "cases": [
+          {
+            "from": 5,
+            "to": 16,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 235
+            },
+            "tensileMpa": {
+              "min": 360,
+              "max": 510
+            },
+            "elongationPct": {
+              "min": 24
+            }
+          },
+          {
+            "from": 16,
+            "to": 40,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 225
+            },
+            "tensileMpa": {
+              "min": 360,
+              "max": 510
+            },
+            "elongationPct": {
+              "min": 24
+            }
+          },
+          {
+            "from": 40,
+            "to": 63,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 215
+            },
+            "tensileMpa": {
+              "min": 360,
+              "max": 510
+            },
+            "elongationPct": {
+              "min": 23
+            }
+          },
+          {
+            "from": 63,
+            "to": 100,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 215
+            },
+            "tensileMpa": {
+              "min": 360,
+              "max": 510
+            },
+            "elongationPct": {
+              "min": 22
+            }
+          },
+          {
+            "from": 100,
+            "to": 150,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 195
+            },
+            "tensileMpa": {
+              "min": 350,
+              "max": 500
+            },
+            "elongationPct": {
+              "min": 22
+            }
+          }
+        ],
+        "yieldSymbol": "ReH",
+        "impact": {
+          "minJ": 27,
+          "temperatureC": 20,
+          "kind": "grade_requirement",
+          "note": "Giá trị JR; áp dụng theo điều kiện thử và dạng sản phẩm đã nêu trong nguồn.",
+          "testDirection": "L",
+          "testDirectionSourceId": "am-structural"
+        },
+        "sourceIds": [
+          "am-structural"
+        ],
+        "tensileTestOrientation": "T",
+        "elongationGaugeLength": "5.65sqrtS0",
+        "testConditionsStatus": "manufacturer_reference_test_conditions_partial"
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.17,
+            "applicability": "5 ≤ t ≤ 40 mm"
+          },
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.2,
+            "applicability": "40 < t ≤ 150 mm"
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 1.4
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.035
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.035
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.55
+          },
+          {
+            "element": "N",
+            "mode": "limit",
+            "max": 0.012
+          }
+        ],
+        "sourceIds": [
+          "am-structural"
+        ]
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 7850,
+          "kind": "typical_generic"
+        },
+        "youngModulusGpa": {
+          "value": 210,
+          "kind": "typical_generic"
+        },
+        "sourceIds": [
+          "bauforum-structural"
+        ]
+      },
+      "notes": [
+        "Cơ tính trong bản mẫu chỉ áp dụng đúng dạng sản phẩm, chiều dày và trạng thái nêu trong nguồn.",
+        "Không sử dụng tên thép tương tự để tự thay thế mác khi chưa so đầy đủ đặc tính, tiêu chuẩn và điều kiện giao hàng."
+      ],
+      "sourceIds": [
+        "am-structural",
+        "bauforum-structural",
+        "bringas-method",
+        "am-a30",
+        "tk-structural",
+        "steelconstruction-corrosion",
+        "esab-s235-s355"
+      ],
+      "engineering": {
+        "dataStatus": "not_assessed",
+        "designProperties": {
+          "hardness": [],
+          "fatigue": [],
+          "fractureToughness": [],
+          "temperatureDependentProperties": [],
+          "other": []
+        },
+        "manufacturing": {
+          "weldability": "see_materials_welding",
+          "machinability": null,
+          "formability": null,
+          "heatTreatmentRoutes": [
+            "s235jr-normalizing",
+            "s235jr-stress-relief"
+          ],
+          "surfaceTreatmentRoutes": []
+        },
+        "service": {
+          "corrosionResistance": null,
+          "wearResistance": null,
+          "temperatureLimits": [],
+          "otherRatings": []
+        },
+        "selection": {
+          "approvedComponentIds": [],
+          "approvedRuleIds": [],
+          "conditions": [],
+          "limitations": []
+        },
+        "assessment": {
+          "approvedWeldingMethodIds": []
+        },
+        "review": {
+          "status": "draft",
+          "sourceIds": [],
+          "checkedBy": null,
+          "checkedAt": null,
+          "approvedBy": null,
+          "approvedAt": null
+        }
+      },
+      "referenceData": {
+        "sourcePriority": "Sách ASTM DS67B 2004: đối chiếu tên mác và dữ liệu lịch sử; tiêu chuẩn áp dụng: quy định giới hạn kỹ thuật; datasheet nhà sản xuất: dữ liệu sản phẩm.",
+        "approvedForAutomatedDesign": false,
+        "recordReviewStatus": "draft",
+        "bookReference": {
+          "sourceId": "bringas-method",
+          "editionYear": 2004,
+          "comparativeOnly": true,
+          "pdfPages": [
+            66,
+            81
+          ],
+          "printedPages": [
+            52,
+            67
+          ]
+        },
+        "standardEditionRecords": [
+          {
+            "designation": "EN 10025:1993",
+            "role": "historical_ASTMDs67B_reference",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1A/3.1B",
+            "status": "historical_not_for_current_acceptance"
+          },
+          {
+            "designation": "EN 10025-2:2019",
+            "role": "current_reference_to_verify_for_contract",
+            "sourceId": "am-structural",
+            "status": "requires_primary_standard_and_product_verification"
+          }
+        ],
+        "historicalDesignations": [
+          {
+            "grade": "S235JR",
+            "materialNumber": "1.0037",
+            "standardEdition": "EN 10025:1993",
+            "relationship": "historical_reference_only_not_identity_or_substitution",
+            "sourceId": "bringas-method",
+            "pdfPage": 66
+          },
+          {
+            "grade": "S235JRG2",
+            "materialNumber": "1.0038",
+            "standardEdition": "EN 10025:1993",
+            "relationship": "historical_name_sharing_steel_number_across_revisions_not_direct_substitute",
+            "sourceId": "bringas-method",
+            "pdfPage": 66
+          }
+        ],
+        "comparisonCandidates": [
+          {
+            "standard": "ASTM A 1011/A 1011M-03",
+            "grade": "Grade 33 [230]",
+            "steelNumber": null,
+            "uns": "K02502",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S235JR",
+            "steelNumber": "1.0037",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S235JRG1",
+            "steelNumber": "1.0036",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S235J0",
+            "steelNumber": "1.0114",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S235J2G3",
+            "steelNumber": "1.0116",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S235J2G4",
+            "steelNumber": "1.0117",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67
+          },
+          {
+            "standard": "ASTM A 1011/A 1011M-03",
+            "grade": "Grade 36 [250] Type 1",
+            "steelNumber": null,
+            "uns": "K02502",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67
+          }
+        ],
+        "engineeringLimits": {
+          "carbonEquivalent": {
+            "symbol": "CEV",
+            "method": "IIW as referenced by EN 10025-2",
+            "kind": "manufacturer_catalogue_limit",
+            "unit": "mass_percent",
+            "productForm": "hot_rolled_structural_plate",
+            "standardEditionScope": "EN 10025-2 referenced by ArcelorMittal H30; not a substitute for approved standard edition",
+            "bands": [
+              {
+                "from": 5,
+                "to": 40,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "max": 0.35
+              },
+              {
+                "from": 40,
+                "to": 150,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "max": 0.38
+              }
+            ],
+            "sourceId": "am-structural",
+            "sourceClauseOrTable": "H30 Chemical composition – S235JR"
+          }
+        },
+        "sourceReconciliation": [
+          "ASTM DS67B trích EN 10025:1993; giới hạn cơ tính thay đổi theo phiên bản tiêu chuẩn. Giữ bảng hãng H30 hiện có, không thay bằng số liệu lịch sử.",
+          "Không dùng quan hệ mác theo sách 2004 để phê duyệt thay thế vật liệu.",
+          "Trong EN 10025:1993, S235JR là 1.0037 và S235JRG2 là 1.0038 (sách ASTM 2004, PDF tr.66); mác S235JR/1.0038 hiện hành không được mô tả như một mác đồng nhất với bản 1993.",
+          "Ký hiệu 1.0037 gắn với S235JR trong EN 10025:1993 (ASTM DS67B); cần phân biệt với định danh 1.0038 trong bản ghi hiện tại."
+        ],
+        "bookStandardData": {
+          "sourceId": "bringas-method",
+          "valueKind": "historical_standard_value_as_tabulated_in_ASTM_DS67B_2004",
+          "useRestriction": "Dữ liệu lịch sử để tra cứu và đối chiếu; không thay thế tiêu chuẩn đang áp dụng.",
+          "standardEdition": "EN 10025:1993",
+          "grade": "S235JRG2",
+          "steelNumber": "1.0038",
+          "productForm": "structural_steel_plate",
+          "heatTreatmentCode": "HR",
+          "heatTreatmentNote": "HR theo ký hiệu trong bảng sách (cán nóng).",
+          "mechanical": {
+            "sourceTable": "3.1A",
+            "pdfPage": 66,
+            "printedPage": 52,
+            "dimension": {
+              "kind": "thickness",
+              "unit": "mm"
+            },
+            "yieldSymbol": "ReH",
+            "units": {
+              "yield": "MPa",
+              "tensile": "MPa",
+              "elongation": "%"
+            },
+            "testDirection": null,
+            "testDirectionNote": "Bảng sách không ghi hướng mẫu; không gán L/T.",
+            "cases": [
+              {
+                "from": null,
+                "to": 3,
+                "fromInclusive": false,
+                "toInclusive": false,
+                "yieldMin": 235,
+                "tensile": {
+                  "min": 360,
+                  "max": 510
+                },
+                "elongationMin": null
+              },
+              {
+                "from": 3,
+                "to": 16,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "yieldMin": 235,
+                "tensile": {
+                  "min": 340,
+                  "max": 470
+                },
+                "elongationMin": 24
+              },
+              {
+                "from": 16,
+                "to": 40,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 225,
+                "tensile": {
+                  "min": 340,
+                  "max": 470
+                },
+                "elongationMin": 24
+              },
+              {
+                "from": 40,
+                "to": 63,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 215,
+                "tensile": {
+                  "min": 340,
+                  "max": 470
+                },
+                "elongationMin": 23
+              },
+              {
+                "from": 63,
+                "to": 80,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 215,
+                "tensile": {
+                  "min": 340,
+                  "max": 470
+                },
+                "elongationMin": 22
+              },
+              {
+                "from": 80,
+                "to": 100,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 215,
+                "tensile": {
+                  "min": 340,
+                  "max": 470
+                },
+                "elongationMin": 22
+              },
+              {
+                "from": 100,
+                "to": 150,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 195,
+                "tensile": {
+                  "min": 340,
+                  "max": 470
+                },
+                "elongationMin": 22
+              },
+              {
+                "from": 150,
+                "to": 200,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 185,
+                "tensile": {
+                  "min": 320,
+                  "max": 470
+                },
+                "elongationMin": 21
+              },
+              {
+                "from": 200,
+                "to": 250,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 175,
+                "tensile": {
+                  "min": 320,
+                  "max": 470
+                },
+                "elongationMin": 21
+              }
+            ],
+            "impact": [
+              {
+                "from": 3,
+                "to": 150,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "temperatureC": 20,
+                "minJ": 27
+              },
+              {
+                "from": 150,
+                "to": 250,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "temperatureC": 20,
+                "minJ": 23
+              }
+            ],
+            "readingNote": "Ô Rm và KV gộp nhiều vùng chiều dày trong bảng đã được đối chiếu bằng ảnh trang."
+          },
+          "chemistry": {
+            "sourceTable": "3.1B",
+            "pdfPage": 81,
+            "printedPage": 67,
+            "unit": "mass_percent",
+            "analysisBasis": null,
+            "analysisBasisNote": "Tiêu đề bảng: Weight %, maximum unless otherwise specified; sách không nêu phân tích mẻ hay sản phẩm.",
+            "rows": [
+              {
+                "element": "C",
+                "max": 0.17,
+                "dimension": {
+                  "from": null,
+                  "to": 16,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                }
+              },
+              {
+                "element": "C",
+                "max": 0.17,
+                "dimension": {
+                  "from": 16,
+                  "to": 40,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                }
+              },
+              {
+                "element": "C",
+                "max": 0.2,
+                "dimension": {
+                  "from": 40,
+                  "to": null,
+                  "fromInclusive": false,
+                  "toInclusive": false
+                }
+              },
+              {
+                "element": "Mn",
+                "max": 1.4
+              },
+              {
+                "element": "P",
+                "max": 0.045
+              },
+              {
+                "element": "S",
+                "max": 0.045
+              },
+              {
+                "element": "N",
+                "max": 0.009
+              }
+            ]
+          },
+          "comparisonGroupPages": [
+            81
+          ],
+          "notes": [
+            "Bản ghi lịch sử dùng S235JRG2/1.0038 (EN 10025:1993), là mác mang số 1.0038 trước khi đổi tên; không đồng nhất tự động với S235JR hiện hành.",
+            "Rm vùng 3–100 mm theo bảng sách là 340–470 MPa, khác 360–510 MPa trong bảng nhà sản xuất hiện dùng: không thay thế lẫn nhau."
+          ]
+        },
+        "comparisonCandidatesNote": "Theo sách (Ch.1): đường kẻ đen ngăn các nhóm thép 'so sánh được gần nhau hơn', đường xám ngăn dữ liệu trong cùng nhóm; cách nhóm có tính chủ quan. Cùng nhóm KHÔNG có nghĩa là tương đương hay thay thế được. Nhóm lấy từ các hàng nằm giữa hai đường kẻ đen trên cùng trang; nếu nhóm có thể kéo dài qua ngắt trang thì phần ngoài trang này chưa được đưa vào.",
+        "openIssues": [
+          {
+            "id": "S235JR-edition",
+            "severity": "medium",
+            "kind": "data_check",
+            "topic": "Phiên bản tiêu chuẩn của bộ cơ tính",
+            "findingVi": "Bảng hãng viện dẫn EN 10025-2:2004; bản ghi ghi nhận EN 10025-2:2019 là phiên bản cần xác minh.",
+            "evidence": [
+              {
+                "sourceId": "am-structural"
+              }
+            ],
+            "actionVi": "Xác nhận phiên bản áp dụng và ghi standardEdition cho khối cơ tính.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "S235JR-diff-1993",
+            "severity": "info",
+            "kind": "edition_difference",
+            "topic": "Khác biệt giữa các phiên bản",
+            "findingVi": "So với EN 10025:1993 (S235JRG2) trong sách: Rm 3–100 mm 340–470 MPa so với 360–510 MPa hiện tại; P, S ≤ 0,045% so với ≤ 0,035%; N ≤ 0,009% so với ≤ 0,012%. Đây là khác biệt phiên bản.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 66,
+                "printedPage": 52,
+                "table": "3.1A"
+              },
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 81,
+                "printedPage": 67,
+                "table": "3.1B"
+              },
+              {
+                "sourceId": "am-structural"
+              }
+            ],
+            "actionVi": "Không cần sửa; giữ tách bạch hai bộ số liệu.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "S235JR-range",
+            "severity": "low",
+            "kind": "coverage",
+            "topic": "Phạm vi chiều dày",
+            "findingVi": "Dữ liệu hiện dừng ở 150 mm theo catalogue hãng; bảng 1993 trong sách có vùng đến 250 mm.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 66,
+                "printedPage": 52,
+                "table": "3.1A"
+              }
+            ],
+            "actionVi": "Bổ sung từ nguồn hiện hành nếu cần.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          }
+        ]
+      },
+      "heatTreatment": {
+        "status": "sourced_reference_partial",
+        "routes": [
+          {
+            "id": "s235jr-normalizing",
+            "precededBy": [],
+            "process": "normalizing",
+            "purposeVi": "Đồng đều tổ chức hạt; tạo trạng thái thường hóa (+N)",
+            "temperatureC": {
+              "min": null,
+              "max": null
+            },
+            "holdingNote": null,
+            "cooling": null,
+            "resultCondition": "+N",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "tk-structural",
+            "sourceClauseOrTable": "Delivery condition +N",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Nguồn giải thích trạng thái cung cấp +N (thường hóa/cán thường hóa); không có nhiệt độ quy trình áp dụng riêng cho bản ghi tấm +AR hiện tại. Không đồng nhất +AR với +N."
+          },
+          {
+            "id": "s235jr-stress-relief",
+            "precededBy": [],
+            "process": "stress_relieving",
+            "purposeVi": "Giảm ứng suất dư sau hàn hoặc gia công",
+            "temperatureC": {
+              "min": null,
+              "max": null
+            },
+            "holdingNote": null,
+            "cooling": null,
+            "resultCondition": null,
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": null,
+            "sourceClauseOrTable": null,
+            "valueKind": null,
+            "verificationStatus": "empty_template",
+            "note": null
+          }
+        ],
+        "linkNoteVi": "Bản ghi cơ tính hiện ở trạng thái cán nóng +AR. +N là điều kiện cung cấp khác; không tự dùng bảng cơ tính +AR cho sản phẩm sau nhiệt luyện.",
+        "sourceIds": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "overall": {
+          "rating": "good",
+          "summaryVi": "Nhóm thép kết cấu carbon–mangan có tính hàn tốt bằng các phương pháp thông dụng; biện pháp hàn còn phụ thuộc chiều dày, liên kết và điều kiện thi công.",
+          "sourceId": "am-a30",
+          "sourceClauseOrTable": "Advantages – weldability"
+        },
+        "carbonEquivalentRef": "referenceData.engineeringLimits.carbonEquivalent",
+        "consumables": [
+          {
+            "process": "SMAW",
+            "classificationIso": null,
+            "classificationAws": null,
+            "classificationGb": null,
+            "noteVi": "Ví dụ que ESAB OK 43.32 được hãng liệt kê cho thép S235–S355; phải chọn cấp bền/KV của kim loại hàn phù hợp liên kết và WPS.",
+            "sourceId": "esab-s235-s355",
+            "sourceClauseOrTable": "Product description – steels S235–S355"
+          }
+        ],
+        "preheat": [],
+        "interpassTemperatureC": {
+          "min": null,
+          "max": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "pwht": {
+          "required": null,
+          "temperatureC": {
+            "min": null,
+            "max": null
+          },
+          "holdingNote": null,
+          "noteVi": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "specialNotes": [
+          {
+            "textVi": "Không mặc định gia nhiệt sơ bộ hoặc PWHT cho mọi mối nối; đánh giá theo vật liệu thực tế, chiều dày, hydro, nhiệt đầu vào và độ kiềm chế.",
+            "sourceId": "am-a30",
+            "sourceClauseOrTable": "Advantages – pre-/postheat"
+          },
+          {
+            "textVi": "Nếu sử dụng mạ kẽm nhúng nóng, kiểm tra yêu cầu thành phần (đặc biệt Si), trạng thái và khả năng phù hợp mạ trước khi đặt hàng.",
+            "sourceId": "am-a30",
+            "sourceClauseOrTable": "Recommendations for use"
+          }
+        ],
+        "dissimilarJoints": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Kết cấu và khung thép hàn",
+            "noteVi": "Tấm/sản phẩm cán nóng; chọn đúng giới hạn chảy theo chiều dày, trạng thái cung cấp.",
+            "sourceId": "am-a30"
+          },
+          {
+            "productVi": "Chi tiết cơ khí và giá đỡ",
+            "noteVi": "Ứng dụng kết cấu và cơ khí thông dụng; không suy ra khả năng chịu tải từ riêng tên mác.",
+            "sourceId": "tk-structural"
+          },
+          {
+            "productVi": "Cấu kiện xây dựng và công trình cầu",
+            "noteVi": "Sử dụng theo thiết kế, tiêu chuẩn dự án và điều kiện chống ăn mòn.",
+            "sourceId": "tk-structural"
+          }
+        ],
+        "environments": [
+          {
+            "environment": "indoor_dry",
+            "suitability": "suitable",
+            "conditionsVi": "Phù hợp cấu kiện trong nhà, khô; một số môi trường khô có thể không cần sơn chống ăn mòn.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "outdoor_atmospheric",
+            "suitability": "conditional",
+            "conditionsVi": "Kết cấu lộ thiên cần hệ sơn hoặc mạ phù hợp mức ăn mòn, tuổi thọ và bảo trì.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "marine_chloride",
+            "suitability": "conditional",
+            "conditionsVi": "Nếu dùng cho kết cấu lộ thiên vùng biển, phải thiết kế hệ bảo vệ chống ăn mòn phù hợp; không coi đây là thép chống ăn mòn tự nhiên.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "chemical",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "food_contact",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "low_temperature",
+            "suitability": "conditional",
+            "conditionsVi": "Cấp JR trong bản ghi có thử KV ở +20°C; không suy ra bảo đảm độ dai tại nhiệt độ thấp hơn từ dữ liệu hiện có.",
+            "sourceId": "am-structural",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "elevated_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "wear",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "fatigue_loading",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          }
+        ],
+        "limitations": [
+          {
+            "textVi": "Cơ tính phụ thuộc chiều dày và trạng thái cung cấp (+AR khác +N); không dùng thông số ngoài dải dữ liệu.",
+            "sourceId": "tk-structural"
+          }
+        ],
+        "notRecommended": [
+          {
+            "textVi": "Không dùng thép kết cấu không được bảo vệ bề mặt trong môi trường ăn mòn mạnh nếu yêu cầu độ bền lâu dài.",
+            "sourceId": "steelconstruction-corrosion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-10025-2-s355j2-hot-rolled-plate",
+      "grade": "S355J2",
+      "title": "Thép kết cấu S355J2",
+      "family": "structural",
+      "system": "EN",
+      "materialNumber": "1.0577",
+      "otherNames": [
+        "S355J2 (không đồng nhất với S355J2+N)"
+      ],
+      "standard": "EN 10025-2",
+      "sourceEditionNote": "Bảng hãng viện dẫn EN 10025-2:2004; xác minh phiên bản hiện hành trước tính toán",
+      "productForm": "Tấm / sản phẩm cán nóng",
+      "condition": "As-rolled (cán nóng)",
+      "description": "Thép kết cấu cường độ cao, cấp J2 yêu cầu kiểm tra va đập ở −20°C.",
+      "applications": [
+        "Kết cấu chịu lực",
+        "Dầm và khung thép",
+        "Kết cấu máy hàn"
+      ],
+      "mechanical": {
+        "status": "manufacturer_reference",
+        "dimension": {
+          "kind": "thickness",
+          "label": "Chiều dày tấm",
+          "unit": "mm",
+          "default": 20
+        },
+        "cases": [
+          {
+            "from": 5,
+            "to": 16,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 355
+            },
+            "tensileMpa": {
+              "min": 470,
+              "max": 630
+            },
+            "elongationPct": {
+              "min": 20
+            }
+          },
+          {
+            "from": 16,
+            "to": 40,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 345
+            },
+            "tensileMpa": {
+              "min": 470,
+              "max": 630
+            },
+            "elongationPct": {
+              "min": 20
+            }
+          },
+          {
+            "from": 40,
+            "to": 63,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 335
+            },
+            "tensileMpa": {
+              "min": 470,
+              "max": 630
+            },
+            "elongationPct": {
+              "min": 19
+            }
+          },
+          {
+            "from": 63,
+            "to": 80,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 325
+            },
+            "tensileMpa": {
+              "min": 470,
+              "max": 630
+            },
+            "elongationPct": {
+              "min": 18
+            }
+          },
+          {
+            "from": 80,
+            "to": 100,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 315
+            },
+            "tensileMpa": {
+              "min": 470,
+              "max": 630
+            },
+            "elongationPct": {
+              "min": 18
+            }
+          },
+          {
+            "from": 100,
+            "to": 120,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 295
+            },
+            "tensileMpa": {
+              "min": 450,
+              "max": 600
+            },
+            "elongationPct": {
+              "min": 18
+            }
+          }
+        ],
+        "yieldSymbol": "ReH",
+        "impact": {
+          "minJ": 27,
+          "temperatureC": -20,
+          "kind": "grade_requirement",
+          "note": "KV tối thiểu tại −20°C; xem điều kiện và phương pháp thử theo nguồn.",
+          "testDirection": "L",
+          "testDirectionSourceId": "am-structural"
+        },
+        "sourceIds": [
+          "am-structural"
+        ],
+        "tensileTestOrientation": "T",
+        "elongationGaugeLength": "5.65sqrtS0",
+        "testConditionsStatus": "manufacturer_reference_test_conditions_partial"
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.2,
+            "applicability": "5 ≤ t ≤ 30 mm"
+          },
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.22,
+            "applicability": "30 < t ≤ 120 mm"
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 1.6
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.025
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.025
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.55
+          }
+        ],
+        "sourceIds": [
+          "am-structural"
+        ]
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 7850,
+          "kind": "typical_generic"
+        },
+        "youngModulusGpa": {
+          "value": 210,
+          "kind": "typical_generic"
+        },
+        "sourceIds": [
+          "bauforum-structural"
+        ]
+      },
+      "notes": [
+        "Chọn đúng chiều dày: ReH tối thiểu giảm khi chiều dày tăng.",
+        "S355J2 và S355J2+N có điều kiện giao hàng khác nhau; không gộp thành một bản ghi."
+      ],
+      "sourceIds": [
+        "am-structural",
+        "bauforum-structural",
+        "bringas-method",
+        "marcegaglia-s355j2-2025",
+        "am-a30",
+        "tk-structural",
+        "steelconstruction-corrosion",
+        "esab-s235-s355",
+        "ovako-s355j2-2025"
+      ],
+      "engineering": {
+        "dataStatus": "not_assessed",
+        "designProperties": {
+          "hardness": [],
+          "fatigue": [],
+          "fractureToughness": [],
+          "temperatureDependentProperties": [],
+          "other": []
+        },
+        "manufacturing": {
+          "weldability": "see_materials_welding",
+          "machinability": null,
+          "formability": null,
+          "heatTreatmentRoutes": [
+            "s355j2-normalizing",
+            "s355j2-stress-relief"
+          ],
+          "surfaceTreatmentRoutes": []
+        },
+        "service": {
+          "corrosionResistance": null,
+          "wearResistance": null,
+          "temperatureLimits": [],
+          "otherRatings": []
+        },
+        "selection": {
+          "approvedComponentIds": [],
+          "approvedRuleIds": [],
+          "conditions": [],
+          "limitations": []
+        },
+        "assessment": {
+          "approvedWeldingMethodIds": []
+        },
+        "review": {
+          "status": "draft",
+          "sourceIds": [],
+          "checkedBy": null,
+          "checkedAt": null,
+          "approvedBy": null,
+          "approvedAt": null
+        }
+      },
+      "referenceData": {
+        "sourcePriority": "Sách ASTM DS67B 2004: đối chiếu tên mác và dữ liệu lịch sử; tiêu chuẩn áp dụng: quy định giới hạn kỹ thuật; datasheet nhà sản xuất: dữ liệu sản phẩm.",
+        "approvedForAutomatedDesign": false,
+        "recordReviewStatus": "draft",
+        "bookReference": {
+          "sourceId": "bringas-method",
+          "editionYear": 2004,
+          "comparativeOnly": true,
+          "pdfPages": [
+            76,
+            77,
+            85
+          ],
+          "printedPages": [
+            62,
+            63,
+            71
+          ]
+        },
+        "standardEditionRecords": [
+          {
+            "designation": "EN 10025:1993",
+            "role": "historical_ASTMDs67B_reference",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1A/3.1B",
+            "status": "historical_not_for_current_acceptance"
+          },
+          {
+            "designation": "EN 10025-2:2019",
+            "role": "current_reference_to_verify_for_contract",
+            "sourceId": "marcegaglia-s355j2-2025",
+            "status": "identified_in_manufacturer_declaration_not_full_standard_review"
+          }
+        ],
+        "historicalDesignations": [
+          {
+            "grade": "S355J2G3",
+            "materialNumber": "1.0570",
+            "standardEdition": "EN 10025:1993",
+            "relationship": "historical_reference_only_not_identity_or_substitution",
+            "sourceId": "bringas-method",
+            "pdfPage": 76
+          },
+          {
+            "grade": "S355J2G4",
+            "materialNumber": "1.0577",
+            "standardEdition": "EN 10025:1993",
+            "relationship": "historical_name_sharing_steel_number_across_revisions_not_direct_substitute",
+            "sourceId": "bringas-method",
+            "pdfPage": 77
+          }
+        ],
+        "comparisonCandidates": [
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S355JR",
+            "steelNumber": "1.0045",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S355J0",
+            "steelNumber": "1.0553",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S355J2G3",
+            "steelNumber": "1.0570",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S355K2G3",
+            "steelNumber": "1.0595",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "EN 10025:1993",
+            "grade": "S355K2G4",
+            "steelNumber": "1.0596",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "JIS G 3106:1999",
+            "grade": "SM520B",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "JIS G 3106:1999",
+            "grade": "SM520C",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "JIS G 3101:1995",
+            "grade": "SS540",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          },
+          {
+            "standard": "ASTM A 678/A 678M-00a",
+            "grade": "Grade B",
+            "steelNumber": null,
+            "uns": "K02002",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71
+          }
+        ],
+        "engineeringLimits": {
+          "carbonEquivalent": {
+            "symbol": "CEV",
+            "method": "IIW as referenced by EN 10025-2",
+            "kind": "manufacturer_catalogue_limit",
+            "unit": "mass_percent",
+            "productForm": "hot_rolled_structural_plate",
+            "standardEditionScope": "EN 10025-2 referenced by ArcelorMittal H30; not a substitute for approved standard edition",
+            "bands": [
+              {
+                "from": 5,
+                "to": 30,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "max": 0.45
+              },
+              {
+                "from": 30,
+                "to": 120,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "max": 0.47
+              }
+            ],
+            "sourceId": "am-structural",
+            "sourceClauseOrTable": "H30 Chemical composition – S355J2"
+          }
+        },
+        "sourceReconciliation": [
+          "ASTM DS67B trích EN 10025:1993; giới hạn cơ tính thay đổi theo phiên bản tiêu chuẩn. Giữ bảng hãng H30 hiện có, không thay bằng số liệu lịch sử.",
+          "Không dùng quan hệ mác theo sách 2004 để phê duyệt thay thế vật liệu.",
+          "Nguồn Palfinger cung cấp S355J2G3/1.0570 và ghi A578 Gr50; ASTM A578 là tiêu chuẩn kiểm tra siêu âm, không phải mác thép A578 Grade 50. Không nhập như mác tương đương.",
+          "Nguồn Palfinger ghi Ni <=0,03% cho S355J2G3; chưa xác minh, không dùng thay giới hạn hóa học của S355J2/1.0577.",
+          "Declaration of Performance Marcegaglia 2025 xác nhận EN 10025-2:2019 và số vật liệu 1.0577; một ô trong bảng ReH ghi 1.0114, không được coi là thay đổi định danh.",
+          "Nguồn Ned-Deck ký hiệu S355J2G3 / 1.0570 theo hệ lịch sử; không tự gộp vào bản ghi S355J2 / 1.0577."
+        ],
+        "bookStandardData": {
+          "sourceId": "bringas-method",
+          "valueKind": "historical_standard_value_as_tabulated_in_ASTM_DS67B_2004",
+          "useRestriction": "Dữ liệu lịch sử để tra cứu và đối chiếu; không thay thế tiêu chuẩn đang áp dụng.",
+          "standardEdition": "EN 10025:1993",
+          "grade": "S355J2G4",
+          "steelNumber": "1.0577",
+          "productForm": "structural_steel_plate",
+          "heatTreatmentCode": "HR",
+          "heatTreatmentNote": "HR theo ký hiệu trong bảng sách (cán nóng).",
+          "mechanical": {
+            "sourceTable": "3.1A",
+            "pdfPage": 77,
+            "printedPage": 63,
+            "dimension": {
+              "kind": "thickness",
+              "unit": "mm"
+            },
+            "yieldSymbol": "ReH",
+            "units": {
+              "yield": "MPa",
+              "tensile": "MPa",
+              "elongation": "%"
+            },
+            "testDirection": null,
+            "testDirectionNote": "Bảng sách không ghi hướng mẫu; không gán L/T.",
+            "cases": [
+              {
+                "from": null,
+                "to": 3,
+                "fromInclusive": false,
+                "toInclusive": false,
+                "yieldMin": 355,
+                "tensile": {
+                  "min": 510,
+                  "max": 680
+                },
+                "elongationMin": null
+              },
+              {
+                "from": 3,
+                "to": 16,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "yieldMin": 355,
+                "tensile": {
+                  "min": 490,
+                  "max": 630
+                },
+                "elongationMin": 20
+              },
+              {
+                "from": 16,
+                "to": 40,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 345,
+                "tensile": {
+                  "min": 490,
+                  "max": 630
+                },
+                "elongationMin": 20
+              },
+              {
+                "from": 40,
+                "to": 63,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 335,
+                "tensile": {
+                  "min": 490,
+                  "max": 630
+                },
+                "elongationMin": 19
+              },
+              {
+                "from": 63,
+                "to": 80,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 325,
+                "tensile": {
+                  "min": 490,
+                  "max": 630
+                },
+                "elongationMin": 18
+              },
+              {
+                "from": 80,
+                "to": 100,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 315,
+                "tensile": {
+                  "min": 490,
+                  "max": 630
+                },
+                "elongationMin": 18
+              },
+              {
+                "from": 100,
+                "to": 150,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 295,
+                "tensile": {
+                  "min": 470,
+                  "max": 630
+                },
+                "elongationMin": 18
+              },
+              {
+                "from": 150,
+                "to": 200,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 285,
+                "tensile": {
+                  "min": 450,
+                  "max": 630
+                },
+                "elongationMin": 17
+              },
+              {
+                "from": 200,
+                "to": 250,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "yieldMin": 275,
+                "tensile": {
+                  "min": 450,
+                  "max": 630
+                },
+                "elongationMin": 17
+              }
+            ],
+            "impact": [
+              {
+                "from": 3,
+                "to": 150,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "temperatureC": -20,
+                "minJ": 27
+              },
+              {
+                "from": 150,
+                "to": 250,
+                "fromInclusive": false,
+                "toInclusive": true,
+                "temperatureC": -20,
+                "minJ": 23
+              }
+            ],
+            "readingNote": "Ô Rm và KV gộp nhiều vùng chiều dày trong bảng đã được đối chiếu bằng ảnh trang."
+          },
+          "chemistry": {
+            "sourceTable": "3.1B",
+            "pdfPage": 85,
+            "printedPage": 71,
+            "unit": "mass_percent",
+            "analysisBasis": null,
+            "analysisBasisNote": "Tiêu đề bảng: Weight %, maximum unless otherwise specified; sách không nêu phân tích mẻ hay sản phẩm.",
+            "rows": [
+              {
+                "element": "C",
+                "max": 0.2,
+                "dimension": {
+                  "from": null,
+                  "to": 16,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                }
+              },
+              {
+                "element": "C",
+                "max": 0.2,
+                "dimension": {
+                  "from": 16,
+                  "to": 40,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                }
+              },
+              {
+                "element": "C",
+                "max": 0.22,
+                "dimension": {
+                  "from": 40,
+                  "to": null,
+                  "fromInclusive": false,
+                  "toInclusive": false
+                }
+              },
+              {
+                "element": "Mn",
+                "max": 1.6
+              },
+              {
+                "element": "Si",
+                "max": 0.55
+              },
+              {
+                "element": "P",
+                "max": 0.035
+              },
+              {
+                "element": "S",
+                "max": 0.035
+              }
+            ]
+          },
+          "comparisonGroupPages": [
+            85
+          ],
+          "notes": [
+            "Bản ghi lịch sử dùng S355J2G4/1.0577 (EN 10025:1993).",
+            "Rm vùng 3–100 mm theo bảng sách là 490–630 MPa, khác 470–630 MPa trong bảng nhà sản xuất hiện dùng.",
+            "Sách có Si ≤ 0,55% cho S355J2G4; bản ghi hiện hành chưa có dòng Si vì nguồn hiện dùng chưa được xác minh có nêu Si: cần kiểm tra nguồn hiện hành, không chép giá trị 1993 sang."
+          ]
+        },
+        "comparisonCandidatesNote": "Theo sách (Ch.1): đường kẻ đen ngăn các nhóm thép 'so sánh được gần nhau hơn', đường xám ngăn dữ liệu trong cùng nhóm; cách nhóm có tính chủ quan. Cùng nhóm KHÔNG có nghĩa là tương đương hay thay thế được. Nhóm lấy từ các hàng nằm giữa hai đường kẻ đen trên cùng trang; nếu nhóm có thể kéo dài qua ngắt trang thì phần ngoài trang này chưa được đưa vào.",
+        "openIssues": [
+          {
+            "id": "S355J2-C-band",
+            "severity": "high",
+            "kind": "data_check",
+            "topic": "Thành phần C theo chiều dày",
+            "findingVi": "Bản ghi hiện tách giới hạn C ở 30 mm (≤ 0,20 đến 30 mm; ≤ 0,22 trên 30 mm), trùng với mốc tách của CEV. Bảng EN 10025:1993 trong sách tách C ở 40 mm. Mốc 30 mm có thể là lỗi nhập lẫn với bảng CEV.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 85,
+                "printedPage": 71,
+                "table": "3.1B"
+              },
+              {
+                "sourceId": "am-structural",
+                "note": "giá trị hiện tại trong bản ghi"
+              }
+            ],
+            "actionVi": "Mở lại bảng H30 của ArcelorMittal và/hoặc EN 10025-2:2019 để xác nhận mốc tách C; sửa applicability nếu đúng là 40 mm.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "S355J2-Si",
+            "severity": "medium",
+            "kind": "data_check",
+            "topic": "Thiếu Si",
+            "findingVi": "Bản ghi chưa có dòng Si. EN 10025:1993 trong sách có Si ≤ 0,55% cho S355J2G4.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 85,
+                "printedPage": 71,
+                "table": "3.1B"
+              }
+            ],
+            "actionVi": "Kiểm tra nguồn hiện hành (H30 hoặc toàn văn EN 10025-2:2019); chỉ nhập khi nguồn hiện hành nêu. Không chép giá trị 1993.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "S355J2-edition",
+            "severity": "medium",
+            "kind": "data_check",
+            "topic": "Phiên bản tiêu chuẩn của bộ cơ tính",
+            "findingVi": "Bảng cơ tính lấy từ catalogue ArcelorMittal viện dẫn EN 10025-2:2004, trong khi DoP Marcegaglia 2025 viện dẫn EN 10025-2:2019.",
+            "evidence": [
+              {
+                "sourceId": "am-structural"
+              },
+              {
+                "sourceId": "marcegaglia-s355j2-2025"
+              }
+            ],
+            "actionVi": "Xác nhận phiên bản áp dụng cho dự án và ghi standardEdition cho khối cơ tính.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "S355J2-range",
+            "severity": "low",
+            "kind": "coverage",
+            "topic": "Phạm vi chiều dày",
+            "findingVi": "Dữ liệu hiện dừng ở 120 mm theo catalogue hãng; bảng 1993 trong sách có vùng đến 250 mm.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 77,
+                "printedPage": 63,
+                "table": "3.1A"
+              }
+            ],
+            "actionVi": "Nếu xưởng dùng tấm dày hơn 120 mm, bổ sung từ nguồn hiện hành.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "S355J2-Rm-edition",
+            "severity": "info",
+            "kind": "edition_difference",
+            "topic": "Khác biệt giữa các phiên bản",
+            "findingVi": "Rm vùng 3–100 mm: 470–630 MPa (bản ghi hiện tại) và 490–630 MPa (EN 10025:1993 trong sách). Đây là khác biệt phiên bản, không phải lỗi nhập.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 77,
+                "printedPage": 63,
+                "table": "3.1A"
+              },
+              {
+                "sourceId": "am-structural"
+              }
+            ],
+            "actionVi": "Không cần sửa; giữ tách bạch hai bộ số liệu.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          }
+        ]
+      },
+      "heatTreatment": {
+        "status": "sourced_reference_partial",
+        "routes": [
+          {
+            "id": "s355j2-normalizing",
+            "precededBy": [],
+            "process": "normalizing",
+            "purposeVi": "Đồng đều tổ chức hạt; tạo trạng thái thường hóa (+N)",
+            "temperatureC": {
+              "min": null,
+              "max": null
+            },
+            "holdingNote": null,
+            "cooling": null,
+            "resultCondition": "+N",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "tk-structural",
+            "sourceClauseOrTable": "Delivery condition +N",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Nguồn giải thích trạng thái cung cấp +N (thường hóa/cán thường hóa); không có nhiệt độ quy trình áp dụng riêng cho bản ghi tấm +AR hiện tại. Không đồng nhất +AR với +N."
+          },
+          {
+            "id": "s355j2-stress-relief",
+            "precededBy": [],
+            "process": "stress_relieving",
+            "purposeVi": "Giảm ứng suất dư sau hàn hoặc gia công",
+            "temperatureC": {
+              "min": null,
+              "max": null
+            },
+            "holdingNote": null,
+            "cooling": null,
+            "resultCondition": null,
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": null,
+            "sourceClauseOrTable": null,
+            "valueKind": null,
+            "verificationStatus": "empty_template",
+            "note": null
+          }
+        ],
+        "linkNoteVi": "Bản ghi cơ tính hiện ở trạng thái cán nóng +AR. +N là điều kiện cung cấp khác; không tự dùng bảng cơ tính +AR cho sản phẩm sau nhiệt luyện.",
+        "sourceIds": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "overall": {
+          "rating": "good",
+          "summaryVi": "Nhóm thép kết cấu carbon–mangan có tính hàn tốt bằng các phương pháp thông dụng; biện pháp hàn còn phụ thuộc chiều dày, liên kết và điều kiện thi công.",
+          "sourceId": "am-a30",
+          "sourceClauseOrTable": "Advantages – weldability"
+        },
+        "carbonEquivalentRef": "referenceData.engineeringLimits.carbonEquivalent",
+        "consumables": [
+          {
+            "process": "SMAW",
+            "classificationIso": null,
+            "classificationAws": null,
+            "classificationGb": null,
+            "noteVi": "Ví dụ que ESAB OK 43.32 được hãng liệt kê cho thép S235–S355; phải chọn cấp bền/KV của kim loại hàn phù hợp liên kết và WPS.",
+            "sourceId": "esab-s235-s355",
+            "sourceClauseOrTable": "Product description – steels S235–S355"
+          }
+        ],
+        "preheat": [],
+        "interpassTemperatureC": {
+          "min": null,
+          "max": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "pwht": {
+          "required": null,
+          "temperatureC": {
+            "min": null,
+            "max": null
+          },
+          "holdingNote": null,
+          "noteVi": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "specialNotes": [
+          {
+            "textVi": "Không mặc định gia nhiệt sơ bộ hoặc PWHT cho mọi mối nối; đánh giá theo vật liệu thực tế, chiều dày, hydro, nhiệt đầu vào và độ kiềm chế.",
+            "sourceId": "am-a30",
+            "sourceClauseOrTable": "Advantages – pre-/postheat"
+          },
+          {
+            "textVi": "Nếu sử dụng mạ kẽm nhúng nóng, kiểm tra yêu cầu thành phần (đặc biệt Si), trạng thái và khả năng phù hợp mạ trước khi đặt hàng.",
+            "sourceId": "am-a30",
+            "sourceClauseOrTable": "Recommendations for use"
+          }
+        ],
+        "dissimilarJoints": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Kết cấu và khung thép hàn",
+            "noteVi": "Tấm/sản phẩm cán nóng; chọn đúng giới hạn chảy theo chiều dày, trạng thái cung cấp.",
+            "sourceId": "am-a30"
+          },
+          {
+            "productVi": "Chi tiết cơ khí và giá đỡ",
+            "noteVi": "Ứng dụng kết cấu và cơ khí thông dụng; không suy ra khả năng chịu tải từ riêng tên mác.",
+            "sourceId": "tk-structural"
+          },
+          {
+            "productVi": "Cấu kiện xây dựng và công trình cầu",
+            "noteVi": "Sử dụng theo thiết kế, tiêu chuẩn dự án và điều kiện chống ăn mòn.",
+            "sourceId": "tk-structural"
+          }
+        ],
+        "environments": [
+          {
+            "environment": "indoor_dry",
+            "suitability": "suitable",
+            "conditionsVi": "Phù hợp cấu kiện trong nhà, khô; một số môi trường khô có thể không cần sơn chống ăn mòn.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "outdoor_atmospheric",
+            "suitability": "conditional",
+            "conditionsVi": "Kết cấu lộ thiên cần hệ sơn hoặc mạ phù hợp mức ăn mòn, tuổi thọ và bảo trì.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "marine_chloride",
+            "suitability": "conditional",
+            "conditionsVi": "Nếu dùng cho kết cấu lộ thiên vùng biển, phải thiết kế hệ bảo vệ chống ăn mòn phù hợp; không coi đây là thép chống ăn mòn tự nhiên.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "chemical",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "food_contact",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "low_temperature",
+            "suitability": "conditional",
+            "conditionsVi": "Cấp J2 có KV ≥ 27 J ở −20°C theo nguồn và điều kiện thử của bản ghi; vẫn phải xét nhiệt độ thiết kế và cấu kiện.",
+            "sourceId": "am-structural",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "elevated_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "wear",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "fatigue_loading",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          }
+        ],
+        "limitations": [
+          {
+            "textVi": "Cơ tính phụ thuộc chiều dày và trạng thái cung cấp (+AR khác +N); không dùng thông số ngoài dải dữ liệu.",
+            "sourceId": "tk-structural"
+          }
+        ],
+        "notRecommended": [
+          {
+            "textVi": "Không dùng thép kết cấu không được bảo vệ bề mặt trong môi trường ăn mòn mạnh nếu yêu cầu độ bền lâu dài.",
+            "sourceId": "steelconstruction-corrosion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-10083-2-c45-qt-bar",
+      "grade": "C45",
+      "title": "Thép cơ khí C45 (+QT)",
+      "family": "machinery",
+      "system": "EN",
+      "materialNumber": "1.0503",
+      "otherNames": [
+        "AISI/SAE 1045 (tham khảo đối chiếu, không tương đương mặc định)"
+      ],
+      "standard": "EN 10083-2 (dữ liệu nhà cung cấp)",
+      "sourceEditionNote": "Hãng ghi EN 10083-2; đối chiếu EN ISO 683-1 và chứng chỉ lô thực tế khi ứng dụng",
+      "productForm": "Thanh tròn",
+      "condition": "Tôi và ram (+QT)",
+      "description": "Thép carbon trung bình, dùng cho trục và chi tiết máy chịu tải vừa.",
+      "applications": [
+        "Trục",
+        "Bánh răng",
+        "Chi tiết gia công cơ khí"
+      ],
+      "mechanical": {
+        "status": "supplier_reference",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 25,
+          "technicalDefinition": "relevant section diameter per EN 10083-1:2006 Annex A referenced by supplier; actual piece diameter not always identical to ruling section"
+        },
+        "cases": [
+          {
+            "from": 1,
+            "to": 16,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 490
+            },
+            "tensileMpa": {
+              "min": 700,
+              "max": 850
+            },
+            "elongationPct": {
+              "min": 14
+            },
+            "reductionOfAreaPct": {
+              "min": 35
+            }
+          },
+          {
+            "from": 16,
+            "to": 40,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 430
+            },
+            "tensileMpa": {
+              "min": 650,
+              "max": 800
+            },
+            "elongationPct": {
+              "min": 16
+            },
+            "reductionOfAreaPct": {
+              "min": 40
+            }
+          },
+          {
+            "from": 40,
+            "to": 100,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 370
+            },
+            "tensileMpa": {
+              "min": 630,
+              "max": 780
+            },
+            "elongationPct": {
+              "min": 17
+            },
+            "reductionOfAreaPct": {
+              "min": 45
+            }
+          }
+        ],
+        "yieldSymbol": "Re",
+        "impact": null,
+        "sourceIds": [
+          "mt-c45"
+        ]
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "min": 0.42,
+            "max": 0.5
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.4
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "min": 0.5,
+            "max": 0.8
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "max": 0.4
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "max": 0.4
+          },
+          {
+            "element": "Mo",
+            "mode": "limit",
+            "max": 0.1
+          }
+        ],
+        "sourceIds": [
+          "mt-c45"
+        ]
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 7800,
+          "kind": "manufacturer_typical",
+          "sourceId": "ovako-c45-2025"
+        },
+        "youngModulusGpa": {
+          "value": 210,
+          "kind": "manufacturer_typical",
+          "sourceId": "ovako-c45-2025"
+        },
+        "sourceIds": [
+          "ovako-c45-2025"
+        ]
+      },
+      "notes": [
+        "C45 ở trạng thái +QT có cơ tính khác với +N, +A hoặc cán nóng.",
+        "Dữ liệu giới hạn theo đường kính mẫu thử/tiết diện. Chưa có dữ liệu cho d > 100 mm trong bản mẫu.",
+        "Tổng Cr + Mo + Ni ≤ 0,63% là giới hạn kết hợp; không được chỉ kiểm tra từng nguyên tố riêng lẻ."
+      ],
+      "sourceIds": [
+        "mt-c45",
+        "bringas-method",
+        "ovako-c45-2025",
+        "welding-institute-steels",
+        "steelconstruction-corrosion"
+      ],
+      "engineering": {
+        "dataStatus": "not_assessed",
+        "designProperties": {
+          "hardness": [],
+          "fatigue": [],
+          "fractureToughness": [],
+          "temperatureDependentProperties": [],
+          "other": []
+        },
+        "manufacturing": {
+          "weldability": "see_materials_welding",
+          "machinability": null,
+          "formability": null,
+          "heatTreatmentRoutes": [
+            "c45-normalizing",
+            "c45-soft-annealing",
+            "c45-hardening",
+            "c45-tempering",
+            "c45-induction-hardening",
+            "c45-stress-relief"
+          ],
+          "surfaceTreatmentRoutes": []
+        },
+        "service": {
+          "corrosionResistance": null,
+          "wearResistance": null,
+          "temperatureLimits": [],
+          "otherRatings": []
+        },
+        "selection": {
+          "approvedComponentIds": [],
+          "approvedRuleIds": [],
+          "conditions": [],
+          "limitations": []
+        },
+        "assessment": {
+          "approvedWeldingMethodIds": []
+        },
+        "review": {
+          "status": "draft",
+          "sourceIds": [],
+          "checkedBy": null,
+          "checkedAt": null,
+          "approvedBy": null,
+          "approvedAt": null
+        }
+      },
+      "referenceData": {
+        "sourcePriority": "Sách ASTM DS67B 2004: đối chiếu tên mác và dữ liệu lịch sử; tiêu chuẩn áp dụng: quy định giới hạn kỹ thuật; datasheet nhà sản xuất: dữ liệu sản phẩm.",
+        "approvedForAutomatedDesign": false,
+        "recordReviewStatus": "draft",
+        "bookReference": {
+          "sourceId": "bringas-method",
+          "editionYear": 2004,
+          "comparativeOnly": true,
+          "pdfPages": [
+            44
+          ],
+          "printedPages": [
+            29
+          ]
+        },
+        "standardEditionRecords": [
+          {
+            "designation": "EN 10083-2:1991",
+            "role": "historical_composition_reference",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "status": "historical"
+          },
+          {
+            "designation": "EN 10083-2",
+            "role": "supplier_reference_QT",
+            "sourceId": "mt-c45",
+            "sourceClauseOrTable": "C45 Chemical Composition / Mechanical Characteristics",
+            "status": "source_specific_reference"
+          },
+          {
+            "designation": "EN ISO 683-1:2018",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "mt-c45",
+            "status": "not_compared_to_full_normative_text"
+          }
+        ],
+        "historicalDesignations": [],
+        "comparisonCandidates": [
+          {
+            "standard": "ASTM A 29/A 29M-03",
+            "grade": "1044",
+            "steelNumber": null,
+            "uns": "G10440",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ASTM A 29/A 29M-03",
+            "grade": "1045",
+            "steelNumber": null,
+            "uns": "G10450",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ASTM A 29/A 29M-03",
+            "grade": "1046",
+            "steelNumber": null,
+            "uns": "G10460",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ASTM A 108-03",
+            "grade": "1045",
+            "steelNumber": null,
+            "uns": "G10450",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ASTM A 576-90b (2000)",
+            "grade": "1044",
+            "steelNumber": null,
+            "uns": "G10440",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ASTM A 576-90b (2000)",
+            "grade": "1045",
+            "steelNumber": null,
+            "uns": "G10450",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ASTM A 576-90b (2000)",
+            "grade": "1046",
+            "steelNumber": null,
+            "uns": "G10460",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "SAE J403 NOV01",
+            "grade": "1044",
+            "steelNumber": null,
+            "uns": "G10440",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "SAE J403 NOV01",
+            "grade": "1045",
+            "steelNumber": null,
+            "uns": "G10450",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "SAE J403 NOV01",
+            "grade": "1046",
+            "steelNumber": null,
+            "uns": "G10460",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "JIS G 4051:1979",
+            "grade": "S45C",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "EN 10016-4:1995",
+            "grade": "C46D2",
+            "steelNumber": "1.1162",
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "EN 10083-1:1991",
+            "grade": "C45E",
+            "steelNumber": "1.1191",
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "EN 10083-1:1991",
+            "grade": "C45R",
+            "steelNumber": "1.1201",
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ISO 683-1:1987",
+            "grade": "C 45",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ISO 683-1:1987",
+            "grade": "C 45 E4",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          },
+          {
+            "standard": "ISO 683-1:1987",
+            "grade": "C 45 M2",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29
+          }
+        ],
+        "engineeringLimits": {
+          "combinedAlloyLimit": {
+            "kind": "heat_analysis_max_combined",
+            "elements": [
+              "Cr",
+              "Mo",
+              "Ni"
+            ],
+            "max": 0.63,
+            "unit": "mass_percent",
+            "sourceId": "mt-c45",
+            "sourceClauseOrTable": "Chemical composition – Cr + Mo + Ni max",
+            "sourceEdition": "EN 10083-2 per supplier"
+          },
+          "reductionOfArea": {
+            "symbol": "Z",
+            "unit": "percent",
+            "kind": "supplier_reference_minimum_by_relevant_diameter",
+            "bands": [
+              {
+                "diameterTo": 16,
+                "min": 35
+              },
+              {
+                "diameterFromExclusive": 16,
+                "diameterTo": 40,
+                "min": 40
+              },
+              {
+                "diameterFromExclusive": 40,
+                "diameterTo": 100,
+                "min": 45
+              }
+            ],
+            "sourceId": "mt-c45",
+            "sourceClauseOrTable": "Mechanical characteristics – quenched and tempered C45"
+          }
+        },
+        "sourceReconciliation": [
+          "C45/1.0503 trong ASTM DS67B theo EN 10083-2:1991. Không xem SAE 1045 hoặc S45C là tương đương để thay thế tự động.",
+          "Số liệu +QT áp dụng theo đường kính tiết diện quy đổi/chiều dày thấu tôi và nguồn nhà cung cấp; cần xác định rõ khi dùng cho thanh lớn."
+        ],
+        "bookStandardData": {
+          "sourceId": "bringas-method",
+          "valueKind": "historical_standard_value_as_tabulated_in_ASTM_DS67B_2004",
+          "useRestriction": "Dữ liệu lịch sử để tra cứu và đối chiếu; không thay thế tiêu chuẩn đang áp dụng.",
+          "standardEdition": "EN 10083-2:1991",
+          "grade": "C45",
+          "steelNumber": "1.0503",
+          "productForm": "general_use_carbon_steel",
+          "mechanical": null,
+          "mechanicalNote": "Sách chỉ có bảng thành phần cho C45 ở mục 2.1; không có cơ tính +QT cho thanh. Cơ tính hiện có giữ theo nguồn nhà cung cấp.",
+          "chemistry": {
+            "sourceTable": "2.1",
+            "pdfPage": 44,
+            "printedPage": 29,
+            "unit": "mass_percent",
+            "analysisBasis": null,
+            "rows": [
+              {
+                "element": "C",
+                "min": 0.42,
+                "max": 0.5
+              },
+              {
+                "element": "Mn",
+                "min": 0.5,
+                "max": 0.8
+              },
+              {
+                "element": "Si",
+                "max": 0.4
+              },
+              {
+                "element": "P",
+                "max": 0.045
+              },
+              {
+                "element": "S",
+                "max": 0.045
+              },
+              {
+                "element": "Cr",
+                "max": 0.4
+              },
+              {
+                "element": "Ni",
+                "max": 0.4
+              },
+              {
+                "element": "Mo",
+                "max": 0.1
+              }
+            ],
+            "combinedLimits": [
+              {
+                "elements": [
+                  "Cr",
+                  "Mo",
+                  "Ni"
+                ],
+                "max": 0.63
+              }
+            ]
+          },
+          "comparisonGroupPages": [
+            44
+          ],
+          "notes": [
+            "Thành phần EN 10083-2:1991 trong sách trùng với bảng nhà cung cấp M.T. Acciai đang dùng (kiểm tra ngày nhập)."
+          ]
+        },
+        "comparisonCandidatesNote": "Theo sách (Ch.1): đường kẻ đen ngăn các nhóm thép 'so sánh được gần nhau hơn', đường xám ngăn dữ liệu trong cùng nhóm; cách nhóm có tính chủ quan. Cùng nhóm KHÔNG có nghĩa là tương đương hay thay thế được. Nhóm lấy từ các hàng nằm giữa hai đường kẻ đen trên cùng trang; nếu nhóm có thể kéo dài qua ngắt trang thì phần ngoài trang này chưa được đưa vào.",
+        "openIssues": [
+          {
+            "id": "C45-standard",
+            "severity": "high",
+            "kind": "data_check",
+            "topic": "Tiêu chuẩn hiện hành",
+            "findingVi": "Nguồn nhà cung cấp ghi EN 10083-2; bản ghi đã nêu EN ISO 683-1 là tiêu chuẩn hiện hành cần rà soát nhưng chưa đối chiếu.",
+            "evidence": [
+              {
+                "sourceId": "mt-c45"
+              }
+            ],
+            "actionVi": "Đối chiếu cơ tính +QT và thành phần với EN ISO 683-1 bản hiện hành; cập nhật standard và standardEdition.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "C45-chem-1991",
+            "severity": "info",
+            "kind": "cross_check_ok",
+            "topic": "Thành phần khớp với sách",
+            "findingVi": "Thành phần EN 10083-2:1991 trong sách trùng với bảng nhà cung cấp đang dùng.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 44,
+                "printedPage": 29,
+                "table": "2.1"
+              },
+              {
+                "sourceId": "mt-c45"
+              }
+            ],
+            "actionVi": "Không cần sửa.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "C45-physical",
+            "severity": "medium",
+            "kind": "coverage",
+            "topic": "Thiếu tính chất vật lý",
+            "findingVi": "Chưa có ρ, E có nguồn cho C45 nên C45 không xuất hiện khi lọc #ρ, #E và không so sánh được các chỉ tiêu này.",
+            "evidence": [],
+            "actionVi": "Bổ sung từ datasheet nhà sản xuất có nêu ρ, E cho C45.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "C45-range",
+            "severity": "low",
+            "kind": "coverage",
+            "topic": "Phạm vi đường kính",
+            "findingVi": "Chưa có dữ liệu +QT cho d > 100 mm.",
+            "evidence": [
+              {
+                "sourceId": "mt-c45"
+              }
+            ],
+            "actionVi": "Bổ sung nếu xưởng dùng trục lớn hơn 100 mm.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          }
+        ]
+      },
+      "heatTreatment": {
+        "status": "sourced_reference_partial",
+        "routes": [
+          {
+            "id": "c45-normalizing",
+            "precededBy": [],
+            "process": "normalizing",
+            "purposeVi": "Đồng đều tổ chức trước gia công hoặc tôi",
+            "temperatureC": {
+              "min": 840,
+              "max": 870
+            },
+            "holdingNote": null,
+            "cooling": "still_air",
+            "resultCondition": "+N",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": "Heat treatment recommendations – Normalizing",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Khuyến nghị Ovako cho sản phẩm C45; tính chất sau thường hóa không thay cho bảng +QT."
+          },
+          {
+            "id": "c45-soft-annealing",
+            "precededBy": [],
+            "process": "soft_annealing",
+            "purposeVi": "Giảm độ cứng để dễ gia công cắt",
+            "temperatureC": {
+              "min": 650,
+              "max": 700
+            },
+            "holdingNote": null,
+            "cooling": "still_air",
+            "resultCondition": "+A",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": "Heat treatment recommendations – Soft annealing",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Trong nguồn Ovako: +SA (spheroidized carbides); khác với +QT."
+          },
+          {
+            "id": "c45-hardening",
+            "precededBy": [],
+            "process": "hardening",
+            "purposeVi": "Tôi để tăng độ cứng, làm bước trước ram",
+            "temperatureC": {
+              "min": 840,
+              "max": 870
+            },
+            "holdingNote": null,
+            "cooling": "oil",
+            "resultCondition": null,
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": "Heat treatment recommendations – Quench & Tempering",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Nhánh tôi dầu 840–870°C; Ovako còn nêu nhánh tôi nước 820–850°C. Phải ram ngay sau tôi; lựa chọn môi trường theo chi tiết."
+          },
+          {
+            "id": "c45-tempering",
+            "precededBy": [
+              "c45-hardening"
+            ],
+            "process": "tempering",
+            "purposeVi": "Ram sau tôi; cùng với tôi tạo trạng thái tôi + ram (+QT)",
+            "temperatureC": {
+              "min": null,
+              "max": null
+            },
+            "holdingNote": null,
+            "cooling": null,
+            "resultCondition": "+QT",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": "Heat treatment recommendations – Quench & Tempering",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Ovako ghi phải ram ngay sau tôi, nhưng không đưa ra một nhiệt độ ram duy nhất trong bảng; xác định nhiệt độ theo cơ tính/độ cứng mong muốn và quy trình thực tế."
+          },
+          {
+            "id": "c45-induction-hardening",
+            "precededBy": [],
+            "process": "induction_hardening",
+            "purposeVi": "Tôi bề mặt cổ trục, răng; lõi giữ trạng thái trước đó",
+            "temperatureC": {
+              "min": 870,
+              "max": 900
+            },
+            "holdingNote": null,
+            "cooling": "oil",
+            "resultCondition": null,
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": true,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": "Heat treatment recommendations – Induction or Flame hardening",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Khoảng hãng công bố cho tôi cảm ứng hoặc tôi ngọn lửa; không suy ra độ sâu lớp tôi hay độ cứng cuối cùng."
+          },
+          {
+            "id": "c45-stress-relief",
+            "precededBy": [],
+            "process": "stress_relieving",
+            "purposeVi": "Giảm ứng suất dư sau gia công thô hoặc nắn",
+            "temperatureC": {
+              "min": 550,
+              "max": 650
+            },
+            "holdingNote": null,
+            "cooling": "still_air",
+            "resultCondition": null,
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": "Heat treatment recommendations – Stress relieve annealing",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Khuyến nghị Ovako; chọn thời gian và điều kiện áp dụng theo kích thước/chu trình chi tiết."
+          }
+        ],
+        "linkNoteVi": "Cơ tính Re/Rm/A trong bản ghi là trạng thái +QT do M.T. Acciai công bố, không phải cơ tính của mọi quy trình liệt kê từ Ovako.",
+        "sourceIds": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "overall": {
+          "rating": "limited",
+          "summaryVi": "C45 chứa khoảng 0,42–0,50% C, nguy cơ cứng hóa HAZ và nứt hàn đáng chú ý; không có bộ nhiệt độ preheat chung đáng tin cho mọi mối hàn.",
+          "sourceId": "welding-institute-steels",
+          "sourceClauseOrTable": "Weldability of steels / cracking risks"
+        },
+        "carbonEquivalentRef": null,
+        "consumables": [],
+        "preheat": [],
+        "interpassTemperatureC": {
+          "min": null,
+          "max": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "pwht": {
+          "required": null,
+          "temperatureC": {
+            "min": null,
+            "max": null
+          },
+          "holdingNote": null,
+          "noteVi": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "specialNotes": [
+          {
+            "textVi": "Cần xem xét CEV theo thành phần thực, hydro khuếch tán, chiều dày/kiềm chế, nhiệt đầu vào và trạng thái +QT trước khi xác định quy trình hàn.",
+            "sourceId": "welding-institute-steels",
+            "sourceClauseOrTable": "Hydrogen/solidification cracking"
+          },
+          {
+            "textVi": "Nhiệt tác động của hàn hoặc PWHT có thể thay đổi tổ chức và cơ tính của C45 +QT. Không dùng nhiệt độ ram bất kỳ chỉ vì có bảng tham khảo.",
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": "Heat treatment recommendations"
+          }
+        ],
+        "dissimilarJoints": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Trục truyền động, chốt và chi tiết máy",
+            "noteVi": "C45 carbon trung bình dùng cho chi tiết cơ khí; cơ tính và độ cứng phụ thuộc trạng thái nhiệt luyện/tiết diện.",
+            "sourceId": "ovako-c45-2025"
+          },
+          {
+            "productVi": "Chi tiết cần tôi và ram (+QT)",
+            "noteVi": "Nhà sản xuất công bố các chế độ tôi/ram tham khảo; cơ tính hiện có là +QT từ nguồn nhà cung cấp M.T. Acciai.",
+            "sourceId": "ovako-c45-2025"
+          },
+          {
+            "productVi": "Vùng cổ trục hoặc mặt cần tăng cứng",
+            "noteVi": "Có thể tham khảo tôi cảm ứng bề mặt; yêu cầu độ cứng và chiều sâu lớp tôi cần quy định riêng.",
+            "sourceId": "ovako-c45-2025"
+          }
+        ],
+        "environments": [
+          {
+            "environment": "indoor_dry",
+            "suitability": "suitable",
+            "conditionsVi": "Chi tiết máy trong nhà khi điều kiện tải trọng, mài mòn và bôi trơn được xem xét.",
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "outdoor_atmospheric",
+            "suitability": "conditional",
+            "conditionsVi": "Thép carbon cần sơn, mạ hoặc bảo vệ bề mặt thích hợp khi tiếp xúc khí quyển ngoài trời.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "marine_chloride",
+            "suitability": "conditional",
+            "conditionsVi": "Môi trường clorua/ẩm cao cần biện pháp chống ăn mòn riêng; không xem C45 là inox.",
+            "sourceId": "steelconstruction-corrosion",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "chemical",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "food_contact",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "low_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "elevated_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "wear",
+            "suitability": "conditional",
+            "conditionsVi": "Có thể tăng độ cứng bề mặt bằng tôi cảm ứng; cần kiểm tra độ cứng, chiều sâu lớp tôi và độ bền lõi.",
+            "sourceId": "ovako-c45-2025",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "fatigue_loading",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          }
+        ],
+        "limitations": [
+          {
+            "textVi": "Bản ghi cơ tính đang ở trạng thái +QT; không sử dụng cho C45 +AR, +N, +A hoặc tiết diện ngoài khoảng có dữ liệu.",
+            "sourceId": "mt-c45"
+          },
+          {
+            "textVi": "Khả năng hàn khó hơn thép kết cấu carbon thấp: kiểm soát nguy cơ cứng hóa vùng ảnh hưởng nhiệt/nứt, đặc biệt với mối ghép dày hoặc bị kiềm chế.",
+            "sourceId": "welding-institute-steels"
+          }
+        ],
+        "notRecommended": [
+          {
+            "textVi": "Không mặc định sử dụng C45 làm kết cấu hàn thông thường như S235/S355 khi chưa đánh giá tính hàn và yêu cầu công nghệ.",
+            "sourceId": "welding-institute-steels"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outokumpu-304-14301-flat-product",
+      "grade": "304",
+      "title": "Thép không gỉ 304",
+      "family": "stainless",
+      "system": "EN / ASTM",
+      "materialNumber": "1.4301",
+      "otherNames": [
+        "EN 1.4301",
+        "UNS S30400",
+        "X5CrNi18-10"
+      ],
+      "standard": "Outokumpu Core 304/4301 / EN 10088 (theo sản phẩm)",
+      "sourceEditionNote": "Dữ liệu từ Outokumpu; cơ tính phụ thuộc dạng sản phẩm và trạng thái cung cấp.",
+      "productForm": "Tấm / cuộn cán nóng hoặc nguội",
+      "condition": "Theo datasheet sản phẩm Outokumpu",
+      "description": "Thép không gỉ Austenitic Cr–Ni, phổ biến trong thiết bị và chế tạo.",
+      "applications": [
+        "Bồn, vỏ thiết bị",
+        "Thiết bị thực phẩm",
+        "Chi tiết inox phổ thông"
+      ],
+      "mechanical": {
+        "status": "manufacturer_indicative",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "reference": 230
+            },
+            "elongationPct": {
+              "reference": 45
+            },
+            "tensileMpa": null
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "outo-core"
+        ],
+        "note": "Rp0,2 và độ giãn dài là giá trị tham khảo từ bảng sản phẩm hãng; không được coi là thông số thiết kế cho mọi chiều dày/trạng thái.",
+        "referenceFormCode": "C",
+        "referenceFormNote": "Giá trị reference trong mechanical.cases[] ở giao diện cũ là dạng C (cán nguội). Đọc bảng đầy đủ C/H/P trong referenceData.engineeringLimits.mechanicalByFormEN10088_2 trước khi sử dụng."
+      },
+      "chemistry": {
+        "kind": "typical_manufacturer_composition",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "typical",
+            "value": 0.04
+          },
+          {
+            "element": "Cr",
+            "mode": "typical",
+            "value": 18.1
+          },
+          {
+            "element": "Ni",
+            "mode": "typical",
+            "value": 8.1
+          }
+        ],
+        "sourceIds": [
+          "outo-304",
+          "outo-core"
+        ]
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 7900,
+          "kind": "manufacturer_reference_20c"
+        },
+        "youngModulusGpa": {
+          "value": 200,
+          "kind": "manufacturer_reference_20c"
+        },
+        "sourceIds": [
+          "outo-core"
+        ],
+        "linearThermalExpansion20To100C_10eMinus6PerK": {
+          "value": 16.0,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-core"
+        },
+        "thermalConductivity20C_WmK": {
+          "value": 15,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-core"
+        },
+        "specificHeat20C_JkgK": {
+          "value": 500,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-core"
+        },
+        "electricalResistivity20C_OhmMm2PerM": {
+          "value": 0.73,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-core"
+        },
+        "magnetizable": {
+          "value": false,
+          "kind": "manufacturer_reference_for_solution_annealed_austenitic_grade",
+          "sourceId": "outo-core"
+        }
+      },
+      "notes": [
+        "Thành phần hóa học hiển thị là giá trị điển hình của hãng, không phải giới hạn min/max của tiêu chuẩn.",
+        "Khi tra cứu, chọn đúng mác, tiêu chuẩn, dạng sản phẩm và trạng thái.",
+        "Bảng cơ tính theo dạng C (cán nguội), H (cán nóng), P (tấm dày) xem ở tab Cơ tính; thẻ tóm tắt chỉ là giá trị tham khảo chung của hãng, không dùng thay bảng theo dạng."
+      ],
+      "sourceIds": [
+        "outo-304",
+        "outo-core",
+        "bringas-method",
+        "esab-308l",
+        "outo-corrosion-general"
+      ],
+      "engineering": {
+        "dataStatus": "not_assessed",
+        "designProperties": {
+          "hardness": [],
+          "fatigue": [],
+          "fractureToughness": [],
+          "temperatureDependentProperties": [],
+          "other": []
+        },
+        "manufacturing": {
+          "weldability": "see_materials_welding",
+          "machinability": null,
+          "formability": null,
+          "heatTreatmentRoutes": [
+            "304-solution-annealing"
+          ],
+          "surfaceTreatmentRoutes": []
+        },
+        "service": {
+          "corrosionResistance": null,
+          "wearResistance": null,
+          "temperatureLimits": [],
+          "otherRatings": []
+        },
+        "selection": {
+          "approvedComponentIds": [],
+          "approvedRuleIds": [],
+          "conditions": [],
+          "limitations": []
+        },
+        "assessment": {
+          "approvedWeldingMethodIds": []
+        },
+        "review": {
+          "status": "draft",
+          "sourceIds": [],
+          "checkedBy": null,
+          "checkedAt": null,
+          "approvedBy": null,
+          "approvedAt": null
+        }
+      },
+      "referenceData": {
+        "sourcePriority": "Sách ASTM DS67B 2004: đối chiếu tên mác và dữ liệu lịch sử; tiêu chuẩn áp dụng: quy định giới hạn kỹ thuật; datasheet nhà sản xuất: dữ liệu sản phẩm.",
+        "approvedForAutomatedDesign": false,
+        "recordReviewStatus": "draft",
+        "bookReference": {
+          "sourceId": "bringas-method",
+          "editionYear": 2004,
+          "comparativeOnly": true,
+          "pdfPages": [
+            385,
+            392
+          ],
+          "printedPages": [
+            373,
+            380
+          ]
+        },
+        "standardEditionRecords": [
+          {
+            "designation": "EN 10088-2:1995",
+            "role": "historical_chemical_limits",
+            "sourceId": "bringas-method",
+            "sourceClauseOrTable": "8.1.3A Chemical Composition of Austenitic Stainless Steels",
+            "status": "historical_not_for_current_application"
+          },
+          {
+            "designation": "EN 10088-2 (edition of manufacturer datasheet not explicit)",
+            "role": "manufacturer_mechanical_by_product_form",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": "Mechanical properties according to EN 10088-2, Table 5",
+            "status": "manufacturer_reference_needs_edition_and_contract_check"
+          },
+          {
+            "designation": "ASTM A240 (edition of manufacturer datasheet not explicit)",
+            "role": "alternative_manufacturer_mechanical_table",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": "Mechanical properties according to ASTM A240, Table 6",
+            "status": "manufacturer_reference_not_combined_with_EN_limit"
+          }
+        ],
+        "historicalDesignations": [],
+        "comparisonCandidates": [
+          {
+            "standard": "ASTM A 240/A 240M-03c",
+            "grade": "304",
+            "steelNumber": null,
+            "uns": "S30400",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 385,
+            "printedPage": 373
+          },
+          {
+            "standard": "ASTM A 666-03",
+            "grade": "304",
+            "steelNumber": null,
+            "uns": "S30400",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 385,
+            "printedPage": 373
+          },
+          {
+            "standard": "JIS G 4304:1999",
+            "grade": "SUS304",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 385,
+            "printedPage": 373
+          },
+          {
+            "standard": "JIS G 4305:1999",
+            "grade": "SUS304",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 385,
+            "printedPage": 373
+          },
+          {
+            "standard": "JIS G 4312:1991",
+            "grade": "SUS304",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 385,
+            "printedPage": 373
+          },
+          {
+            "standard": "ISO 4955:1994",
+            "grade": "X7CrNi18-9",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 385,
+            "printedPage": 373
+          }
+        ],
+        "engineeringLimits": {
+          "historicalHeatAnalysisEN10088_2_1995": {
+            "kind": "standard_historical_limits_not_current_acceptance",
+            "standardEdition": "EN 10088-2:1995",
+            "productForm": "plate_sheet_strip",
+            "unit": "mass_percent",
+            "sourceId": "bringas-method",
+            "pdfPage": 385,
+            "sourceClauseOrTable": "8.1.3A",
+            "elements": [
+              {
+                "element": "C",
+                "min": null,
+                "max": 0.07
+              },
+              {
+                "element": "Mn",
+                "min": null,
+                "max": 2.0
+              },
+              {
+                "element": "Si",
+                "min": null,
+                "max": 1.0
+              },
+              {
+                "element": "P",
+                "min": null,
+                "max": 0.045
+              },
+              {
+                "element": "S",
+                "min": null,
+                "max": 0.015
+              },
+              {
+                "element": "Cr",
+                "min": 17.0,
+                "max": 19.5
+              },
+              {
+                "element": "Ni",
+                "min": 8.0,
+                "max": 10.5
+              },
+              {
+                "element": "N",
+                "min": null,
+                "max": 0.11
+              }
+            ]
+          },
+          "mechanicalByFormEN10088_2": {
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": "Table 5 – Mechanical properties at 20°C",
+            "temperatureC": 20,
+            "standardEdition": "EN 10088-2 referenced by Outokumpu (specific edition unconfirmed)",
+            "dataKind": "manufacturer_datasheet_reference_to_standard",
+            "noAutoAcceptance": true,
+            "forms": [
+              {
+                "code": "C",
+                "productForm": "cold_rolled_coil_sheet",
+                "yieldRp02Mpa": {
+                  "min": 230
+                },
+                "yieldRp10Mpa": {
+                  "min": 260
+                },
+                "tensileRmMpa": {
+                  "min": 540,
+                  "max": 750
+                },
+                "elongationA5Pct": {
+                  "min": 45
+                },
+                "elongationA80Pct": {
+                  "min": 45
+                }
+              },
+              {
+                "code": "H",
+                "productForm": "hot_rolled_coil_sheet",
+                "yieldRp02Mpa": {
+                  "min": 210
+                },
+                "yieldRp10Mpa": {
+                  "min": 250
+                },
+                "tensileRmMpa": {
+                  "min": 520,
+                  "max": 720
+                },
+                "elongationA5Pct": {
+                  "min": 45
+                },
+                "elongationA80Pct": {
+                  "min": 45
+                }
+              },
+              {
+                "code": "P",
+                "productForm": "quarto_plate",
+                "yieldRp02Mpa": {
+                  "min": 210
+                },
+                "yieldRp10Mpa": {
+                  "min": 250
+                },
+                "tensileRmMpa": {
+                  "min": 520,
+                  "max": 720
+                },
+                "elongationA5Pct": {
+                  "min": 45
+                },
+                "elongationA80Pct": {
+                  "min": 45
+                }
+              }
+            ]
+          },
+          "mechanicalByASTMA240": {
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": "Table 6 – ASTM A240",
+            "productForms": [
+              "C",
+              "H",
+              "P"
+            ],
+            "yieldRp02Mpa": {
+              "min": 170
+            },
+            "tensileRmMpa": {
+              "min": 485
+            },
+            "elongationA50Pct": {
+              "min": 40
+            },
+            "dataKind": "alternative_standard_reference",
+            "noAutoAcceptance": true
+          }
+        },
+        "sourceReconciliation": [
+          "Chemical composition hiện hiển thị trong tab Thành phần là giá trị ĐIỂN HÌNH của hãng; giới hạn hóa học EN 10088-2:1995 lưu riêng để tra cứu lịch sử và không dùng nghiệm thu hiện tại.",
+          "Bảng cơ tính phải chọn chính xác tiêu chuẩn EN hoặc ASTM, trạng thái C/H/P; không so sánh/đối chiếu giá trị không tương thích.",
+          "Các ký hiệu chung 304/316L và số vật liệu 1.4301/1.4404 xác nhận định danh; các biến thể 1.4432, 1.4435 không tự gộp."
+        ],
+        "bookStandardData": {
+          "sourceId": "bringas-method",
+          "valueKind": "historical_standard_value_as_tabulated_in_ASTM_DS67B_2004",
+          "useRestriction": "Dữ liệu lịch sử để tra cứu và đối chiếu; không thay thế tiêu chuẩn đang áp dụng.",
+          "standardEdition": "EN 10088-2:1995",
+          "grade": "X5CrNi18-10",
+          "steelNumber": "1.4301",
+          "mechanical": {
+            "sourceTable": "8.1.3B",
+            "pdfPage": 392,
+            "printedPage": 380,
+            "temperatureC": null,
+            "yieldSymbol": "Rp0,2",
+            "units": {
+              "yield": "MPa",
+              "tensile": "MPa",
+              "elongation": "%"
+            },
+            "heatTreatmentCode": "AT",
+            "heatTreatmentNote": "AT = ủ dung dịch (solution annealed) theo ký hiệu trong sách.",
+            "forms": [
+              {
+                "code": "St/CR",
+                "productForm": "cold_rolled_strip",
+                "thickness": {
+                  "from": null,
+                  "to": 6,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                },
+                "yieldMin": 230,
+                "tensile": {
+                  "min": 540,
+                  "max": 750
+                },
+                "elongationMin": 45
+              },
+              {
+                "code": "St/HR",
+                "productForm": "hot_rolled_strip",
+                "thickness": {
+                  "from": null,
+                  "to": 12,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                },
+                "yieldMin": 210,
+                "tensile": {
+                  "min": 520,
+                  "max": 720
+                },
+                "elongationMin": 45
+              },
+              {
+                "code": "Pl/HR",
+                "productForm": "hot_rolled_plate",
+                "thickness": {
+                  "from": null,
+                  "to": 75,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                },
+                "yieldMin": 210,
+                "tensile": {
+                  "min": 520,
+                  "max": 720
+                },
+                "elongationMin": 45
+              }
+            ],
+            "readingNote": "Ô Rm và A gộp nhiều dạng sản phẩm trong bảng đã được đối chiếu bằng ảnh trang."
+          },
+          "chemistryRef": "Giới hạn hóa học EN 10088-2:1995 đã có tại referenceData.engineeringLimits.historicalHeatAnalysisEN10088_2_1995.",
+          "comparisonGroupPages": [
+            385
+          ],
+          "notes": [
+            "Giá trị EN 10088-2:1995 trong sách trùng với bảng EN 10088-2 do Outokumpu công bố cho dạng C/H/P đang lưu (kiểm tra ngày nhập); phiên bản Outokumpu viện dẫn vẫn chưa xác nhận."
+          ]
+        },
+        "comparisonCandidatesNote": "Theo sách (Ch.1): đường kẻ đen ngăn các nhóm thép 'so sánh được gần nhau hơn', đường xám ngăn dữ liệu trong cùng nhóm; cách nhóm có tính chủ quan. Cùng nhóm KHÔNG có nghĩa là tương đương hay thay thế được. Nhóm lấy từ các hàng nằm giữa hai đường kẻ đen trên cùng trang; nếu nhóm có thể kéo dài qua ngắt trang thì phần ngoài trang này chưa được đưa vào.",
+        "openIssues": [
+          {
+            "id": "304-chem-limits",
+            "severity": "high",
+            "kind": "data_check",
+            "topic": "Thiếu giới hạn thành phần hiện hành",
+            "findingVi": "Tab Thành phần chỉ có giá trị điển hình của hãng (C, Cr, Ni); giới hạn min/max chỉ có bản EN 10088-2:1995 lưu ở phần lịch sử. Giới hạn theo tiêu chuẩn hiện hành chưa được điền đầy đủ.",
+            "evidence": [
+              {
+                "sourceId": "outo-core"
+              },
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 385,
+                "printedPage": 373,
+                "table": "8.1.3A"
+              }
+            ],
+            "actionVi": "Bổ sung bảng giới hạn thành phần theo EN 10088-2 bản hiện hành (hoặc bảng của hãng có nêu giới hạn).",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "304-form-thickness",
+            "severity": "medium",
+            "kind": "data_check",
+            "topic": "Thiếu giới hạn chiều dày theo dạng C/H/P",
+            "findingVi": "Bảng cơ tính C/H/P của hãng chưa ghi chiều dày tối đa từng dạng. EN 10088-2:1995 trong sách ghi C ≤ 6 mm, H ≤ 12 mm, P ≤ 75 mm; phiên bản hiện hành có thể khác.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 392,
+                "printedPage": 380,
+                "table": "8.1.3B"
+              },
+              {
+                "sourceId": "outo-core"
+              }
+            ],
+            "actionVi": "Bổ sung chiều dày tối đa từng dạng từ nguồn hiện hành.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "304-condition",
+            "severity": "medium",
+            "kind": "data_check",
+            "topic": "Trạng thái giao hàng chưa đúng nghĩa",
+            "findingVi": "Trường condition đang ghi \"Theo datasheet sản phẩm Outokumpu\", không phải trạng thái vật liệu. Bảng trong sách ghi trạng thái AT (ủ dung dịch).",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 392,
+                "printedPage": 380,
+                "table": "8.1.3B"
+              }
+            ],
+            "actionVi": "Ghi trạng thái theo nguồn hiện hành (ví dụ ủ dung dịch kèm dạng bề mặt) sau khi xác nhận.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "304-mech-1995",
+            "severity": "info",
+            "kind": "cross_check_ok",
+            "topic": "Cơ tính khớp với sách",
+            "findingVi": "Cơ tính C/H/P của hãng trùng với EN 10088-2:1995 trong sách về Rp0,2, Rm, A.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 392,
+                "printedPage": 380,
+                "table": "8.1.3B"
+              }
+            ],
+            "actionVi": "Không cần sửa.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          }
+        ]
+      },
+      "steelDesignation": "X5CrNi18-10",
+      "unsNumber": "S30400",
+      "heatTreatment": {
+        "status": "sourced_reference_partial",
+        "routes": [
+          {
+            "id": "304-solution-annealing",
+            "precededBy": [],
+            "process": "solution_annealing",
+            "purposeVi": "Ủ dung dịch: hòa tan carbide, phục hồi khả năng chống ăn mòn và độ dẻo",
+            "temperatureC": {
+              "min": 1000,
+              "max": 1100
+            },
+            "holdingNote": null,
+            "cooling": "rapid",
+            "resultCondition": "+AT",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": "Fabrication – Heat treatment",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Outokumpu yêu cầu làm nguội nhanh bằng nước hoặc không khí; điều kiện kích thước/chi tiết do sản phẩm và thiết bị quyết định. Austenitic không hóa bền bằng tôi–ram thông thường."
+          }
+        ],
+        "linkNoteVi": "Nhiệt luyện ủ dung dịch dùng để phục hồi trạng thái austenite/khả năng chống ăn mòn; không suy ra cơ tính của sản phẩm đã gia công nguội.",
+        "sourceIds": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "overall": {
+          "rating": "good",
+          "summaryVi": "Outokumpu ghi nhận inox austenitic 304 có tính hàn tốt với nhiều phương pháp thông dụng; khi hàn tiết diện dày, chú ý nhạy cảm ăn mòn liên hạt.",
+          "sourceId": "outo-core",
+          "sourceClauseOrTable": "Fabrication – Welding"
+        },
+        "carbonEquivalentRef": null,
+        "consumables": [
+          {
+            "process": "GTAW",
+            "classificationIso": "W 19 9 L",
+            "classificationAws": "ER308L",
+            "classificationGb": null,
+            "noteVi": "Ví dụ que TIG ESAB OK Tigrod 308L cho inox họ 18Cr–8Ni (304); không phải loại duy nhất.",
+            "sourceId": "esab-308l",
+            "sourceClauseOrTable": "Filler classification / application"
+          }
+        ],
+        "preheat": [],
+        "interpassTemperatureC": {
+          "min": null,
+          "max": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "pwht": {
+          "required": false,
+          "temperatureC": {
+            "min": null,
+            "max": null
+          },
+          "holdingNote": null,
+          "noteVi": "Thông thường không yêu cầu PWHT; trường hợp có nguy cơ SCC hoặc mỏi cần đánh giá riêng. Không suy ra mọi liên kết đều được miễn xử lý.",
+          "sourceId": "outo-core",
+          "sourceClauseOrTable": "Fabrication – Welding"
+        },
+        "specialNotes": [
+          {
+            "textVi": "Khi hàn inox austenitic, kiểm soát biến dạng do giãn nở nhiệt cao; làm sạch oxit màu nhiệt sau hàn (ví dụ tẩy bề mặt phù hợp) để phục hồi chống ăn mòn.",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": "Fabrication – Welding"
+          },
+          {
+            "textVi": "Nguồn hãng không đưa ra nhiệt độ gia nhiệt sơ bộ cố định cho mọi mối hàn; không tự chọn giá trị khi chưa có WPS.",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": "Fabrication – Welding"
+          }
+        ],
+        "dissimilarJoints": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Thiết bị nhà bếp và công nghiệp thực phẩm",
+            "noteVi": "Ứng dụng điển hình của Core 304/4301 trong môi trường ít hoặc vừa ăn mòn.",
+            "sourceId": "outo-core"
+          },
+          {
+            "productVi": "Bồn chứa, vỏ thiết bị, chi tiết inox",
+            "noteVi": "Phụ thuộc môi chất, chất lượng bề mặt, khe hở và vệ sinh sau hàn.",
+            "sourceId": "outo-core"
+          },
+          {
+            "productVi": "Lan can, ốp trang trí, cấu kiện kiến trúc",
+            "noteVi": "Tham khảo cho khí quyển nông thôn và đô thị ít ô nhiễm; hạn chế khi có phun muối/clorua cao.",
+            "sourceId": "outo-core"
+          }
+        ],
+        "environments": [
+          {
+            "environment": "indoor_dry",
+            "suitability": "suitable",
+            "conditionsVi": "Phù hợp nhiều ứng dụng trong nhà, bề mặt sạch và điều kiện ăn mòn thông thường.",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "outdoor_atmospheric",
+            "suitability": "conditional",
+            "conditionsVi": "Khí quyển ít clorua có thể phù hợp; vùng phun nước biển hoặc ô nhiễm cao cần đánh giá mác cao hơn.",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "marine_chloride",
+            "suitability": "conditional",
+            "conditionsVi": "304 không có Mo; khi vùng phun muối/Cl- cao, có nguy cơ rỗ và ăn mòn khe, nên xem xét mác phù hợp hơn.",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "chemical",
+            "suitability": "conditional",
+            "conditionsVi": "Có thể dùng với một số môi trường ăn mòn nhẹ; phải kiểm tra loại hóa chất, nồng độ và nhiệt độ.",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "food_contact",
+            "suitability": "conditional",
+            "conditionsVi": "Được hãng liệt kê cho thiết bị thực phẩm; vẫn cần chọn đúng hoàn thiện bề mặt và yêu cầu vệ sinh của ứng dụng.",
+            "sourceId": "outo-core",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "low_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "elevated_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "wear",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "fatigue_loading",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          }
+        ],
+        "limitations": [
+          {
+            "textVi": "Hàn tấm dày/chịu điều kiện nhạy ăn mòn liên hạt cần xem xét phương án carbon thấp (như 304L) và điều kiện xử lý bề mặt.",
+            "sourceId": "outo-core"
+          }
+        ],
+        "notRecommended": [
+          {
+            "textVi": "Không mặc định dùng 304 cho kết cấu chịu lực trong không khí hồ bơi có clorua; Outokumpu cảnh báo nguy cơ nứt ăn mòn ứng suất.",
+            "sourceId": "outo-core"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outokumpu-316l-14404-flat-product",
+      "grade": "316L",
+      "title": "Thép không gỉ 316L",
+      "family": "stainless",
+      "system": "EN / ASTM",
+      "materialNumber": "1.4404",
+      "otherNames": [
+        "EN 1.4404",
+        "UNS S31603",
+        "X2CrNiMo17-12-2"
+      ],
+      "standard": "Outokumpu Supra 316L/4404 / EN 10088 (theo sản phẩm)",
+      "sourceEditionNote": "Dữ liệu từ Outokumpu; cơ tính phụ thuộc dạng sản phẩm và trạng thái cung cấp.",
+      "productForm": "Tấm / cuộn cán nóng hoặc nguội",
+      "condition": "Theo datasheet sản phẩm Outokumpu",
+      "description": "Thép không gỉ Austenitic Cr–Ni–Mo hàm lượng carbon thấp, chống ăn mòn tốt hơn trong nhiều môi trường.",
+      "applications": [
+        "Thiết bị hóa chất",
+        "Đường ống, bồn",
+        "Thiết bị chế biến"
+      ],
+      "mechanical": {
+        "status": "manufacturer_indicative",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "reference": 240
+            },
+            "elongationPct": {
+              "reference": 40
+            },
+            "tensileMpa": null
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "outo-supra"
+        ],
+        "note": "Rp0,2 và độ giãn dài là giá trị tham khảo từ bảng sản phẩm hãng; không được coi là thông số thiết kế cho mọi chiều dày/trạng thái.",
+        "referenceFormCode": "C",
+        "referenceFormNote": "Giá trị reference trong mechanical.cases[] ở giao diện cũ là dạng C (cán nguội). Đọc bảng đầy đủ C/H/P trong referenceData.engineeringLimits.mechanicalByFormEN10088_2 trước khi sử dụng."
+      },
+      "chemistry": {
+        "kind": "typical_manufacturer_composition",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "typical",
+            "value": 0.02
+          },
+          {
+            "element": "Cr",
+            "mode": "typical",
+            "value": 17.2
+          },
+          {
+            "element": "Ni",
+            "mode": "typical",
+            "value": 10.1
+          },
+          {
+            "element": "Mo",
+            "mode": "typical",
+            "value": 2.1
+          }
+        ],
+        "sourceIds": [
+          "outo-316",
+          "outo-supra"
+        ]
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 8000,
+          "kind": "manufacturer_reference_20c"
+        },
+        "youngModulusGpa": {
+          "value": 200,
+          "kind": "manufacturer_reference_20c"
+        },
+        "sourceIds": [
+          "outo-supra"
+        ],
+        "linearThermalExpansion20To100C_10eMinus6PerK": {
+          "value": 16.0,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra"
+        },
+        "thermalConductivity20C_WmK": {
+          "value": 15,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra"
+        },
+        "specificHeat20C_JkgK": {
+          "value": 500,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra"
+        },
+        "electricalResistivity20C_OhmMm2PerM": {
+          "value": 0.75,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra"
+        },
+        "magnetizable": {
+          "value": false,
+          "kind": "manufacturer_reference_for_solution_annealed_austenitic_grade",
+          "sourceId": "outo-supra"
+        }
+      },
+      "notes": [
+        "Thành phần hóa học hiển thị là giá trị điển hình của hãng, không phải giới hạn min/max của tiêu chuẩn.",
+        "Khi tra cứu, chọn đúng mác, tiêu chuẩn, dạng sản phẩm và trạng thái.",
+        "Bảng cơ tính theo dạng C (cán nguội), H (cán nóng), P (tấm dày) xem ở tab Cơ tính; thẻ tóm tắt chỉ là giá trị tham khảo chung của hãng, không dùng thay bảng theo dạng."
+      ],
+      "sourceIds": [
+        "outo-316",
+        "outo-supra",
+        "bringas-method",
+        "esab-316l",
+        "outo-corrosion-general"
+      ],
+      "engineering": {
+        "dataStatus": "not_assessed",
+        "designProperties": {
+          "hardness": [],
+          "fatigue": [],
+          "fractureToughness": [],
+          "temperatureDependentProperties": [],
+          "other": []
+        },
+        "manufacturing": {
+          "weldability": "see_materials_welding",
+          "machinability": null,
+          "formability": null,
+          "heatTreatmentRoutes": [
+            "316l-solution-annealing"
+          ],
+          "surfaceTreatmentRoutes": []
+        },
+        "service": {
+          "corrosionResistance": null,
+          "wearResistance": null,
+          "temperatureLimits": [],
+          "otherRatings": []
+        },
+        "selection": {
+          "approvedComponentIds": [],
+          "approvedRuleIds": [],
+          "conditions": [],
+          "limitations": []
+        },
+        "assessment": {
+          "approvedWeldingMethodIds": []
+        },
+        "review": {
+          "status": "draft",
+          "sourceIds": [],
+          "checkedBy": null,
+          "checkedAt": null,
+          "approvedBy": null,
+          "approvedAt": null
+        }
+      },
+      "referenceData": {
+        "sourcePriority": "Sách ASTM DS67B 2004: đối chiếu tên mác và dữ liệu lịch sử; tiêu chuẩn áp dụng: quy định giới hạn kỹ thuật; datasheet nhà sản xuất: dữ liệu sản phẩm.",
+        "approvedForAutomatedDesign": false,
+        "recordReviewStatus": "draft",
+        "bookReference": {
+          "sourceId": "bringas-method",
+          "editionYear": 2004,
+          "comparativeOnly": true,
+          "pdfPages": [
+            386,
+            395
+          ],
+          "printedPages": [
+            374,
+            383
+          ]
+        },
+        "standardEditionRecords": [
+          {
+            "designation": "EN 10088-2:1995",
+            "role": "historical_chemical_limits",
+            "sourceId": "bringas-method",
+            "sourceClauseOrTable": "8.1.3A Chemical Composition of Austenitic Stainless Steels",
+            "status": "historical_not_for_current_application"
+          },
+          {
+            "designation": "EN 10088-2 (edition of manufacturer datasheet not explicit)",
+            "role": "manufacturer_mechanical_by_product_form",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": "Mechanical properties according to EN 10088-2, Table 5",
+            "status": "manufacturer_reference_needs_edition_and_contract_check"
+          },
+          {
+            "designation": "ASTM A240 (edition of manufacturer datasheet not explicit)",
+            "role": "alternative_manufacturer_mechanical_table",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": "Mechanical properties according to ASTM A240, Table 6",
+            "status": "manufacturer_reference_not_combined_with_EN_limit"
+          }
+        ],
+        "historicalDesignations": [],
+        "comparisonCandidates": [
+          {
+            "standard": "ASTM A 240/A 240M-03c",
+            "grade": "316L",
+            "steelNumber": null,
+            "uns": "S31603",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 386,
+            "printedPage": 374
+          },
+          {
+            "standard": "ASTM A 666-03",
+            "grade": "316L",
+            "steelNumber": null,
+            "uns": "S31603",
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 386,
+            "printedPage": 374
+          },
+          {
+            "standard": "JIS G 4304:1999",
+            "grade": "SUS316L",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 386,
+            "printedPage": 374
+          },
+          {
+            "standard": "JIS G 4305:1999",
+            "grade": "SUS316L",
+            "steelNumber": null,
+            "uns": null,
+            "relationship": "book_same_comparative_group_not_equivalence",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 386,
+            "printedPage": 374
+          },
+          {
+            "standard": "EN 10088-2:1995",
+            "grade": "X2CrNiMo17-12-3",
+            "steelNumber": "1.4432",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 386,
+            "printedPage": 374
+          },
+          {
+            "standard": "EN 10088-2:1995",
+            "grade": "X2CrNiMo18-14-3",
+            "steelNumber": "1.4435",
+            "uns": null,
+            "relationship": "same_standard_sibling_in_book_group",
+            "sourceId": "bringas-method",
+            "sourceTable": "8.1.3A",
+            "pdfPage": 386,
+            "printedPage": 374
+          }
+        ],
+        "engineeringLimits": {
+          "historicalHeatAnalysisEN10088_2_1995": {
+            "kind": "standard_historical_limits_not_current_acceptance",
+            "standardEdition": "EN 10088-2:1995",
+            "productForm": "plate_sheet_strip",
+            "unit": "mass_percent",
+            "sourceId": "bringas-method",
+            "pdfPage": 386,
+            "sourceClauseOrTable": "8.1.3A",
+            "elements": [
+              {
+                "element": "C",
+                "min": null,
+                "max": 0.03
+              },
+              {
+                "element": "Mn",
+                "min": null,
+                "max": 2.0
+              },
+              {
+                "element": "Si",
+                "min": null,
+                "max": 1.0
+              },
+              {
+                "element": "P",
+                "min": null,
+                "max": 0.045
+              },
+              {
+                "element": "S",
+                "min": null,
+                "max": 0.015
+              },
+              {
+                "element": "Cr",
+                "min": 16.5,
+                "max": 18.5
+              },
+              {
+                "element": "Ni",
+                "min": 10.0,
+                "max": 13.0
+              },
+              {
+                "element": "Mo",
+                "min": 2.0,
+                "max": 2.5
+              },
+              {
+                "element": "N",
+                "min": null,
+                "max": 0.11
+              }
+            ]
+          },
+          "mechanicalByFormEN10088_2": {
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": "Table 5 – Mechanical properties at 20°C",
+            "temperatureC": 20,
+            "standardEdition": "EN 10088-2 referenced by Outokumpu (specific edition unconfirmed)",
+            "dataKind": "manufacturer_datasheet_reference_to_standard",
+            "noAutoAcceptance": true,
+            "forms": [
+              {
+                "code": "C",
+                "productForm": "cold_rolled_coil_sheet",
+                "yieldRp02Mpa": {
+                  "min": 240
+                },
+                "yieldRp10Mpa": {
+                  "min": 270
+                },
+                "tensileRmMpa": {
+                  "min": 530,
+                  "max": 680
+                },
+                "elongationA5Pct": {
+                  "min": 40
+                },
+                "elongationA80Pct": {
+                  "min": 40
+                }
+              },
+              {
+                "code": "H",
+                "productForm": "hot_rolled_coil_sheet",
+                "yieldRp02Mpa": {
+                  "min": 220
+                },
+                "yieldRp10Mpa": {
+                  "min": 260
+                },
+                "tensileRmMpa": {
+                  "min": 530,
+                  "max": 680
+                },
+                "elongationA5Pct": {
+                  "min": 40
+                },
+                "elongationA80Pct": {
+                  "min": 40
+                }
+              },
+              {
+                "code": "P",
+                "productForm": "quarto_plate",
+                "yieldRp02Mpa": {
+                  "min": 220
+                },
+                "yieldRp10Mpa": {
+                  "min": 260
+                },
+                "tensileRmMpa": {
+                  "min": 520,
+                  "max": 670
+                },
+                "elongationA5Pct": {
+                  "min": 45
+                },
+                "elongationA80Pct": {
+                  "min": 45
+                }
+              }
+            ]
+          },
+          "mechanicalByASTMA240": {
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": "Table 6 – ASTM A240",
+            "productForms": [
+              "C",
+              "H",
+              "P"
+            ],
+            "yieldRp02Mpa": {
+              "min": 170
+            },
+            "tensileRmMpa": {
+              "min": 485
+            },
+            "elongationA50Pct": {
+              "min": 40
+            },
+            "dataKind": "alternative_standard_reference",
+            "noAutoAcceptance": true
+          }
+        },
+        "sourceReconciliation": [
+          "Chemical composition hiện hiển thị trong tab Thành phần là giá trị ĐIỂN HÌNH của hãng; giới hạn hóa học EN 10088-2:1995 lưu riêng để tra cứu lịch sử và không dùng nghiệm thu hiện tại.",
+          "Bảng cơ tính phải chọn chính xác tiêu chuẩn EN hoặc ASTM, trạng thái C/H/P; không so sánh/đối chiếu giá trị không tương thích.",
+          "Các ký hiệu chung 304/316L và số vật liệu 1.4301/1.4404 xác nhận định danh; các biến thể 1.4432, 1.4435 không tự gộp."
+        ],
+        "bookStandardData": {
+          "sourceId": "bringas-method",
+          "valueKind": "historical_standard_value_as_tabulated_in_ASTM_DS67B_2004",
+          "useRestriction": "Dữ liệu lịch sử để tra cứu và đối chiếu; không thay thế tiêu chuẩn đang áp dụng.",
+          "standardEdition": "EN 10088-2:1995",
+          "grade": "X2CrNiMo17-12-2",
+          "steelNumber": "1.4404",
+          "mechanical": {
+            "sourceTable": "8.1.3B",
+            "pdfPage": 395,
+            "printedPage": 383,
+            "temperatureC": null,
+            "yieldSymbol": "Rp0,2",
+            "units": {
+              "yield": "MPa",
+              "tensile": "MPa",
+              "elongation": "%"
+            },
+            "heatTreatmentCode": "AT",
+            "heatTreatmentNote": "AT = ủ dung dịch (solution annealed) theo ký hiệu trong sách.",
+            "forms": [
+              {
+                "code": "St/CR",
+                "productForm": "cold_rolled_strip",
+                "thickness": {
+                  "from": null,
+                  "to": 6,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                },
+                "yieldMin": 240,
+                "tensile": {
+                  "min": 530,
+                  "max": 680
+                },
+                "elongationMin": 40
+              },
+              {
+                "code": "St/HR",
+                "productForm": "hot_rolled_strip",
+                "thickness": {
+                  "from": null,
+                  "to": 12,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                },
+                "yieldMin": 220,
+                "tensile": {
+                  "min": 530,
+                  "max": 680
+                },
+                "elongationMin": 40
+              },
+              {
+                "code": "Pl/HR",
+                "productForm": "hot_rolled_plate",
+                "thickness": {
+                  "from": null,
+                  "to": 75,
+                  "fromInclusive": false,
+                  "toInclusive": true
+                },
+                "yieldMin": 220,
+                "tensile": {
+                  "min": 520,
+                  "max": 670
+                },
+                "elongationMin": 45
+              }
+            ],
+            "readingNote": "Ô Rm và A gộp nhiều dạng sản phẩm trong bảng đã được đối chiếu bằng ảnh trang."
+          },
+          "chemistryRef": "Giới hạn hóa học EN 10088-2:1995 đã có tại referenceData.engineeringLimits.historicalHeatAnalysisEN10088_2_1995.",
+          "comparisonGroupPages": [
+            386
+          ],
+          "notes": [
+            "Giá trị EN 10088-2:1995 trong sách trùng với bảng EN 10088-2 do Outokumpu công bố cho dạng C/H/P đang lưu (kiểm tra ngày nhập); phiên bản Outokumpu viện dẫn vẫn chưa xác nhận."
+          ]
+        },
+        "comparisonCandidatesNote": "Theo sách (Ch.1): đường kẻ đen ngăn các nhóm thép 'so sánh được gần nhau hơn', đường xám ngăn dữ liệu trong cùng nhóm; cách nhóm có tính chủ quan. Cùng nhóm KHÔNG có nghĩa là tương đương hay thay thế được. Nhóm lấy từ các hàng nằm giữa hai đường kẻ đen trên cùng trang; nếu nhóm có thể kéo dài qua ngắt trang thì phần ngoài trang này chưa được đưa vào.",
+        "openIssues": [
+          {
+            "id": "316L-chem-limits",
+            "severity": "high",
+            "kind": "data_check",
+            "topic": "Thiếu giới hạn thành phần hiện hành",
+            "findingVi": "Tab Thành phần chỉ có giá trị điển hình của hãng (C, Cr, Ni, Mo); giới hạn min/max chỉ có bản EN 10088-2:1995 lưu ở phần lịch sử. Giới hạn theo tiêu chuẩn hiện hành chưa được điền đầy đủ.",
+            "evidence": [
+              {
+                "sourceId": "outo-supra"
+              },
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 386,
+                "printedPage": 374,
+                "table": "8.1.3A"
+              }
+            ],
+            "actionVi": "Bổ sung bảng giới hạn thành phần theo EN 10088-2 bản hiện hành (hoặc bảng của hãng có nêu giới hạn).",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "316L-form-thickness",
+            "severity": "medium",
+            "kind": "data_check",
+            "topic": "Thiếu giới hạn chiều dày theo dạng C/H/P",
+            "findingVi": "Bảng cơ tính C/H/P của hãng chưa ghi chiều dày tối đa từng dạng. EN 10088-2:1995 trong sách ghi C ≤ 6 mm, H ≤ 12 mm, P ≤ 75 mm; phiên bản hiện hành có thể khác.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 395,
+                "printedPage": 383,
+                "table": "8.1.3B"
+              },
+              {
+                "sourceId": "outo-supra"
+              }
+            ],
+            "actionVi": "Bổ sung chiều dày tối đa từng dạng từ nguồn hiện hành.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "316L-condition",
+            "severity": "medium",
+            "kind": "data_check",
+            "topic": "Trạng thái giao hàng chưa đúng nghĩa",
+            "findingVi": "Trường condition đang ghi \"Theo datasheet sản phẩm Outokumpu\", không phải trạng thái vật liệu. Bảng trong sách ghi trạng thái AT (ủ dung dịch).",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 395,
+                "printedPage": 383,
+                "table": "8.1.3B"
+              }
+            ],
+            "actionVi": "Ghi trạng thái theo nguồn hiện hành (ví dụ ủ dung dịch kèm dạng bề mặt) sau khi xác nhận.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          },
+          {
+            "id": "316L-mech-1995",
+            "severity": "info",
+            "kind": "cross_check_ok",
+            "topic": "Cơ tính khớp với sách",
+            "findingVi": "Cơ tính C/H/P của hãng trùng với EN 10088-2:1995 trong sách về Rp0,2, Rm, A.",
+            "evidence": [
+              {
+                "sourceId": "bringas-method",
+                "pdfPage": 395,
+                "printedPage": 383,
+                "table": "8.1.3B"
+              }
+            ],
+            "actionVi": "Không cần sửa.",
+            "status": "open",
+            "raisedBy": "rà soát nháp, chờ chủ dự án duyệt",
+            "raisedAt": "2026-10-29"
+          }
+        ]
+      },
+      "steelDesignation": "X2CrNiMo17-12-2",
+      "unsNumber": "S31603",
+      "heatTreatment": {
+        "status": "sourced_reference_partial",
+        "routes": [
+          {
+            "id": "316l-solution-annealing",
+            "precededBy": [],
+            "process": "solution_annealing",
+            "purposeVi": "Ủ dung dịch: hòa tan carbide, phục hồi khả năng chống ăn mòn và độ dẻo",
+            "temperatureC": {
+              "min": 1000,
+              "max": 1100
+            },
+            "holdingNote": null,
+            "cooling": "rapid",
+            "resultCondition": "+AT",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": "Fabrication – Heat treatment",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Outokumpu yêu cầu làm nguội nhanh bằng nước hoặc không khí; điều kiện kích thước/chi tiết do sản phẩm và thiết bị quyết định. Austenitic không hóa bền bằng tôi–ram thông thường."
+          }
+        ],
+        "linkNoteVi": "Nhiệt luyện ủ dung dịch dùng để phục hồi trạng thái austenite/khả năng chống ăn mòn; không suy ra cơ tính của sản phẩm đã gia công nguội.",
+        "sourceIds": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "overall": {
+          "rating": "good",
+          "summaryVi": "316L carbon thấp có tính hàn tốt; giảm nhạy cảm ăn mòn liên hạt sau hàn so với 316 thường.",
+          "sourceId": "outo-supra",
+          "sourceClauseOrTable": "Fabrication – Welding"
+        },
+        "carbonEquivalentRef": null,
+        "consumables": [
+          {
+            "process": "GTAW",
+            "classificationIso": "W 19 12 3 L",
+            "classificationAws": "ER316L",
+            "classificationGb": null,
+            "noteVi": "Ví dụ que TIG ESAB Exaton 316/316L (ER316L) cho inox 316L; cần chọn theo môi trường và WPS.",
+            "sourceId": "esab-316l",
+            "sourceClauseOrTable": "Filler classification / application"
+          }
+        ],
+        "preheat": [],
+        "interpassTemperatureC": {
+          "min": null,
+          "max": null,
+          "sourceId": null,
+          "sourceClauseOrTable": null
+        },
+        "pwht": {
+          "required": false,
+          "temperatureC": {
+            "min": null,
+            "max": null
+          },
+          "holdingNote": null,
+          "noteVi": "Thông thường không yêu cầu PWHT; trường hợp có nguy cơ SCC hoặc mỏi cần đánh giá riêng. Không suy ra mọi liên kết đều được miễn xử lý.",
+          "sourceId": "outo-supra",
+          "sourceClauseOrTable": "Fabrication – Welding"
+        },
+        "specialNotes": [
+          {
+            "textVi": "Khi hàn inox austenitic, kiểm soát biến dạng do giãn nở nhiệt cao; làm sạch oxit màu nhiệt sau hàn (ví dụ tẩy bề mặt phù hợp) để phục hồi chống ăn mòn.",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": "Fabrication – Welding"
+          },
+          {
+            "textVi": "Nguồn hãng không đưa ra nhiệt độ gia nhiệt sơ bộ cố định cho mọi mối hàn; không tự chọn giá trị khi chưa có WPS.",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": "Fabrication – Welding"
+          }
+        ],
+        "dissimilarJoints": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Thiết bị công nghiệp hóa chất và hóa dầu",
+            "noteVi": "316L/1.4404 có Mo, được hãng liệt kê cho môi trường ăn mòn cao hơn 304; phải kiểm tra môi chất.",
+            "sourceId": "outo-supra"
+          },
+          {
+            "productVi": "Thiết bị giấy, thực phẩm và dược phẩm",
+            "noteVi": "Ứng dụng điển hình trong catalogue Supra; chọn vật liệu theo mức ăn mòn và hoàn thiện bề mặt.",
+            "sourceId": "outo-supra"
+          },
+          {
+            "productVi": "Bồn, mặt bích và van inox",
+            "noteVi": "Ứng dụng cơ khí/thiết bị quá trình; cần xét clorua, khe, ứng suất và nhiệt độ.",
+            "sourceId": "outo-supra"
+          }
+        ],
+        "environments": [
+          {
+            "environment": "indoor_dry",
+            "suitability": "suitable",
+            "conditionsVi": "Phù hợp nhiều ứng dụng trong nhà với bề mặt inox sạch; có thể dư khả năng chống ăn mòn so với yêu cầu.",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "outdoor_atmospheric",
+            "suitability": "suitable",
+            "conditionsVi": "Hãng nêu khả năng dùng cho nhiều khu công nghiệp và khu ven biển mức ăn mòn vừa; chi tiết khu vực phun muối cần kiểm tra riêng.",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "marine_chloride",
+            "suitability": "conditional",
+            "conditionsVi": "Mo cải thiện chống ăn mòn rỗ/khe so với 304, nhưng không bảo đảm trong nước biển tù đọng hoặc clorua đậm đặc, nhất là nhiệt độ cao.",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "chemical",
+            "suitability": "conditional",
+            "conditionsVi": "Phù hợp nhiều quá trình công nghiệp, nhưng khả năng chịu từng axit/kiềm phụ thuộc môi chất, nồng độ và nhiệt độ; không suy ra chịu mọi hóa chất.",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "food_contact",
+            "suitability": "conditional",
+            "conditionsVi": "Được hãng liệt kê cho thực phẩm/dược phẩm; kiểm tra điều kiện vệ sinh, bề mặt và môi chất tẩy rửa.",
+            "sourceId": "outo-supra",
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "low_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "elevated_temperature",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "wear",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          },
+          {
+            "environment": "fatigue_loading",
+            "suitability": null,
+            "conditionsVi": null,
+            "sourceId": null,
+            "sourceClauseOrTable": null
+          }
+        ],
+        "limitations": [
+          {
+            "textVi": "Trong môi trường clorua kết hợp ứng suất và nhiệt độ, 316L vẫn có nguy cơ nứt ăn mòn ứng suất (SCC).",
+            "sourceId": "outo-corrosion-general"
+          }
+        ],
+        "notRecommended": [
+          {
+            "textVi": "Không mặc định chọn 316L cho nước biển có clorua hoặc axit mạnh nếu chưa có đánh giá ăn mòn theo điều kiện thực tế.",
+            "sourceId": "outo-supra"
+          }
+        ]
+      }
+    }
+  ],
+  "engineeringExtension": {
+    "schemaVersion": "0.1.0-draft",
+    "status": "schema_only_not_approved",
+    "decisionNoticeVi": "Sổ tay hỗ trợ tra cứu và so sánh thông số vật liệu. Khi áp dụng thực tế, cần chú ý đúng tiêu chuẩn, dạng sản phẩm, kích thước và trạng thái.",
+    "inheritLegacyDataStatus": true,
+    "policy": {
+      "referenceOnly": true,
+      "endUserMakesFinalDecision": true,
+      "noAutomaticMaterialEquivalence": true,
+      "noAutomaticMaterialAcceptance": true,
+      "missingDataResult": "insufficient_data",
+      "acceptanceRequiresApprovedStandardLimits": true,
+      "engineDisabledUntilRulesReviewed": true
+    },
+    "reviewWorkflow": {
+      "allowedStatuses": [
+        "draft",
+        "checked",
+        "approved",
+        "superseded"
+      ],
+      "requireIndependentCheckerForApproval": true,
+      "requiredProvenanceFields": [
+        "sourceId",
+        "standardEdition",
+        "sourceClauseOrTable",
+        "productForm",
+        "deliveryCondition",
+        "dimensionBand",
+        "testConditions",
+        "checkedBy",
+        "approvedBy"
+      ]
+    },
+    "resultStates": [
+      {
+        "id": "pass",
+        "labelVi": "Đáp ứng"
+      },
+      {
+        "id": "fail",
+        "labelVi": "Không đáp ứng"
+      },
+      {
+        "id": "conditional",
+        "labelVi": "Cần đánh giá điều kiện"
+      },
+      {
+        "id": "insufficient_data",
+        "labelVi": "Chưa đủ dữ liệu"
+      },
+      {
+        "id": "not_applicable",
+        "labelVi": "Không áp dụng"
+      }
+    ],
+    "properties": [
+      {
+        "id": "yield_strength",
+        "labelVi": "Giới hạn chảy",
+        "symbol": "ReH/Rp0,2",
+        "unit": "MPa",
+        "comparison": "min_threshold",
+        "requiresConditions": [
+          "dimension",
+          "deliveryCondition",
+          "standardEdition"
+        ]
+      },
+      {
+        "id": "tensile_strength",
+        "labelVi": "Giới hạn bền kéo",
+        "symbol": "Rm",
+        "unit": "MPa",
+        "comparison": "range",
+        "requiresConditions": [
+          "dimension",
+          "deliveryCondition",
+          "standardEdition"
+        ]
+      },
+      {
+        "id": "elongation",
+        "labelVi": "Độ giãn dài sau đứt",
+        "symbol": "A",
+        "unit": "%",
+        "comparison": "min_threshold",
+        "requiresConditions": [
+          "testSpecimen",
+          "dimension",
+          "standardEdition"
+        ]
+      },
+      {
+        "id": "impact_energy",
+        "labelVi": "Công va đập",
+        "symbol": "KV",
+        "unit": "J",
+        "comparison": "min_threshold",
+        "requiresConditions": [
+          "testTemperatureC",
+          "specimenOrientation",
+          "testSpecimen",
+          "standardEdition"
+        ]
+      },
+      {
+        "id": "hardness",
+        "labelVi": "Độ cứng",
+        "symbol": "HBW/HRC/HV",
+        "unit": null,
+        "comparison": "test_method_dependent",
+        "requiresConditions": [
+          "hardnessScale",
+          "testMethod",
+          "materialCondition"
+        ]
+      },
+      {
+        "id": "carbon_equivalent",
+        "labelVi": "Carbon tương đương",
+        "symbol": "CEV/CET",
+        "unit": "%",
+        "comparison": "method_dependent",
+        "requiresConditions": [
+          "completeHeatChemistry",
+          "selectedApprovedCalculationMethod"
+        ]
+      }
+    ],
+    "equivalence": {
+      "status": "no_approved_pairs",
+      "approvedRelations": [],
+      "candidateSimilarityRules": [],
+      "requireConditions": [
+        "productForm",
+        "standardEdition",
+        "deliveryCondition",
+        "dimensionBand",
+        "impactRequirements"
+      ],
+      "similarityCannotBeCalledEquivalence": true
+    },
+    "selection": {
+      "status": "questions_draft_no_approved_rules",
+      "componentTypes": [
+        {
+          "id": "shaft",
+          "labelVi": "Trục máy",
+          "status": "questionnaire_draft",
+          "description": "Thu thập điều kiện sơ bộ để lọc ứng viên; không thay thế tính toán bền, mỏi hay độ võng.",
+          "questions": [
+            {
+              "id": "diameter_mm",
+              "labelVi": "Đường kính lớn nhất",
+              "type": "number",
+              "unit": "mm",
+              "minExclusive": 0,
+              "required": true
+            },
+            {
+              "id": "loading",
+              "labelVi": "Dạng tải trọng",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                {
+                  "value": "static",
+                  "labelVi": "Tĩnh hoặc biến đổi ít"
+                },
+                {
+                  "value": "cyclic",
+                  "labelVi": "Thay đổi theo chu kỳ"
+                },
+                {
+                  "value": "impact",
+                  "labelVi": "Có va đập"
+                }
+              ]
+            },
+            {
+              "id": "bending_moment_nm",
+              "labelVi": "Mômen uốn lớn nhất (nếu có)",
+              "type": "number",
+              "unit": "N.m",
+              "minInclusive": 0,
+              "required": false
+            },
+            {
+              "id": "torque_nm",
+              "labelVi": "Mômen xoắn lớn nhất (nếu có)",
+              "type": "number",
+              "unit": "N.m",
+              "minInclusive": 0,
+              "required": false
+            },
+            {
+              "id": "surface_wear",
+              "labelVi": "Bề mặt có yêu cầu chống mài mòn?",
+              "type": "boolean",
+              "required": true
+            },
+            {
+              "id": "environment",
+              "labelVi": "Môi trường làm việc",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                {
+                  "value": "indoor",
+                  "labelVi": "Trong nhà, thông thường"
+                },
+                {
+                  "value": "humid",
+                  "labelVi": "Ẩm ướt, ngoài trời"
+                },
+                {
+                  "value": "marine",
+                  "labelVi": "Nước biển hoặc khí quyển biển"
+                },
+                {
+                  "value": "chemical",
+                  "labelVi": "Hóa chất hoặc ăn mòn đặc biệt"
+                }
+              ]
+            },
+            {
+              "id": "design_objective",
+              "labelVi": "Yêu cầu ưu tiên",
+              "type": "multi_choice",
+              "required": false,
+              "options": [
+                {
+                  "value": "strength",
+                  "labelVi": "Độ bền"
+                },
+                {
+                  "value": "stiffness",
+                  "labelVi": "Độ cứng vững"
+                },
+                {
+                  "value": "fatigue",
+                  "labelVi": "Tuổi thọ mỏi"
+                },
+                {
+                  "value": "wear",
+                  "labelVi": "Chống mài mòn"
+                },
+                {
+                  "value": "corrosion",
+                  "labelVi": "Chống ăn mòn"
+                },
+                {
+                  "value": "machinability",
+                  "labelVi": "Dễ gia công"
+                }
+              ]
+            }
+          ],
+          "analysisInputsRequiredForDesignCheck": [
+            "geometry_and_stress_concentrations",
+            "load_spectrum",
+            "load_cycles",
+            "surface_finish",
+            "material_condition",
+            "design_code_and_safety_factors"
+          ],
+          "approvedRuleIds": []
+        },
+        {
+          "id": "gear",
+          "labelVi": "Bánh răng",
+          "status": "planned",
+          "questions": [],
+          "approvedRuleIds": []
+        },
+        {
+          "id": "fastener",
+          "labelVi": "Bu lông / chi tiết liên kết",
+          "status": "planned",
+          "questions": [],
+          "approvedRuleIds": []
+        },
+        {
+          "id": "welded_structure",
+          "labelVi": "Kết cấu hàn",
+          "status": "planned",
+          "questions": [],
+          "approvedRuleIds": []
+        }
+      ],
+      "approvedRules": [],
+      "rankingRules": [],
+      "onlySuggestMaterialsWithSufficientReviewedEvidence": true,
+      "neverAssumeMissingConstraintsPass": true
+    },
+    "weldability": {
+      "status": "no_approved_assessment_methods",
+      "approvedCalculationMethods": [],
+      "approvedAssessmentMethods": [],
+      "inputFields": [
+        "materialGrade",
+        "productForm",
+        "deliveryCondition",
+        "thicknessMm",
+        "heatChemistry",
+        "jointGeometryAndRestraint",
+        "hydrogenLevel",
+        "heatInput",
+        "ambientAndInitialTemperature",
+        "selectedWeldingProcedure"
+      ],
+      "doNotInferPreheatFromCevAlone": true,
+      "doNotSubstituteForApprovedWpsWpqr": true
+    },
+    "optionEvaluation": {
+      "status": "no_approved_evaluation_models",
+      "approvedModels": [],
+      "candidateSelectionRuleIds": [],
+      "possibleObjectives": [
+        "strength",
+        "stiffness",
+        "fatigue",
+        "wear",
+        "corrosion",
+        "mass",
+        "machinability",
+        "weldability",
+        "cost"
+      ],
+      "requirementsMustBeCheckedBeforeRanking": true,
+      "noUnverifiedAutoScoring": true
+    },
+    "engineeringNotes": [],
+    "changeHistory": [
+      {
+        "changeType": "schema_extension",
+        "noteVi": "Chỉ bổ sung cấu trúc mở rộng phân tích; không thêm giá trị vật liệu chưa được xác minh, không kích hoạt logic kết luận tự động.",
+        "status": "draft",
+        "author": "draft_generated_for_owner_review",
+        "approvedBy": null
+      },
+      {
+        "changeType": "curated_material_reference_enrichment",
+        "noteVi": "Bổ sung tham chiếu chính xác theo 5 mác đã có: lịch sử ASTM DS67B 2004, CEV ArcelorMittal, Z/C45 M.T. Acciai, 304/316L C/H/P Outokumpu; giữ nguyên giá trị gốc ở các bảng JS hiện hành và trạng thái chưa duyệt kỹ thuật. Đối chiếu riêng bảng H30 của ArcelorMittal, M.T. Acciai C45 và bảng 5/6 của Outokumpu. Chưa phê duyệt thiết kế tự động.",
+        "status": "draft",
+        "author": "technical_data_crosscheck_2026-10-29",
+        "approvedBy": null
+      },
+      {
+        "changeType": "book_historical_data_enrichment",
+        "noteVi": "Bổ sung từ ASTM DS67B (Bringas, 2004) cho 5 mác: cơ tính/va đập/thành phần theo EN 10025:1993 (S235JRG2, S355J2G4), thành phần EN 10083-2:1991 (C45), cơ tính EN 10088-2:1995 (1.4301, 1.4404) và danh sách cùng nhóm so sánh của sách. Lưu tại materials[].referenceData.bookStandardData và comparisonCandidates; không sửa trường JS đang đọc, không phê duyệt tương đương, thiết kế tự động.",
+        "status": "draft",
+        "author": "draft_generated_for_owner_review",
+        "approvedBy": null
+      },
+      {
+        "changeType": "review_and_presentation_alignment",
+        "noteVi": "Rà soát 5 mác: chuyển 2 ghi chú về nguồn từ notes sang sourceReconciliation, cập nhật ghi chú C/H/P cho 304/316L, thêm referenceData.openIssues (các điểm cần xác minh với nguồn hiện hành). Không thay đổi giá trị số liệu nào.",
+        "status": "draft",
+        "author": "draft_generated_for_owner_review",
+        "approvedBy": null
+      },
+      {
+        "changeType": "reference_handbook_scope_simplification",
+        "noteVi": "Giữ công cụ tra cứu và so sánh; loại chức năng kiểm tra chứng chỉ và các thông báo nghiệm thu khỏi phạm vi sổ tay. Không thay đổi thông số vật liệu.",
+        "status": "owner_requested",
+        "author": "owner_request_2026-10-29",
+        "approvedBy": null
+      },
+      {
+        "changeType": "heat_treatment_template",
+        "noteVi": "Thêm khung materials[].heatTreatment cho 5 mác (danh sách quy trình, nhiệt độ, làm nguội, trạng thái và độ cứng đạt được). Mọi giá trị số và nguồn để trống, chờ bổ sung từ tài liệu có nguồn. Không thay đổi số liệu hiện có.",
+        "status": "draft",
+        "author": "owner_request_2026-10-29",
+        "approvedBy": null
+      },
+      {
+        "changeType": "welding_and_usage_templates",
+        "noteVi": "Thêm khung materials[].welding (đánh giá tính hàn, vật liệu hàn, gia nhiệt sơ bộ có điều kiện, nhiệt độ giữa lớp, PWHT, lưu ý, hàn khác loại) và materials[].usage (sản phẩm khuyến cáo, 9 môi trường cần đánh giá, giới hạn, không khuyến cáo). Không điền số liệu vì chưa có nguồn đáng tin cậy trong bộ tài liệu hiện có; CEV đã có nguồn được liên kết qua carbonEquivalentRef.",
+        "status": "draft",
+        "author": "owner_request_2026-10-29",
+        "approvedBy": null
+      },
+      {
+        "changeType": "eight_tab_sourced_reference_completion",
+        "noteVi": "Bổ sung dữ liệu có nguồn cho 5 mác, ưu tiên Khuyến cáo sử dụng, Nhiệt luyện, Hàn và ρ/E của C45 theo khung 8 tab. Không đổi hóa học/cơ tính cũ, không kết luận thiết kế và không phát triển chức năng MTC. Các giá trị trống không có căn cứ vẫn giữ null.",
+        "status": "reference_data_updated",
+        "author": "technical_reference_completion_2026-10-29",
+        "approvedBy": null
+      }
+    ]
+  }
+}
