@@ -2,18 +2,19 @@
  * EPSILON SOFT - flat distribution (2026-10-23)
  *  - All shared UI/engineering helpers live in app.js.
  *  - Layout CSS is injected from this app.js; no assets/css/ is needed.
- *  - Each tool remains its own assets/js/tools/*.js.
+ *  - Each tool remains its own assets/js/tools/*.js; Cơ khí tools (dir:'mechanical') live in assets/js/mechanical/*.js.
  *  - The code below preserves the approved UI and tested engineering algorithms.
  */
-const EPSILON_STYLES = ":root{color-scheme:light;--purple:#5a20db;--purple2:#7c31ff;--deep:#0a1b62;--navy:#07185e;--blue:#0637e9;--yellow:#ffdc08;--green:#09b37e;--muted:#51648e;--line:#dce5fa;--paper:#fff;--page:#f8faff;--shadow:0 8px 24px rgba(43,58,129,.075);font-family:Inter,\"Segoe UI\",Arial,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased}\n*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--navy);background:radial-gradient(ellipse at 80% 10%,#f4f1ff,transparent 55%),var(--page);min-width:320px;font-size:16px;line-height:1.48}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}a{text-decoration:none;color:inherit}img{max-width:100%;height:auto}svg{flex-shrink:0}[hidden]{display:none!important}:focus-visible{outline:3px solid #ffb900;outline-offset:3px}.shell{max-width:1620px;width:calc(100% - 48px);margin-inline:auto}.skip-link{position:absolute;top:-60px;left:12px;background:white;padding:12px;z-index:1000}.skip-link:focus{top:8px}\n.site-header{background:linear-gradient(103deg,#4c16dc 0%,#5322c8 48%,#5e19cf 100%);color:white;box-shadow:0 3px 14px #29039f1a}.header-inner{display:flex;align-items:center;min-height:76px;gap:18px}.brand{display:flex;align-items:center;flex-shrink:0;white-space:nowrap;gap:8px}.brand-mark{width:59px;height:59px;object-fit:contain;filter:none}.brand-wordmark{font-weight:900;font-size:35px;letter-spacing:-1.7px;line-height:1;display:flex;align-items:baseline}.brand-wordmark strong{font-size:inherit;color:var(--yellow);font-weight:900;letter-spacing:-1.6px}.brand-divider{height:32px;width:1px;background:#ffffff80;margin-left:14px}.header-tagline{font-weight:700;font-size:17px;white-space:nowrap;letter-spacing:.4px}.main-nav{display:flex;gap:12px;margin-left:auto;align-items:center}.nav-link{display:inline-flex;align-items:center;gap:10px;border-radius:12px;padding:11px 17px;color:white;background:#3b0fa472;font-size:16px;font-weight:700;white-space:nowrap;transition:background .18s,transform .18s}.nav-link .svg-icon{width:20px;height:20px}.nav-link:hover{background:#9156fa}.nav-link.is-active{background:#fff;color:#521bd6;box-shadow:0 4px 12px #270e7d22}.mobile-menu{display:none}.icon-button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#ffffff1d;color:white;border:1px solid #ffffff55}\nmain{min-height:calc(100vh - 250px)}.page-home{padding-top:18px}.hero{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(280px,1fr) minmax(275px,.78fr);min-height:264px;border:1px solid #d9e1f9;border-radius:18px;overflow:hidden;background:linear-gradient(112deg,#f3f6ff 0%,#ecf4ff 42%,#c2b4ff 76%,#855afa 100%);position:relative}.hero-copy{padding:26px 8px 26px 34px;position:relative;z-index:2}.eyebrow{font-size:17px;letter-spacing:1.8px;font-weight:900;color:#1432bd;margin:0 0 8px}.hero-title{font-size:clamp(42px,3.55vw,58px);letter-spacing:-2.6px;line-height:1.01;font-weight:900;color:#041bb0;margin:0}.hero-title strong{color:var(--yellow)}.hero-subtitle{font-size:clamp(19px,1.35vw,24px);font-weight:800;margin:9px 0 8px;white-space:nowrap;color:#0d22a4}.hero-description{font-size:16px;color:#364d84;margin:0}.hero-perks{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:22px;font-weight:750}.hero-perks span{display:inline-flex;gap:10px;align-items:center;white-space:nowrap}.check-dot{border-radius:100%;display:inline-flex;align-items:center;justify-content:center;background:#10b981;width:24px;height:24px;color:white}.hero-art{position:relative;min-height:255px;align-self:stretch;background:linear-gradient(120deg,#e0faff12,transparent 80%);overflow:hidden}.hero-art img{position:absolute;left:50%;top:50%;width:110%;max-width:none;height:100%;object-fit:cover;transform:translate(-50%,-50%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 93%,transparent 100%)}.hero-cta{background:linear-gradient(128deg,#092ec4 0%,#2f39ee 95%);color:white;padding:21px 22px;display:flex;flex-direction:column;justify-content:space-between;position:relative}.hero-cta::before{content:\"\";position:absolute;inset:0;opacity:.22;background:radial-gradient(circle at 100% 30%,#8f9cff,transparent 55%);pointer-events:none}.hero-cta h2{position:relative;margin:0 0 10px;font-size:23px;line-height:1.2;letter-spacing:-.4px;color:white}.hero-cta p{position:relative;display:flex;align-items:flex-start;gap:8px;margin:5px 0;font-size:16px}.hero-cta p svg{color:#89fdd3}.button{display:inline-flex;justify-content:center;align-items:center;gap:10px;min-height:49px;border:0;border-radius:12px;padding:10px 20px;font-weight:800;font-size:16px;transition:transform .16s,filter .16s}.button:hover:not(:disabled){filter:brightness(1.045);transform:translateY(-1px)}.button-yellow{background:var(--yellow);color:#07167f;position:relative;margin-top:9px;box-shadow:0 8px 20px #121e904a}.button-purple{background:linear-gradient(120deg,#722cff,#4928ef);color:white}.button-outline{background:white;color:#5326dc;border:1px solid #9f86fd}.button-soft{background:#f0edff;color:#5127cf}.button-sm{min-height:40px;padding:6px 13px;font-size:16px}.button-plain{background:white;color:#1d37a4;border:1px solid var(--line)}\n.directory{scroll-margin-top:20px;margin-top:21px}.section-toolbar{display:flex;align-items:center;gap:14px;justify-content:space-between;margin-bottom:12px}.section-heading{margin:0;font-size:18px;font-weight:900;letter-spacing:.3px;white-space:nowrap}.section-heading::before{content:\"\";display:inline-block;height:16px;width:4px;background:#7034ee;margin-right:10px;border-radius:4px;vertical-align:-2px}.toolbar-right{display:flex;gap:12px;align-items:center}.search-box{width:320px;background:white;border:1px solid #d2def8;box-shadow:0 4px 12px #293e890b;border-radius:22px;display:flex;align-items:center;gap:8px;padding:0 13px;min-height:43px;color:#7790b6}.search-box:focus-within{border-color:#8f6cfa;box-shadow:0 0 0 4px #8f6cfa24}.search-box input{border:0;background:transparent;width:100%;outline:none;color:var(--navy);font-size:16px;min-width:0}.search-box input::placeholder{color:#8c9cba}.view-toggle{display:flex;gap:2px;border:1px solid #dae2fb;padding:3px;background:white;border-radius:12px}.toggle-button{border:0;background:transparent;color:#6d86ad;padding:5px;border-radius:8px;display:grid;place-items:center}.toggle-button.active{background:#6d2de3;color:white}.columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}.group-panel{border:1px solid #dbe5f9;border-radius:19px;padding:13px;background:#fff;box-shadow:var(--shadow);min-width:0;display:flex;flex-direction:column;min-height:365px}.group-panel.mytools{background:linear-gradient(145deg,#f3eaff,#f9f7ff);border-color:#dfd4ff}.group-panel.category-calc{background:linear-gradient(145deg,#eaf6ff,#f4f9ff);border-color:#d1e6ff}.group-panel.category-engineering{background:linear-gradient(155deg,#fff6eb,#fffbf4);border-color:#ffe8d3}.group-panel.category-utility{background:linear-gradient(145deg,#e6fbf4,#f6fffc);border-color:#d1f0e8}.group-heading{display:flex;align-items:center;gap:13px;padding:1px 0 12px}.category-emblem{width:50px;height:50px;display:grid;place-items:center;color:white;background:linear-gradient(138deg,#9661ff,#6022df);border-radius:13px;box-shadow:0 5px 12px #5e28d22b;flex-shrink:0}.category-calc .category-emblem{background:linear-gradient(138deg,#64caff,#167ae6)}.category-engineering .category-emblem{background:linear-gradient(138deg,#ffc15b,#ff711e)}.category-utility .category-emblem{background:linear-gradient(138deg,#8ee89b,#05ab83)}.group-heading-text{min-width:0}.group-heading-text h3{margin:0;font-size:19px;line-height:1.17;color:#182aa8;font-weight:900}.group-heading-text p{margin:4px 0 0;font-size:16px;color:#566d99;line-height:1.25}.group-count{margin-left:auto;border:4px solid white;background:#dfe9fd;min-width:39px;height:39px;display:grid;place-items:center;font-weight:900;border-radius:100%;color:#1a32b5;font-size:17px;flex-shrink:0}.group-items{display:grid;gap:7px}.tool-card{background:#fff;border:1px solid #e1e8f5;border-radius:13px;padding:8px 10px;display:flex;align-items:center;gap:10px;min-height:69px;box-shadow:0 2px 6px #091e4a07;transition:transform .17s,border-color .17s,box-shadow .17s;position:relative}.tool-card.is-ready:hover{transform:translateY(-2px);border-color:#b8c8ff;box-shadow:0 6px 15px #30166d1a}.tool-link{display:flex;min-width:0;flex:1;align-items:center;gap:10px}.tool-tile{height:45px;width:45px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;color:#1166df;background:linear-gradient(140deg,#edf6ff,#a7dafa)}.tone-blue{color:#0054e6;background:linear-gradient(145deg,#d7eeff,#9bd4ff)}.tone-mint{color:#009f78;background:linear-gradient(145deg,#e2fff4,#b0e9db)}.tone-orange{color:#f36d00;background:linear-gradient(145deg,#fff0db,#ffce9b)}.tone-violet{color:#7631ec;background:linear-gradient(145deg,#f1eaff,#dbc0ff)}.tone-red{color:#e8294a;background:linear-gradient(145deg,#ffebee,#ffc9d0)}.tone-teal{color:#009c9a;background:linear-gradient(145deg,#e2fff7,#a4e9d8)}.tool-names{min-width:0;display:flex;flex-direction:column;gap:1px}.tool-names b{font-size:16px;line-height:1.2;font-weight:800;display:block}.tool-names small{font-size:16px;color:#607297;line-height:1.25;display:block}.star-btn{width:33px;height:42px;display:grid;place-items:center;border:0;color:#98a9c8;background:transparent;padding:0;flex-shrink:0}.star-btn:hover,.star-btn[aria-pressed=\"true\"]{color:#f5a900}.star-btn[aria-pressed=\"true\"] svg{fill:#ffe951;stroke:#a86e03}.star-btn svg{width:24px;height:24px}.tool-card.is-planned{opacity:.72;background:#fdfdff}.tool-card.is-planned .tool-link{cursor:default}.soon-label{font-size:16px;color:#7643dd;background:#eee8ff;border-radius:8px;padding:2px 8px;align-self:flex-start}.mytools-empty{border:1px dashed #b7bafa;border-radius:14px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:235px;padding:20px;background:#ffffff51}.empty-icon{color:#4829ca;background:#eeeaff;border:1px solid #d1c8ff;border-radius:13px;padding:12px;display:grid;place-items:center}.mytools-empty strong{font-size:17px}.mytools-empty p{margin:0;font-size:16px;color:#5c6d9e}.mytools-hint{background:#ffffff80;border:1px solid #e0ddff;border-radius:12px;margin-top:12px;padding:11px;display:flex;gap:9px;align-items:center;color:#3854a3;font-size:16px}.mytools-hint svg{color:#e8aa00}.empty-search{text-align:center;padding:28px;background:white;border:1px dashed #bdc9e8;border-radius:13px;color:#3c5396;margin-top:14px}.columns.list-view{display:block}.list-view .group-panel{min-height:0;margin-bottom:16px}.list-view .group-items{grid-template-columns:repeat(2,minmax(0,1fr))}.list-view .mytools-empty{min-height:95px}\n.portable-strip{position:relative;margin:15px 0 24px;min-height:132px;border-radius:19px;color:white;padding:22px 25px;display:flex;gap:28px;align-items:center;overflow:hidden;background:linear-gradient(113deg,#6120e7,#2145f2 46%,#761bf0);box-shadow:0 8px 20px #4435df22}.portable-strip::before{content:\"\";position:absolute;inset:0;background:radial-gradient(ellipse at 60% -20%,#56e7ff88,transparent 53%),repeating-linear-gradient(130deg,transparent 0 120px,#ffffff08 122px 129px);pointer-events:none}.portable-stripe{position:relative;display:flex;align-items:center;gap:15px;flex:0 0 27%}.win-badge{display:grid;place-items:center;border-radius:16px;width:79px;height:79px;transform:rotate(-3deg);background:linear-gradient(130deg,#083ad6,#14baf3);box-shadow:0 0 0 2px #ffcc19,0 5px 14px #0003;flex-shrink:0}.win-badge .svg-icon{width:48px;height:48px}.portable-stripe h3{font-size:28px;line-height:1.2;margin:0;font-weight:900}.portable-stripe p{margin:0;font-size:16px}.portable-strip small.status{display:inline-block;font-size:16px;font-weight:850;color:#102bb9;background:#ffdf0a;border-radius:999px;padding:2px 9px;margin-top:5px}.portable-text{position:relative;flex:1;max-width:550px}.portable-text h3{font-size:20px;line-height:1.25;margin:0 0 8px;color:white}.portable-text p{margin:0;font-size:16px;line-height:1.4}.portable-laptop{height:130px;width:205px;object-fit:cover;object-position:center;align-self:stretch;mix-blend-mode:screen;opacity:.93;position:relative}.portable-actions{position:relative;display:grid;gap:6px;min-width:185px}.portable-actions .button{width:100%}.portable-actions span{font-size:16px;text-align:center}.portable-details{margin:0 0 24px;padding:20px 24px;background:#fff;border:1px solid var(--line);border-radius:16px;scroll-margin-top:16px}.portable-details h3{font-size:21px;margin:0 0 8px}.portable-details p{margin:8px 0}.portable-details .button{margin-top:8px}.callout{border:1px solid #d8e2ff;border-radius:14px;padding:15px 18px;background:#f0f5ff;font-size:16px;line-height:1.6}.callout.warning{background:#fffaed;border-color:#f5dfaa;color:#684b10}.callout.success{background:#eefcf5;border-color:#b4ebd3;color:#145e44}.callout strong{font-weight:850}\n.site-footer{border-top:1px solid var(--line);padding-top:22px;padding-bottom:26px;color:#67799b}.footer-main{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.footer-brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;color:#1d32b3}.footer-brand img{width:38px;height:38px}.footer-brand img.footer-logo{width:220px;height:auto}.footer-main p{font-size:16px;margin:6px 0}.footer-links{display:flex;gap:20px;font-size:16px;font-weight:700}.footer-links a:hover{color:#6b2cda}.footer-bottom{font-size:16px;border-top:1px solid #e5ebfa;margin-top:18px;padding-top:13px}.toast-region{position:fixed;z-index:9999;right:22px;bottom:22px;pointer-events:none;max-width:calc(100vw - 44px)}.toast{padding:14px 18px;background:#3817ad;color:white;border:1px solid #ffffff44;border-radius:13px;box-shadow:0 15px 38px #19125155;min-width:230px;font-size:16px;animation:slidein .2s ease}.toast.error{background:#a02349}.toast.success{background:#087b65}@keyframes slidein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}\n/* Tools */\n.tool-page{padding:20px 10px 30px}.breadcrumbs{display:flex;align-items:center;flex-wrap:wrap;gap:10px;color:#485a8b;font-size:16px;margin-bottom:16px}.breadcrumbs a{color:#3434c5;font-weight:700}.breadcrumbs a:hover{text-decoration:underline}.tool-heading{display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap}.tool-heading-icon{height:72px;width:72px;border-radius:19px;display:grid;place-items:center;flex-shrink:0}.tool-heading-icon .svg-icon{width:40px;height:40px}.tool-heading h1{font-size:clamp(29px,2.4vw,42px);line-height:1.12;letter-spacing:-1.15px;margin:0 0 5px;color:#0d178e}.tool-heading p{margin:0;color:#607198;font-size:19px}.tool-heading .button{margin-left:auto}.tool-surface{display:grid;grid-template-columns:1fr;gap:15px}.tool-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px;min-width:0}.tool-box{background:#fff;border:1px solid #d9e5fb;border-radius:16px;padding:16px;box-shadow:0 3px 12px #2b5a9c0a;min-width:0}.tool-box-heading{font-size:20px;color:#0c268f;font-weight:900;margin:0 0 13px;display:flex;align-items:center;gap:9px}.tool-box-heading .svg-icon{color:#4b55e9}.box-lead{font-size:16px;color:var(--muted);margin:-8px 0 15px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.form-field{display:flex;flex-direction:column;gap:5px;min-width:0;font-weight:750;color:#122766;font-size:16px}.form-field>span:first-child{font-size:16px}.form-field select,.form-field>input,.form-field textarea{background:white;color:#13266d;min-width:0;width:100%;min-height:48px;border:1px solid #c7d5fa;border-radius:10px;padding:10px 12px;outline:0}.form-field select:focus,.form-field>input:focus,.form-field textarea:focus,.input-wrap:focus-within{border-color:#8255f8;box-shadow:0 0 0 3px #8556ee27}.input-wrap{display:flex;align-items:center;min-height:47px;border:1px solid #c7d5fa;border-radius:10px;overflow:hidden;background:white}.input-wrap input{border:0;min-width:0;flex:1;width:100%;height:45px;padding:7px 11px;outline:0;color:#13266d}.input-wrap small{color:#563bd3;background:#f2f1ff;font-size:16px;font-weight:700;padding:9px;min-width:45px;text-align:center;white-space:nowrap}.form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.results-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.results-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.result-tile{border:1px solid #dae4ff;border-radius:14px;padding:16px;background:linear-gradient(125deg,#f1faff,#e1f3ff);min-width:0}.result-tile.green{background:linear-gradient(125deg,#ecfff7,#dcf9e9);border-color:#bcebd9}.result-tile.purple{background:linear-gradient(125deg,#fbf3ff,#efe5ff);border-color:#dfcfff}.result-tile.yellow{background:linear-gradient(125deg,#fff9df,#fff3b8);border-color:#ffdf7f}.result-tile strong{display:block;font-size:16px;color:#264caa;font-weight:850;margin-bottom:5px}.result-tile output{display:block;font-size:clamp(23px,2.2vw,32px);font-weight:900;color:#03279b;line-height:1.08;overflow-wrap:anywhere}.result-tile output small{font-size:16px;color:#33579c}.result-tile.yellow output{color:#4d18b0}.preview-canvas{display:grid;place-items:center;min-height:285px;border:1px solid #e1e5fc;border-radius:14px;background:linear-gradient(145deg,#f7f8ff,#fcfaff);padding:12px;overflow:hidden}.preview-canvas svg{width:100%;max-height:320px}.shape-note{text-align:center;margin:10px 0 0;color:#65749a}.tool-error{color:#aa2645;font-weight:750;margin-top:12px;min-height:22px}.tool-hint{font-size:16px;line-height:1.55;color:#65749a;margin:13px 0 0}.tool-hint strong{color:#1a2f8f}.separator{height:1px;background:#e3e8f9;margin:14px 0}.tool-detail-card{background:linear-gradient(120deg,#f7f9ff,#f0edff);border-radius:14px;padding:15px;color:#3f4b87}.tool-detail-card p{margin:7px 0}.related-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.related-tools a{display:grid;grid-template-columns:44px minmax(0,1fr) 16px;align-items:center;column-gap:10px;min-height:64px;min-width:0;background:#fff;border:1px solid #dfe8fa;border-radius:11px;padding:9px 12px;font-size:16px;font-weight:750}.related-tools a:hover{border-color:#9b8cf3}.related-tools a>.tool-tile{width:44px;height:44px;display:grid;place-items:center;flex:none}.related-tools a>.tool-tile>.svg-icon{display:block;margin:0;justify-self:center;align-self:center}.related-tools a>.related-tool-name{min-width:0;line-height:1.3;overflow-wrap:break-word}.related-tools a>.svg-icon:last-child{width:16px;height:16px;margin:0;justify-self:end;align-self:center;flex:none}.demo-table{border-collapse:collapse;width:100%;background:#fff}.demo-table th,.demo-table td{text-align:left;border-bottom:1px solid #e5edfc;padding:10px;vertical-align:middle;font-size:16px}.demo-table th{font-weight:850;color:#2a369d;background:#f3f5ff}.data-table-scroll{overflow:auto;max-height:470px;border:1px solid #e1e8fa;border-radius:10px}.badge-pale{font-size:16px;font-weight:750;color:#6030c6;border-radius:999px;background:#ede8ff;padding:5px 12px;display:inline-flex;gap:6px;align-items:center}.symbol-math{font-size:23px;color:#6138c7;font-weight:800}.key-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.calc-key{border-radius:10px;min-height:58px;background:#f5f7ff;border:1px solid #dce4fb;color:#162873;font-size:21px;font-weight:750}.calc-key:hover{background:#e7edff}.calc-key.operator{color:#662adc;background:#f1ecff}.calc-key.equals{background:#6725e4;color:white}.calc-display{background:#f3f6fe;border:1px solid #c9d7fa;padding:18px;border-radius:14px;margin:12px 0 20px;font-size:32px;min-height:90px;width:100%;text-align:right;color:#10217f;font-weight:800}.calc-history{max-height:300px;overflow-y:auto}.history-item{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e1e7f5;padding:9px;font-size:16px}.calendar-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between}.cal-month{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-top:12px}.cal-dow{text-align:center;font-weight:850;color:#485eb5;font-size:16px;padding:6px}.cal-cell{border:1px solid #e1e9f7;border-radius:9px;min-height:64px;text-align:left;padding:6px;display:flex;flex-direction:column;align-items:flex-start;background:#fff;font-weight:800;color:#263c8b}.cal-cell:hover{border-color:#8657f8}.cal-cell.is-selected{border:2px solid #6521dd;background:#f3ecff}.cal-cell.is-other{opacity:.35}.cal-cell.is-today .day-solar{background:#0a44de;color:white}.day-solar{border-radius:5px;padding:0 5px}.day-lunar{font-size:16px;color:#9b59bb;margin-top:auto}.note-area{width:100%;min-height:270px;resize:vertical;border:1px solid #ccd8f8;border-radius:12px;padding:15px;font-size:17px;line-height:1.6}.qr-output{background:#fff;border:1px solid #d9e3f8;border-radius:13px;min-height:280px;padding:15px;display:grid;place-items:center;overflow:auto}.qr-output canvas{max-width:100%;height:auto}.stack{display:grid;gap:15px}.mini-kpi{font-size:16px;color:#536d9b}.intro-card{border-radius:17px;padding:24px;border:1px solid #dbe4fb;background:white;margin:20px 0}.intro-card h1{font-size:34px;color:#142dab;margin:0 0 10px}.intro-card p{font-size:17px}.help-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.help-grid .tool-box{min-height:155px}.status-pill{background:#ffedbd;color:#6e5000;font-weight:850;border-radius:999px;padding:5px 10px;font-size:16px}.spin{display:inline-block;border:3px solid #ffffff60;border-top-color:currentColor;border-radius:50%;width:18px;height:18px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}\n@media(max-width:1360px){.header-tagline{display:none}.brand-divider{display:none}.nav-link{padding:10px 12px}.hero{grid-template-columns:1.15fr .85fr}.hero-art{min-height:242px}.hero-cta{grid-column:1/-1;display:none}.group-heading-text h3{font-size:17px}.group-heading-text p{font-size:16px}.tool-card{gap:7px;padding:8px}.tool-tile{height:42px;width:42px}.tool-names b{font-size:16px}.tool-names small{font-size:16px}.portable-laptop{display:none}}\n@media(max-width:1070px){.brand-wordmark{font-size:29px}.main-nav{gap:5px}.nav-link{font-size:16px;padding:9px 10px}.columns{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr 1fr}.hero-copy{padding:25px}.hero-title{font-size:46px}.hero-subtitle{white-space:normal}.hero-art{max-height:270px}.portable-text{max-width:none}.portable-stripe{flex-basis:40%}.tool-grid-2{grid-template-columns:1fr}.tool-box{padding:17px}}\n@media(max-width:750px){.shell{width:calc(100% - 28px)}.header-inner{min-height:67px;gap:5px}.brand-mark{height:48px;width:48px}.brand-wordmark{font-size:26px;letter-spacing:-1.2px}.mobile-menu{display:flex;margin-left:auto}.main-nav{display:none;position:absolute;top:65px;right:14px;left:14px;z-index:50;flex-direction:column;align-items:stretch;background:#5121ce;border-radius:13px;padding:10px;box-shadow:0 15px 25px #1f158946}.main-nav.open{display:flex}.nav-link{padding:14px 15px}.hero{display:block}.hero-copy{padding:23px}.hero-title{font-size:clamp(39px,8.7vw,54px)}.hero-subtitle{font-size:20px;white-space:normal}.hero-art{height:200px;min-height:200px}.hero-art img{height:240px;object-fit:cover}.hero-cta{display:none}.section-toolbar{align-items:stretch;flex-direction:column;gap:10px}.toolbar-right{width:100%}.search-box{flex:1;width:auto;max-width:none}.columns{grid-template-columns:1fr;gap:12px}.group-panel{min-height:unset}.mytools-empty{min-height:160px}.group-heading-text h3{font-size:20px}.group-heading-text p{font-size:16px}.group-items{gap:9px}.tool-card{min-height:74px;padding:10px 12px}.tool-tile{width:49px;height:49px}.tool-names b{font-size:17px}.tool-names small{font-size:16px}.list-view .group-items{grid-template-columns:1fr}.portable-strip{flex-wrap:wrap;gap:15px;padding:18px}.portable-stripe{flex-basis:100%}.portable-text{flex-basis:100%}.portable-actions{width:100%}.footer-main{flex-direction:column}.footer-links{flex-wrap:wrap;gap:10px 20px}.tool-page{padding-inline:0}.tool-heading-icon{width:57px;height:57px}.tool-heading h1{font-size:29px}.tool-heading p{font-size:16px}.tool-heading .button{margin-left:0}.form-grid,.form-grid.three{grid-template-columns:1fr}.results-grid,.results-grid.three,.related-tools,.help-grid{grid-template-columns:1fr 1fr}.result-tile output{font-size:24px}.tool-heading{gap:13px}.tool-box-heading{font-size:19px}}\n@media(max-width:420px){.brand-wordmark{font-size:22px}.brand-mark{width:42px;height:42px}.hero-title{font-size:38px}.hero-subtitle{font-size:19px}.hero-copy{padding:20px 15px}.hero-perks{gap:9px}.hero-perks span{white-space:normal}.results-grid,.results-grid.three,.related-tools,.help-grid{grid-template-columns:1fr}.tool-heading h1{font-size:27px}.cal-cell{min-height:59px;padding:4px}.day-lunar{font-size:16px}.tool-page{padding-top:14px}}\n@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}\n\n/* Startup fallback, replaced by app.js after successful module import. */\n.startup-panel{max-width:820px;margin:clamp(32px,8vh,100px) auto;background:#fff;border:1px solid #dfd7ff;border-radius:20px;box-shadow:0 14px 36px rgba(51,34,122,.09);padding:30px;color:#182b79;font-size:16px;line-height:1.65}.startup-panel h1{font-size:25px;color:#5221c9;margin:0 0 16px}.startup-panel p{font-size:16px}.startup-panel code{color:#3e19b5;background:#f2efff;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}\n\n/* Epsilon Soft PDF Studio - shared document workspace. All UI text >=16px. */\n.pdf-studio{--pdf-purple:#6429e3;--pdf-blue:#1733a5;--pdf-border:#d9dffd;--pdf-ink:#132565;color:var(--pdf-ink);font-size:16px;display:grid;gap:14px}\n.pdf-studio *{box-sizing:border-box}\n.pdf-studio button,.pdf-studio input,.pdf-studio select,.pdf-studio textarea{font:inherit}\n.pdf-intro{display:flex;align-items:center;justify-content:space-between;gap:24px;border-radius:18px;background:linear-gradient(115deg,#f3eeff 0%,#ecf4ff 54%,#fff9e3 100%);border:1px solid #e3d9ff;padding:20px 24px}\n.pdf-intro h2{font-size:clamp(23px,2vw,30px);margin:0 0 8px;font-weight:900;color:#171781}\n.pdf-intro p{font-size:16px;line-height:1.5;margin:0}\n.pdf-eyebrow{font-size:16px!important;letter-spacing:.06em;font-weight:850;color:#7633dc;margin-bottom:7px!important}\n.pdf-privacy{min-width:245px;background:#fff8;border:1px solid #ddd4ff;padding:12px;border-radius:13px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}\n.pdf-privacy small{display:block;flex-basis:100%;color:#5a6e9f;font-size:16px;font-weight:450}\n.pdf-topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:13px 16px;background:white;border:1px solid var(--pdf-border);border-radius:16px;flex-wrap:wrap}\n.pdf-fileline{display:flex;align-items:center;gap:10px;min-width:0;flex:1}\n.pdf-fileline b{font-size:18px;display:block;max-width:380px;overflow-wrap:anywhere}\n.pdf-fileline small{color:#6275a2;font-size:16px;display:block}\n.pdf-fileicon{background:#f0e9ff;border-radius:12px;padding:9px;color:#7533e8;display:grid;place-items:center}\n.pdf-topactions{display:flex;gap:8px;flex-wrap:wrap}\n.pdf-topactions .button{padding:10px 13px;font-size:16px;min-height:42px}\n.pdf-studio .button:disabled{opacity:.45;cursor:not-allowed}\n.pdf-dropzone{display:grid;justify-items:center;gap:13px;padding:55px 20px;border:2px dashed #b9a4ff;border-radius:20px;background:linear-gradient(135deg,#fbfaff,#f4f6ff);text-align:center;transition:background .2s,border-color .2s}\n.pdf-dropzone.dragging{border-color:#6f2be3;background:#e9dffe}\n.pdf-dropzone h3{font-size:26px;margin:0;color:#21259a}\n.pdf-dropzone p{max-width:570px;margin:0;color:#5571a4;font-size:17px;line-height:1.65}\n.pdf-dropzone small{font-size:16px;color:#667ba3}\n.pdf-drop-icon{width:84px;height:84px;color:#662bdb;background:linear-gradient(135deg,#eadbff,#c6e6ff);display:grid;place-items:center;border-radius:23px}\n.pdf-drop-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}\n.pdf-tabs{display:flex;flex-wrap:wrap;gap:7px;align-items:center;border:1px solid #d5dcf8;border-radius:16px;background:#f5f5ff;padding:8px}\n.pdf-tab{display:flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:11px;padding:12px 15px;background:transparent;color:#344a91;font-size:16px;font-weight:850;cursor:pointer}\n.pdf-tab:hover{background:#e8e8fc}\n.pdf-tab.is-active{color:#fff;background:linear-gradient(115deg,#5825d9,#6b34ee);box-shadow:0 6px 14px #5121bc31}\n.pdf-studio .tool-box{padding:19px}\n.pdf-operations{border:1px solid #d6dffe;border-radius:15px;background:white}\n.pdf-operations [data-panel][hidden]{display:none!important}\n.pdf-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;margin-bottom:13px}\n.pdf-panel-head h3{font-size:21px;display:flex;gap:9px;align-items:center;color:#19278c;margin:0}\n.pdf-panel-head p{font-size:16px;margin:0;color:#5a6eaa;flex:1;min-width:260px;line-height:1.5}\n.pdf-action-row{display:flex;flex-wrap:wrap;gap:8px}\n.pdf-action-row .button{font-size:16px;min-height:42px;padding:9px 13px}\n.pdf-inline-form,.pdf-edit-settings,.pdf-compress{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-top:15px;padding:13px;background:#f6f8ff;border:1px solid #e1e6ff;border-radius:12px}\n.pdf-inline-form label,.pdf-edit-settings label,.pdf-compress label{display:flex;flex-direction:column;gap:6px;font-size:16px;font-weight:800;color:#182a88;flex:1;min-width:145px}\n.pdf-inline-form input,.pdf-edit-settings input,.pdf-edit-settings select,.pdf-compress select{width:100%;height:43px;background:white;padding:7px 11px;border:1px solid #cbd5f9;border-radius:9px;font-size:16px;color:#243d84}\n.pdf-edit-settings input[type=\"color\"]{padding:3px;max-width:90px;cursor:pointer}\n.pdf-panel-tip{color:#647aa9;font-size:16px;margin:10px 0 0;line-height:1.5}\n.pdf-danger-tip{font-size:16px;line-height:1.55;background:#fff8e4;color:#8c5711;border:1px solid #f3d99a;border-radius:10px;margin:14px 0 0;padding:12px}\n.pdf-editor-grid{display:grid;grid-template-columns:minmax(205px,260px) minmax(0,1fr);gap:14px;align-items:stretch}\n.pdf-page-sidebar,.pdf-viewer{background:#fff;border:1px solid #dce4fa;border-radius:16px;min-height:420px;overflow:hidden}\n.pdf-page-sidebar{padding:12px}\n.pdf-sidebar-title{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:18px;font-weight:900;color:#1b2f93}\n.pdf-sidebar-title span{background:#f3ecff;color:#6028d7;border-radius:30px;padding:5px 10px;font-size:16px}\n.pdf-page-hint{font-size:16px;color:#6378a5;line-height:1.4;margin:10px 0}\n.pdf-thumbnails{height:min(73vh,730px);overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;padding:5px;scrollbar-color:#a8b6e5 transparent}\n.pdf-thumb{position:relative;min-width:0;background:#f7f9ff;border:2px solid #e4eafc;border-radius:10px;padding:7px;cursor:grab}\n.pdf-thumb:hover{border-color:#a688ef}.pdf-thumb.active{border-color:#6930df;background:#efe9ff}\n.pdf-thumb-check{position:absolute;top:5px;right:5px;width:20px;height:20px;accent-color:#622cdc;z-index:2;cursor:pointer}\n.pdf-thumb-button{padding:0;border:0;background:transparent;display:flex;flex-direction:column;gap:5px;align-items:center;cursor:pointer;width:100%;min-height:111px;font-size:16px;color:#273c8b;font-weight:800}\n.pdf-thumb-button canvas{width:auto;max-width:100%;max-height:104px;height:auto;background:white;box-shadow:0 3px 9px #20326b1c;border:1px solid #e0e5f5}\n.pdf-viewer{display:flex;flex-direction:column;background:#f5f7ff}\n.pdf-viewer-toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:10px 17px;background:#fff;border-bottom:1px solid #dde5fa;font-weight:900;color:#223995;min-height:49px}\n.pdf-viewer-toolbar>div{display:flex;gap:8px}\n.pdf-icon-btn{display:grid;place-items:center;border:1px solid #cdd7f5;border-radius:9px;background:#f8faff;color:#5a2dd0;width:36px;height:32px;cursor:pointer}\n.pdf-icon-btn:first-child svg{transform:rotate(180deg)}\n.pdf-preview-area{background:radial-gradient(circle at 50% 30%,#f0edff 0%,#e7eeff 80%);min-height:520px;padding:18px;display:flex;justify-content:center;align-items:flex-start;overflow:auto;position:relative}\n#pdf-canvas{display:block;background:white;box-shadow:0 5px 28px #1c316131;max-width:100%;height:auto;cursor:crosshair}\n.pdf-preview-message{color:#5c6f99;font-size:16px;position:absolute;top:25%;padding:15px;border-radius:12px;background:#fff;max-width:90%;text-align:center}\n.pdf-preview-message[hidden]{display:none}\n.pdf-preview-caption{font-size:16px;color:#6076a8;padding:10px;margin:0;text-align:center;background:#fff}\n.pdf-signbox{display:flex;align-items:flex-start;gap:13px;flex-wrap:wrap;margin-top:15px;padding:13px;background:#fbfaff;border-radius:12px;border:1px solid #ded6ff}\n.pdf-signbox>div{max-width:240px}\n.pdf-signbox strong{display:block;font-size:17px;color:#222890}\n.pdf-signbox p{font-size:16px;color:#6680ac;line-height:1.4;margin:4px 0}\n.pdf-signbox canvas{background:white;width:min(480px,100%);max-width:100%;height:150px;border:1px dashed #9ea7f2;border-radius:11px;touch-action:none;cursor:crosshair}\n.pdf-advanced{display:grid;gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}\n.pdf-advanced article{background:#f5f6ff;border:1px solid #e3dfff;border-radius:11px;padding:15px}\n.pdf-advanced article b{display:block;font-size:18px;color:#30238d;margin-bottom:10px}\n.pdf-advanced article p{color:#576ca0;font-size:16px;line-height:1.6;margin:0}\n.pdf-busy{position:fixed;z-index:200;bottom:25px;right:25px;max-width:min(440px,90vw);border-radius:13px;background:#5624cb;color:white;display:flex;align-items:center;gap:10px;padding:14px 18px;font-size:16px;font-weight:800;box-shadow:0 14px 40px #3d258257}\n.pdf-busy[hidden],.pdf-message[hidden]{display:none!important}\n.pdf-message{background:#fff1ed;border:1px solid #f0a09d;color:#922d2d;font-size:16px;padding:12px 16px;border-radius:12px;line-height:1.5;overflow-wrap:anywhere}\n.pdf-legal{color:#6176a4;font-size:16px;line-height:1.55;margin:6px 0 0}\n@media(max-width:1050px){.pdf-intro{flex-direction:column;align-items:flex-start}.pdf-privacy{width:100%}.pdf-editor-grid{grid-template-columns:210px minmax(0,1fr)}.pdf-advanced{grid-template-columns:1fr 1fr}}\n@media(max-width:740px){.pdf-editor-grid{grid-template-columns:1fr}.pdf-page-sidebar{min-height:0}.pdf-thumbnails{height:auto;max-height:240px;grid-template-columns:repeat(4,minmax(0,1fr))}.pdf-thumb-check{width:18px;height:18px}.pdf-thumb-button{min-height:90px}.pdf-dropzone{padding:28px 13px}.pdf-topactions{width:100%;justify-content:flex-start}.pdf-tab{flex:1;justify-content:center;padding:10px}.pdf-panel-head{display:block}.pdf-panel-head p{margin-top:10px}.pdf-action-row .button{flex:1}.pdf-preview-area{min-height:340px}.pdf-advanced{grid-template-columns:1fr}}\n@media(max-width:430px){.pdf-thumbnails{grid-template-columns:repeat(3,minmax(0,1fr))}.pdf-tabs{gap:4px}.pdf-tab{font-size:16px}.pdf-intro{padding:17px}.pdf-intro h2{font-size:24px}}\n";
+const EPSILON_STYLES = ":root{color-scheme:light;--purple:#5a20db;--purple2:#7c31ff;--deep:#0a1b62;--navy:#07185e;--blue:#0637e9;--yellow:#ffdc08;--green:#09b37e;--muted:#51648e;--line:#dce5fa;--paper:#fff;--page:#f8faff;--shadow:0 8px 24px rgba(43,58,129,.075);font-family:Inter,\"Segoe UI\",Arial,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased}\n*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--navy);background:radial-gradient(ellipse at 80% 10%,#f4f1ff,transparent 55%),var(--page);min-width:320px;font-size:16px;line-height:1.48}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}a{text-decoration:none;color:inherit}img{max-width:100%;height:auto}svg{flex-shrink:0}[hidden]{display:none!important}:focus-visible{outline:3px solid #ffb900;outline-offset:3px}.shell{max-width:1620px;width:calc(100% - 48px);margin-inline:auto}.skip-link{position:absolute;top:-60px;left:12px;background:white;padding:12px;z-index:1000}.skip-link:focus{top:8px}\n.site-header{background:linear-gradient(103deg,#4c16dc 0%,#5322c8 48%,#5e19cf 100%);color:white;box-shadow:0 3px 14px #29039f1a}.header-inner{display:flex;align-items:center;min-height:76px;gap:18px}.brand{display:flex;align-items:center;flex-shrink:0;white-space:nowrap;gap:8px}.brand-mark{width:59px;height:59px;object-fit:contain;filter:none}.brand-wordmark{font-weight:900;font-size:35px;letter-spacing:-1.7px;line-height:1;display:flex;align-items:baseline}.brand-wordmark strong{font-size:inherit;color:var(--yellow);font-weight:900;letter-spacing:-1.6px}.brand-divider{height:32px;width:1px;background:#ffffff80;margin-left:14px}.header-tagline{font-weight:700;font-size:17px;white-space:nowrap;letter-spacing:.4px}.main-nav{display:flex;gap:12px;margin-left:auto;align-items:center}.nav-link{display:inline-flex;align-items:center;gap:10px;border-radius:12px;padding:11px 17px;color:white;background:#3b0fa472;font-size:16px;font-weight:700;white-space:nowrap;transition:background .18s,transform .18s}.nav-link .svg-icon{width:20px;height:20px}.nav-link:hover{background:#9156fa}.nav-link.is-active{background:#fff;color:#521bd6;box-shadow:0 4px 12px #270e7d22}.mobile-menu{display:none}.icon-button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#ffffff1d;color:white;border:1px solid #ffffff55}\nmain{min-height:calc(100vh - 250px)}.page-home{padding-top:18px}.hero{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(280px,1fr) minmax(275px,.78fr);min-height:264px;border:1px solid #d9e1f9;border-radius:18px;overflow:hidden;background:linear-gradient(112deg,#f3f6ff 0%,#ecf4ff 42%,#c2b4ff 76%,#855afa 100%);position:relative}.hero-copy{padding:26px 8px 26px 34px;position:relative;z-index:2}.eyebrow{font-size:17px;letter-spacing:1.8px;font-weight:900;color:#1432bd;margin:0 0 8px}.hero-title{font-size:clamp(42px,3.55vw,58px);letter-spacing:-2.6px;line-height:1.01;font-weight:900;color:#041bb0;margin:0}.hero-title strong{color:var(--yellow)}.hero-subtitle{font-size:clamp(19px,1.35vw,24px);font-weight:800;margin:9px 0 8px;white-space:nowrap;color:#0d22a4}.hero-description{font-size:16px;color:#364d84;margin:0}.hero-perks{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:22px;font-weight:750}.hero-perks span{display:inline-flex;gap:10px;align-items:center;white-space:nowrap}.check-dot{border-radius:100%;display:inline-flex;align-items:center;justify-content:center;background:#10b981;width:24px;height:24px;color:white}.hero-art{position:relative;min-height:255px;align-self:stretch;background:linear-gradient(120deg,#e0faff12,transparent 80%);overflow:hidden}.hero-art img{position:absolute;left:50%;top:50%;width:110%;max-width:none;height:100%;object-fit:cover;transform:translate(-50%,-50%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 93%,transparent 100%)}.hero-cta{background:linear-gradient(128deg,#092ec4 0%,#2f39ee 95%);color:white;padding:21px 22px;display:flex;flex-direction:column;justify-content:space-between;position:relative}.hero-cta::before{content:\"\";position:absolute;inset:0;opacity:.22;background:radial-gradient(circle at 100% 30%,#8f9cff,transparent 55%);pointer-events:none}.hero-cta h2{position:relative;margin:0 0 10px;font-size:23px;line-height:1.2;letter-spacing:-.4px;color:white}.hero-cta p{position:relative;display:flex;align-items:flex-start;gap:8px;margin:5px 0;font-size:16px}.hero-cta p svg{color:#89fdd3}.button{display:inline-flex;justify-content:center;align-items:center;gap:10px;min-height:49px;border:0;border-radius:12px;padding:10px 20px;font-weight:800;font-size:16px;transition:transform .16s,filter .16s}.button:hover:not(:disabled){filter:brightness(1.045);transform:translateY(-1px)}.button-yellow{background:var(--yellow);color:#07167f;position:relative;margin-top:9px;box-shadow:0 8px 20px #121e904a}.button-purple{background:linear-gradient(120deg,#722cff,#4928ef);color:white}.button-outline{background:white;color:#5326dc;border:1px solid #9f86fd}.button-soft{background:#f0edff;color:#5127cf}.button-sm{min-height:40px;padding:6px 13px;font-size:16px}.button-plain{background:white;color:#1d37a4;border:1px solid var(--line)}\n.directory{scroll-margin-top:20px;margin-top:21px}.section-toolbar{display:flex;align-items:center;gap:14px;justify-content:space-between;margin-bottom:12px}.section-heading{margin:0;font-size:18px;font-weight:900;letter-spacing:.3px;white-space:nowrap}.section-heading::before{content:\"\";display:inline-block;height:16px;width:4px;background:#7034ee;margin-right:10px;border-radius:4px;vertical-align:-2px}.toolbar-right{display:flex;gap:12px;align-items:center}.search-box{width:320px;background:white;border:1px solid #d2def8;box-shadow:0 4px 12px #293e890b;border-radius:22px;display:flex;align-items:center;gap:8px;padding:0 13px;min-height:43px;color:#7790b6}.search-box:focus-within{border-color:#8f6cfa;box-shadow:0 0 0 4px #8f6cfa24}.search-box input{border:0;background:transparent;width:100%;outline:none;color:var(--navy);font-size:16px;min-width:0}.search-box input::placeholder{color:#8c9cba}.view-toggle{display:flex;gap:2px;border:1px solid #dae2fb;padding:3px;background:white;border-radius:12px}.toggle-button{border:0;background:transparent;color:#6d86ad;padding:5px;border-radius:8px;display:grid;place-items:center}.toggle-button.active{background:#6d2de3;color:white}.columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}.group-panel{border:1px solid #dbe5f9;border-radius:19px;padding:13px;background:#fff;box-shadow:var(--shadow);min-width:0;display:flex;flex-direction:column;min-height:365px}.group-panel.mytools{background:linear-gradient(145deg,#f3eaff,#f9f7ff);border-color:#dfd4ff}.group-panel.category-calc{background:linear-gradient(145deg,#eaf6ff,#f4f9ff);border-color:#d1e6ff}.group-panel.category-engineering{background:linear-gradient(155deg,#fff6eb,#fffbf4);border-color:#ffe8d3}.group-panel.category-utility{background:linear-gradient(145deg,#e6fbf4,#f6fffc);border-color:#d1f0e8}.group-heading{display:flex;align-items:center;gap:13px;padding:1px 0 12px}.category-emblem{width:50px;height:50px;display:grid;place-items:center;color:white;background:linear-gradient(138deg,#9661ff,#6022df);border-radius:13px;box-shadow:0 5px 12px #5e28d22b;flex-shrink:0}.category-calc .category-emblem{background:linear-gradient(138deg,#64caff,#167ae6)}.category-engineering .category-emblem{background:linear-gradient(138deg,#ffc15b,#ff711e)}.category-utility .category-emblem{background:linear-gradient(138deg,#8ee89b,#05ab83)}.group-heading-text{min-width:0}.group-heading-text h3{margin:0;font-size:19px;line-height:1.17;color:#182aa8;font-weight:900}.group-heading-text p{margin:4px 0 0;font-size:16px;color:#566d99;line-height:1.25}.group-count{margin-left:auto;border:4px solid white;background:#dfe9fd;min-width:39px;height:39px;display:grid;place-items:center;font-weight:900;border-radius:100%;color:#1a32b5;font-size:17px;flex-shrink:0}.group-items{display:grid;gap:7px}.tool-card{background:#fff;border:1px solid #e1e8f5;border-radius:13px;padding:8px 10px;display:flex;align-items:center;gap:10px;min-height:69px;box-shadow:0 2px 6px #091e4a07;transition:transform .17s,border-color .17s,box-shadow .17s;position:relative}.tool-card.is-ready:hover{transform:translateY(-2px);border-color:#b8c8ff;box-shadow:0 6px 15px #30166d1a}.tool-link{display:flex;min-width:0;flex:1;align-items:center;gap:10px}.tool-tile{height:45px;width:45px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;color:#1166df;background:linear-gradient(140deg,#edf6ff,#a7dafa)}.tone-blue{color:#0054e6;background:linear-gradient(145deg,#d7eeff,#9bd4ff)}.tone-mint{color:#009f78;background:linear-gradient(145deg,#e2fff4,#b0e9db)}.tone-orange{color:#f36d00;background:linear-gradient(145deg,#fff0db,#ffce9b)}.tone-violet{color:#7631ec;background:linear-gradient(145deg,#f1eaff,#dbc0ff)}.tone-red{color:#e8294a;background:linear-gradient(145deg,#ffebee,#ffc9d0)}.tone-teal{color:#009c9a;background:linear-gradient(145deg,#e2fff7,#a4e9d8)}.tool-names{min-width:0;display:flex;flex-direction:column;gap:1px}.tool-names b{font-size:16px;line-height:1.2;font-weight:800;display:block}.tool-names small{font-size:16px;color:#607297;line-height:1.25;display:block}.star-btn{width:33px;height:42px;display:grid;place-items:center;border:0;color:#98a9c8;background:transparent;padding:0;flex-shrink:0}.star-btn:hover,.star-btn[aria-pressed=\"true\"]{color:#f5a900}.star-btn[aria-pressed=\"true\"] svg{fill:#ffe951;stroke:#a86e03}.star-btn svg{width:24px;height:24px}.tool-card.is-planned{opacity:.72;background:#fdfdff}.tool-card.is-planned .tool-link{cursor:default}.soon-label{font-size:16px;color:#7643dd;background:#eee8ff;border-radius:8px;padding:2px 8px;align-self:flex-start}.mytools-empty{border:1px dashed #b7bafa;border-radius:14px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:235px;padding:20px;background:#ffffff51}.empty-icon{color:#4829ca;background:#eeeaff;border:1px solid #d1c8ff;border-radius:13px;padding:12px;display:grid;place-items:center}.mytools-empty strong{font-size:17px}.mytools-empty p{margin:0;font-size:16px;color:#5c6d9e}.mytools-hint{background:#ffffff80;border:1px solid #e0ddff;border-radius:12px;margin-top:12px;padding:11px;display:flex;gap:9px;align-items:center;color:#3854a3;font-size:16px}.mytools-hint svg{color:#e8aa00}.empty-search{text-align:center;padding:28px;background:white;border:1px dashed #bdc9e8;border-radius:13px;color:#3c5396;margin-top:14px}.columns.list-view{display:block}.list-view .group-panel{min-height:0;margin-bottom:16px}.list-view .group-items{grid-template-columns:repeat(2,minmax(0,1fr))}.list-view .mytools-empty{min-height:95px}\n.portable-strip{position:relative;margin:15px 0 24px;min-height:132px;border-radius:19px;color:white;padding:22px 25px;display:flex;gap:28px;align-items:center;overflow:hidden;background:linear-gradient(113deg,#6120e7,#2145f2 46%,#761bf0);box-shadow:0 8px 20px #4435df22}.portable-strip::before{content:\"\";position:absolute;inset:0;background:radial-gradient(ellipse at 60% -20%,#56e7ff88,transparent 53%),repeating-linear-gradient(130deg,transparent 0 120px,#ffffff08 122px 129px);pointer-events:none}.portable-stripe{position:relative;display:flex;align-items:center;gap:15px;flex:0 0 27%}.win-badge{display:grid;place-items:center;border-radius:16px;width:79px;height:79px;transform:rotate(-3deg);background:linear-gradient(130deg,#083ad6,#14baf3);box-shadow:0 0 0 2px #ffcc19,0 5px 14px #0003;flex-shrink:0}.win-badge .svg-icon{width:48px;height:48px}.portable-stripe h3{font-size:28px;line-height:1.2;margin:0;font-weight:900}.portable-stripe p{margin:0;font-size:16px}.portable-strip small.status{display:inline-block;font-size:16px;font-weight:850;color:#102bb9;background:#ffdf0a;border-radius:999px;padding:2px 9px;margin-top:5px}.portable-text{position:relative;flex:1;max-width:550px}.portable-text h3{font-size:20px;line-height:1.25;margin:0 0 8px;color:white}.portable-text p{margin:0;font-size:16px;line-height:1.4}.portable-laptop{height:130px;width:205px;object-fit:cover;object-position:center;align-self:stretch;mix-blend-mode:screen;opacity:.93;position:relative}.portable-actions{position:relative;display:grid;gap:6px;min-width:185px}.portable-actions .button{width:100%}.portable-actions span{font-size:16px;text-align:center}.portable-details{margin:0 0 24px;padding:20px 24px;background:#fff;border:1px solid var(--line);border-radius:16px;scroll-margin-top:16px}.portable-details h3{font-size:21px;margin:0 0 8px}.portable-details p{margin:8px 0}.portable-details .button{margin-top:8px}.callout{border:1px solid #d8e2ff;border-radius:14px;padding:15px 18px;background:#f0f5ff;font-size:16px;line-height:1.6}.callout.warning{background:#fffaed;border-color:#f5dfaa;color:#684b10}.callout.success{background:#eefcf5;border-color:#b4ebd3;color:#145e44}.callout strong{font-weight:850}\n.site-footer{border-top:1px solid var(--line);padding-top:22px;padding-bottom:26px;color:#67799b}.footer-main{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.footer-brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;color:#1d32b3}.footer-brand img{width:38px;height:38px}.footer-brand img.footer-logo{width:220px;height:auto}.footer-main p{font-size:16px;margin:6px 0}.footer-links{display:flex;gap:20px;font-size:16px;font-weight:700}.footer-links a:hover{color:#6b2cda}.footer-bottom{font-size:16px;border-top:1px solid #e5ebfa;margin-top:18px;padding-top:13px}.toast-region{position:fixed;z-index:9999;right:22px;bottom:22px;pointer-events:none;max-width:calc(100vw - 44px)}.toast{padding:14px 18px;background:#3817ad;color:white;border:1px solid #ffffff44;border-radius:13px;box-shadow:0 15px 38px #19125155;min-width:230px;font-size:16px;animation:slidein .2s ease}.toast.error{background:#a02349}.toast.success{background:#087b65}@keyframes slidein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}\n/* Tools */\n.tool-page{padding:20px 10px 30px}.breadcrumbs{display:flex;align-items:center;flex-wrap:wrap;gap:10px;color:#485a8b;font-size:16px;margin-bottom:16px}.breadcrumbs a{color:#3434c5;font-weight:700}.breadcrumbs a:hover{text-decoration:underline}.tool-heading{display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap}.tool-heading-icon{height:72px;width:72px;border-radius:19px;display:grid;place-items:center;flex-shrink:0}.tool-heading-icon .svg-icon{width:40px;height:40px}.tool-heading h1{font-size:clamp(29px,2.4vw,42px);line-height:1.12;letter-spacing:-1.15px;margin:0 0 5px;color:#0d178e}.tool-heading p{margin:0;color:#607198;font-size:19px}.tool-heading .button{margin-left:auto}.tool-surface{display:grid;grid-template-columns:1fr;gap:15px}.tool-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px;min-width:0}.tool-box{background:#fff;border:1px solid #d9e5fb;border-radius:16px;padding:16px;box-shadow:0 3px 12px #2b5a9c0a;min-width:0}.tool-box-heading{font-size:20px;color:#0c268f;font-weight:900;margin:0 0 13px;display:flex;align-items:center;gap:9px}.tool-box-heading .svg-icon{color:#4b55e9}.box-lead{font-size:16px;color:var(--muted);margin:-8px 0 15px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.form-field{display:flex;flex-direction:column;gap:5px;min-width:0;font-weight:750;color:#122766;font-size:16px}.form-field>span:first-child{font-size:16px}.form-field select,.form-field>input,.form-field textarea{background:white;color:#13266d;min-width:0;width:100%;min-height:48px;border:1px solid #c7d5fa;border-radius:10px;padding:10px 12px;outline:0}.form-field select:focus,.form-field>input:focus,.form-field textarea:focus,.input-wrap:focus-within{border-color:#8255f8;box-shadow:0 0 0 3px #8556ee27}.input-wrap{display:flex;align-items:center;min-height:47px;border:1px solid #c7d5fa;border-radius:10px;overflow:hidden;background:white}.input-wrap input{border:0;min-width:0;flex:1;width:100%;height:45px;padding:7px 11px;outline:0;color:#13266d}.input-wrap small{color:#563bd3;background:#f2f1ff;font-size:16px;font-weight:700;padding:9px;min-width:45px;text-align:center;white-space:nowrap}.form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.results-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.results-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.result-tile{border:1px solid #dae4ff;border-radius:14px;padding:16px;background:linear-gradient(125deg,#f1faff,#e1f3ff);min-width:0}.result-tile.green{background:linear-gradient(125deg,#ecfff7,#dcf9e9);border-color:#bcebd9}.result-tile.purple{background:linear-gradient(125deg,#fbf3ff,#efe5ff);border-color:#dfcfff}.result-tile.yellow{background:linear-gradient(125deg,#fff9df,#fff3b8);border-color:#ffdf7f}.result-tile strong{display:block;font-size:16px;color:#264caa;font-weight:850;margin-bottom:5px}.result-tile output{display:block;font-size:clamp(23px,2.2vw,32px);font-weight:900;color:#03279b;line-height:1.08;overflow-wrap:anywhere}.result-tile output small{font-size:16px;color:#33579c}.result-tile.yellow output{color:#4d18b0}.preview-canvas{display:grid;place-items:center;min-height:285px;border:1px solid #e1e5fc;border-radius:14px;background:linear-gradient(145deg,#f7f8ff,#fcfaff);padding:12px;overflow:hidden}.preview-canvas svg{width:100%;max-height:320px}.shape-note{text-align:center;margin:10px 0 0;color:#65749a}.tool-error{color:#aa2645;font-weight:750;margin-top:12px;min-height:22px}.tool-hint{font-size:16px;line-height:1.55;color:#65749a;margin:13px 0 0}.tool-hint strong{color:#1a2f8f}.separator{height:1px;background:#e3e8f9;margin:14px 0}.tool-detail-card{background:linear-gradient(120deg,#f7f9ff,#f0edff);border-radius:14px;padding:15px;color:#3f4b87}.tool-detail-card p{margin:7px 0}.related-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.related-tools a{display:grid;grid-template-columns:44px minmax(0,1fr) 16px;align-items:center;column-gap:10px;min-height:64px;min-width:0;background:#fff;border:1px solid #dfe8fa;border-radius:11px;padding:9px 12px;font-size:16px;font-weight:750}.related-tools a:hover{border-color:#9b8cf3}.related-tools a>.tool-tile{width:44px;height:44px;display:grid;place-items:center;flex:none}.related-tools a>.tool-tile>.svg-icon{display:block;margin:0;justify-self:center;align-self:center}.related-tools a>.related-tool-name{min-width:0;line-height:1.3;overflow-wrap:break-word}.related-tools a>.svg-icon:last-child{width:16px;height:16px;margin:0;justify-self:end;align-self:center;flex:none}.demo-table{border-collapse:collapse;width:100%;background:#fff}.demo-table th,.demo-table td{text-align:left;border-bottom:1px solid #e5edfc;padding:10px;vertical-align:middle;font-size:16px}.demo-table th{font-weight:850;color:#2a369d;background:#f3f5ff}.data-table-scroll{overflow:auto;max-height:470px;border:1px solid #e1e8fa;border-radius:10px}.badge-pale{font-size:16px;font-weight:750;color:#6030c6;border-radius:999px;background:#ede8ff;padding:5px 12px;display:inline-flex;gap:6px;align-items:center}.symbol-math{font-size:23px;color:#6138c7;font-weight:800}.key-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.calc-key{border-radius:10px;min-height:58px;background:#f5f7ff;border:1px solid #dce4fb;color:#162873;font-size:21px;font-weight:750}.calc-key:hover{background:#e7edff}.calc-key.operator{color:#662adc;background:#f1ecff}.calc-key.equals{background:#6725e4;color:white}.calc-display{background:#f3f6fe;border:1px solid #c9d7fa;padding:18px;border-radius:14px;margin:12px 0 20px;font-size:32px;min-height:90px;width:100%;text-align:right;color:#10217f;font-weight:800}.calc-history{max-height:300px;overflow-y:auto}.history-item{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e1e7f5;padding:9px;font-size:16px}.calendar-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between}.cal-month{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-top:12px}.cal-dow{text-align:center;font-weight:850;color:#485eb5;font-size:16px;padding:6px}.cal-cell{border:1px solid #e1e9f7;border-radius:9px;min-height:64px;text-align:left;padding:6px;display:flex;flex-direction:column;align-items:flex-start;background:#fff;font-weight:800;color:#263c8b}.cal-cell:hover{border-color:#8657f8}.cal-cell.is-selected{border:2px solid #6521dd;background:#f3ecff}.cal-cell.is-other{opacity:.35}.cal-cell.is-today .day-solar{background:#0a44de;color:white}.day-solar{border-radius:5px;padding:0 5px}.day-lunar{font-size:16px;color:#9b59bb;margin-top:auto}.note-area{width:100%;min-height:270px;resize:vertical;border:1px solid #ccd8f8;border-radius:12px;padding:15px;font-size:17px;line-height:1.6}.qr-output{background:#fff;border:1px solid #d9e3f8;border-radius:13px;min-height:280px;padding:15px;display:grid;place-items:center;overflow:auto}.qr-output canvas{max-width:100%;height:auto}.stack{display:grid;gap:15px}.mini-kpi{font-size:16px;color:#536d9b}.intro-card{border-radius:17px;padding:24px;border:1px solid #dbe4fb;background:white;margin:20px 0}.intro-card h1{font-size:34px;color:#142dab;margin:0 0 10px}.intro-card p{font-size:17px}.help-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.help-grid .tool-box{min-height:155px}.status-pill{background:#ffedbd;color:#6e5000;font-weight:850;border-radius:999px;padding:5px 10px;font-size:16px}.spin{display:inline-block;border:3px solid #ffffff60;border-top-color:currentColor;border-radius:50%;width:18px;height:18px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}\n@media(max-width:1360px){.header-tagline{display:none}.brand-divider{display:none}.nav-link{padding:10px 12px}.hero{grid-template-columns:1.15fr .85fr}.hero-art{min-height:242px}.hero-cta{grid-column:1/-1;display:none}.group-heading-text h3{font-size:17px}.group-heading-text p{font-size:16px}.tool-card{gap:7px;padding:8px}.tool-tile{height:42px;width:42px}.tool-names b{font-size:16px}.tool-names small{font-size:16px}.portable-laptop{display:none}}\n@media(max-width:1070px){.brand-wordmark{font-size:29px}.main-nav{gap:5px}.nav-link{font-size:16px;padding:9px 10px}.columns{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr 1fr}.hero-copy{padding:25px}.hero-title{font-size:46px}.hero-subtitle{white-space:normal}.hero-art{max-height:270px}.portable-text{max-width:none}.portable-stripe{flex-basis:40%}.tool-grid-2{grid-template-columns:1fr}.tool-box{padding:17px}}\n@media(max-width:750px){.shell{width:calc(100% - 28px)}.header-inner{min-height:67px;gap:5px}.brand-mark{height:48px;width:48px}.brand-wordmark{font-size:26px;letter-spacing:-1.2px}.mobile-menu{display:flex;margin-left:auto}.main-nav{display:none;position:absolute;top:65px;right:14px;left:14px;z-index:50;flex-direction:column;align-items:stretch;background:#5121ce;border-radius:13px;padding:10px;box-shadow:0 15px 25px #1f158946}.main-nav.open{display:flex}.nav-link{padding:14px 15px}.hero{display:block}.hero-copy{padding:23px}.hero-title{font-size:clamp(39px,8.7vw,54px)}.hero-subtitle{font-size:20px;white-space:normal}.hero-art{height:200px;min-height:200px}.hero-art img{height:240px;object-fit:cover}.hero-cta{display:none}.section-toolbar{align-items:stretch;flex-direction:column;gap:10px}.toolbar-right{width:100%}.search-box{flex:1;width:auto;max-width:none}.columns{grid-template-columns:1fr;gap:12px}.group-panel{min-height:unset}.mytools-empty{min-height:160px}.group-heading-text h3{font-size:20px}.group-heading-text p{font-size:16px}.group-items{gap:9px}.tool-card{min-height:74px;padding:10px 12px}.tool-tile{width:49px;height:49px}.tool-names b{font-size:17px}.tool-names small{font-size:16px}.list-view .group-items{grid-template-columns:1fr}.portable-strip{flex-wrap:wrap;gap:15px;padding:18px}.portable-stripe{flex-basis:100%}.portable-text{flex-basis:100%}.portable-actions{width:100%}.footer-main{flex-direction:column}.footer-links{flex-wrap:wrap;gap:10px 20px}.tool-page{padding-inline:0}.tool-heading-icon{width:57px;height:57px}.tool-heading h1{font-size:29px}.tool-heading p{font-size:16px}.tool-heading .button{margin-left:0}.form-grid,.form-grid.three{grid-template-columns:1fr}.results-grid,.results-grid.three,.related-tools,.help-grid{grid-template-columns:1fr 1fr}.result-tile output{font-size:24px}.tool-heading{gap:13px}.tool-box-heading{font-size:19px}}\n@media(max-width:420px){.brand-wordmark{font-size:22px}.brand-mark{width:42px;height:42px}.hero-title{font-size:38px}.hero-subtitle{font-size:19px}.hero-copy{padding:20px 15px}.hero-perks{gap:9px}.hero-perks span{white-space:normal}.results-grid,.results-grid.three,.related-tools,.help-grid{grid-template-columns:1fr}.tool-heading h1{font-size:27px}.cal-cell{min-height:59px;padding:4px}.day-lunar{font-size:16px}.tool-page{padding-top:14px}}\n@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}\n\n/* Startup fallback, replaced by app.js after successful module import. */\n.startup-panel{max-width:820px;margin:clamp(32px,8vh,100px) auto;background:#fff;border:1px solid #dfd7ff;border-radius:20px;box-shadow:0 14px 36px rgba(51,34,122,.09);padding:30px;color:#182b79;font-size:16px;line-height:1.65}.startup-panel h1{font-size:25px;color:#5221c9;margin:0 0 16px}.startup-panel p{font-size:16px}.startup-panel code{color:#3e19b5;background:#f2efff;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}\n\n/* Epsilon Blue Soft PDF Studio - shared document workspace. All UI text >=16px. */\n.pdf-studio{--pdf-purple:#6429e3;--pdf-blue:#1733a5;--pdf-border:#d9dffd;--pdf-ink:#132565;color:var(--pdf-ink);font-size:16px;display:grid;gap:14px}\n.pdf-studio *{box-sizing:border-box}\n.pdf-studio button,.pdf-studio input,.pdf-studio select,.pdf-studio textarea{font:inherit}\n.pdf-intro{display:flex;align-items:center;justify-content:space-between;gap:24px;border-radius:18px;background:linear-gradient(115deg,#f3eeff 0%,#ecf4ff 54%,#fff9e3 100%);border:1px solid #e3d9ff;padding:20px 24px}\n.pdf-intro h2{font-size:clamp(23px,2vw,30px);margin:0 0 8px;font-weight:900;color:#171781}\n.pdf-intro p{font-size:16px;line-height:1.5;margin:0}\n.pdf-eyebrow{font-size:16px!important;letter-spacing:.06em;font-weight:850;color:#7633dc;margin-bottom:7px!important}\n.pdf-privacy{min-width:245px;background:#fff8;border:1px solid #ddd4ff;padding:12px;border-radius:13px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}\n.pdf-privacy small{display:block;flex-basis:100%;color:#5a6e9f;font-size:16px;font-weight:450}\n.pdf-topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:13px 16px;background:white;border:1px solid var(--pdf-border);border-radius:16px;flex-wrap:wrap}\n.pdf-fileline{display:flex;align-items:center;gap:10px;min-width:0;flex:1}\n.pdf-fileline b{font-size:18px;display:block;max-width:380px;overflow-wrap:anywhere}\n.pdf-fileline small{color:#6275a2;font-size:16px;display:block}\n.pdf-fileicon{background:#f0e9ff;border-radius:12px;padding:9px;color:#7533e8;display:grid;place-items:center}\n.pdf-topactions{display:flex;gap:8px;flex-wrap:wrap}\n.pdf-topactions .button{padding:10px 13px;font-size:16px;min-height:42px}\n.pdf-studio .button:disabled{opacity:.45;cursor:not-allowed}\n.pdf-dropzone{display:grid;justify-items:center;gap:13px;padding:55px 20px;border:2px dashed #b9a4ff;border-radius:20px;background:linear-gradient(135deg,#fbfaff,#f4f6ff);text-align:center;transition:background .2s,border-color .2s}\n.pdf-dropzone.dragging{border-color:#6f2be3;background:#e9dffe}\n.pdf-dropzone h3{font-size:26px;margin:0;color:#21259a}\n.pdf-dropzone p{max-width:570px;margin:0;color:#5571a4;font-size:17px;line-height:1.65}\n.pdf-dropzone small{font-size:16px;color:#667ba3}\n.pdf-drop-icon{width:84px;height:84px;color:#662bdb;background:linear-gradient(135deg,#eadbff,#c6e6ff);display:grid;place-items:center;border-radius:23px}\n.pdf-drop-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}\n.pdf-tabs{display:flex;flex-wrap:wrap;gap:7px;align-items:center;border:1px solid #d5dcf8;border-radius:16px;background:#f5f5ff;padding:8px}\n.pdf-tab{display:flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:11px;padding:12px 15px;background:transparent;color:#344a91;font-size:16px;font-weight:850;cursor:pointer}\n.pdf-tab:hover{background:#e8e8fc}\n.pdf-tab.is-active{color:#fff;background:linear-gradient(115deg,#5825d9,#6b34ee);box-shadow:0 6px 14px #5121bc31}\n.pdf-studio .tool-box{padding:19px}\n.pdf-operations{border:1px solid #d6dffe;border-radius:15px;background:white}\n.pdf-operations [data-panel][hidden]{display:none!important}\n.pdf-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;margin-bottom:13px}\n.pdf-panel-head h3{font-size:21px;display:flex;gap:9px;align-items:center;color:#19278c;margin:0}\n.pdf-panel-head p{font-size:16px;margin:0;color:#5a6eaa;flex:1;min-width:260px;line-height:1.5}\n.pdf-action-row{display:flex;flex-wrap:wrap;gap:8px}\n.pdf-action-row .button{font-size:16px;min-height:42px;padding:9px 13px}\n.pdf-inline-form,.pdf-edit-settings,.pdf-compress{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-top:15px;padding:13px;background:#f6f8ff;border:1px solid #e1e6ff;border-radius:12px}\n.pdf-inline-form label,.pdf-edit-settings label,.pdf-compress label{display:flex;flex-direction:column;gap:6px;font-size:16px;font-weight:800;color:#182a88;flex:1;min-width:145px}\n.pdf-inline-form input,.pdf-edit-settings input,.pdf-edit-settings select,.pdf-compress select{width:100%;height:43px;background:white;padding:7px 11px;border:1px solid #cbd5f9;border-radius:9px;font-size:16px;color:#243d84}\n.pdf-edit-settings input[type=\"color\"]{padding:3px;max-width:90px;cursor:pointer}\n.pdf-panel-tip{color:#647aa9;font-size:16px;margin:10px 0 0;line-height:1.5}\n.pdf-danger-tip{font-size:16px;line-height:1.55;background:#fff8e4;color:#8c5711;border:1px solid #f3d99a;border-radius:10px;margin:14px 0 0;padding:12px}\n.pdf-editor-grid{display:grid;grid-template-columns:minmax(205px,260px) minmax(0,1fr);gap:14px;align-items:stretch}\n.pdf-page-sidebar,.pdf-viewer{background:#fff;border:1px solid #dce4fa;border-radius:16px;min-height:420px;overflow:hidden}\n.pdf-page-sidebar{padding:12px}\n.pdf-sidebar-title{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:18px;font-weight:900;color:#1b2f93}\n.pdf-sidebar-title span{background:#f3ecff;color:#6028d7;border-radius:30px;padding:5px 10px;font-size:16px}\n.pdf-page-hint{font-size:16px;color:#6378a5;line-height:1.4;margin:10px 0}\n.pdf-thumbnails{height:min(73vh,730px);overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;padding:5px;scrollbar-color:#a8b6e5 transparent}\n.pdf-thumb{position:relative;min-width:0;background:#f7f9ff;border:2px solid #e4eafc;border-radius:10px;padding:7px;cursor:grab}\n.pdf-thumb:hover{border-color:#a688ef}.pdf-thumb.active{border-color:#6930df;background:#efe9ff}\n.pdf-thumb-check{position:absolute;top:5px;right:5px;width:20px;height:20px;accent-color:#622cdc;z-index:2;cursor:pointer}\n.pdf-thumb-button{padding:0;border:0;background:transparent;display:flex;flex-direction:column;gap:5px;align-items:center;cursor:pointer;width:100%;min-height:111px;font-size:16px;color:#273c8b;font-weight:800}\n.pdf-thumb-button canvas{width:auto;max-width:100%;max-height:104px;height:auto;background:white;box-shadow:0 3px 9px #20326b1c;border:1px solid #e0e5f5}\n.pdf-viewer{display:flex;flex-direction:column;background:#f5f7ff}\n.pdf-viewer-toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:10px 17px;background:#fff;border-bottom:1px solid #dde5fa;font-weight:900;color:#223995;min-height:49px}\n.pdf-viewer-toolbar>div{display:flex;gap:8px}\n.pdf-icon-btn{display:grid;place-items:center;border:1px solid #cdd7f5;border-radius:9px;background:#f8faff;color:#5a2dd0;width:36px;height:32px;cursor:pointer}\n.pdf-icon-btn:first-child svg{transform:rotate(180deg)}\n.pdf-preview-area{background:radial-gradient(circle at 50% 30%,#f0edff 0%,#e7eeff 80%);min-height:520px;padding:18px;display:flex;justify-content:center;align-items:flex-start;overflow:auto;position:relative}\n#pdf-canvas{display:block;background:white;box-shadow:0 5px 28px #1c316131;max-width:100%;height:auto;cursor:crosshair}\n.pdf-preview-message{color:#5c6f99;font-size:16px;position:absolute;top:25%;padding:15px;border-radius:12px;background:#fff;max-width:90%;text-align:center}\n.pdf-preview-message[hidden]{display:none}\n.pdf-preview-caption{font-size:16px;color:#6076a8;padding:10px;margin:0;text-align:center;background:#fff}\n.pdf-signbox{display:flex;align-items:flex-start;gap:13px;flex-wrap:wrap;margin-top:15px;padding:13px;background:#fbfaff;border-radius:12px;border:1px solid #ded6ff}\n.pdf-signbox>div{max-width:240px}\n.pdf-signbox strong{display:block;font-size:17px;color:#222890}\n.pdf-signbox p{font-size:16px;color:#6680ac;line-height:1.4;margin:4px 0}\n.pdf-signbox canvas{background:white;width:min(480px,100%);max-width:100%;height:150px;border:1px dashed #9ea7f2;border-radius:11px;touch-action:none;cursor:crosshair}\n.pdf-advanced{display:grid;gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}\n.pdf-advanced article{background:#f5f6ff;border:1px solid #e3dfff;border-radius:11px;padding:15px}\n.pdf-advanced article b{display:block;font-size:18px;color:#30238d;margin-bottom:10px}\n.pdf-advanced article p{color:#576ca0;font-size:16px;line-height:1.6;margin:0}\n.pdf-busy{position:fixed;z-index:200;bottom:25px;right:25px;max-width:min(440px,90vw);border-radius:13px;background:#5624cb;color:white;display:flex;align-items:center;gap:10px;padding:14px 18px;font-size:16px;font-weight:800;box-shadow:0 14px 40px #3d258257}\n.pdf-busy[hidden],.pdf-message[hidden]{display:none!important}\n.pdf-message{background:#fff1ed;border:1px solid #f0a09d;color:#922d2d;font-size:16px;padding:12px 16px;border-radius:12px;line-height:1.5;overflow-wrap:anywhere}\n.pdf-legal{color:#6176a4;font-size:16px;line-height:1.55;margin:6px 0 0}\n@media(max-width:1050px){.pdf-intro{flex-direction:column;align-items:flex-start}.pdf-privacy{width:100%}.pdf-editor-grid{grid-template-columns:210px minmax(0,1fr)}.pdf-advanced{grid-template-columns:1fr 1fr}}\n@media(max-width:740px){.pdf-editor-grid{grid-template-columns:1fr}.pdf-page-sidebar{min-height:0}.pdf-thumbnails{height:auto;max-height:240px;grid-template-columns:repeat(4,minmax(0,1fr))}.pdf-thumb-check{width:18px;height:18px}.pdf-thumb-button{min-height:90px}.pdf-dropzone{padding:28px 13px}.pdf-topactions{width:100%;justify-content:flex-start}.pdf-tab{flex:1;justify-content:center;padding:10px}.pdf-panel-head{display:block}.pdf-panel-head p{margin-top:10px}.pdf-action-row .button{flex:1}.pdf-preview-area{min-height:340px}.pdf-advanced{grid-template-columns:1fr}}\n@media(max-width:430px){.pdf-thumbnails{grid-template-columns:repeat(3,minmax(0,1fr))}.pdf-tabs{gap:4px}.pdf-tab{font-size:16px}.pdf-intro{padding:17px}.pdf-intro h2{font-size:24px}}\n";
 const themeSheet = document.createElement('style');
 themeSheet.id = 'epsilon-soft-theme';
 themeSheet.textContent = EPSILON_STYLES + "\n/* ES TOOLKIT desktop-density: size/spacing parity with the approved Portable app.\n * Does not scale text below 16px, does not touch home cards, math or tool logic.\n * Compact only for laptop/desktop browser windows; mobile remains unchanged. */\n@media (min-width: 1024px) and (max-height: 900px) {\n  .tool-page{padding:8px 4px 18px}\n  .tool-page .breadcrumbs{margin-bottom:8px;gap:8px;line-height:1.25}\n  .tool-page .tool-heading{gap:11px;margin-bottom:9px;flex-wrap:nowrap}\n  .tool-page .tool-heading-icon{width:50px;height:50px;border-radius:13px}\n  .tool-page .tool-heading-icon .svg-icon{width:29px;height:29px}\n  .tool-page .tool-heading h1{font-size:28px;line-height:1.12;letter-spacing:-.55px;margin-bottom:2px}\n  .tool-page .tool-heading p{font-size:16px;line-height:1.26}\n  .tool-page .tool-heading .button{min-height:42px;padding:7px 12px;margin-left:auto}\n  .tool-page .tool-surface{gap:10px}\n  .tool-page .tool-grid-2{gap:10px}\n  .tool-page .tool-box{padding:12px;border-radius:14px}\n  .tool-page .tool-box-heading{font-size:19px;margin-bottom:9px}\n  .tool-page .form-grid{gap:10px}\n  .tool-page .form-field select,.tool-page .form-field>input,.tool-page .form-field textarea{min-height:43px;padding:7px 10px}\n  .tool-page .input-wrap{min-height:43px}\n}\n";
 document.head.appendChild(themeSheet);
 // Dynamic layout styling, bundled in app.js.
-themeSheet.textContent += "\n/* Epsilon Soft navigation: web-first sidebar. The base theme remains unchanged. */\nbody.es-has-sidebar{background:radial-gradient(ellipse at 85% 12%,#f1ecff,transparent 48%),#f8faff}\n.es-app-layout.shell{max-width:1620px;width:calc(100% - 42px);display:grid;grid-template-columns:232px minmax(0,1fr);gap:17px;align-items:start;margin:0 auto;padding-top:15px;transition:grid-template-columns .17s ease}\n.es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n.es-app-layout .es-main-pane{min-width:0;width:100%;margin:0;max-width:none;min-height:calc(100vh - 235px)}\n.es-sidebar{background:linear-gradient(153deg,#f7f2ff 0%,#fff 47%,#f6f9ff 100%);border:1px solid #ddd9f7;box-shadow:0 7px 27px #29126c0d;border-radius:17px;position:sticky;top:13px;height:calc(100dvh - 26px);min-height:400px;max-height:940px;display:flex;flex-direction:column;gap:6px;padding:12px 10px;z-index:45;min-width:0}\n.es-sidebar-top{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 4px 10px}\n.es-sidebar-title{font-size:16px;font-weight:900;letter-spacing:.55px;color:#5131b5;white-space:nowrap}\n.es-side-toggle{display:grid;place-items:center;background:#f0eaff;border:1px solid #d8cbff;color:#5e27d8;border-radius:10px;min-height:39px;min-width:39px;padding:6px;flex-shrink:0}\n.es-side-toggle:hover{background:#e8dfff}\n.es-side-nav{display:flex;flex-direction:column;gap:5px;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#ddd5f5 transparent;padding:2px 2px 8px}\n.es-side-link{min-height:50px;border:1px solid transparent;border-radius:12px;padding:7px 8px;display:flex;align-items:center;gap:10px;color:#283a88;background:transparent;position:relative;font-size:16px;font-weight:750;text-align:left}\n.es-side-link:hover{background:white;border-color:#e6e2f6}\n.es-side-link[aria-current=\"page\"]{background:#eee8ff;color:#5124c2;border-color:#dacdff;box-shadow:0 2px 9px #5a26ba12}\n.es-side-link[aria-current=\"page\"]:before{content:\"\";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:4px;background:#7434ec}\n.es-side-icon{height:38px;width:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:11px;background:#eee5ff;color:#6b30e0}\n.es-side-link[data-side=\"all\"] .es-side-icon{background:#e3ecff;color:#2562dc}\n.es-side-link[data-side=\"calc\"] .es-side-icon{background:#dff3ff;color:#0081ea}\n.es-side-link[data-side=\"engineering\"] .es-side-icon{background:#fff0dd;color:#ed781f}\n.es-side-link[data-side=\"utility\"] .es-side-icon{background:#dcf8ee;color:#039d7c}\n.es-side-link[data-side=\"mytools\"] .es-side-icon{background:linear-gradient(135deg,#985dff,#6924e3);color:#fff}\n.es-side-link[data-side=\"ecosystem\"] .es-side-icon{background:linear-gradient(145deg,#e6e1ff,#d9e9ff);color:#6044db}\n.es-side-link[data-side=\"portable\"] .es-side-icon{background:#e3edff;color:#2156c8}\n.es-side-name{flex:1;min-width:0;line-height:1.25;overflow-wrap:anywhere}\n.es-side-count{display:grid;place-items:center;min-width:29px;min-height:29px;padding:1px 5px;font-size:16px;font-weight:850;border-radius:50%;background:#e7ecff;color:#344da3;flex-shrink:0}\n.es-side-divider{height:1px;background:#e4e4f4;margin:8px 5px}\n.es-sidebar-bottom{display:grid;gap:4px;border-top:1px solid #e0e4f6;padding:10px 2px 0;margin-top:auto}\n.es-sidebar-bottom .es-side-link{min-height:47px}\n.es-is-collapsed .es-sidebar{padding-inline:7px}\n.es-is-collapsed .es-sidebar-top{padding:0 0 10px;justify-content:center}\n.es-is-collapsed .es-sidebar-title,.es-is-collapsed .es-side-name,.es-is-collapsed .es-side-count{display:none}\n.es-is-collapsed .es-side-link{justify-content:center;padding:5px 2px;min-height:49px}\n.es-is-collapsed .es-side-icon{height:40px;width:40px;flex-basis:40px}\n.es-is-collapsed .es-side-nav{padding-inline:0}\n.es-is-collapsed .es-sidebar-bottom{padding:10px 0 0}\n.es-is-collapsed .es-side-link:hover:after,.es-is-collapsed .es-side-link:focus-visible:after{content:attr(data-label);position:absolute;z-index:100;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:#25145c;color:#fff;white-space:nowrap;min-width:max-content;padding:9px 12px;border-radius:9px;box-shadow:0 7px 18px #240b6540;font-size:16px;font-weight:650;pointer-events:none}\n.es-app-layout .page-home{padding-top:0}\n.es-feature{height:157px;min-height:157px;display:grid;grid-template-columns:minmax(0,1fr) 34%;overflow:hidden;border:1px solid #d6def6;border-radius:17px;background:linear-gradient(110deg,#f3f7ff 0%,#e8f3ff 55%,#c4bcff 100%);position:relative;margin:0 0 16px}\n.es-feature-copy{padding:16px 12px 12px 22px;position:relative;z-index:2;min-width:0}\n.es-feature-eyebrow{font-size:16px;color:#1835b6;font-weight:850;letter-spacing:.75px;margin:0 0 4px}\n.es-feature h1{font-size:34px;line-height:1.08;margin:0 0 4px;color:#071faa;font-weight:950;letter-spacing:-1px}\n.es-feature h1 strong{color:#ffcc00}\n.es-feature .es-feature-tag{margin:0;color:#172e84;font-size:16px;line-height:1.27;font-weight:800}\n.es-feature .es-feature-meta{margin:5px 0 0;color:#4b6092;font-size:16px;line-height:1.3}\n.es-feature-art{position:relative;overflow:hidden;background:linear-gradient(120deg,#d4eaff,#8065ed)}\n.es-feature-art img{height:100%;width:100%;object-fit:cover;object-position:center}\n.es-feature-link{display:inline-flex;align-items:center;gap:7px;margin-top:6px;color:#5123bd;font-size:16px;font-weight:850;text-decoration:underline;text-underline-offset:3px}\n.es-directory{margin:0 0 15px;scroll-margin-top:12px}\n.es-directory-header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:0 0 12px;flex-wrap:wrap}\n.es-directory-title-row{display:flex;align-items:center;gap:10px;min-width:0}\n.es-directory-title-row .es-directory-emblem{width:45px;height:45px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(140deg,#9260ff,#5925d9);color:white;flex:0 0 45px}\n.es-directory-title{margin:0;color:#172d99;font-size:21px;line-height:1.22;font-weight:900}\n.es-directory-sub{margin:2px 0 0;font-size:16px;color:#61749a;line-height:1.23}\n.es-directory-total{font-size:16px;font-weight:850;color:#5128ca;background:#efeaff;border-radius:11px;padding:6px 10px;flex-shrink:0}\n.es-catalog-toolbar{display:flex;align-items:center;gap:8px;margin-left:auto}\n.es-catalog-toolbar .search-box{width:min(280px,31vw);min-height:43px}\n.es-catalog-toolbar .view-toggle{flex-shrink:0}\n.es-directory-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;align-items:stretch}\n.es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}\n.es-directory-grid .tool-card{min-width:0;min-height:82px;padding:9px 9px;border-radius:13px}\n.es-directory-grid .tool-link{gap:9px}\n.es-directory-grid .tool-tile{height:42px;width:42px;border-radius:11px;flex-shrink:0}\n.es-directory-grid .tool-names b{font-size:16px;line-height:1.2}\n.es-directory-grid .tool-names small{font-size:16px;line-height:1.22}\n.es-directory-grid .star-btn{width:27px;min-width:27px;height:36px}\n.es-directory-grid .mytools-empty{grid-column:1/-1;min-height:188px;padding:26px 18px}\n.es-directory-grid .es-no-matches{grid-column:1/-1;border:1px dashed #d6c9ff;background:#faf8ff;color:#586a98;border-radius:13px;padding:32px;text-align:center}\n.es-mini-promo{border:1px solid #ded9ff;background:linear-gradient(105deg,#f7f1ff,#f3f8ff);border-radius:14px;padding:11px 16px;display:flex;align-items:center;gap:12px;margin-bottom:17px;color:#4e3997}\n.es-mini-promo .svg-icon{color:#7936e9}\n.es-mini-promo strong{color:#261d92}\n.es-mini-promo a{color:#5729c7;font-weight:800;white-space:nowrap;margin-left:auto}\n.es-static-page{padding:3px 0 20px;display:grid;gap:14px}\n.es-static-intro{display:flex;align-items:center;gap:14px;padding:19px 22px;border:1px solid #dedffa;border-radius:16px;background:linear-gradient(112deg,#f3f1ff,#f1f7ff)}\n.es-static-intro-icon{display:grid;place-items:center;flex-shrink:0;width:55px;height:55px;border-radius:14px;background:linear-gradient(135deg,#8650ee,#4838cb);color:white}\n.es-static-intro h1{margin:0;color:#18299c;font-weight:900;font-size:28px}\n.es-static-intro p{margin:3px 0 0;color:#566b9d;font-size:16px}\n.es-system-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}\n.es-system-card{border:1px solid #dde3f8;border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:12px;padding:19px;min-width:0;box-shadow:0 4px 17px #1b23820b}\n.es-system-head{display:flex;align-items:center;gap:12px}\n.es-system-logo{height:56px;width:56px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(125deg,#e3ecff,#e8dfff);color:#5225d7;flex:0 0 56px;overflow:hidden}\n.es-system-logo img{height:100%;width:100%;object-fit:contain}\n.es-system-card h2{font-size:21px;line-height:1.2;color:#142a99;margin:0}\n.es-system-card p{color:#566b95;font-size:16px;line-height:1.5;margin:0}\n.es-system-link{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:#f1ecff;border:1px solid #e2d5ff;color:#5127ca;padding:9px 13px;border-radius:10px;font-size:16px;font-weight:800}\n.es-system-link:hover{background:#e5dcff}\n.es-system-pending{font-size:16px;color:#697ca1}\n.es-portable-guide{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}\n.es-portable-guide .tool-box{min-height:0}\n.es-portable-guide h2{font-size:19px}\n.es-portable-guide p,.es-portable-guide li{font-size:16px;line-height:1.55}\n.es-portable-guide ul{padding-left:21px;margin:8px 0}\n.es-tool-actions{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}\n.es-tool-actions .button{min-height:43px;padding:8px 13px;margin-left:0!important}\n.es-tool-actions .es-portable-button{background:#edf2ff;color:#194ab2;border:1px solid #cddaff}\n.es-tool-actions .es-portable-button:hover{background:#e5ebff}\n.es-tool-actions .es-portable-button.is-loading{opacity:.75}\n.es-modal-layer{position:fixed;inset:0;background:#0c123677;display:grid;place-items:center;padding:20px;z-index:2100}\n.es-modal{width:min(470px,100%);background:#fff;border:1px solid #d8caff;box-shadow:0 24px 70px #15104b55;border-radius:19px;padding:23px;display:grid;gap:14px}\n.es-modal-icon{display:grid;place-items:center;height:48px;width:48px;border-radius:13px;background:#e9e1ff;color:#6331de}\n.es-modal h2{font-size:21px;margin:0;color:#1c268f}\n.es-modal p{font-size:16px;margin:0;color:#50628b;line-height:1.55}\n.es-modal-actions{display:flex;justify-content:flex-end}\n.es-mobile-backdrop{display:none}\n.site-header .main-nav [data-nav=\"explore\"],.site-header .main-nav [data-nav=\"portable\"]{display:none}\n.site-header .mobile-menu{display:none!important}\n@media(min-width:1450px){.es-directory-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}\n@media(max-width:1220px) and (min-width:951px){.es-app-layout.shell{grid-template-columns:206px minmax(0,1fr);gap:12px}.es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}.es-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:1080px){\n .es-app-layout.shell,.es-app-layout.es-is-collapsed{display:block;width:calc(100% - 28px);padding-top:12px}\n .es-app-layout .es-main-pane{width:100%}\n .es-sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;min-height:0;max-height:none;width:min(325px,calc(100vw - 52px));padding:15px 12px;border-radius:0 18px 18px 0;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 0 1px #ddd9f7,10px 0 40px #0e0c3540;z-index:1300}\n .es-sidebar.es-mobile-open{transform:translateX(0)}\n .es-is-collapsed .es-sidebar{padding:15px 12px}\n .es-is-collapsed .es-sidebar-title,.es-is-collapsed .es-side-name,.es-is-collapsed .es-side-count{display:block}\n .es-is-collapsed .es-sidebar-top{justify-content:space-between;padding:0 4px 10px}\n .es-is-collapsed .es-side-link{justify-content:flex-start;padding:7px 8px}\n .es-is-collapsed .es-sidebar-bottom{padding:10px 2px 0}\n .es-mobile-backdrop.es-show{position:fixed;inset:0;z-index:1250;background:#100b3e88;display:block}\n .site-header .main-nav{display:none!important}\n .site-header .mobile-menu{display:grid!important;margin-left:auto;place-items:center;order:10}\n .es-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}\n .es-feature{grid-template-columns:minmax(0,1fr) 40%}\n .es-system-grid{grid-template-columns:repeat(2,minmax(0,1fr))}\n}\n@media(max-width:690px){\n .es-directory-grid,.es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}\n .es-feature{height:auto;min-height:145px;grid-template-columns:1fr}\n .es-feature-copy{padding:14px 17px}\n .es-feature h1{font-size:31px}\n .es-feature-art{display:none}\n .es-directory-header{align-items:stretch}\n .es-catalog-toolbar{width:100%;margin-left:0}\n .es-catalog-toolbar .search-box{flex:1;width:auto;min-width:0}\n .es-system-grid,.es-portable-guide{grid-template-columns:1fr}\n .es-mini-promo{flex-wrap:wrap}\n .es-mini-promo a{margin-left:0}\n .tool-heading .es-tool-actions{margin-left:0;width:100%;justify-content:flex-start}\n}\n@media(max-width:480px){\n .es-directory-grid,.es-directory-grid.es-view-list{grid-template-columns:1fr}\n .es-feature-eyebrow,.es-feature .es-feature-tag,.es-feature .es-feature-meta{font-size:16px}\n .es-feature-link{font-size:16px}\n .es-directory-title{font-size:19px}\n .es-directory-sub{font-size:16px}\n .es-static-intro{padding:15px}\n .es-static-intro h1{font-size:24px}\n .es-tool-actions .button{font-size:16px}\n}\n@media(prefers-reduced-motion:reduce){.es-app-layout.shell,.es-sidebar{transition:none}}\n";
+themeSheet.textContent += "\n/* Epsilon Blue Soft navigation: web-first sidebar. The base theme remains unchanged. */\nbody.es-has-sidebar{background:radial-gradient(ellipse at 85% 12%,#f1ecff,transparent 48%),#f8faff}\n.es-app-layout.shell{max-width:1620px;width:calc(100% - 42px);display:grid;grid-template-columns:232px minmax(0,1fr);gap:17px;align-items:start;margin:0 auto;padding-top:15px;transition:grid-template-columns .17s ease}\n.es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n.es-app-layout .es-main-pane{min-width:0;width:100%;margin:0;max-width:none;min-height:calc(100vh - 235px)}\n.es-sidebar{background:linear-gradient(153deg,#f7f2ff 0%,#fff 47%,#f6f9ff 100%);border:1px solid #ddd9f7;box-shadow:0 7px 27px #29126c0d;border-radius:17px;position:sticky;top:13px;height:calc(100dvh - 26px);min-height:400px;max-height:940px;display:flex;flex-direction:column;gap:6px;padding:12px 10px;z-index:45;min-width:0}\n.es-sidebar-top{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 4px 10px}\n.es-sidebar-title{font-size:16px;font-weight:900;letter-spacing:.55px;color:#5131b5;white-space:nowrap}\n.es-side-toggle{display:grid;place-items:center;background:#f0eaff;border:1px solid #d8cbff;color:#5e27d8;border-radius:10px;min-height:39px;min-width:39px;padding:6px;flex-shrink:0}\n.es-side-toggle:hover{background:#e8dfff}\n.es-side-nav{display:flex;flex-direction:column;gap:5px;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#ddd5f5 transparent;padding:2px 2px 8px}\n.es-side-link{min-height:50px;border:1px solid transparent;border-radius:12px;padding:7px 8px;display:flex;align-items:center;gap:10px;color:#283a88;background:transparent;position:relative;font-size:16px;font-weight:750;text-align:left}\n.es-side-link:hover{background:white;border-color:#e6e2f6}\n.es-side-link[aria-current=\"page\"]{background:#eee8ff;color:#5124c2;border-color:#dacdff;box-shadow:0 2px 9px #5a26ba12}\n.es-side-link[aria-current=\"page\"]:before{content:\"\";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:4px;background:#7434ec}\n.es-side-icon{height:38px;width:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:11px;background:#eee5ff;color:#6b30e0}\n.es-side-link[data-side=\"all\"] .es-side-icon{background:#e3ecff;color:#2562dc}\n.es-side-link[data-side=\"calc\"] .es-side-icon{background:#dff3ff;color:#0081ea}\n.es-side-link[data-side=\"engineering\"] .es-side-icon{background:#fff0dd;color:#ed781f}\n.es-side-link[data-side=\"utility\"] .es-side-icon{background:#dcf8ee;color:#039d7c}\n.es-side-link[data-side=\"mytools\"] .es-side-icon{background:linear-gradient(135deg,#985dff,#6924e3);color:#fff}\n.es-side-link[data-side=\"ecosystem\"] .es-side-icon{background:linear-gradient(145deg,#e6e1ff,#d9e9ff);color:#6044db}\n.es-side-name{flex:1;min-width:0;line-height:1.25;overflow-wrap:anywhere}\n.es-side-count{display:grid;place-items:center;min-width:29px;min-height:29px;padding:1px 5px;font-size:16px;font-weight:850;border-radius:50%;background:#e7ecff;color:#344da3;flex-shrink:0}\n.es-side-divider{height:1px;background:#e4e4f4;margin:8px 5px}\n.es-sidebar-bottom{display:grid;gap:4px;border-top:1px solid #e0e4f6;padding:10px 2px 0;margin-top:auto}\n.es-sidebar-bottom .es-side-link{min-height:47px}\n.es-is-collapsed .es-sidebar{padding-inline:7px}\n.es-is-collapsed .es-sidebar-top{padding:0 0 10px;justify-content:center}\n.es-is-collapsed .es-sidebar-title,.es-is-collapsed .es-side-name,.es-is-collapsed .es-side-count{display:none}\n.es-is-collapsed .es-side-link{justify-content:center;padding:5px 2px;min-height:49px}\n.es-is-collapsed .es-side-icon{height:40px;width:40px;flex-basis:40px}\n.es-is-collapsed .es-side-nav{padding-inline:0}\n.es-is-collapsed .es-sidebar-bottom{padding:10px 0 0}\n.es-is-collapsed .es-side-link:hover:after,.es-is-collapsed .es-side-link:focus-visible:after{content:attr(data-label);position:absolute;z-index:100;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:#25145c;color:#fff;white-space:nowrap;min-width:max-content;padding:9px 12px;border-radius:9px;box-shadow:0 7px 18px #240b6540;font-size:16px;font-weight:650;pointer-events:none}\n.es-app-layout .page-home{padding-top:0}\n.es-feature{height:157px;min-height:157px;display:grid;grid-template-columns:minmax(0,1fr) 34%;overflow:hidden;border:1px solid #d6def6;border-radius:17px;background:linear-gradient(110deg,#f3f7ff 0%,#e8f3ff 55%,#c4bcff 100%);position:relative;margin:0 0 16px}\n.es-feature-copy{padding:16px 12px 12px 22px;position:relative;z-index:2;min-width:0}\n.es-feature-eyebrow{font-size:16px;color:#1835b6;font-weight:850;letter-spacing:.75px;margin:0 0 4px}\n.es-feature h1{font-size:34px;line-height:1.08;margin:0 0 4px;color:#071faa;font-weight:950;letter-spacing:-1px}\n.es-feature h1 strong{color:#ffcc00}\n.es-feature .es-feature-tag{margin:0;color:#172e84;font-size:16px;line-height:1.27;font-weight:800}\n.es-feature .es-feature-meta{margin:5px 0 0;color:#4b6092;font-size:16px;line-height:1.3}\n.es-feature-art{position:relative;overflow:hidden;background:linear-gradient(120deg,#d4eaff,#8065ed)}\n.es-feature-art img{height:100%;width:100%;object-fit:cover;object-position:center}\n.es-feature-link{display:inline-flex;align-items:center;gap:7px;margin-top:6px;color:#5123bd;font-size:16px;font-weight:850;text-decoration:underline;text-underline-offset:3px}\n.es-directory{margin:0 0 15px;scroll-margin-top:12px}\n.es-directory-header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:0 0 12px;flex-wrap:wrap}\n.es-directory-title-row{display:flex;align-items:center;gap:10px;min-width:0}\n.es-directory-title-row .es-directory-emblem{width:45px;height:45px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(140deg,#9260ff,#5925d9);color:white;flex:0 0 45px}\n.es-directory-title{margin:0;color:#172d99;font-size:21px;line-height:1.22;font-weight:900}\n.es-directory-sub{margin:2px 0 0;font-size:16px;color:#61749a;line-height:1.23}\n.es-directory-total{font-size:16px;font-weight:850;color:#5128ca;background:#efeaff;border-radius:11px;padding:6px 10px;flex-shrink:0}\n.es-catalog-toolbar{display:flex;align-items:center;gap:8px;margin-left:auto}\n.es-catalog-toolbar .search-box{width:min(280px,31vw);min-height:43px}\n.es-catalog-toolbar .view-toggle{flex-shrink:0}\n.es-directory-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;align-items:stretch}\n.es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}\n.es-directory-grid .tool-card{min-width:0;min-height:82px;padding:9px 9px;border-radius:13px}\n.es-directory-grid .tool-link{gap:9px}\n.es-directory-grid .tool-tile{height:42px;width:42px;border-radius:11px;flex-shrink:0}\n.es-directory-grid .tool-names b{font-size:16px;line-height:1.2}\n.es-directory-grid .tool-names small{font-size:16px;line-height:1.22}\n.es-directory-grid .star-btn{width:27px;min-width:27px;height:36px}\n.es-directory-grid .mytools-empty{grid-column:1/-1;min-height:188px;padding:26px 18px}\n.es-directory-grid .es-no-matches{grid-column:1/-1;border:1px dashed #d6c9ff;background:#faf8ff;color:#586a98;border-radius:13px;padding:32px;text-align:center}\n.es-mini-promo{border:1px solid #ded9ff;background:linear-gradient(105deg,#f7f1ff,#f3f8ff);border-radius:14px;padding:11px 16px;display:flex;align-items:center;gap:12px;margin-bottom:17px;color:#4e3997}\n.es-mini-promo .svg-icon{color:#7936e9}\n.es-mini-promo strong{color:#261d92}\n.es-mini-promo a{color:#5729c7;font-weight:800;white-space:nowrap;margin-left:auto}\n.es-static-page{padding:3px 0 20px;display:grid;gap:14px}\n.es-static-intro{display:flex;align-items:center;gap:14px;padding:19px 22px;border:1px solid #dedffa;border-radius:16px;background:linear-gradient(112deg,#f3f1ff,#f1f7ff)}\n.es-static-intro-icon{display:grid;place-items:center;flex-shrink:0;width:55px;height:55px;border-radius:14px;background:linear-gradient(135deg,#8650ee,#4838cb);color:white}\n.es-static-intro h1{margin:0;color:#18299c;font-weight:900;font-size:28px}\n.es-static-intro p{margin:3px 0 0;color:#566b9d;font-size:16px}\n.es-system-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}\n.es-system-card{border:1px solid #dde3f8;border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:12px;padding:19px;min-width:0;box-shadow:0 4px 17px #1b23820b}\n.es-system-head{display:flex;align-items:center;gap:12px}\n.es-system-logo{height:56px;width:56px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(125deg,#e3ecff,#e8dfff);color:#5225d7;flex:0 0 56px;overflow:hidden}\n.es-system-logo img{height:100%;width:100%;object-fit:contain}\n.es-system-card h2{font-size:21px;line-height:1.2;color:#142a99;margin:0}\n.es-system-card p{color:#566b95;font-size:16px;line-height:1.5;margin:0}\n.es-system-link{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:#f1ecff;border:1px solid #e2d5ff;color:#5127ca;padding:9px 13px;border-radius:10px;font-size:16px;font-weight:800}\n.es-system-link:hover{background:#e5dcff}\n.es-system-pending{font-size:16px;color:#697ca1}\n.es-portable-guide{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}\n.es-portable-guide .tool-box{min-height:0}\n.es-portable-guide h2{font-size:19px}\n.es-portable-guide p,.es-portable-guide li{font-size:16px;line-height:1.55}\n.es-portable-guide ul{padding-left:21px;margin:8px 0}\n.es-tool-actions{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}\n.es-tool-actions .button{min-height:43px;padding:8px 13px;margin-left:0!important}\n.es-tool-actions .es-portable-button{background:#edf2ff;color:#194ab2;border:1px solid #cddaff}\n.es-tool-actions .es-portable-button:hover{background:#e5ebff}\n.es-tool-actions .es-portable-button.is-loading{opacity:.75}\n.es-modal-layer{position:fixed;inset:0;background:#0c123677;display:grid;place-items:center;padding:20px;z-index:2100}\n.es-modal{width:min(470px,100%);background:#fff;border:1px solid #d8caff;box-shadow:0 24px 70px #15104b55;border-radius:19px;padding:23px;display:grid;gap:14px}\n.es-modal-icon{display:grid;place-items:center;height:48px;width:48px;border-radius:13px;background:#e9e1ff;color:#6331de}\n.es-modal h2{font-size:21px;margin:0;color:#1c268f}\n.es-modal p{font-size:16px;margin:0;color:#50628b;line-height:1.55}\n.es-modal-actions{display:flex;justify-content:flex-end}\n.es-mobile-backdrop{display:none}\n.site-header .main-nav [data-nav=\"explore\"]{display:none}\n.site-header .mobile-menu{display:none!important}\n@media(min-width:1450px){.es-directory-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}\n@media(max-width:1220px) and (min-width:951px){.es-app-layout.shell{grid-template-columns:206px minmax(0,1fr);gap:12px}.es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}.es-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:1080px){\n .es-app-layout.shell,.es-app-layout.es-is-collapsed{display:block;width:calc(100% - 28px);padding-top:12px}\n .es-app-layout .es-main-pane{width:100%}\n .es-sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;min-height:0;max-height:none;width:min(325px,calc(100vw - 52px));padding:15px 12px;border-radius:0 18px 18px 0;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 0 1px #ddd9f7,10px 0 40px #0e0c3540;z-index:1300}\n .es-sidebar.es-mobile-open{transform:translateX(0)}\n .es-is-collapsed .es-sidebar{padding:15px 12px}\n .es-is-collapsed .es-sidebar-title,.es-is-collapsed .es-side-name,.es-is-collapsed .es-side-count{display:block}\n .es-is-collapsed .es-sidebar-top{justify-content:space-between;padding:0 4px 10px}\n .es-is-collapsed .es-side-link{justify-content:flex-start;padding:7px 8px}\n .es-is-collapsed .es-sidebar-bottom{padding:10px 2px 0}\n .es-mobile-backdrop.es-show{position:fixed;inset:0;z-index:1250;background:#100b3e88;display:block}\n .site-header .main-nav{display:none!important}\n .site-header .mobile-menu{display:grid!important;margin-left:auto;place-items:center;order:10}\n .es-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}\n .es-feature{grid-template-columns:minmax(0,1fr) 40%}\n .es-system-grid{grid-template-columns:repeat(2,minmax(0,1fr))}\n}\n@media(max-width:690px){\n .es-directory-grid,.es-directory-grid.es-view-list{grid-template-columns:repeat(2,minmax(0,1fr))}\n .es-feature{height:auto;min-height:145px;grid-template-columns:1fr}\n .es-feature-copy{padding:14px 17px}\n .es-feature h1{font-size:31px}\n .es-feature-art{display:none}\n .es-directory-header{align-items:stretch}\n .es-catalog-toolbar{width:100%;margin-left:0}\n .es-catalog-toolbar .search-box{flex:1;width:auto;min-width:0}\n .es-system-grid,.es-portable-guide{grid-template-columns:1fr}\n .es-mini-promo{flex-wrap:wrap}\n .es-mini-promo a{margin-left:0}\n .tool-heading .es-tool-actions{margin-left:0;width:100%;justify-content:flex-start}\n}\n@media(max-width:480px){\n .es-directory-grid,.es-directory-grid.es-view-list{grid-template-columns:1fr}\n .es-feature-eyebrow,.es-feature .es-feature-tag,.es-feature .es-feature-meta{font-size:16px}\n .es-feature-link{font-size:16px}\n .es-directory-title{font-size:19px}\n .es-directory-sub{font-size:16px}\n .es-static-intro{padding:15px}\n .es-static-intro h1{font-size:24px}\n .es-tool-actions .button{font-size:16px}\n}\n@media(prefers-reduced-motion:reduce){.es-app-layout.shell,.es-sidebar{transition:none}}\n";
+themeSheet.textContent += "\n/* Tab Hướng dẫn sử dụng cạnh tên tool (tool khai báo guide:true và export GUIDE) */\n.es-tool-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.es-tool-title h1{margin:0}\n.es-guide-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #cdb8fb;background:#fff;color:#5a20db;border-radius:10px;padding:6px 14px;font:inherit;font-size:15.5px;font-weight:800;cursor:pointer}\n.es-guide-btn:hover{background:#f4efff}.es-guide-btn[aria-expanded=\"true\"]{background:#5a20db;color:#fff;border-color:#5a20db}\n.es-tool-guide{margin:0 0 14px;font-size:15px;line-height:1.55;color:#24305a}.es-tool-guide[hidden]{display:none}\n.es-tool-guide h3{margin:10px 0 4px;font-size:16.5px;color:#4d21b8}.es-tool-guide h3:first-child{margin-top:0}.es-tool-guide ol,.es-tool-guide ul{margin:2px 0 6px;padding-left:22px}.es-tool-guide li{margin:3px 0}\n";
 
-// Homepage is a desktop three-region dashboard: prominent hero / scrollable tool catalog / original Portable banner.
+// Homepage dashboard: hero, tool catalog, and decorative footer artwork.
 // No changes to the 16 tool modules, app state, mathematical engines, or the normal collapsed tool sidebar.
 themeSheet.textContent += `
 /* Sidebar stays visible on homepage and category screens, as in the user's current screenshot. */
@@ -21,8 +22,7 @@ body.es-catalog-mode .es-app-layout.shell{display:grid;grid-template-columns:232
 body.es-catalog-mode .es-sidebar{display:flex}
 body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}
 body.es-catalog-mode .es-app-layout .es-main-pane{min-width:0;width:100%;margin:0;max-width:none}
-body.es-catalog-mode .site-header .main-nav [data-nav="explore"],
-body.es-catalog-mode .site-header .main-nav [data-nav="portable"]{display:none}
+body.es-catalog-mode .site-header .main-nav [data-nav="explore"]{display:none}
 body.es-catalog-mode .site-header .mobile-menu{display:none!important}
 /* All three dashboard regions remain visible inside a laptop viewport. Only tool cards scroll. */
 .es-dashboard-layout{height:clamp(575px,calc(100dvh - 145px),830px);display:grid;grid-template-rows:clamp(210px,28vh,258px) minmax(0,1fr) clamp(120px,16.5vh,150px);gap:12px;min-width:0;min-height:0}
@@ -63,7 +63,7 @@ body.es-catalog-mode .site-header .mobile-menu{display:none!important}
 .es-dashboard-layout .es-directory-grid .tool-names b{font-size:16px}
 .es-dashboard-layout .es-directory-grid .tool-names small{font-size:16px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .es-dashboard-layout .es-directory-grid .mytools-empty{min-height:160px}
-/* Original gradient Portable promotional artwork stays in the lower fixed region. */
+/* Decorative artwork stays in the lower fixed region. */
 .es-dashboard-layout .portable-strip{height:100%;min-height:0;margin:0;display:grid;grid-template-columns:minmax(172px,.85fr) minmax(230px,1.25fr) minmax(110px,.58fr) minmax(170px,.72fr);align-items:center;gap:12px;padding:12px 17px;border-radius:17px;overflow:hidden}
 .es-dashboard-layout .portable-stripe{flex:none;min-width:0;gap:9px}
 .es-dashboard-layout .win-badge{width:65px;height:65px;flex:0 0 65px}
@@ -145,7 +145,7 @@ themeSheet.textContent += '\n/* Approved 2026-10-24 improvements: responsive wid
 // Brand banner shells: artworks are text-free; all copy, buttons and badges are app-rendered.
 // The approved illustration is integrated into a single seamless background, rather than three disconnected panels.
 themeSheet.textContent += `
-/* Epsilon Soft banner shell v2: decorative image assets ONLY, editable app text. */
+/* Epsilon Blue Soft banner shell v2: decorative image assets ONLY, editable app text. */
 .es-dashboard-layout .hero,.es-restored-landing .hero{
  background-color:#eff6ff;
  background-image:url('./assets/images/main-banner.png');
@@ -194,6 +194,8 @@ themeSheet.textContent += `
  letter-spacing:-1.7px;gap:0;
 }
 .es-hub-intro h1.es-hub-wordmark strong{color:#ffdc08;letter-spacing:-1.6px;font-weight:900}
+.es-hub-intro h1.es-hub-wordmark{gap:6px}
+@media(max-width:530px){.es-hub-intro>div{min-width:0}.es-hub-intro h1.es-hub-wordmark{font-size:clamp(19px,5.4vw,26px);flex-wrap:wrap;white-space:normal;letter-spacing:-.6px;gap:2px 6px}}
 .es-hub-intro .es-hub-logo img{object-fit:contain}
 /* Keep both text and the blue action card inside the approved banner at every laptop height. */
 @media(min-width:1081px){
@@ -247,7 +249,7 @@ themeSheet.textContent += `
 }
 `;
 
-// 2026-10-24: Approved Epsilon Soft header: purple is dominant; a restrained royal-blue transition.
+// 2026-10-24: Approved Epsilon Blue Soft header: purple is dominant; a restrained royal-blue transition.
 // Inactive navigation uses soft purple; the current route is white like the approved Home tab.
 // Main dashboard, tool cards, banner artwork and tool modules are unchanged.
 themeSheet.textContent += `
@@ -276,9 +278,8 @@ themeSheet.textContent += `
   box-shadow:0 4px 14px rgba(22,14,101,.18);
 }
 .site-header .main-nav .nav-link:focus-visible{outline:3px solid #ffdc08;outline-offset:3px}
-/* Match the approved four header tabs; Epsilon Hub is still available in the sidebar. */
-.site-header .main-nav a[data-nav="explore"],
-.site-header .main-nav a[data-nav="portable"]{display:inline-flex!important}
+/* Match the approved four header tabs; Epsilon Blue Hub is still available in the sidebar. */
+.site-header .main-nav a[data-nav="explore"]{display:inline-flex!important}
 .site-header .main-nav .es-hub-nav{display:none!important}
 @media(min-width:1081px) and (max-width:1550px){
  .site-header .brand-wordmark{font-size:clamp(27px,2.15vw,33px)}
@@ -492,7 +493,7 @@ themeSheet.textContent += `
 .es-hero-dialog-close{display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;border:1px solid #dfE5ff;border-radius:11px;background:#f4f6ff;color:#3444ae}
 .es-hero-dialog-close:hover{background:#eceaff}
 .es-hero-intro{margin:0 0 14px;color:#4b5e89;font-size:16px;line-height:1.5}
-.es-hero-about-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+.es-hero-about-products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
 .es-hero-product{min-width:0;display:flex;flex-direction:column;gap:6px;padding:15px;border-radius:15px;background:linear-gradient(125deg,#f8f9ff,#eef3ff);border:1px solid #e1e7ff}
 .es-hero-product strong{display:flex;align-items:center;gap:8px;color:#132aa5;font-size:17px}
 .es-hero-product strong .svg-icon{color:#6934de}
@@ -647,7 +648,7 @@ themeSheet.textContent += `
 `;
 
 
-// Mobile-only category rail: pinned MY TOOLS + horizontally swipeable app folders.
+// Mobile-only category rail: pinned My tools + horizontally swipeable app folders.
 // Desktop sidebar, tool modules, data and footer remain unchanged.
 themeSheet.textContent += `
 .es-mobile-rail{display:none}
@@ -752,28 +753,25 @@ themeSheet.textContent += `
 `;
 
 
-// Epsilon Hub: category -> JSON-driven products. No extra image assets.
+// Epsilon Blue Hub: category -> JSON-driven products. No extra image assets.
 themeSheet.textContent += `
 .es-hub-intro .es-hub-group-icon{background:linear-gradient(140deg,#f1e6ff,#e7d8ff);color:#5d2bd2;border-radius:13px;width:52px;height:52px;flex:0 0 52px}
 .es-hub-intro #es-hub-group-heading{font-size:clamp(24px,3vw,32px);line-height:1.2;color:#18299c}
 .es-hub-families{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
+.es-hub-families.is-single{grid-template-columns:minmax(0,1fr);max-width:820px;margin-inline:auto}
 .es-hub-family-card{position:relative;display:flex;flex-direction:column;gap:16px;min-width:0;min-height:230px;padding:23px 25px;border-radius:20px;border:1px solid #d9def9;background:linear-gradient(125deg,#fff 18%,#f2f4ff 100%);box-shadow:0 9px 25px rgba(29,32,116,.055);color:#142994;overflow:hidden;transition:transform .16s,box-shadow .16s,border-color .16s}
 .es-hub-family-card:hover{border-color:#bcaaf9;box-shadow:0 14px 32px rgba(47,35,139,.12);transform:translateY(-2px)}
 .es-hub-family-card[data-family="edu"]{background:linear-gradient(135deg,#ffffff,#f5edff 90%)}
-.es-hub-family-card[data-family="lab"]{background:linear-gradient(135deg,#ffffff,#eaf4ff 90%)}
 .es-hub-family-main{display:flex;align-items:center;gap:14px;min-width:0}
 .es-hub-family-icon{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;border-radius:17px;background:#e9dcff;color:#6429d0}
-.es-hub-family-card[data-family="lab"] .es-hub-family-icon{background:#ddedff;color:#1760bc}
 .es-hub-family-icon svg{width:34px;height:34px}
 .es-hub-family-heading{min-width:0}
-.es-hub-family-heading h2{font-size:24px;font-weight:900;letter-spacing:-.6px;margin:0;line-height:1.18;display:flex;align-items:baseline;gap:0;flex-wrap:wrap}
+.es-hub-family-heading h2{font-size:24px;font-weight:900;letter-spacing:-.6px;margin:0;line-height:1.18;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
 .es-hub-family-heading h2 .es-hub-family-brand{color:#142994}
 .es-hub-family-heading h2 .es-hub-family-branch{color:var(--yellow)}
 .es-hub-family-count{display:inline-flex;margin-top:5px;font-size:16px;font-weight:800;color:#704ec0}
-.es-hub-family-card[data-family="lab"] .es-hub-family-count{color:#2b6dba}
 .es-hub-family-card>p{font-size:16px;line-height:1.5;color:#586995;margin:0;flex:1}
 .es-hub-family-action{display:flex;align-items:center;gap:9px;align-self:flex-start;border-radius:11px;background:#5b27d6;color:#fff;padding:10px 15px;min-height:43px;font-weight:800;font-size:16px}
-.es-hub-family-card[data-family="lab"] .es-hub-family-action{background:#1e5fc9}
 .es-hub-family-action svg{width:18px;height:18px}
 .es-hub-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;align-items:stretch}
 .es-hub-section-title{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;color:#142d9b}
@@ -799,7 +797,7 @@ themeSheet.textContent += `
 .es-hub-product-card .es-system-link{font-size:16px;min-height:39px;padding:7px 12px;border-radius:10px;margin-top:2px;align-self:flex-start;gap:7px;background:#efeaff;border:1px solid #ddd1ff;color:#5424c9;font-weight:800;box-shadow:0 2px 7px rgba(81,42,160,.065);transition:background .16s,color .16s,transform .16s,border-color .16s}
 .es-hub-product-card .es-system-pending{display:inline-flex;align-items:center;align-self:flex-start;margin:3px 0 0;padding:7px 0;color:#61718f;font-size:16px;font-weight:700}
 
-/* Compact Epsilon Hub cards: elegant accent, readable 16px actions, no forced blank space. */
+/* Compact Epsilon Blue Hub cards: elegant accent, readable 16px actions, no forced blank space. */
 .es-hub-intro{padding:14px 18px;gap:12px}
 .es-hub-product-card::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:3px;background:var(--hub-accent);opacity:.8;border-radius:0 5px 5px 0;pointer-events:none}
 .es-hub-product-card:hover{transform:translateY(-2px);box-shadow:0 9px 22px rgba(42,37,122,.12);border-color:#c6b6f8}
@@ -947,7 +945,7 @@ themeSheet.textContent += `
 
 // 2026-10-24: Remove the crowded blue promo block from the banner.
 // The two action buttons are real controls in a light strip beneath page content.
-// Desktop sidebar no longer duplicates Header > Portable / Help.
+// Desktop sidebar does not duplicate the Help header link.
 themeSheet.textContent += `
 /* Wider two-part hero: headline on the left, artwork to the right, no blue CTA panel. */
 @media(min-width:721px){
@@ -1062,7 +1060,7 @@ themeSheet.textContent += `
 `;
 
 themeSheet.textContent += `
-/* Epsilon Soft identity and approved portrait/desktop footer layout, 2026-10-24. */
+/* Epsilon Blue Soft identity and approved portrait/desktop footer layout, 2026-10-24. */
 .site-header .brand{gap:0;min-width:0}
 .site-header .es-header-lockup{display:block;width:clamp(185px,18vw,270px);height:auto;max-height:55px;object-fit:contain}
 .es-hero-logo-title{line-height:1!important;margin:5px 0 7px!important;letter-spacing:0!important}
@@ -1079,18 +1077,16 @@ themeSheet.textContent += `
  box-shadow:0 10px 28px rgba(41,29,127,.12);
 }
 .site-footer>.footer-main,.site-footer>.es-footer-actions,.site-footer>.footer-bottom{position:relative;z-index:2}
-.site-footer .footer-main{max-width:calc(100% - 305px);gap:14px;flex-wrap:wrap}
+.site-footer .footer-main{max-width:100%;gap:14px;flex-wrap:wrap}
 .site-footer .footer-brand img.footer-logo{display:block;width:clamp(200px,18vw,245px);height:auto;object-fit:contain}
 .site-footer .footer-main p{color:#ebeeff;margin:3px 0;font-size:16px}
 .site-footer .footer-links{gap:14px;color:#fff;font-size:16px;flex-wrap:wrap}
 .site-footer .footer-links a:hover{color:#ffe65f}
-.site-footer>.es-footer-actions{margin:10px 0 0;width:min(540px,calc(100% - 305px));grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.site-footer>.es-footer-actions{margin:10px 0 0;width:min(540px,100%);grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .site-footer .footer-bottom{margin-top:13px;border-color:#ffffff5c;color:#eff2ff;font-size:16px;padding-top:10px}
-.site-footer .es-footer-laptop{display:block;position:absolute;right:2%;bottom:8px;z-index:1;pointer-events:none;width:clamp(220px,23vw,355px);height:auto;max-width:40%;object-fit:contain;filter:drop-shadow(0 9px 14px rgba(3,7,50,.32));transform:rotate(2deg)}
 @media(max-width:1050px) and (orientation:landscape){
- .site-footer .footer-main{max-width:calc(100% - 205px)}
- .site-footer>.es-footer-actions{width:min(460px,calc(100% - 205px))}
- .site-footer .es-footer-laptop{width:220px}
+ .site-footer .footer-main{max-width:100%}
+ .site-footer>.es-footer-actions{width:min(460px,100%)}
 }
 /* User-defined mobile: portrait, including tablets. Landscape has no bottom dock. */
 body.es-portrait-layout .site-header{position:sticky!important;top:0;z-index:210}
@@ -1118,7 +1114,6 @@ body.es-portrait-layout .site-footer.shell{margin-top:18px!important;min-height:
 body.es-portrait-layout .site-footer .footer-main{max-width:none!important;display:flex;flex-direction:column;align-items:flex-start;gap:11px}
 body.es-portrait-layout .site-footer>.es-footer-actions{width:100%!important;display:grid;grid-template-columns:1fr!important;max-width:none;margin:12px 0 0}
 body.es-portrait-layout .site-footer .footer-logo{width:min(230px,70vw)!important}
-body.es-portrait-layout .site-footer .es-footer-laptop{display:none!important}
 body.es-portrait-layout .site-footer .footer-bottom{line-height:1.45}
 body:not(.es-portrait-layout) .es-mobile-rail{display:none!important}
 @media(max-width:720px) and (orientation:landscape){
@@ -1130,7 +1125,7 @@ body:not(.es-portrait-layout) .es-mobile-rail{display:none!important}
 `;
 
 // 2026-10-24: Device installation instructions in the Help page.
-// This is an in-browser Web App install flow, distinct from Windows Portable EXE.
+// These installation instructions apply to the browser-based Web App (PWA).
 themeSheet.textContent += `
 .es-portable-guide>.es-help-install-card{
  grid-column:1/-1;padding:19px 21px 18px;border:1px solid #d8dfff;
@@ -1156,7 +1151,7 @@ themeSheet.textContent += `
 
 themeSheet.textContent += `
 
-/* 2026-10-24: Epsilon Soft hero visual 5:1. No duplicate logo inside banner.
+/* 2026-10-24: Epsilon Blue Soft hero visual 5:1. No duplicate logo inside banner.
    Original photo is 2048x409, left side intentionally holds live HTML text. */
 .es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{
  background-image:url('./assets/images/main-banner.png')!important;
@@ -1274,11 +1269,11 @@ themeSheet.textContent += `
 
 `;
 
-// 2026-10-25: MY TOOLS quick access in the landscape header.
+// 2026-10-25: My tools quick access in the landscape header.
 // The bottom swipe rail remains the only mobile/portrait navigation.
 themeSheet.textContent += `
-/* MY TOOLS: click title for category, chevron for pinned-tool dropdown. */
-.site-header .main-nav>.nav-link{box-sizing:border-box;height:45px;min-height:45px;padding-top:0;padding-bottom:0}   /* cao đúng bằng khung MY TOOLS */
+/* My tools: click title for category, chevron for pinned-tool dropdown. */
+.site-header .main-nav>.nav-link{box-sizing:border-box;height:45px;min-height:45px;padding-top:0;padding-bottom:0}   /* cao đúng bằng khung My tools */
 .site-header{position:relative;z-index:230}
 .site-header .es-header-mytools{
  position:relative;display:flex;align-items:center;flex:0 0 auto;isolation:isolate;
@@ -1330,7 +1325,7 @@ themeSheet.textContent += `
 .es-header-mytools-empty a{display:inline-block;margin-top:8px;font-weight:800;color:#5322cf;text-decoration:underline}
 /* Portrait uses the approved bottom navigation, so there is no duplicate button. */
 body.es-portrait-layout .es-header-mytools{display:none!important}
-/* ALL TOOLS: cùng kiểu MY TOOLS; menu rộng hơn, có tiêu đề nhóm. Màn hình dọc: chỉ giữ link, không có mũi tên. */
+/* ALL TOOLS: cùng kiểu My tools; menu rộng hơn, có tiêu đề nhóm. Màn hình dọc: chỉ giữ link, không có mũi tên. */
 .es-header-alltools-menu{width:min(360px,calc(100vw - 26px));max-height:min(470px,calc(100dvh - 102px))}
 .es-header-alltools-group{display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px 9px 6px;border-top:1px solid #eee9fb;
  font-size:14.5px;font-weight:900;letter-spacing:.03em;color:#6a4bd0;text-transform:uppercase}
@@ -1376,7 +1371,7 @@ body.es-portrait-layout .es-header-alltools .es-header-mytools-toggle,body.es-po
  body:not(.es-portrait-layout) .site-header .es-header-mytools>.es-header-mytools-link svg{height:16px;width:16px}
  body:not(.es-portrait-layout) .site-header .es-header-mytools-count{min-width:18px;height:18px;font-size:16px;padding:1px 4px}
  body:not(.es-portrait-layout) .site-header .es-header-mytools-toggle{width:29px;flex-basis:29px;min-height:39px}   /* +10 % */
- body:not(.es-portrait-layout) .site-header .main-nav>.nav-link{height:41px;min-height:41px}   /* cao bằng khung MY TOOLS (39 + viền) */
+ body:not(.es-portrait-layout) .site-header .main-nav>.nav-link{height:41px;min-height:41px}   /* cao bằng khung My tools (39 + viền) */
  body:not(.es-portrait-layout) .site-header .es-language-picker{order:2;margin-left:0;padding:2px}
  body:not(.es-portrait-layout) .site-header .es-language-btn{min-width:28px;min-height:30px;padding:3px 5px;font-size:16px}
 }
@@ -1394,7 +1389,7 @@ body.es-portrait-layout .es-header-alltools .es-header-mytools-toggle,body.es-po
  body:not(.es-portrait-layout) .site-header .main-nav .nav-link{padding:6px 6px}
 }
 /* At landscape phone width the old sidebar grid creates an empty 175px column.
-   Keep the content full-width; quick access is supplied by header MY TOOLS. */
+   Keep the content full-width; quick access is supplied by header My tools. */
 @media (max-width:720px) and (orientation:landscape){
  body:not(.es-portrait-layout) .es-sidebar{display:none!important}
  body:not(.es-portrait-layout) .es-app-layout.shell,
@@ -1406,6 +1401,111 @@ body.es-portrait-layout .es-header-alltools .es-header-mytools-toggle,body.es-po
  }
 }
 @media (prefers-reduced-motion:reduce){.site-header .es-header-mytools-toggle svg{transition:none}}
+`;
+
+themeSheet.textContent += "\n/* Approved group navigation and Settings language panel. */\n.site-header .main-nav>a[data-nav=\"office\"],.site-header .main-nav>a[data-nav=\"technical\"],\n.site-header .main-nav>a[data-nav=\"mechanical\"],.site-header .main-nav>a[data-nav=\"home\"],\n.site-header .main-nav>a[data-nav=\"handbook\"]{display:inline-flex!important}\n.site-header .main-nav .nav-link{gap:6px}\n.es-home-group-title{grid-column:1/-1;display:flex;align-items:center;gap:10px;min-height:39px;padding:6px 10px;border:1px solid #e2e7fa;border-radius:11px;background:linear-gradient(105deg,#f7f8ff,#f3f8ff);font-size:17px;font-weight:850;color:#203898}\n.es-home-group-title>a{display:flex;align-items:center;gap:9px;min-width:0}\n.es-home-group-title>a:hover{color:#5b29cc;text-decoration:underline;text-underline-offset:3px}\n.es-home-group-title>small{margin-left:auto;color:#5c70a2;font-size:16px}\n.es-sidebar-bottom .es-side-link{min-height:44px}\n.es-settings-language{display:inline-flex;gap:8px;padding:6px;border:1px solid #d9dffa;border-radius:13px;background:#f3f5ff;margin:12px 0}\n.es-settings-language .es-language-btn{color:#2c3c97;min-width:68px;min-height:44px;border-radius:10px;border:1px solid #d9e1fc;background:#fff;font-size:17px;font-weight:850}\n.es-settings-language .es-language-btn[aria-pressed=\"true\"]{background:#5d2ad9;border-color:#5d2ad9;color:#fff;box-shadow:0 3px 10px #251a9925}\n.es-settings-language .es-language-btn:hover{border-color:#7e5aeb}\n.es-preferences-card{padding:22px}\n.es-preferences-card>p{font-size:16px;color:#455b90;line-height:1.5;margin:5px 0}\n.es-preferences-card>.es-settings-note{color:#69799b}\n@media(max-width:1560px) and (min-width:1081px){.site-header .header-tagline,.site-header .brand-divider{display:none!important}}\n@media(min-width:1081px) and (max-width:1300px){.site-header .main-nav{gap:4px}.site-header .main-nav .nav-link{padding-inline:8px;gap:5px}.site-header .es-header-lockup{width:clamp(180px,17.7vw,240px)}.site-header .es-header-mytools>.es-header-mytools-link{padding-inline:7px}}\n@media (min-width:1081px) and (max-width:1190px){.site-header .header-inner{flex-wrap:wrap;min-height:0;gap:5px;padding-block:7px}.site-header .main-nav{order:3;flex:0 0 100%;width:100%;margin-left:0;justify-content:space-between;gap:5px}}\n@media (max-width:1080px) and (orientation:landscape){body:not(.es-portrait-layout) .site-header .main-nav{flex-wrap:wrap}body:not(.es-portrait-layout) .site-header .main-nav .nav-link{padding:7px 6px}}\n@media (max-width:820px) and (orientation:landscape){body:not(.es-portrait-layout) .site-header .main-nav{justify-content:space-around}}\n";
+
+themeSheet.textContent += `
+/* Independent category disclosure and one sidebar scroller. */
+.site-header .es-header-category{min-height:45px;align-self:center;position:relative}
+.site-header .es-header-category>.es-header-category-link{padding:8px 4px 8px 10px;min-height:43px;font-size:16px;line-height:1.2}
+.site-header .es-header-category>.es-header-category-toggle{min-height:43px;width:31px;flex-basis:31px}
+.site-header .es-header-category>.es-header-category-menu{width:min(330px,calc(100vw - 26px));top:calc(100% + 9px)}
+.site-header .es-header-category:is([data-header-category="mechanical"],[data-header-category="handbook"])>.es-header-category-menu{left:auto;right:0}
+.site-header .es-header-category.is-active{background:#fff;color:#5522cd;border-color:#fff;box-shadow:0 4px 14px rgba(22,14,101,.18)}
+.site-header .es-header-category.is-active>.es-header-category-link,
+.site-header .es-header-category.is-active>.es-header-category-link.is-active{color:inherit;background:transparent;box-shadow:none}
+.site-header .es-header-category.is-active>.es-header-category-toggle{border-left-color:#e3dcf7;color:#5522cd}
+.site-header .es-header-category>.es-header-category-link:hover{background:rgba(255,255,255,.13)}
+.site-header .es-header-category.is-active>.es-header-category-link:hover{background:#f2edff}
+.es-sidebar>.es-side-nav{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
+.es-sidebar .es-side-nav>.es-sidebar-bottom{display:grid;gap:4px;flex:0 0 auto;margin-top:auto;padding:11px 2px 2px;border-top:1px solid #e0e4f6}
+.es-sidebar .es-side-nav>.es-sidebar-bottom>.es-side-link{min-height:47px}
+@media(max-width:1080px) and (orientation:landscape){
+ body:not(.es-portrait-layout) .site-header .es-header-category{min-height:41px}
+ body:not(.es-portrait-layout) .site-header .es-header-category>.es-header-category-link{min-height:39px;padding:7px 3px 7px 7px}
+ body:not(.es-portrait-layout) .site-header .es-header-category>.es-header-category-toggle{min-height:39px;width:27px;flex-basis:27px}
+}
+`;
+
+themeSheet.textContent += `
+/* 2026-10-28: slightly larger Epsilon brand and a balanced Home action on desktop.
+   Logo remains the approved image asset; no navigation or mobile logic changes. */
+@media (min-width:1301px){
+ .site-header .es-header-lockup{width:clamp(305px,23.5vw,355px);max-height:68px;height:auto}
+ .site-header .main-nav>a[data-nav="home"]{min-width:115px;justify-content:center;padding-inline:17px;font-size:17px;gap:8px}
+ .site-header .main-nav>a[data-nav="home"] .svg-icon{width:21px;height:21px}
+}
+@media (min-width:1081px) and (max-width:1300px){
+ .site-header .es-header-lockup{width:clamp(230px,21vw,275px);max-height:60px;height:auto}
+ .site-header .main-nav>a[data-nav="home"]{min-width:104px;justify-content:center}
+}
+`;
+
+// 2026-10-28: compact header tabs; icon, text and chevron on one centered line.
+// Desktop/landscape navigation only. Preserve existing dropdown behavior.
+themeSheet.textContent += `
+@media (min-width:1081px){
+ .site-header .main-nav{align-items:center}
+ .site-header .main-nav>a.nav-link{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:41px;min-height:41px;padding-top:0;padding-bottom:0;
+  line-height:1.1;gap:7px;
+ }
+ .site-header .es-header-mytools,
+ .site-header .es-header-category{
+  height:41px;min-height:41px;align-items:center;
+ }
+ .site-header .es-header-mytools>.es-header-mytools-link,
+ .site-header .es-header-category>.es-header-category-link{
+  display:inline-flex;align-items:center;
+  height:39px;min-height:39px;
+  padding-top:0;padding-bottom:0;
+  line-height:1.1;gap:6px;
+ }
+ .site-header .es-header-mytools>.es-header-mytools-toggle,
+ .site-header .es-header-category>.es-header-category-toggle{
+  height:39px;min-height:39px;
+ }
+ .site-header .main-nav>a.nav-link>.svg-icon,
+ .site-header .es-header-mytools>.es-header-mytools-link>.svg-icon{
+  display:block;align-self:center;flex-shrink:0;
+  width:18px;height:18px;vertical-align:middle;
+ }
+ .site-header .es-header-mytools>.es-header-mytools-link>span:not(.es-header-mytools-count){
+  display:inline-flex;align-items:center;line-height:1.1;
+ }
+ .site-header .es-header-mytools-toggle>.svg-icon{display:block;width:18px;height:18px}
+ .site-header .main-nav>a.nav-link>[data-icon]{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:19px;height:19px;flex:0 0 19px;line-height:0;
+ }
+ .site-header .main-nav>a.nav-link>[data-icon]>.svg-icon{
+  display:block;width:19px;height:19px;
+ }
+ .site-header .main-nav>a[data-nav="home"]{
+  min-width:110px;padding-inline:12px;
+ }
+ .site-header .main-nav>a[data-nav="home"]>.svg-icon{width:19px;height:19px}
+}
+/* Narrow landscape already uses 41px buttons; align icons without changing their sizing. */
+@media (max-width:1080px) and (orientation:landscape){
+ body:not(.es-portrait-layout) .site-header .main-nav .nav-link>span[data-icon]{
+  display:inline-flex;align-items:center;justify-content:center;line-height:0;
+ }
+ body:not(.es-portrait-layout) .site-header .main-nav .nav-link>span[data-icon]>.svg-icon{display:block}
+}
+`;
+
+themeSheet.textContent += `
+/* Specialist category indicator: a compact inline lock, never an access-control gate. */
+.es-specialist-lock{display:inline-flex;align-items:center;justify-content:center;vertical-align:-1px;flex:0 0 auto;margin-left:3px;line-height:0;color:inherit}
+.es-specialist-lock .svg-icon{width:14px;height:14px;stroke-width:2;display:block}
+.site-header .es-header-category-link .es-specialist-lock{color:#ffe7b4;margin-left:1px}
+.site-header .es-header-category.is-active .es-specialist-lock{color:#a16b20}
+.es-side-name .es-specialist-lock{color:#987437;margin-left:5px;vertical-align:-2px}
+.es-mobile-folder-label .es-specialist-lock{color:#9d7635;margin-left:4px;vertical-align:-2px}
+.es-is-collapsed .es-side-name .es-specialist-lock{display:none}
 `;
 
 // Former assets/js/lib/ui.js (bundled, not reimplemented)
@@ -1453,12 +1553,14 @@ const path = {
  files:'<rect x="7" y="7" width="14" height="14" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/>',
  rotate:'<path d="M20 6v6h-6M4 18v-6h6M5 10a8 8 0 0 1 13-4l2 6M4 12l2 6a8 8 0 0 0 13-3"/>',
  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5-11 11"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2c0-5 16-5 16 0v2"/>',
  settings:'<path d="M4 7h16m-10-4v8M4 17h16m-6-4v8"/>',
  scissors:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m8.1 8.1 13 13M14 10l7-7M8 15.9l5-5"/>',
  stamp:'<path d="M4 18h16v4H4zM12 2a4 4 0 0 1 4 4l-1 4 4 5H5l4-5-1-4a4 4 0 0 1 4-4z"/>',
  upload:'<path d="M12 17V3m-5 5 5-5 5 5M3 17v4h18v-4"/>'
 };
 Object.assign(path, {
+ lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
  'chevron-down':'<path d="m6 9 6 6 6-6"/>',
  gear:'<path d="M10.1 2h3.8l.6 2.3c.6.2 1.2.4 1.7.7l2.1-1.2 2.7 2.7-1.2 2.1c.3.5.5 1.1.7 1.7l2.3.6v3.8l-2.3.6c-.2.6-.4 1.2-.7 1.7l1.2 2.1-2.7 2.7-2.1-1.2c-.5.3-1.1.5-1.7.7l-.6 2.3h-3.8l-.6-2.3c-.6-.2-1.2-.4-1.7-.7l-2.1 1.2-2.7-2.7 1.2-2.1c-.3-.5-.5-1.1-.7-1.7L2 13.9v-3.8l2.3-.6c.2-.6.4-1.2.7-1.7L3.8 5.7l2.7-2.7 2.1 1.2c.5-.3 1.1-.5 1.7-.7Z"/><circle cx="12" cy="12" r="3.2"/>',
  'panel-left-open':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-11 3 3-3 3"/>',
@@ -1501,7 +1603,7 @@ function normalize(s){return String(s).toLocaleLowerCase('vi').normalize('NFD').
 
 
 
-// Epsilon Soft Basic -> Epsilon Lab Pro: category-specific navigation, not a paid release link.
+// Epsilon Blue Soft engineering category: existing public tools and future advanced features.
 themeSheet.textContent += `
 .es-eng-bridge{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0;margin:0 0 12px;border:1px solid #d9defb;border-radius:15px;background:#fff;overflow:hidden;box-shadow:0 4px 16px #2038880b}
 .es-eng-half{display:flex;align-items:center;gap:11px;padding:12px 14px;min-width:0}
@@ -1515,7 +1617,7 @@ themeSheet.textContent += `
 .es-eng-pro .es-eng-label{color:#5622c7}
 .es-eng-pro .es-eng-label span{background:#fff3d7;color:#805309;border-color:#f5dca3}
 .es-eng-copy p{margin:4px 0 0;font-size:16px;line-height:1.35;color:#485d91}
-.es-eng-cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;min-height:37px;padding:8px 11px;border-radius:10px;background:linear-gradient(118deg,#7230e7,#4427d5);color:#fff;font-size:16px;line-height:1.2;font-weight:850;text-align:center;white-space:nowrap;box-shadow:0 4px 10px #4925b326;transition:filter .16s ease}
+.es-eng-cta{border:0;appearance:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;min-height:37px;padding:8px 11px;border-radius:10px;background:linear-gradient(118deg,#7230e7,#4427d5);color:#fff;font-size:16px;line-height:1.2;font-weight:850;text-align:center;white-space:nowrap;box-shadow:0 4px 10px #4925b326;transition:filter .16s ease}
 .es-eng-cta:hover{filter:brightness(1.08)}
 .es-eng-cta .svg-icon{width:15px;height:15px}
 @media(max-width:1250px){.es-eng-bridge{grid-template-columns:1fr}.es-eng-basic{border-right:0;border-bottom:1px solid #d9defb}}
@@ -1600,7 +1702,7 @@ small{font-size:16px}
 `;
 
 // Tool workspaces: portrait mobile gets a compact bottom chevron. Tapping it
-// temporarily opens the complete MY TOOLS/category rail; tapping the backdrop
+// temporarily opens the complete My tools/category rail; tapping the backdrop
 // or pressing Escape closes it. The homepage keeps its existing pinned dock.
 themeSheet.textContent += `
 .es-tool-rail-toggle,.es-tool-rail-backdrop{display:none}
@@ -1666,7 +1768,7 @@ body.es-portrait-layout.es-tool-mode .site-footer.shell{
 `;
 
 // Former assets/js/lib/engineering.js (bundled, not reimplemented)
-/** Epsilon Soft calculations. Core equations ported with test cases from ES TOOLKIT V1.0 Go source (geometry.go/converter.go). */
+/** Epsilon Blue Soft calculations. Core equations ported with test cases from ES TOOLKIT V1.0 Go source (geometry.go/converter.go). */
 const MASS_SHAPES=[
  {name:'Tấm chữ nhật',fields:[['a','Chiều dài a','200'],['b','Chiều rộng b','100'],['t','Chiều dày t','10']],formula:'S = a × b; V = S × t'},
  {name:'Tấm vuông',fields:[['a','Cạnh a','100'],['t','Chiều dày t','10']],formula:'S = a²; V = S × t'},
@@ -1837,44 +1939,64 @@ globalThis.EpsilonSoftShared = Object.freeze({icon, hydrateIcons, number, numeri
 
 // Main application coordinator
 /**
- * Epsilon Soft Web App — application coordinator.
+ * Epsilon Blue Soft Web App — application coordinator.
  * No backend, no login. Persistent data here is ONLY pins and open counts.
  * Modules in assets/js/tools are loaded on demand; tool inputs are not tracked.
  */
 
 
-themeSheet.textContent += '\n\n/* Epsilon Soft / Nesting 2D - wider real sheet preview, less unused side/panel whitespace.\n   Preserves the original SVG viewBox, coordinates, cutting algorithm and mobile flow.\n   The extra selector specificity intentionally wins over nesting.js embedded CSS. */\n@media (min-width:1261px) {\n  .tool-page .nest-pro .nest-panelgrid {\n    grid-template-columns:minmax(375px,min(34.5%,465px)) minmax(0,1fr);\n    gap:8px;\n  }\n  .tool-page .nest-pro .nest-panel {\n    padding:8px 9px;\n  }\n  .tool-page .nest-pro .nest-figure {\n    padding:5px 6px;\n    min-height:0;\n  }\n  .tool-page .nest-pro .nest-figure-title {\n    margin-bottom:3px;\n  }\n  .tool-page .nest-pro .nest-preview {\n    min-height:0;\n    align-items:center;\n  }\n  .tool-page .nest-pro .nest-preview svg {\n    width:100%;\n    max-width:100%;\n    height:auto;\n    min-height:0;\n    max-height:min(62vh,510px);\n    object-fit:contain;\n  }\n  .tool-page .nest-pro .nest-legend {\n    min-height:25px;\n    margin-top:4px;\n    gap:10px 14px;\n  }\n  .tool-page .nest-pro .nest-caption { margin-top:6px; }\n}\n';
+themeSheet.textContent += '\n\n/* Epsilon Blue Soft / Nesting 2D - wider real sheet preview, less unused side/panel whitespace.\n   Preserves the original SVG viewBox, coordinates, cutting algorithm and mobile flow.\n   The extra selector specificity intentionally wins over nesting.js embedded CSS. */\n@media (min-width:1261px) {\n  .tool-page .nest-pro .nest-panelgrid {\n    grid-template-columns:minmax(375px,min(34.5%,465px)) minmax(0,1fr);\n    gap:8px;\n  }\n  .tool-page .nest-pro .nest-panel {\n    padding:8px 9px;\n  }\n  .tool-page .nest-pro .nest-figure {\n    padding:5px 6px;\n    min-height:0;\n  }\n  .tool-page .nest-pro .nest-figure-title {\n    margin-bottom:3px;\n  }\n  .tool-page .nest-pro .nest-preview {\n    min-height:0;\n    align-items:center;\n  }\n  .tool-page .nest-pro .nest-preview svg {\n    width:100%;\n    max-width:100%;\n    height:auto;\n    min-height:0;\n    max-height:min(62vh,510px);\n    object-fit:contain;\n  }\n  .tool-page .nest-pro .nest-legend {\n    min-height:25px;\n    margin-top:4px;\n    gap:10px 14px;\n  }\n  .tool-page .nest-pro .nest-caption { margin-top:6px; }\n}\n';
+
+themeSheet.textContent += "\n/* Final layout fit for laptop/desktop. */\n@media(min-width:1081px){\n .es-app-layout.shell,body.es-catalog-mode .es-app-layout.shell{grid-template-columns:304px minmax(0,1fr)}\n .es-app-layout.es-is-collapsed,body.es-catalog-mode .es-app-layout.es-is-collapsed{grid-template-columns:65px minmax(0,1fr)}\n}\n@media(orientation:landscape) and (min-width:721px){\n .es-dashboard-layout>.es-main-banner,.es-restored-landing>.es-main-banner{min-height:275px!important}\n}\n";
+
+themeSheet.textContent += `
+/* Compact Office pages: one navigation line, one brief explanation, no extra title/access label. */
+.es-free-tool .es-free-topline{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;margin-bottom:4px}
+.es-free-tool .es-free-topline .breadcrumbs{margin:0;min-width:0}
+.es-free-tool .es-free-topline .es-tool-actions{margin-left:auto;flex-shrink:0}
+.es-free-tool .es-free-topline .es-tool-actions .button{min-height:40px;padding:7px 12px}
+.es-free-tool .es-free-desc{margin:0 0 13px;color:#5a6c94;font-size:16px;line-height:1.35}
+.es-free-tool .es-free-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:600px){.es-free-tool .es-free-topline{align-items:flex-start}.es-free-tool .es-free-topline .es-tool-actions{margin-left:auto}}
+`;
 
 const DEFINITIONS = Object.freeze([
- {id:'calculator',name:'Máy tính khoa học',sub:'Phép tính và hàm toán học',group:'calc',icon:'calculator',tone:'tone-blue',file:'calculator.js'},
- {id:'area',name:'Diện tích hình học',sub:'Tính diện tích nhiều hình',group:'calc',icon:'area',tone:'tone-mint',file:'area.js'},
- {id:'mass',name:'Khối lượng vật liệu',sub:'Tính nhanh theo kích thước',group:'calc',icon:'box',tone:'tone-orange',file:'mass.js'},
- {id:'converter',name:'Đổi đơn vị',sub:'Chuyển đổi đơn vị đa dạng',group:'calc',icon:'swap',tone:'tone-violet',file:'converter.js'},
- {id:'interest',name:'Tính lãi suất',sub:'Tiền gửi, vay vốn, đầu tư',group:'calc',icon:'percent',tone:'tone-blue',file:'interest.js'},
- {id:'nesting',name:'Trải phôi 2D',sub:'Trải phôi 2D theo ES TOOLKIT Portable',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting.js'},
- {id:'nesting-pro',name:'Trải phôi 2D PRO',sub:'Cutting plan tôn tấm · nhiều chi tiết, nhiều khổ, xuất DXF · thử nghiệm nội bộ',group:'engineering',icon:'nesting',tone:'tone-orange',file:'nesting_pro.js'},
- {id:'bar-cutting',name:'Cắt thép hình 1D',sub:'Tối ưu cắt cây thép · giảm hao phí',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh.js'},
- {id:'bar-cutting-pro',name:'Cắt thép hình 1D PRO',sub:'Tối ưu sơ đồ cắt · bản thử nghiệm nội bộ',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh_pro.js'},
- {id:'bar-cutting-pro-max',name:'Cắt thép hình 1D PRO MAX',sub:'Tối ưu cắt và đề xuất nối cột · thử nghiệm nội bộ',group:'engineering',icon:'scissors',tone:'tone-orange',file:'thep_hinh_pro_max.js'},
- {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'engineering',icon:'database',tone:'tone-violet',file:'density.js'},
- {id:'beam',name:'Tính kết cấu đơn giản',sub:'Dầm đơn giản: M, V, độ võng',group:'engineering',icon:'beam',tone:'tone-blue',file:'beam.js'},
- {id:'paint',name:'Paint Studio',sub:'Tính lượng sơn · WFT/DFT · diện tích',group:'engineering',icon:'paint',tone:'tone-mint',file:'paint.js'},
- {id:'color-mixer',name:'Phối màu RGB & CMYK',sub:'Pha màu, chuyển mã và tạo bảng phối hài hòa',group:'engineering',icon:'palette',tone:'tone-violet',file:'color-mixer.js'},
- {id:'pdf',name:'PDF Studio',sub:'Gộp, tách, chỉnh sửa, ký tên và chuyển đổi PDF',group:'utility',icon:'pdf',tone:'tone-red',file:'pdf-studio.js'},
- {id:'calendar',name:'Âm lịch – Dương lịch',sub:'Tra cứu ngày tháng, lịch vạn niên',group:'utility',icon:'calendar',tone:'tone-mint',file:'calendar.js'},
- {id:'vietqr',name:'VietQR',sub:'Tạo mã QR chuyển khoản ngân hàng',group:'utility',icon:'qr',tone:'tone-violet',file:'vietqr.js'},
- {id:'barcode',name:'Tạo và đọc mã vạch',sub:'Tạo Code 39 và quét nếu hỗ trợ',group:'utility',icon:'barcode',tone:'tone-blue',file:'barcode.js'},
- {id:'image-studio',name:'Image Studio',sub:'Nén, cắt, xoay ảnh và tách nền chữ ký',group:'utility',icon:'image',tone:'tone-mint',file:'image-studio.js'},
- {id:'money-words',name:'Đọc số tiền bằng chữ',sub:'Đọc số tiền Việt – Anh, sao chép nhanh',group:'utility',icon:'file',tone:'tone-blue',file:'money-words.js'},
- {id:'notes',name:'Ghi chú nhanh',sub:'Viết, lưu và tải ghi chú',group:'utility',icon:'notes',tone:'tone-orange',file:'notes.js'}
+ {id:'calculator',name:'Máy tính khoa học',sub:'Phép tính và hàm toán học',group:'technical',dir:'engineering',icon:'calculator',tone:'tone-blue',file:'calculator.js'},
+ {id:'area',name:'Diện tích hình học',sub:'Tính diện tích nhiều hình',group:'technical',dir:'engineering',icon:'area',tone:'tone-mint',file:'area.js'},
+ {id:'mass',name:'Khối lượng vật liệu',sub:'Tính nhanh theo kích thước',group:'technical',dir:'engineering',icon:'box',tone:'tone-orange',file:'mass.js'},
+ {id:'converter',name:'Đổi đơn vị',sub:'Chuyển đổi đơn vị đa dạng',group:'technical',dir:'engineering',icon:'swap',tone:'tone-violet',file:'converter.js'},
+ {id:'container',name:'Tra cứu Container',sub:'Kích thước, Tare, Gross, Net và tải trọng các hãng tàu',group:'technical',dir:'engineering',icon:'box',tone:'tone-mint',file:'container.js'},
+ {id:'interest',name:'Tính lãi suất',sub:'Lãi suất tiền gửi và khoản vay',group:'office',dir:'office',icon:'percent',tone:'tone-blue',file:'interest.js'},
+{id:'cutting-plan-plate',name:'Cutting Plan Plate',sub:'Thép tấm · định mức, sơ đồ cắt, tấm lẻ, xuất DXF · thử nghiệm nội bộ',group:'mechanical',icon:'nesting',tone:'tone-orange',dir:'mechanical',file:'cutting-plan-plate.js',guide:true},
+{id:'cutting-plan-section',name:'Cutting Plan Section',sub:'Thép hình · định mức, sơ đồ cắt, cây lẻ, đề xuất nối cột · thử nghiệm nội bộ',group:'mechanical',icon:'scissors',tone:'tone-orange',dir:'mechanical',file:'cutting-plan-section.js',guide:true},
+ {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'technical',dir:'engineering',icon:'database',tone:'tone-violet',file:'density.js'},
+ {id:'beam-check',name:'Beam Check',sub:'Tính bền dầm · thử nghiệm nội bộ',group:'mechanical',icon:'beam',tone:'tone-blue',dir:'mechanical',file:'beam-check.js'},
+ {id:'coating-plan',name:'Coating Plan',sub:'Sơn epoxy, PU kết cấu thép · lượng sơn · WFT/DFT · diện tích',group:'mechanical',icon:'paint',tone:'tone-mint',dir:'mechanical',file:'coating-plan.js'},
+ {id:'color-mixer',name:'Phối màu RGB & CMYK',sub:'Pha màu, chuyển mã và tạo bảng phối hài hòa',group:'technical',dir:'engineering',icon:'palette',tone:'tone-violet',file:'color-mixer.js'},
+ {id:'pdf',name:'PDF Studio',sub:'Gộp, tách, chỉnh sửa và ký PDF',group:'office',dir:'office',icon:'pdf',tone:'tone-red',file:'pdf-studio.js'},
+ {id:'calendar',name:'Âm lịch – Dương lịch',sub:'Tra cứu ngày dương lịch, âm lịch',group:'office',dir:'office',icon:'calendar',tone:'tone-mint',file:'calendar.js'},
+ {id:'vietqr',name:'VietQR',sub:'Tạo mã QR chuyển khoản',group:'office',dir:'office',icon:'qr',tone:'tone-violet',file:'vietqr.js'},
+ {id:'barcode',name:'Tạo và đọc mã vạch',sub:'Tạo và đọc mã vạch',group:'office',dir:'office',icon:'barcode',tone:'tone-blue',file:'barcode.js'},
+ {id:'image-studio',name:'Image Studio',sub:'Chỉnh sửa ảnh và chữ ký',group:'office',dir:'office',icon:'image',tone:'tone-mint',file:'image-studio.js'},
+ {id:'money-words',name:'Đọc số tiền bằng chữ',sub:'Đọc số tiền Việt – Anh',group:'office',dir:'office',icon:'file',tone:'tone-blue',file:'money-words.js'},
+ {id:'notes',name:'Ghi chú nhanh',sub:'Ghi và lưu ghi chú nhanh',group:'office',dir:'office',icon:'notes',tone:'tone-orange',file:'notes.js'},
+ {id:'material-handbook',name:'Vật liệu',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'database',tone:'tone-mint',file:'material-handbook.js'},
+ {id:'bearing-handbook',name:'Ổ đỡ',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'gear',tone:'tone-blue',file:'bearing-handbook.js'},
+ {id:'bolt-handbook',name:'Bu lông',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'settings',tone:'tone-orange',file:'bolt-handbook.js'},
+ {id:'tolerance-handbook',name:'Dung sai',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'ruler',tone:'tone-violet',file:'tolerance-handbook.js'}
 ]);
 const GROUPS=Object.freeze([
- {id:'calc',name:'TÍNH TOÁN',description:'Tính toán nhanh, chính xác, tiện lợi',icon:'calculator',cls:'category-calc'},
- {id:'engineering',name:'KỸ THUẬT',description:'Công cụ kỹ thuật Basic miễn phí',icon:'gear',cls:'category-engineering'},
- {id:'utility',name:'TÀI LIỆU & TIỆN ÍCH',description:'Xử lý tài liệu, lịch và tiện ích khác',icon:'pdf',cls:'category-utility'}
+ {id:'office',name:'Văn phòng',description:'Tài liệu và tiện ích văn phòng',icon:'file',cls:'category-utility',access:'free'},
+ {id:'technical',name:'Kỹ thuật',description:'Tính toán, đo lường và tra cứu kỹ thuật',icon:'calculator',cls:'category-calc',access:'free'},
+ {id:'mechanical',name:'Cơ khí',description:'Công cụ cơ khí chuyên ngành',icon:'gear',cls:'category-engineering',access:'specialist'},
+ {id:'handbook',name:'Sổ tay',description:'Sổ tay kỹ thuật chuyên ngành',icon:'book',cls:'category-engineering',access:'specialist'}
 ]);
+// Directory for each group; handbook modules can be added in assets/js/handbook/.
+const GROUP_DIRECTORIES=Object.freeze({office:'office',technical:'engineering',mechanical:'mechanical',handbook:'handbook'});
 const map=new Map(DEFINITIONS.map(t=>[t.id,t]));
 const STORAGE_KEY='epsilon-soft.my-tools.v1';
+// Mã tool cũ → mã mới (giữ link, ghim và lượt mở cũ khi đổi tên tool)
+const LEGACY_TOOL_IDS={qr:'vietqr','nesting-pro':'cutting-plan-plate','bar-cutting-pro-max':'cutting-plan-section',nesting:'cutting-plan-plate','bar-cutting':'cutting-plan-section','bar-cutting-pro':'cutting-plan-section',paint:'coating-plan',beam:'beam-check','beam-analysis':'beam-check'};
 let favorites={pinned:[],opens:{}};
 let displayMode='grid';
 let currentModuleCleanup=null;
@@ -1886,23 +2008,28 @@ const ES_LANGUAGE_KEY='epsilon-soft.language.v1';
 let esLanguage='vi';
 try { if(localStorage.getItem(ES_LANGUAGE_KEY)==='en') esLanguage='en'; } catch {/* Storage disabled: VI remains available. */}
 const ES_EN_TEXT=Object.freeze({
- 'bo cong cu mien phi':'FREE ONLINE TOOLS',
+ 'van phong & ky thuat':'OFFICE & ENGINEERING',
  'lam viec':'Work',
  'nhanh hon moi ngay.':'smarter every day.',
  'tinh toan · ky thuat · pdf · tien ich':'Calculators · Engineering · PDF · Utilities',
  'dung ngay':'Use instantly',
- 'loi ich epsilon soft':'Epsilon Soft advantages',
- 'trang chu':'Home','huong dan':'Help','kham pha cong cu':'Explore tools','kham pha tat ca cong cu':'Explore all tools',
+ 'loi ich epsilon blue soft':'Epsilon Blue Soft advantages',
+ 'trang chu':'Home','huong dan':'Help','so tay':'Handbook','so tay ky thuat chuyen nganh':'Specialist engineering handbook','kham pha cong cu':'Explore tools','kham pha tat ca cong cu':'Explore all tools',
  'danh muc':'CATEGORIES','tat ca cong cu':'All tools','cong cu':'Tools',
  'tinh toan':'Calculations','ky thuat':'Engineering','tai lieu & tien ich':'Documents & Utilities',
  'tai lieu va tien ich':'Documents & Utilities','tai lieu, lich va cac tien ich khac':'Documents, calendars & utilities',
- 'my tools':'MY TOOLS','epsilon hub':'EPSILON HUB',
- 'cong cu va he sinh thai':'Tools and ecosystem','danh muc epsilon soft':'Epsilon Soft categories',
+ 'my tools':'My tools','epsilon blue hub':'EPSILON BLUE HUB',
+ 'cong cu va he sinh thai':'Tools and ecosystem','danh muc epsilon blue soft':'Epsilon Blue Soft categories',
  'mo danh muc':'Open categories','thu gon thanh danh muc':'Collapse categories',
  'mo rong thanh danh muc':'Expand categories','mo menu':'Open menu',
- 'cong cu truc tuyen mien phi':'FREE ONLINE TOOLS',
+ 'cong cu ky thuat va van phong':'ENGINEERING & OFFICE TOOLS',
  'ho tro cong viec hang ngay. nhanh gon va de dung.':'Everyday tools. Fast, practical and easy to use.',
  'tinh toan · ky thuat · xu ly tai lieu · tien ich · va nhieu cong cu huu ich khac':'Calculations · Engineering · Documents · Utilities · And more',
+ 'van phong mien phi':'Free office tools','ky thuat chuyen sau':'Advanced engineering',
+ 'dang hoan thien':'In development','dinh huong chuyen sau':'Advanced development',
+ 'cac cong cu ky thuat dang cong khai phuc vu tinh toan va tra cuu; can kiem chung ket qua khi ap dung thuc te.':'Public engineering tools support calculation and reference; verify results before use.',
+ 'cong cu ky thuat chuyen sau se duoc phat trien trong epsilon blue soft. quyen vip chi ap dung khi hoan thien phan quyen thuc te.':'Advanced engineering is being developed within Epsilon Blue Soft. VIP access requires real authorization.',
+ 'thong tin lien he':'Contact information',
  'mien phi':'Free','khong can tai khoan':'No account required',
  'su dung ngay tren trinh duyet':'Use instantly in your browser',
  'nhieu cong cu huu ich':'Useful tools','trong mot nen tang':'on one platform',
@@ -1911,41 +2038,35 @@ const ES_EN_TEXT=Object.freeze({
  'phu hop cong viec, hoc tap va ky thuat':'For work, study and engineering',
  'kham pha cong cu':'Explore tools',
  'cai app':'Install App','gioi thieu va lien he':'About & Contact',
- 'cai app epsilon soft len thiet bi':'Install Epsilon Soft on this device',
- 'gioi thieu va lien he epsilon soft':'About and contact Epsilon Soft',
+ 'cai app epsilon blue soft len thiet bi':'Install Epsilon Blue Soft on this device',
+ 'gioi thieu va lien he epsilon blue soft':'About and contact Epsilon Blue Soft',
  'chon cong cu phu hop hoac tim kiem nhanh':'Choose a tool or search quickly',
  'chon cong cu phu hop':'Choose a suitable tool',
  'cac cong cu anh/chi da ghim bang ngoi sao':'Your starred tools',
  'tinh toan nhanh, chinh xac, tien loi':'Quick, accurate and convenient calculations',
  'ho tro cong viec chuyen mon':'Professional engineering tools',
- 'cong cu ky thuat basic mien phi':'Free Basic engineering tools',
+ 'cong cu ky thuat chuyen sau':'Advanced engineering tools',
  'cat thep hinh 1d':'1D Steel Bar Cutting',
  'toi uu cat cay thep · giam hao phi':'Optimize steel bar cutting · reduce waste',
  'phien ban basic':'BASIC EDITION',
  'dinh huong phat trien':'IN DEVELOPMENT PLAN',
  'cac cong cu tai day la phien ban co ban, phu hop tinh toan va tra cuu ky thuat hang ngay.':'These are Basic tools for everyday engineering calculations and reference.',
- 'cong cu ky thuat chuyen sau se duoc phat trien trong epsilon lab.':'Advanced engineering tools are planned within Epsilon Lab.',
- 'kham pha epsilon lab':'Explore Epsilon Lab',
+ 'cac cong cu ky thuat chuyen sau duoc phat trien trong epsilon blue soft.':'Advanced engineering tools are developed within Epsilon Blue Soft.',
  'xu ly tai lieu, lich va tien ich khac':'Documents, calendars and everyday utilities',
  'tim cong cu...':'Search tools...','tim kiem cong cu':'Search tools',
  'dang luoi':'Grid view','dang danh sach':'List view',
  'danh sach cong cu, dung chuot hoac phim mui ten de cuon':'Scrollable tools list; use mouse or arrow keys',
  'khong tim thay cong cu phu hop. hay thu tu khoa khac.':'No matching tools. Try another keyword.',
  'chua co cong cu nao':'No pinned tools yet',
- 'nhan ⭐ tai mot cong cu de them vao my tools.':'Star a tool to add it to MY TOOLS.',
+ 'nhan ⭐ tai mot cong cu de them vao my tools.':'Star a tool to add it to My tools.',
  'dang phat trien':'In development',
- 'them vao my tools':'Add to MY TOOLS','da them vao my tools':'Added to MY TOOLS',
+ 'them vao my tools':'Add to My tools','da them vao my tools':'Added to My tools',
  'ghim':'Pin','bo ghim':'Unpin','cong cu lien quan':'Related tools',
  'dang mo cong cu...':'Opening tool...','dang kiem tra...':'Checking...',
  'xu ly tai trinh duyet':'Processed in your browser',
  'khong the tai cong cu. vui long kiem tra tep javascript tuong ung roi tai lai trang.':'Unable to load this tool. Check its JavaScript file, then reload.',
  'dang test noi bo':'INTERNAL TESTING',
- 'bo cong cu 7 trong 1 - 1 file exe, khong can cai dat':'Seven tools in one EXE. No installation required',
- 'bo cong cu 7 trong 1 – 1 file exe, khong can cai dat':'Seven tools in one EXE. No installation required',
- 'may tinh · dien tich · khoi luong vat lieu · doi don vi · trai phoi 2d · am/duong lich · pdf studio':'Calculator · Area · Mass · Converter · Nesting · Calendar · PDF Studio',
- 'tim hieu es toolkit':'About ES TOOLKIT',
- 'chua phat hanh ban tai cong khai':'Not publicly available yet',
- 'gioi thieu epsilon soft':'About Epsilon Soft',
+ 'gioi thieu epsilon blue soft':'About Epsilon Blue Soft',
  'ket noi cac san pham va ung dung thuoc he sinh thai epsilon.':'Connecting products and apps across the Epsilon ecosystem.',
  'dang tai danh sach san pham...':'Loading products...',
  'chua co san pham nao trong danh muc.':'No products are listed yet.',
@@ -1953,49 +2074,29 @@ const ES_EN_TEXT=Object.freeze({
  'lien ket dang duoc cap nhat':'Link coming soon',
  'thu tai lai':'Try again',
  'khong tai duoc danh sach san pham tu':'Unable to load the product list from',
- 'lop 1 – epsilon edu':'Grade 1 – Epsilon Edu',
- 'hoc toan, tieng viet va tieng anh theo chuong trinh epsilon edu.':'Study Math, Vietnamese and English with Epsilon Edu.',
+ 'lop 1 – epsilon edu':'Grade 1 – Epsilon Blue Edu',
+ 'hoc toan, tieng viet va tieng anh theo chuong trinh epsilon edu.':'Study Math, Vietnamese and English with Epsilon Blue Edu.',
  'cac phan mem, tien ich va giai phap ky thuat trong he sinh thai epsilon.':'Software, utilities and engineering solutions in the Epsilon ecosystem.',
  'huong dan su dung':'User guide',
  'cai app tren dien thoai, may tinh bang va windows':'Install the app on phone, tablet and Windows',
- 'nhan nut cai app o cuoi trang hoac ben duoi de them epsilon soft vao thiet bi nhu mot ung dung.':'Press Install App at the bottom of the page or below to add Epsilon Soft to your device as an app.',
+ 'nhan nut cai app o cuoi trang hoac ben duoi de them epsilon blue soft vao thiet bi nhu mot ung dung.':'Press Install App at the bottom of the page or below to add Epsilon Blue Soft to your device as an app.',
  'windows (chrome / edge)':'Windows (Chrome / Edge)',
  'android (chrome)':'Android (Chrome)',
  'iphone / ipad (safari)':'iPhone / iPad (Safari)',
  'nhan cai app va xac nhan cai dat khi trinh duyet hoi. neu khong hien hop thoai, mo menu chrome/edge hoac bieu tuong cai dat tren thanh dia chi.':'Press Install App and confirm if the browser prompts you. Otherwise, use the Chrome/Edge menu or the install icon in the address bar.',
  'mo trang bang chrome, nhan cai app. neu khong thay hop thoai cai dat, chon menu ⋮ → cai dat ung dung hoac them vao man hinh chinh.':'Open this site in Chrome and select Install App. If no prompt appears, open menu ⋮ → Install app or Add to Home screen.',
  'mo trang bang safari, chon chia se → them vao man hinh chinh. nut cai app tren trang se hien huong dan neu safari khong ho tro hop thoai cai dat.':'Open this site in Safari, then Share → Add to Home Screen. The Install App button will show instructions if Safari cannot display an install prompt.',
- 'day la web app, khong phai file exe portable. can trinh duyet ho tro va website https; mot so thiet bi chi tao loi tat, va mot so cong cu van can internet.':'This is a Web App, not a Portable EXE. A compatible browser and HTTPS are required; some devices may only create a shortcut, and some tools still require internet access.',
- 'epsilon soft mien phi, khong yeu cau tai khoan.':'Epsilon Soft is free and requires no account.',
- 'nhan ngoi sao ⭐ tren cong cu de ghim. chi cong cu da ghim moi xuat hien trong my tools. du lieu nay duoc luu tren trinh duyet hien tai.':'Star a tool to pin it. Only pinned tools appear in MY TOOLS. Preferences are stored in this browser.',
+ 'day la web app duoc cai tu trinh duyet. can trinh duyet ho tro va website https; mot so thiet bi chi tao loi tat, va mot so cong cu van can internet.':'This Web App is installed through your browser. A compatible browser and HTTPS are required; some devices may only create a shortcut, and some tools still require internet access.',
+ 'cong cu van phong mien phi; ky thuat chuyen sau theo lo trinh phat trien.':'Office tools are free; advanced engineering tools follow the development roadmap.',
+ 'nhan ngoi sao ⭐ tren cong cu de ghim. chi cong cu da ghim moi xuat hien trong my tools. du lieu nay duoc luu tren trinh duyet hien tai.':'Star a tool to pin it. Only pinned tools appear in My tools. Preferences are stored in this browser.',
  'danh muc va tim kiem':'Categories and search',
  'chon chu de tren trang chu hoac trong sidebar khi dang dung cong cu. go ten cong cu trong o tim kiem; phim / giup mo o tim kiem nhanh.':'Choose a category from the sidebar. Search by tool name, or press / to focus the search field.',
  'du lieu va quyen rieng tu':'Data and privacy',
  'cac cong cu uu tien xu ly du lieu ngay tai trinh duyet. mot so module co the tai thu vien tu nguon ngoai; hay xem gioi han va huong dan ngay trong module.':'Tools prioritize on-device processing. Some modules load external libraries; check their instructions and limitations.',
  'ket qua ky thuat':'Engineering results',
  'doi chieu don vi do, dau vao va tieu chuan ap dung truoc khi su dung so lieu trong cong viec thuc te.':'Verify units, inputs and applicable standards before using results professionally.',
- 'thong tin, loi ich va huong dan su dung. lien ket tai nam trong tung cong cu web.':'Information, benefits and usage instructions. Downloads are linked from individual web tools.',
- 'portable la gi?':'What is Portable?',
- 'phien ban windows chay truc tiep, thuong khong can trinh cai dat. huu ich khi lam viec offline hoac can mot tien ich chuyen dung tren may tinh.':'A Windows app that usually runs without installation. Useful offline or for dedicated desktop tasks.',
- 'web app van la nen tang uu tien:':'Web App remains the primary option:',
- 'su dung ngay khong can tai xuong.':'Use instantly without downloading.',
- 'cach tai tu tung cong cu':'How to download from a tool',
- 'mo cong cu web can su dung.':'Open the web tool you need.',
- 'nhan nut':'Click the',
- 'canh my tools.':'button next to MY TOOLS.',
- 'neu co ban cong khai, lien ket google drive se mo trong tab moi.':'If a public release is available, its Google Drive link opens in a new tab.',
- 'neu chua co, he thong thong bao de ban co the lien he quan tri vien.':'If unavailable, contact the Epsilon Soft administrator.',
- 'canh bao windows smartscreen':'Windows SmartScreen warnings',
- 'windows co the canh bao voi file exe it pho bien hoac chua duoc ky so. hay xac minh nguon tai, ten file, phien ban va quet bang windows security truoc khi chay. khong bo qua canh bao neu khong chac chan file dang tin cay.':'Windows may warn about an unsigned or uncommon EXE. Verify the source, name and version, and scan the file with Windows Security before running.',
- 'su dung va luu y':'Usage and notes',
- 'tai exe ve thu muc co quyen ghi phu hop, mo truc tiep tren windows tuong thich.':'Download the EXE to a suitable folder and open it on a compatible Windows device.',
- 'kiem tra huong dan di kem tung ban phat hanh.':'Read the instructions for each release.',
- 'khong dung ban dang test noi bo nhu ban phat hanh cong khai.':'Do not treat internal test builds as public releases.',
- 'es toolkit v1.0 hien van trong giai doan thu nghiem noi bo.':'ES TOOLKIT V1.0 is still in internal testing.',
- 'trang nay chi cung cap huong dan, khong chua nut hoac lien ket tai exe.':'This page offers guidance only; it contains no EXE download links.',
- 'chua co ban windows portable':'No Windows Portable release yet',
  'da hieu':'Got it',
- 'cong cu huu ich. trai nghiem don gian. mien phi cho moi nguoi.':'Useful tools. Simple experience. Free for everyone.',
+ 'cong cu van phong mien phi va cong cu ky thuat chuyen sau.':'Free office tools and advanced engineering tools.',
  'du lieu tinh toan duoc xu ly trong trinh duyet cua ban.':'Your calculations are processed in your browser.',
  'bo qua dieu huong':'Skip navigation',
  'may tinh khoa hoc':'Scientific Calculator','phep tinh va ham toan hoc':'Arithmetic and mathematical functions',
@@ -2003,10 +2104,10 @@ const ES_EN_TEXT=Object.freeze({
  'khoi luong vat lieu':'Material Mass','tinh nhanh theo kich thuoc':'Mass from dimensions',
  'doi don vi':'Unit Converter','chuyen doi don vi da dang':'Convert measurement units',
  'tinh lai suat':'Interest Calculator','tien gui, vay von, dau tu':'Savings, loans and investments',
- 'trai phoi 2d':'2D Nesting','trai phoi 2d theo es toolkit portable':'2D layout from ES TOOLKIT Portable',
+ 'trai phoi 2d':'2D Nesting','trai phoi 2d co ban':'Basic 2D nesting',
  'khoi luong rieng':'Material Density','tra cuu khoi luong rieng (kg/m³)':'Density reference (kg/m³)',
- 'tinh ket cau don gian':'Basic Structural Analysis','dam don gian: m, v, do vong':'Simple beams: bending, shear and deflection',
- 'paint studio':'Paint Studio','tinh luong son · wft/dft · dien tich':'Paint quantity · WFT/DFT · surface area',
+ 'tinh ket cau don gian':'Basic Structural Analysis','beam check':'Beam Check','dam don gian: m, v, do vong':'Simple beams: bending, shear and deflection',
+ 'paint studio':'Paint Studio','coating plan':'Coating Plan','tinh luong son · wft/dft · dien tich':'Paint quantity · WFT/DFT · surface area',
  'gop, tach, chinh sua, ky ten va chuyen doi pdf':'Merge, split, edit, sign and convert PDFs',
  'am lich – duong lich':'Lunar & Solar Calendar','tra cuu ngay thang, lich van nien':'Explore dates and lunar calendars',
  'tao ma qr chuyen khoan ngan hang':'Bank transfer QR code',
@@ -2015,7 +2116,27 @@ const ES_EN_TEXT=Object.freeze({
  'doc so tien bang chu':'Amount in Words','doc so tien viet – anh, sao chep nhanh':'Vietnamese & English amount reading',
  'ghi chu nhanh':'Quick Notes','viet, luu va tai ghi chu':'Write, save and download notes',
  'khong yeu cau tai khoan':'No account required',
- 'dang mo epsilon soft...':'Opening Epsilon Soft...'
+ 'van phong':'Office','co khi':'Mechanical','cai dat':'Settings','tai khoan':'Account',
+ 'danh muc cong cu':'Tool categories','ngon ngu giao dien':'Interface language',
+ 'tuy chon ngon ngu duoc luu tren trinh duyet nay.':'Your language choice is saved in this browser.',
+ 'chuyen doi giua tieng viet va tieng anh.':'Switch between Vietnamese and English.',
+ 'van phong va ky thuat mien phi; co khi la nhom chuyen nganh.':'Office and engineering are free; mechanical tools are specialist tools.',
+ 'chua co he thong tai khoan hoac thu phi.':'Account and payment features are not available yet.',
+ 'he thong tai khoan dang duoc phat trien.':'Account features are in development.',
+ 'co khi chuyen nganh':'Specialist mechanical tools',
+ 'danh muc cong cu theo nhom':'Tools by category',
+ 'chuyen nganh':'Specialist','du kien tra phi':'Paid access planned',
+ 'van phong free':'Office Free','ky thuat free':'Engineering Free',
+ 'van phong free · ky thuat free · co khi chuyen nganh':'Office Free · Engineering Free · Mechanical Specialist',
+ 'co khi chuyen nganh · du kien tra phi':'Specialist mechanical tools · paid access planned',
+ 'cong cu co khi chuyen nganh · du kien tra phi':'Specialist mechanical tools · paid access planned','cong cu co khi chuyen nganh':'Specialist mechanical tools',
+ 'cong cu van phong mien phi':'Free office tools',
+ 'tinh toan, do luong va tra cuu ky thuat mien phi':'Free engineering calculations, measurements and references',
+ 'tuy chon hien thi tren thiet bi nay.':'Display preferences on this device.',
+ 'du lieu ca nhan':'Personal data',
+ 'my tools va tuy chon ngon ngu hien duoc luu trong trinh duyet. chua co dong bo tai khoan hoac google drive.':'My tools and language settings are saved in this browser. Account and Google Drive synchronization are not available.',
+ 'chua trien khai':'Not available yet',
+ 'dang mo epsilon blue soft...':'Opening Epsilon Blue Soft...'
 });
 const esOriginalNodes=new WeakMap();
 const esOriginalAttrs=new WeakMap();
@@ -2023,14 +2144,16 @@ function esTranslateValue(original){
  if(esLanguage!=='en')return original;
  const trimmed=original.trim();if(!trimmed)return original;
  const normalized=normalize(trimmed).replace(/\s+/g,' ');
- if(normalized==='epsilon hub')return original;
+ if(normalized==='epsilon blue hub')return original;
  let replacement=ES_EN_TEXT[normalized];
- // Translate the tool heading suffix without changing the actual tool workspace.
- const suffix=' · mien phi · xu ly tai trinh duyet';
- if(!replacement && normalized.endsWith(suffix)){
-  const name=normalized.slice(0,-suffix.length);
-  const before=ES_EN_TEXT[name];
-  if(before)replacement=before+' · Free · In-browser';
+ // Translate publicly displayed tool headings by category; do not modify workspaces.
+ const suffixes=[[' · mien phi · xu ly tai trinh duyet',' · Free · In-browser'],[' · ky thuat chuyen sau · xu ly tai trinh duyet',' · Advanced engineering · In-browser']];
+ for(const [suffix,description] of suffixes){
+  if(!replacement && normalized.endsWith(suffix)){
+   const name=normalized.slice(0,-suffix.length);
+   const before=ES_EN_TEXT[name];
+   if(before)replacement=before+description;
+  }
  }
  if(!replacement)return original;
  const first=original.indexOf(trimmed);
@@ -2079,14 +2202,11 @@ function esSetLanguage(next){
  const heroLayer=document.getElementById('es-hero-dialog-layer');
  if(heroLayer && !heroLayer.hidden){heroLayer.innerHTML=esHeroDialogContent(heroLayer.dataset.mode||'about');heroLayer.querySelector('[data-es-hero-close]')?.focus();}
 }
-function esBuildLanguagePicker(){
- const header=document.querySelector('.header-inner');
- if(!header||header.querySelector('.es-language-picker'))return;
- const picker=document.createElement('div');
- picker.className='es-language-picker';picker.setAttribute('role','group');picker.setAttribute('aria-label','Language / Ngon ngu');
- picker.innerHTML='<button type="button" class="es-language-btn" data-es-lang="vi">VI</button><button type="button" class="es-language-btn" data-es-lang="en">EN</button>';
- header.append(picker);
- esUpdateLanguageButtons();
+function esLanguagePickerHtml(){
+ return `<div class="es-settings-language" role="group" aria-label="Language / Ngôn ngữ">
+   <button type="button" class="es-language-btn" data-es-lang="vi">VI</button>
+   <button type="button" class="es-language-btn" data-es-lang="en">EN</button>
+  </div>`;
 }
 
 function readPreferences(){
@@ -2094,9 +2214,9 @@ function readPreferences(){
   const raw=localStorage.getItem(STORAGE_KEY);if(!raw||raw.length>4096)return;
   const val=JSON.parse(raw);if(!val||typeof val!=='object')return;
   const ids=new Set(DEFINITIONS.filter(t=>!t.planned).map(t=>t.id));
-  if(Array.isArray(val.pinned))favorites.pinned=[...new Set(val.pinned.map(x=>x==='qr'?'vietqr':x).filter(x=>typeof x==='string'&&ids.has(x)))].slice(0,30);
+  if(Array.isArray(val.pinned))favorites.pinned=[...new Set(val.pinned.map(x=>LEGACY_TOOL_IDS[x]||x).filter(x=>typeof x==='string'&&ids.has(x)))].slice(0,30);
   if(val.opens&&typeof val.opens==='object'&&!Array.isArray(val.opens)){
-   for(const id of ids){const n=val.opens[id] ?? (id==='vietqr'?val.opens.qr:undefined);if(Number.isSafeInteger(n)&&n>0)favorites.opens[id]=Math.min(n,1000000);}
+   for(const id of ids){const n=val.opens[id] ?? Object.keys(LEGACY_TOOL_IDS).filter(o=>LEGACY_TOOL_IDS[o]===id).map(o=>val.opens[o]).find(v=>v!==undefined);if(Number.isSafeInteger(n)&&n>0)favorites.opens[id]=Math.min(n,1000000);}
   }
  }catch{/* Continue in memory when browser storage is unavailable/corrupt. */}
 }
@@ -2111,58 +2231,107 @@ function togglePin(id){
  const t=map.get(id);if(!t||t.planned)return;
  const had=isPinned(id);
  favorites.pinned=had?favorites.pinned.filter(x=>x!==id):[...favorites.pinned,id];
- savePreferences();showToast(esLanguage==='en'?(had?`Unpinned ${ES_EN_TEXT[normalize(t.name)]||t.name}`:`Pinned ${ES_EN_TEXT[normalize(t.name)]||t.name} to MY TOOLS`):(had?`Đã bỏ ghim ${t.name}`:`Đã thêm ${t.name} vào MY TOOLS`));
+ savePreferences();showToast(esLanguage==='en'?(had?`Unpinned ${ES_EN_TEXT[normalize(t.name)]||t.name}`:`Pinned ${ES_EN_TEXT[normalize(t.name)]||t.name} to My tools`):(had?`Đã bỏ ghim ${t.name}`:`Đã thêm ${t.name} vào My tools`));
  const active=document.querySelector('.page-home');if(active)renderGroupCards();
- const btn=document.querySelector('.tool-heading [data-pin]');if(btn&&btn.dataset.pin===id){btn.innerHTML=`${icon('star')} ${isPinned(id)?'Đã thêm vào MY TOOLS':'Thêm vào MY TOOLS'}`;btn.setAttribute('aria-pressed',String(isPinned(id)));esTranslateRegion(btn);}
+ const btn=document.querySelector('.tool-page [data-pin]');if(btn&&btn.dataset.pin===id){btn.innerHTML=`${icon('star')} ${isPinned(id)?'Đã thêm vào My tools':'Thêm vào My tools'}`;btn.setAttribute('aria-pressed',String(isPinned(id)));esTranslateRegion(btn);}
 }
 function preferredTools(){
- // MY TOOLS is opt-in only: visits must never add a tool automatically.
+ // My tools is opt-in only: visits must never add a tool automatically.
  // Preserve the order in which users starred their tools.
  return favorites.pinned.map(id=>map.get(id)).filter(t=>t&&!t.planned);
 }
-// MY TOOLS access in the header (landscape widths). The list is ALWAYS sourced from
+// My tools access in the header (landscape widths). The list is ALWAYS sourced from
 // the same favorites state as the sidebar and the portrait bottom category dock.
+// Keep Help in the sidebar; replace its header tab with the Handbook section.
+// The base index.html remains compatible: no extra file needs replacing.
+function prepareHeaderNavigation(){
+ const nav=document.getElementById('main-nav');
+ if(!nav)return;
+ const help=nav.querySelector('a[data-nav="help"]');
+ if(!nav.querySelector('a[data-nav="handbook"]')){
+  const link=document.createElement('a');
+  link.className='nav-link';
+  link.href='#/category/handbook';
+  link.dataset.nav='handbook';
+  link.innerHTML=`${icon('book',20)}<span>Sổ tay</span>`;
+  if(help)help.before(link);else nav.append(link);
+ }
+ help?.remove();
+}
 function buildHeaderMyTools(){
  const nav=document.getElementById('main-nav');
  if(!nav || nav.querySelector('#es-header-mytools'))return;
  const area=document.createElement('div');area.id='es-header-mytools';area.className='es-header-mytools';
- area.innerHTML=`<a class="nav-link es-header-mytools-link" id="es-header-mytools-link" data-nav="mytools" href="#/mytools" aria-label="MY TOOLS">${icon('star',18)}<span>MY TOOLS</span><span class="es-header-mytools-count" id="es-header-mytools-count">0</span></a>
-  <button type="button" class="es-header-mytools-toggle" data-header-mytools-toggle aria-expanded="false" aria-controls="es-header-mytools-menu" aria-label="Xổ danh sách MY TOOLS" title="Xổ danh sách MY TOOLS">${icon('chevron-down',20)}</button>
+ area.innerHTML=`<a class="nav-link es-header-mytools-link" id="es-header-mytools-link" data-nav="mytools" href="#/mytools" aria-label="My tools">${icon('star',18)}<span>My tools</span><span class="es-header-mytools-count" id="es-header-mytools-count">0</span></a>
+  <button type="button" class="es-header-mytools-toggle" data-header-mytools-toggle aria-expanded="false" aria-controls="es-header-mytools-menu" aria-label="Xổ danh sách My tools" title="Xổ danh sách My tools">${icon('chevron-down',20)}</button>
   <div class="es-header-mytools-menu" id="es-header-mytools-menu" aria-label="Danh sách công cụ đã ghim" hidden></div>`;
- nav.insertBefore(area,nav.querySelector('[data-nav="explore"]'));
- buildHeaderAllTools(nav);
+ nav.insertBefore(area,nav.querySelector('[data-nav="office"]'));
  refreshHeaderMyTools();
 }
-/* 2026-10-27: ALL TOOLS có mũi tên xổ giống MY TOOLS – danh sách công cụ theo nhóm. Dùng chung kiểu dáng MY TOOLS. */
-function buildHeaderAllTools(nav){
- const link=nav.querySelector('[data-nav="explore"]');
- if(!link || nav.querySelector('#es-header-alltools'))return;
- const area=document.createElement('div');area.id='es-header-alltools';area.className='es-header-mytools es-header-alltools';
- nav.insertBefore(area,link);
- link.classList.add('es-header-mytools-link');link.id='es-header-alltools-link';
- area.append(link);
- area.insertAdjacentHTML('beforeend',`<button type="button" class="es-header-mytools-toggle" data-header-alltools-toggle aria-expanded="false" aria-controls="es-header-alltools-menu" aria-label="Xổ danh sách tất cả công cụ" title="Xổ danh sách tất cả công cụ">${icon('chevron-down',20)}</button>
-  <div class="es-header-mytools-menu es-header-alltools-menu" id="es-header-alltools-menu" role="region" aria-label="Danh sách tất cả công cụ" hidden></div>`);
+// The three approved categories have separate navigation links and disclosure buttons.
+// Reuse existing tool IDs and the same dropdown interaction model as My tools.
+function buildHeaderCategoryMenus(){
+ const nav=document.getElementById('main-nav');
+ if(!nav)return;
+ for(const group of GROUPS){
+  const link=nav.querySelector(`a[data-nav="${group.id}"]`);
+  if(!link || link.closest('.es-header-category'))continue;
+  const area=document.createElement('div');
+  area.className='es-header-mytools es-header-category';
+  area.dataset.headerCategory=group.id;
+  area.id=`es-header-category-${group.id}`;
+  const toggle=document.createElement('button');
+  toggle.type='button';
+  toggle.className='es-header-mytools-toggle es-header-category-toggle';
+  toggle.dataset.headerCategoryToggle=group.id;
+  toggle.setAttribute('aria-expanded','false');
+  toggle.setAttribute('aria-controls',`es-header-category-menu-${group.id}`);
+  toggle.innerHTML=icon('chevron-down',20);
+  const menu=document.createElement('div');
+  menu.className='es-header-mytools-menu es-header-category-menu';
+  menu.id=`es-header-category-menu-${group.id}`;
+  menu.hidden=true;
+  const oldFree=link.querySelector('.es-nav-free');
+  oldFree?.remove(); // Remove legacy access badges; category navigation remains unchanged.
+  if((group.id==='mechanical'||group.id==='handbook')&&!link.querySelector('.es-specialist-lock')){
+   link.insertAdjacentHTML('beforeend',`<span class="es-specialist-lock" aria-hidden="true">${icon('lock',14)}</span>`);
+  }
+  link.classList.add('es-header-mytools-link','es-header-category-link');
+  nav.insertBefore(area,link);
+  area.append(link,toggle,menu);
+ }
+ refreshHeaderCategoryMenus();
 }
-function refreshHeaderAllTools(){
- const area=document.getElementById('es-header-alltools');if(!area)return;
- const en=esLanguage==='en';
- const toggle=area.querySelector('[data-header-alltools-toggle]');
- if(toggle){const label=en?'Show all tools':'Xổ danh sách tất cả công cụ';toggle.setAttribute('aria-label',label);toggle.title=label;}
- const menu=area.querySelector('#es-header-alltools-menu');if(!menu)return;
- const ready=DEFINITIONS.filter(t=>!t.planned);
- const nameOf=t=>en?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
- const groupName=g=>{const vi=g.name==='TÀI LIỆU & TIỆN ÍCH'?'Tài liệu & Tiện ích':g.name==='TÍNH TOÁN'?'Tính toán':'Kỹ thuật';return en?(ES_EN_TEXT[normalize(vi)]||ES_EN_TEXT[normalize(g.name)]||vi):vi;};
- const groups=GROUPS.map(g=>{
-  const tools=ready.filter(t=>t.group===g.id);
-  if(!tools.length)return '';
-  return `<a class="es-header-alltools-group" href="#/category/${encodeURIComponent(g.id)}">${icon(g.icon,18)}<span>${escapeHTML(groupName(g))}</span><small>${tools.length}</small></a>`+
-   tools.map(t=>`<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(nameOf(t))}">${icon(t.icon,19)}<span>${escapeHTML(nameOf(t))}</span></a>`).join('');
- }).join('');
- menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon('grid',18)} <span>${en?'ALL TOOLS':'ALL TOOLS · Tất cả công cụ'}</span><small class="es-header-alltools-count">${ready.length}</small></div><div class="es-header-mytools-items">${groups}</div>`;
+function refreshHeaderCategoryMenus(){
+ for(const group of GROUPS){
+  const area=document.getElementById(`es-header-category-${group.id}`);
+  if(!area)continue;
+  const label=esLanguage==='en'?({office:'Office',technical:'Engineering',mechanical:'Mechanical',handbook:'Handbook'}[group.id]):group.name;
+  const toggle=area.querySelector('[data-header-category-toggle]');
+  const action=esLanguage==='en'?`Show ${label} tools`:`Xổ danh sách công cụ ${label}`;
+  if(toggle){toggle.setAttribute('aria-label',action);toggle.title=action;}
+  const menu=area.querySelector('.es-header-category-menu');
+  if(!menu)continue;
+  menu.setAttribute('aria-label',esLanguage==='en'?`${label} tools`:`Công cụ ${label}`);
+  const tools=DEFINITIONS.filter(t=>t.group===group.id&&!t.planned);
+  const title=esLanguage==='en'?`${label} · ${tools.length} tools`:`${label} · ${tools.length} công cụ`;
+  menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon(group.icon,18)} <span>${escapeHTML(title)}</span></div><div class="es-header-mytools-items">${tools.map(t=>{
+   const name=esLanguage==='en'?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
+   return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(name)}">${icon(t.icon,19)}<span>${escapeHTML(name)}</span></a>`;
+  }).join('') || `<p class="es-header-mytools-empty">${esLanguage==='en'?'Handbook entries will be added soon.':'Nội dung Sổ tay đang được cập nhật.'}</p>`}</div>`;
+ }
+}
+function closeHeaderCategoryMenus(restoreFocus=false){
+ for(const area of document.querySelectorAll('.es-header-category')){
+  const menu=area.querySelector('.es-header-category-menu');
+  if(!menu || menu.hidden)continue;
+  menu.hidden=true;
+  const toggle=area.querySelector('[data-header-category-toggle]');
+  toggle?.setAttribute('aria-expanded','false');
+  if(restoreFocus)toggle?.focus({preventScroll:true});
+ }
 }
 function closeHeaderMyTools(restoreFocus=false){
- closeHeaderAllTools(restoreFocus);
  const area=document.getElementById('es-header-mytools');if(!area)return;
  const menu=area.querySelector('#es-header-mytools-menu');
  if(!menu || menu.hidden)return;
@@ -2171,17 +2340,7 @@ function closeHeaderMyTools(restoreFocus=false){
  toggle?.setAttribute('aria-expanded','false');
  if(restoreFocus)toggle?.focus({preventScroll:true});
 }
-function closeHeaderAllTools(restoreFocus=false){
- const area=document.getElementById('es-header-alltools');if(!area)return;
- const menu=area.querySelector('#es-header-alltools-menu');
- if(!menu || menu.hidden)return;
- menu.hidden=true;
- const toggle=area.querySelector('[data-header-alltools-toggle]');
- toggle?.setAttribute('aria-expanded','false');
- if(restoreFocus)toggle?.focus({preventScroll:true});
-}
 function refreshHeaderMyTools(){
- refreshHeaderAllTools();
  const area=document.getElementById('es-header-mytools');if(!area)return;
  const pinned=preferredTools();
  const count=area.querySelector('#es-header-mytools-count');
@@ -2189,23 +2348,22 @@ function refreshHeaderMyTools(){
  const link=area.querySelector('#es-header-mytools-link');
  if(link)link.classList.toggle('is-active',location.hash==='#/mytools');
  const toggle=area.querySelector('[data-header-mytools-toggle]');
- if(toggle){const label=esLanguage==='en'?'Show pinned tools':'Xổ danh sách MY TOOLS';toggle.setAttribute('aria-label',label);toggle.title=label;}
+ if(toggle){const label=esLanguage==='en'?'Show pinned tools':'Xổ danh sách My tools';toggle.setAttribute('aria-label',label);toggle.title=label;}
  const menu=area.querySelector('#es-header-mytools-menu');if(!menu)return;
- const heading=esLanguage==='en'?'MY TOOLS · Pinned tools':'MY TOOLS · Công cụ đã ghim';
+ const heading=esLanguage==='en'?'My tools · Pinned tools':'My tools · Công cụ đã ghim';
  const list=pinned.length?pinned.map(t=>{
   const title=esLanguage==='en'?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
   return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(title)}">${icon(t.icon,19)}<span>${escapeHTML(title)}</span></a>`;
- }).join(''):`<div class="es-header-mytools-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào MY TOOLS.'}<a href="#/explore">${esLanguage==='en'?'Explore tools':'Khám phá công cụ'}</a></div>`;
+ }).join(''):`<div class="es-header-mytools-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào My tools.'}<a href="#/category/office">${esLanguage==='en'?'Explore tools':'Khám phá công cụ'}</a></div>`;
  menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon('star',18)} <span>${heading}</span></div><div class="es-header-mytools-items">${list}</div>`;
 }
 function toolCard(t){
  const action=t.planned?`<div class="tool-link"><div class="tool-tile ${t.tone}">${icon(t.icon,27)}</div><div class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small><span class="soon-label">Đang phát triển</span></div></div>`:
  `<a class="tool-link" href="#/tool/${t.id}" aria-label="Mở ${t.name}"><span class="tool-tile ${t.tone}">${icon(t.icon,27)}</span><span class="tool-names"><b>${t.name}</b><small title="${escapeHTML(t.sub)}">${t.sub}</small></span></a>`;
- return `<article class="tool-card ${t.planned?'is-planned':'is-ready'}" data-card="${t.id}" data-search="${normalize(t.name+' '+t.sub)}">${action}${t.planned?'':`<button class="star-btn" type="button" data-pin="${t.id}" aria-label="${isPinned(t.id)?'Bỏ ghim':'Ghim'} ${t.name}" aria-pressed="${isPinned(t.id)}" title="${isPinned(t.id)?'Bỏ ghim':'Thêm vào MY TOOLS'}">${icon('star')}</button>`}</article>`;
+ return `<article class="tool-card ${t.planned?'is-planned':'is-ready'}" data-card="${t.id}" data-search="${normalize(t.name+' '+t.sub)}">${action}${t.planned?'':`<button class="star-btn" type="button" data-pin="${t.id}" aria-label="${isPinned(t.id)?'Bỏ ghim':'Ghim'} ${t.name}" aria-pressed="${isPinned(t.id)}" title="${isPinned(t.id)?'Bỏ ghim':'Thêm vào My tools'}">${icon('star')}</button>`}</article>`;
 }
 // Web-first navigation. All tools keep their existing IDs and mount(root, ctx) APIs.
 const SYSTEM_JSON = 'ecosystem.json';
-const PORTABLE_JSON = 'portable-downloads.json';
 let sidebarIsCollapsed = false;
 let activeCatalog = 'all';
 let modalPreviousFocus = null;
@@ -2234,8 +2392,7 @@ async function readStaticJson(filename, maximum = 60000) {
 function normalizedEcosystem(data){
  if(!data || typeof data!=='object' || Array.isArray(data))throw Error('Invalid Hub JSON');
  const defaults=[
-  {id:'edu',name:'Epsilon Edu',nameEn:'Epsilon Edu',description:'Các chương trình giáo dục và tự học thuộc hệ sinh thái Epsilon.',descriptionEn:'Education and self-study apps in the Epsilon ecosystem.',icon:'book',products:[]},
-  {id:'lab',name:'Epsilon Lab',nameEn:'Epsilon Lab',description:'Phần mềm và giải pháp kỹ thuật thuộc hệ sinh thái Epsilon.',descriptionEn:'Engineering software and practical tools in the Epsilon ecosystem.',icon:'gear',products:[]}
+  {id:'edu',name:'Epsilon Blue Edu',nameEn:'Epsilon Blue Edu',description:'Các chương trình giáo dục và tự học thuộc hệ sinh thái Epsilon.',descriptionEn:'Education and self-study apps in the Epsilon ecosystem.',icon:'book',products:[]}
  ];
  let groups;
  if(Array.isArray(data.groups)){
@@ -2250,7 +2407,7 @@ function normalizedEcosystem(data){
  }else throw Error('Missing groups/products');
  const icons=new Set(['book','grid','calculator','gear','image','file','files','lightbulb','home','shield','orbit','windows','monitor']);
  const safeString=(value,limit)=>typeof value==='string'?value.trim().slice(0,limit):'';
- const normalized=groups.filter(g=>g&&typeof g==='object').map(g=>{
+ const normalized=groups.filter(g=>g&&typeof g==='object'&&String(g.id||'').toLowerCase()!=='lab').map(g=>{
   const id=safeString(g.id,32).toLowerCase();
   if(!/^[a-z0-9-]{1,32}$/.test(id))return null;
   const list=Array.isArray(g.products)?g.products:(Array.isArray(g.items)?g.items:[]);
@@ -2272,6 +2429,9 @@ function hubIconMarkup(product,size){return product.logo?`<img src="./${escapeHT
 function hubFamilyStyledLabel(label){
  const text=String(label||'').trim();
  const parts=text.split(/\s+/);
+ if(parts.length>=3&&parts[0].toLowerCase()==='epsilon'&&parts[1].toLowerCase()==='blue'){
+  return `<span class="es-hub-family-brand">${escapeHTML(parts.slice(0,2).join(' '))}</span><span class="es-hub-family-branch">${escapeHTML(parts.slice(2).join(' '))}</span>`;
+ }
  if(parts.length>=2&&parts[0].toLowerCase()==='epsilon'){
   const branch=parts.slice(1).join(' ');
   return `<span class="es-hub-family-brand">${escapeHTML(parts[0])}</span><span class="es-hub-family-branch">${escapeHTML(branch)}</span>`;
@@ -2298,7 +2458,6 @@ function makeSidebarLink(id, href, label, iconName, count) {
  const selected = (id === 'all' && ['#/home','#/explore',''].includes(location.hash)) ||
   (id === 'mytools' && location.hash === '#/mytools') ||
   (id === 'ecosystem' && location.hash.startsWith('#/ecosystem')) ||
-  (id === 'portable' && location.hash === '#/portable') ||
   (id === 'help' && location.hash === '#/help') ||
   location.hash === '#/category/' + id;
  return `<a class="es-side-link" data-side="${id}" data-label="${escapeHTML(label)}" href="${href}" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}" ${selected?'aria-current="page"':''}><span class="es-side-icon">${icon(iconName,21)}</span><span class="es-side-name">${escapeHTML(label)}</span>${typeof count === 'number'?`<span class="es-side-count">${count}</span>`:''}</a>`;
@@ -2315,12 +2474,17 @@ function sidebarToolsInSection(id){
 }
 function sidebarChildrenHtml(id){
  if(id==='ecosystem'){
-  const home=`<a class="es-side-child" href="#/ecosystem">${icon('orbit',17)}<span>${esLanguage==='en'?'Epsilon Hub home':'Tổng quan Epsilon Hub'}</span></a>`;
-  const groups=Array.isArray(sidebarHubProducts)&&sidebarHubProducts.length?sidebarHubProducts:[{id:'edu',name:'Epsilon Edu',icon:'book'},{id:'lab',name:'Epsilon Lab',icon:'gear'}];
+  const home=`<a class="es-side-child" href="#/ecosystem">${icon('orbit',17)}<span>${esLanguage==='en'?'Epsilon Blue Hub home':'Tổng quan Epsilon Blue Hub'}</span></a>`;
+  const groups=Array.isArray(sidebarHubProducts)&&sidebarHubProducts.length?sidebarHubProducts:[{id:'edu',name:'Epsilon Blue Edu',icon:'book'}];
   return home+groups.map(item=>`<a class="es-side-child" href="#/ecosystem/${escapeHTML(item.id)}" title="${escapeHTML(item.name)}">${icon(item.icon||'orbit',17)}<span>${escapeHTML(item.name)}</span></a>`).join('');
  }
  const items=sidebarToolsInSection(id);
- if(!items.length)return `<p class="es-side-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào.'}</p>`;
+ if(!items.length){
+  const message=id==='mytools'
+   ?(esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào.')
+   :(esLanguage==='en'?'Handbook entries will be added soon.':'Nội dung Sổ tay đang được cập nhật.');
+  return `<p class="es-side-empty">${message}</p>`;
+ }
  return items.map(t=>{
   const selected=location.hash==='#/tool/'+t.id;
   return `<a class="es-side-child" href="#/tool/${t.id}" ${selected?'aria-current="page"':''} title="${escapeHTML(t.name)}">${icon(t.icon,17)}<span>${escapeHTML(t.name)}</span></a>`;
@@ -2336,10 +2500,11 @@ function makeSidebarExpandable(id,href,label,iconName,count){
   route==='#/category/'+id||Boolean(activeTool && id===activeTool.group);
  const escapedLabel=escapeHTML(label);
  const logo=id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" loading="lazy" decoding="async">':icon(iconName,22);
+ const specialistLock=id==='mechanical'||id==='handbook'?` <span class="es-specialist-lock" aria-hidden="true">${icon('lock',14)}</span>`:'';
  const actionLabel=esLanguage==='en'?(open?'Collapse':'Expand'):(open?'Thu gọn':'Mở rộng');
  return `<section class="es-side-section" data-side-section="${id}">
   <div class="es-side-parent ${selected?'is-active':''}">
-   <a class="es-side-link" data-side="${id}" data-label="${escapedLabel}" href="${href}" title="${escapedLabel}" aria-label="${escapedLabel}" ${selected?'aria-current="page"':''}><span class="es-side-icon">${logo}</span><span class="es-side-name">${escapedLabel}</span></a>
+   <a class="es-side-link" data-side="${id}" data-label="${escapedLabel}" href="${href}" title="${escapedLabel}" aria-label="${escapedLabel}" ${selected?'aria-current="page"':''}><span class="es-side-icon">${logo}</span><span class="es-side-name">${escapedLabel}${specialistLock}</span></a>
    <button type="button" class="es-side-expand" data-side-expand="${id}" aria-expanded="${open}" aria-controls="es-side-children-${id}" aria-label="${actionLabel}: ${escapedLabel}" title="${actionLabel}: ${escapedLabel}">${icon('chevron-down',20)}</button>
    ${typeof count==='number'?`<a href="${href}" class="es-side-count" aria-label="${escapedLabel} (${count})">${count}</a>`:''}
   </div>
@@ -2352,7 +2517,7 @@ async function loadSidebarHubProducts(){
  try{
   const data=await readStaticJson(SYSTEM_JSON);
   sidebarHubProducts=normalizedEcosystem(data).map(g=>({id:g.id,name:hubText(g,'name'),icon:g.icon}));
- }catch(error){sidebarHubProducts=null;console.warn('Sidebar Epsilon Hub:',error);}
+ }catch(error){sidebarHubProducts=null;console.warn('Sidebar Epsilon Blue Hub:',error);}
  finally{
   sidebarHubLoading=false;
   const panel=document.getElementById('es-side-children-ecosystem');
@@ -2367,16 +2532,12 @@ async function loadSidebarHubProducts(){
 // All mobile folder links use the exact same routes and published tool definitions as the desktop sidebar.
 function mobileRailEntries(){
  return [
-  {id:'mytools',href:'#/mytools',label:'MY TOOLS',iconName:'star',count:preferredTools().length,expand:true},
-  {id:'ecosystem',href:'#/ecosystem',label:'Epsilon Hub',iconName:'orbit',expand:true},
-  {id:'all',href:'#/explore',label:esLanguage==='en'?'All tools':'Tất cả',iconName:'grid',count:DEFINITIONS.filter(t=>!t.planned).length,expand:true},
-  ...GROUPS.map(g=>({
-   id:g.id,href:'#/category/'+g.id,
-   label:g.id==='calc'?(esLanguage==='en'?'Calculate':'Tính toán'):
-    g.id==='engineering'?(esLanguage==='en'?'Engineering':'Kỹ thuật'):(esLanguage==='en'?'Utilities':'Tài liệu'),
-   iconName:g.icon,expand:true,count:DEFINITIONS.filter(t=>t.group===g.id&&!t.planned).length
-  })),
-  {id:'portable',href:'#/portable',label:'Portable',iconName:'windows',expand:false},
+  {id:'mytools',href:'#/mytools',label:'My tools',iconName:'star',count:preferredTools().length,expand:true},
+  {id:'ecosystem',href:'#/ecosystem',label:'Epsilon Blue Hub',iconName:'orbit',expand:true},
+  ...GROUPS.map(g=>({id:g.id,href:'#/category/'+g.id,label:esLanguage==='en'?({office:'Office',technical:'Engineering',mechanical:'Mechanical',handbook:'Handbook'}[g.id]):g.name,
+   iconName:g.icon,expand:true,count:DEFINITIONS.filter(t=>t.group===g.id&&!t.planned).length})),
+  {id:'settings',href:'#/settings',label:esLanguage==='en'?'Settings':'Cài đặt',iconName:'settings',expand:false},
+  {id:'account',href:'#/account',label:esLanguage==='en'?'Account':'Tài khoản',iconName:'user',expand:false},
   {id:'help',href:'#/help',label:esLanguage==='en'?'Help':'Hướng dẫn',iconName:'book',expand:false}
  ];
 }
@@ -2384,7 +2545,6 @@ function mobileRailIsActive(entry){
  const hash=location.hash;
  const t=hash.startsWith('#/tool/')?map.get(hash.slice(7)):null;
  return (entry.id==='mytools'&&hash==='#/mytools')||
-  (entry.id==='all'&&(['','#/home','#/explore'].includes(hash)))||
   (entry.id==='ecosystem'&&hash.startsWith('#/ecosystem'))||
   hash===entry.href||Boolean(t&&entry.id===t.group);
 }
@@ -2393,12 +2553,11 @@ function mobileRailFolderHtml(entry){
  const current=mobileRailIsActive(entry);
  const label=escapeHTML(entry.label);
  const graphic=entry.id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" width="32" height="32" decoding="async">':icon(entry.iconName,22);
- const ariaLabel=entry.id==='all'?(esLanguage==='en'?'All tools':'Tất cả công cụ'):
-  entry.id==='utility'?(esLanguage==='en'?'Documents and utilities':'Tài liệu & Tiện ích'):entry.label;
+ const ariaLabel=entry.label;
  return `<div class="es-mobile-folder ${current?'is-active':''}" data-mobile-section="${entry.id}">
    <a href="${entry.href}" class="es-mobile-folder-link" title="${escapeHTML(ariaLabel)}" aria-label="${escapeHTML(ariaLabel)}" ${current?'aria-current="page"':''}>
     <span class="es-mobile-folder-icon">${graphic}</span>
-    <span class="es-mobile-folder-label">${label}</span>
+    <span class="es-mobile-folder-label">${label}${entry.id==='mechanical'||entry.id==='handbook'?` <span class="es-specialist-lock" aria-hidden="true">${icon('lock',13)}</span>`:''}</span>
    </a>
    ${entry.id==='mytools'?`<span class="es-mobile-folder-count" aria-hidden="true">${entry.count}</span>`:''}
    ${entry.expand?`<button type="button" class="es-mobile-folder-expand" data-mobile-folder="${entry.id}"
@@ -2449,18 +2608,20 @@ function renderSidebar() {
  if(!nav)return;
  const scroll=nav.scrollTop;
  nav.innerHTML=[
-  makeSidebarExpandable('mytools','#/mytools','MY TOOLS','star',preferredTools().length),
-  makeSidebarExpandable('ecosystem','#/ecosystem','EPSILON HUB','orbit'),
+  makeSidebarExpandable('mytools','#/mytools','My tools','star',preferredTools().length),
+  makeSidebarExpandable('ecosystem','#/ecosystem','Epsilon Blue Hub','orbit'),
   '<div class="es-side-divider" aria-hidden="true"></div>',
-  makeSidebarExpandable('all','#/explore','Tất cả công cụ','grid',DEFINITIONS.filter(t=>!t.planned).length),
-  ...GROUPS.map(g=>makeSidebarExpandable(g.id,'#/category/'+g.id,g.name==='TÀI LIỆU & TIỆN ÍCH'?'Tài liệu & Tiện ích':g.name==='TÍNH TOÁN'?'Tính toán':'Kỹ thuật',g.icon,DEFINITIONS.filter(t=>t.group===g.id&&!t.planned).length))
+  ...GROUPS.map(g=>makeSidebarExpandable(g.id,'#/category/'+g.id,g.name,g.icon,DEFINITIONS.filter(t=>t.group===g.id&&!t.planned).length)),
+  '<div class="es-sidebar-bottom" id="es-side-utilities">'+
+    makeSidebarLink('help','#/help',esLanguage==='en'?'Help':'Hướng dẫn','book')+
+    makeSidebarLink('settings','#/settings','Cài đặt','settings')+
+    makeSidebarLink('account','#/account','Tài khoản','user')+'</div>'
  ].join('');
- // Windows Portable and Help are already present in the desktop header.
- // Mobile keeps its horizontal shortcuts because its header navigation is hidden.
  esTranslateRegion(nav);
  nav.scrollTop=scroll;
  renderMobileRail();
  refreshHeaderMyTools();
+ refreshHeaderCategoryMenus();
 }
 function buildSidebarShell() {
  const wrap = document.createElement('div');
@@ -2469,7 +2630,7 @@ function buildSidebarShell() {
  const sidebar = document.createElement('aside');
  sidebar.id = 'es-sidebar';
  sidebar.className = 'es-sidebar';
- sidebar.setAttribute('aria-label','Danh mục Epsilon Soft');
+ sidebar.setAttribute('aria-label','Danh mục Epsilon Blue Soft');
  sidebar.innerHTML = `<div class="es-sidebar-top"><strong class="es-sidebar-title">DANH MỤC</strong><button type="button" class="es-side-toggle" id="es-side-toggle" aria-label="Thu gọn thanh danh mục" title="Thu gọn thanh danh mục">${icon('panel-left-close',21)}</button></div><nav class="es-side-nav" id="es-side-nav" aria-label="Công cụ và hệ sinh thái"></nav>`;
  main.parentNode.insertBefore(wrap,main);
  const mobileRail=document.createElement('nav');
@@ -2495,12 +2656,6 @@ function buildSidebarShell() {
  renderSidebar();
 }
 
-function enhanceHeaderNavigation(){
- const nav=document.getElementById('main-nav');if(!nav||nav.querySelector('[data-nav="hub"]'))return;
- const hub=document.createElement('a');hub.className='nav-link es-hub-nav';hub.href='#/ecosystem';hub.dataset.nav='hub';
- hub.innerHTML=icon('orbit',19)+' Epsilon Hub';
- nav.insertBefore(hub,nav.querySelector('[data-nav="portable"]'));
-}
 function closeMainMenu(){
  document.getElementById('main-nav')?.classList.remove('open');
  if(document.body.classList.contains('es-catalog-mode'))document.getElementById('menu-toggle')?.setAttribute('aria-expanded','false');
@@ -2553,7 +2708,7 @@ function buildAppDialog() {
  document.body.append(layer);
 }
 
-// Install-on-device is a PWA flow, NOT the separate Windows Portable EXE.
+// Browser install-on-device is the PWA flow; it is not a standalone Windows program.
 let esDeferredInstallPrompt=null;
 let esHeroDialogPreviousFocus=null;
 window.addEventListener('beforeinstallprompt',event=>{
@@ -2562,7 +2717,7 @@ window.addEventListener('beforeinstallprompt',event=>{
 });
 window.addEventListener('appinstalled',()=>{
  esDeferredInstallPrompt=null;
- showToast(esLanguage==='en'?'App installed successfully.':'Đã cài Epsilon Soft thành công.');
+ showToast(esLanguage==='en'?'App installed successfully.':'Đã cài Epsilon Blue Soft thành công.');
 });
 function esPwaIsInstalled(){
  return Boolean(window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone===true);
@@ -2570,26 +2725,27 @@ function esPwaIsInstalled(){
 function esHeroInfoText(vi,en){return esLanguage==='en'?en:vi;}
 function esHeroDialogContent(mode){
  const T=esHeroInfoText;
- const heading=(mode==='about')?T('Giới thiệu và liên hệ','About & Contact'):mode==='installed'?T('Ứng dụng đã được cài đặt','App already installed'):T('Cài Epsilon Soft trên thiết bị','Install Epsilon Soft');
+ const heading=(mode==='about')?T('Giới thiệu và liên hệ','About & Contact'):mode==='installed'?T('Ứng dụng đã được cài đặt','App already installed'):T('Cài Epsilon Blue Soft trên thiết bị','Install Epsilon Blue Soft');
  let body='';
  if(mode==='about'){
-  body=`<p class="es-hero-intro">${T('Epsilon Soft cung cấp các công cụ trực tuyến miễn phí, dễ dùng và thiết thực cho công việc, học tập và kỹ thuật. Có thể dùng ngay trên trình duyệt, không cần đăng nhập.','Epsilon Soft provides free, easy-to-use online tools for work, study and engineering. Use them directly in your browser without signing in.')}</p>
+  body=`<p class="es-hero-intro">${T('Epsilon Blue Soft gồm bốn nhóm công cụ: Văn phòng, Kỹ thuật, Cơ khí và Sổ tay.','Epsilon Blue Soft has four tool categories: Office, Engineering, Mechanical, and Handbook.')}</p>
    <div class="es-hero-about-products">
-    <article class="es-hero-product"><strong>${icon('grid',20)} Epsilon Soft</strong><p>${T('Công cụ tính toán, tài liệu và tiện ích hằng ngày, ưu tiên xử lý ngay trên thiết bị.','Everyday calculators, document tools and utilities, prioritizing on-device processing.')}</p></article>
-    <article class="es-hero-product"><strong>${icon('settings',20)} Epsilon Lab</strong><p>${T('Các sản phẩm và giải pháp kỹ thuật chuyên sâu trong hệ sinh thái Epsilon.','Specialized technical software and engineering solutions in the Epsilon ecosystem.')}</p></article>
-    <article class="es-hero-product"><strong>${icon('book',20)} Epsilon Edu</strong><p>${T('Các ứng dụng giáo dục và tự học, hướng đến trải nghiệm dễ tiếp cận, có tính sư phạm.','Educational and self-study applications designed for accessible learning.')}</p></article>
+    <article class="es-hero-product"><strong>${icon('grid',20)} ${T('Văn phòng','Office')}</strong><p>${T('Xử lý tài liệu và các tiện ích dùng hằng ngày.','Document processing and everyday utilities.')}</p></article>
+    <article class="es-hero-product"><strong>${icon('calculator',20)} ${T('Kỹ thuật','Engineering')}</strong><p>${T('Tính toán, đo lường và tra cứu thông số kỹ thuật.','Engineering calculations, measurements and reference tools.')}</p></article>
+    <article class="es-hero-product"><strong>${icon('gear',20)} ${T('Cơ khí','Mechanical')}</strong><p>${T('Công cụ chuyên ngành cho gia công và chế tạo cơ khí.','Specialist mechanical engineering and fabrication tools.')}</p></article>
+    <article class="es-hero-product"><strong>${icon('book',20)} ${T('Sổ tay','Handbook')}</strong><p>${T('Tra cứu và tham khảo dữ liệu kỹ thuật chuyên ngành.','Technical reference data and handbooks.')}</p></article>
    </div>
-   <a class="es-hero-hub-link" href="#/ecosystem" data-es-go-hub>${icon('orbit',20)} ${T('Khám phá Epsilon Hub','Explore Epsilon Hub')} ${icon('arrow',18)}</a>
+   <a class="es-hero-hub-link" href="#/ecosystem" data-es-go-hub>${icon('orbit',20)} ${T('Khám phá Epsilon Blue Hub','Explore Epsilon Blue Hub')} ${icon('arrow',18)}</a>
    <h3 class="es-hero-contact-title">${T('Thông tin liên hệ','Contact information')}</h3>
    <div class="es-hero-contact-links">
     <a href="mailto:epsilon.vn@gmail.com">${icon('mail',20)} <span>epsilon.vn@gmail.com</span></a>
-    <button type="button" class="es-hero-contact-copy" data-es-copy-phone title="${T('Sao chép số điện thoại','Copy phone number')}" aria-label="${T('Sao chép số điện thoại 0865.749.402','Copy phone number 0865.749.402')}">${icon('phone',20)} <span>0865.749.402</span> ${icon('copy',18)}</button>
-    <a href="https://zalo.me/0865749402" target="_blank" rel="noopener noreferrer">${icon('message-circle',20)} <span>Zalo</span></a>
+    <button type="button" class="es-hero-contact-copy" data-es-copy-phone title="${T('Sao chép số điện thoại','Copy phone number')}" aria-label="${T('Sao chép số điện thoại 0978.251.059','Copy phone number 0978.251.059')}">${icon('phone',20)} <span>0978.251.059</span> ${icon('copy',18)}</button>
+    <a href="https://zalo.me/0978251059" target="_blank" rel="noopener noreferrer">${icon('message-circle',20)} <span>Zalo</span></a>
    </div>`;
  }else if(mode==='installed'){
-  body=`<p class="es-hero-intro">${T('Epsilon Soft đang chạy ở chế độ ứng dụng trên thiết bị này. Anh/chị có thể mở lại từ biểu tượng đã thêm trên màn hình hoặc hệ thống ứng dụng.','Epsilon Soft is already running as an installed app. You can launch it from your home screen or app list.')}</p>`;
+  body=`<p class="es-hero-intro">${T('Epsilon Blue Soft đang chạy ở chế độ ứng dụng trên thiết bị này. Anh/chị có thể mở lại từ biểu tượng đã thêm trên màn hình hoặc hệ thống ứng dụng.','Epsilon Blue Soft is already running as an installed app. You can launch it from your home screen or app list.')}</p>`;
  }else{
-  body=`<p class="es-hero-intro">${T('Cài phiên bản Web App của Epsilon Soft để mở nhanh từ màn hình chính hoặc menu ứng dụng. Đây không phải file EXE của ES TOOLKIT Portable. Tính năng cài đặt phụ thuộc trình duyệt và cấu hình website.','Install the Epsilon Soft Web App for quick access from your home screen or app list. This is not the ES TOOLKIT Portable EXE. Installation depends on your browser and the website configuration.')}</p>
+  body=`<p class="es-hero-intro">${T('Cài phiên bản Web App của Epsilon Blue Soft để mở nhanh từ màn hình chính hoặc menu ứng dụng. Tính năng cài đặt phụ thuộc trình duyệt và cấu hình website.','Install the Epsilon Blue Soft Web App for quick access from your home screen or app list. Installation depends on your browser and the website configuration.')}</p>
    <div class="es-hero-install-devices">
     <div class="es-hero-install-device"><h3>${icon('monitor',21)} Windows</h3><p>${T('Dùng Chrome hoặc Edge. Chọn biểu tượng Cài đặt ở thanh địa chỉ hoặc menu trình duyệt → Cài ứng dụng / Install site as app.','Use Chrome or Edge. Select the install icon in the address bar, or the browser menu → Install app / Install site as app.')}</p></div>
     <div class="es-hero-install-device"><h3>${icon('smartphone',21)} Android</h3><p>${T('Mở bằng Chrome, chọn menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.','Open in Chrome, then menu ⋮ → Install app or Add to Home screen.')}</p></div>
@@ -2620,8 +2776,8 @@ function esCloseHeroDialog(){
 }
 // Clipboard-only phone contact: never dial or open an external link.
 async function esCopyContactPhone(){
- const display='0865.749.402';
- const value='0865749402';
+ const display='0978.251.059';
+ const value='0978251059';
  let copied=false;
  try{
   if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);copied=true;}
@@ -2661,33 +2817,11 @@ async function esInstallWebApp(button){
  }
 }
 
-function engineeringBridgeHtml(){
- // Epsilon Lab has its own product catalog (assets/data/ecosystem.json).
- // Until a product URL is published, this CTA opens the Lab catalog—not a fake Pro tool.
- return `<aside class="es-eng-bridge" aria-label="Epsilon Soft Basic và định hướng Epsilon Lab Pro">
-  <div class="es-eng-half es-eng-basic">
-   <span class="es-eng-symbol" aria-hidden="true">${icon('gear',23)}</span>
-   <div class="es-eng-copy">
-    <div class="es-eng-label"><strong>EPSILON SOFT · BASIC</strong><span>MIỄN PHÍ</span></div>
-    <p>Các công cụ tại đây là phiên bản cơ bản, phù hợp tính toán và tra cứu kỹ thuật hằng ngày.</p>
-   </div>
-  </div>
-  <div class="es-eng-half es-eng-pro">
-   <span class="es-eng-symbol" aria-hidden="true">${icon('beam',22)}</span>
-   <div class="es-eng-copy">
-    <div class="es-eng-label"><strong>EPSILON LAB · PRO</strong><span>ĐỊNH HƯỚNG PHÁT TRIỂN</span></div>
-    <p>Công cụ kỹ thuật chuyên sâu sẽ được phát triển trong Epsilon Lab.</p>
-   </div>
-   <a class="es-eng-cta" href="#/ecosystem/lab" aria-label="Khám phá Epsilon Lab trong Epsilon Hub">Khám phá Epsilon Lab ${icon('arrow',16)}</a>
-  </div>
- </aside>`;
-}
 function currentCatalogData(){
- if(activeCatalog==='mytools')return { name:'MY TOOLS', sub:'Các công cụ anh/chị đã ghim bằng ngôi sao',icon:'star', tools:preferredTools() };
- if(activeCatalog==='all')return { name:'Tất cả công cụ',sub:'Chọn công cụ phù hợp hoặc tìm kiếm nhanh',icon:'grid',tools:DEFINITIONS.filter(t=>!t.planned) };
- const g=GROUPS.find(g=>g.id===activeCatalog);
- return g?{ name:g.name,sub:g.description,icon:g.icon,tools:DEFINITIONS.filter(t=>t.group===g.id&&!t.planned)}:
-  { name:'Tất cả công cụ',sub:'Chọn công cụ phù hợp',icon:'grid',tools:DEFINITIONS.filter(t=>!t.planned)};
+ if(activeCatalog==='mytools')return {name:'My tools',sub:'Các công cụ anh/chị đã ghim bằng ngôi sao',icon:'star',tools:preferredTools()};
+ const g=GROUPS.find(group=>group.id===activeCatalog);
+ if(g)return {name:g.name,sub:g.description,icon:g.icon,access:g.access,tools:DEFINITIONS.filter(t=>t.group===g.id&&!t.planned)};
+ return {name:'Danh mục công cụ theo nhóm',sub:'Văn phòng · Kỹ thuật · Cơ khí · Sổ tay',icon:'grid',tools:GROUPS.flatMap(group=>DEFINITIONS.filter(t=>t.group===group.id&&!t.planned))};
 }
 function renderGroupCards(){
  const grid=main.querySelector('#tool-columns');
@@ -2701,9 +2835,20 @@ function renderGroupCards(){
  const em=main.querySelector('#catalog-icon');if(em)em.innerHTML=icon(data.icon,23);
  grid.classList.toggle('es-view-list',displayMode==='list');
  if(!data.tools.length && activeCatalog==='mytools'){
-  grid.innerHTML=`<div class="mytools-empty"><div class="empty-icon">${icon('star',30)}</div><strong>Chưa có công cụ nào</strong><p>Nhấn ⭐ tại một công cụ để thêm vào MY TOOLS.</p></div>`;
+  grid.innerHTML=`<div class="mytools-empty"><div class="empty-icon">${icon('star',30)}</div><strong>Chưa có công cụ nào</strong><p>Nhấn ⭐ tại một công cụ để thêm vào My tools.</p></div>`;
+ }else if(!data.tools.length && activeCatalog==='handbook'){
+  grid.innerHTML=`<div class="es-no-matches">${icon('book',26)} <strong>${esLanguage==='en'?'Handbook entries are coming soon.':'Sổ tay đang được cập nhật.'}</strong><p>${esLanguage==='en'?'Specialist engineering references will be added here.':'Nội dung kỹ thuật chuyên ngành sẽ được bổ sung tại đây.'}</p></div>`;
  }else if(!matches.length){
   grid.innerHTML='<div class="es-no-matches">Không tìm thấy công cụ phù hợp. Hãy thử từ khóa khác.</div>';
+ }else if(activeCatalog==='all'){
+  grid.innerHTML=GROUPS.map(g=>{
+   const tools=matches.filter(t=>t.group===g.id);
+   if(!tools.length){
+    if(g.id!=='handbook'||query)return '';
+    return `<div class="es-home-group-title"><a href="#/category/handbook">${icon(g.icon,22)}<span>${escapeHTML(g.name)}</span></a><small>0</small></div><div class="es-no-matches" style="grid-column:1/-1">${esLanguage==='en'?'Handbook entries are coming soon.':'Nội dung Sổ tay đang được cập nhật.'}</div>`;
+   }
+   return `<div class="es-home-group-title"><a href="#/category/${g.id}">${icon(g.icon,22)}<span>${escapeHTML(g.name)}</span></a><small>${tools.length}</small></div>`+tools.map(toolCard).join('');
+  }).join('');
  }else grid.innerHTML=matches.map(toolCard).join('');
  renderSidebar();
  esTranslateRegion(main.querySelector('.es-directory'));
@@ -2716,11 +2861,11 @@ function applySearch(raw){
 // Keep copy localized through the existing VI/EN presentation layer without touching tool modules.
 const BANNER_CONTENT = Object.freeze({
  main:Object.freeze({
-  eyebrow:'CÔNG CỤ TRỰC TUYẾN MIỄN PHÍ',
-  brand:'EPSILON',branch:'SOFT',
+  eyebrow:'VĂN PHÒNG & KỸ THUẬT',
+  brand:'EPSILON BLUE',branch:'SOFT',
   tagline:'Hỗ trợ công việc hằng ngày. Nhanh gọn và dễ dùng.',
   description:'Tính toán · Kỹ thuật · Xử lý tài liệu · Tiện ích · Và nhiều công cụ hữu ích khác',
-  perks:['Miễn phí','Không cần tài khoản','Sử dụng ngay trên trình duyệt'],
+  perks:['Văn phòng','Kỹ thuật','Cơ khí chuyên ngành'],
   cardTitle:'Nhiều công cụ hữu ích',cardTitleSecond:'trong một nền tảng',
   cardBullets:['Giao diện hiện đại, dễ sử dụng','Hoạt động ngay trên trình duyệt','Phù hợp công việc, học tập và kỹ thuật'],
   installLabel:'Cài APP',aboutLabel:'Giới thiệu và liên hệ'
@@ -2741,12 +2886,12 @@ function syncMobileInformationOrder(){
  }
 }
 
-function catalogHtml(){return `<div class="page-home es-dashboard-layout">${heroBannerHtml()}<section class="es-directory ${activeCatalog==='engineering'?'es-directory-engineering':''}" id="directory" aria-labelledby="catalog-title"><div class="es-directory-header"><div class="es-directory-title-row"><span class="es-directory-emblem" id="catalog-icon">${icon('grid',23)}</span><div><h1 class="es-directory-title" id="catalog-title">Tất cả công cụ</h1><p class="es-directory-sub" id="catalog-sub">Chọn công cụ phù hợp hoặc tìm kiếm nhanh</p></div><span class="es-directory-total" id="catalog-count">${DEFINITIONS.length}</span></div><div class="es-catalog-toolbar"><label class="search-box" for="tool-search">${icon('search',20)}<input id="tool-search" type="search" maxlength="100" autocomplete="off" placeholder="Tìm công cụ..." aria-label="Tìm kiếm công cụ"></label><div class="view-toggle" aria-label="Chế độ hiển thị"><button class="toggle-button ${displayMode==='grid'?'active':''}" type="button" aria-label="Dạng lưới" data-view="grid" title="Dạng lưới">${icon('grid',21)}</button><button class="toggle-button ${displayMode==='list'?'active':''}" type="button" aria-label="Dạng danh sách" data-view="list" title="Dạng danh sách">${icon('list',21)}</button></div></div></div>${activeCatalog==='engineering'?engineeringBridgeHtml():''}<div class="es-directory-grid" id="tool-columns" role="region" aria-label="Danh sách công cụ"></div></section></div>`;}
+function catalogHtml(){return `<div class="page-home es-dashboard-layout">${heroBannerHtml()}<section class="es-directory " id="directory" aria-labelledby="catalog-title"><div class="es-directory-header"><div class="es-directory-title-row"><span class="es-directory-emblem" id="catalog-icon">${icon('grid',23)}</span><div><h1 class="es-directory-title" id="catalog-title">Danh mục công cụ theo nhóm</h1><p class="es-directory-sub" id="catalog-sub">Chọn công cụ phù hợp hoặc tìm kiếm nhanh</p></div><span class="es-directory-total" id="catalog-count">${DEFINITIONS.length}</span></div><div class="es-catalog-toolbar"><label class="search-box" for="tool-search">${icon('search',20)}<input id="tool-search" type="search" maxlength="100" autocomplete="off" placeholder="Tìm công cụ..." aria-label="Tìm kiếm công cụ"></label><div class="view-toggle" aria-label="Chế độ hiển thị"><button class="toggle-button ${displayMode==='grid'?'active':''}" type="button" aria-label="Dạng lưới" data-view="grid" title="Dạng lưới">${icon('grid',21)}</button><button class="toggle-button ${displayMode==='list'?'active':''}" type="button" aria-label="Dạng danh sách" data-view="list" title="Dạng danh sách">${icon('list',21)}</button></div></div></div><div class="es-directory-grid" id="tool-columns" role="region" aria-label="Danh sách công cụ"></div></section></div>`;}
 function heroBannerHtml(){
- return `<section class="hero es-main-banner" aria-label="Giới thiệu các công cụ Epsilon Soft">
+ return `<section class="hero es-main-banner" aria-label="Giới thiệu các công cụ Epsilon Blue Soft">
   <div class="hero-copy es-hero-copy-v3">
    <div class="es-hero-kicker-v3">
-    <span class="es-hero-kicker-left">${icon('grid',16)}<span>BỘ CÔNG CỤ MIỄN PHÍ</span></span>
+    <span class="es-hero-kicker-left">${icon('grid',16)}<span>VĂN PHÒNG & KỸ THUẬT</span></span>
     <nav class="es-hero-shortcuts" aria-label="${esLanguage==='en'?'Quick access to Studios':'Mở nhanh công cụ Studio'}">
      <a class="es-hero-shortcut es-hero-shortcut-pdf" href="#/tool/pdf" aria-label="${esLanguage==='en'?'Open PDF Studio':'Mở PDF Studio'}"><span class="es-hero-shortcut-icon">${icon('pdf',16)}</span><span>PDF Studio</span></a>
      <a class="es-hero-shortcut es-hero-shortcut-image" href="#/tool/image-studio" aria-label="${esLanguage==='en'?'Open Image Studio':'Mở Image Studio'}"><span class="es-hero-shortcut-icon">${icon('image',16)}</span><span>Image Studio</span></a>
@@ -2754,10 +2899,10 @@ function heroBannerHtml(){
    </div>
    <h1 class="es-hero-headline-v3"><span>Làm việc</span><strong>nhanh hơn mỗi ngày.</strong></h1>
    <p class="es-hero-subline-v3">Tính toán · Kỹ thuật · PDF · Tiện ích</p>
-   <div class="es-hero-benefits-v3" aria-label="Lợi ích Epsilon Soft">
-    <span>${icon('check',15)} Miễn phí</span>
-    <span>${icon('shield',15)} Không cần tài khoản</span>
-    <span>${icon('check',15)} Dùng ngay</span>
+   <div class="es-hero-benefits-v3" aria-label="Lợi ích Epsilon Blue Soft">
+    <span>${icon('check',15)} Văn phòng</span>
+    <span>${icon('check',15)} Kỹ thuật</span>
+    <span>${icon('shield',15)} Cơ khí chuyên ngành</span>
    </div>
   </div><div class="hero-art" aria-hidden="true"></div>
  </section>`;
@@ -2766,7 +2911,7 @@ function heroBannerHtml(){
 // Their click handlers use the existing delegated document events.
 function pageActionButtonsHtml(){
  const m=BANNER_CONTENT.main;
- return `<section class="es-bottom-actions" aria-label="${esLanguage==='en'?'Installation and contact':'Cài đặt và liên hệ'}"><button type="button" class="button es-action-install" data-es-install aria-label="Cài APP Epsilon Soft lên thiết bị">${icon('app-plus',19)} <span>${escapeHTML(m.installLabel)}</span></button><button type="button" class="button es-action-about" data-es-about aria-label="Giới thiệu và liên hệ Epsilon Soft">${icon('contact-card',19)} <span>${escapeHTML(m.aboutLabel)}</span></button></section>`;
+ return `<section class="es-bottom-actions" aria-label="${esLanguage==='en'?'Installation and contact':'Cài đặt và liên hệ'}"><button type="button" class="button es-action-install" data-es-install aria-label="Cài APP Epsilon Blue Soft lên thiết bị">${icon('app-plus',19)} <span>${escapeHTML(m.installLabel)}</span></button><button type="button" class="button es-action-about" data-es-about aria-label="Giới thiệu và liên hệ Epsilon Blue Soft">${icon('contact-card',19)} <span>${escapeHTML(m.aboutLabel)}</span></button></section>`;
 }
 /** Place the global install/contact actions in the actual HTML footer, once per page. */
 function mountFooterActions(){
@@ -2780,38 +2925,51 @@ function mountFooterActions(){
  const bottom=footer.querySelector('.footer-bottom');
  if(bottom)bottom.before(actions);else footer.append(actions);
 }
-function portableBannerHtml(){
- return `<section class="portable-strip es-footer-banner" id="portable" aria-label="Hình minh họa Epsilon Soft"><img class="es-footer-background" src="./assets/images/footer.png" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="portable-laptop" src="./assets/images/es-laptop.png" alt="Giao diện Epsilon Soft hiển thị trên máy tính xách tay" loading="eager" decoding="async"></section>`;
-}
 function landingInfoHtml(content){return `<div class="page-home es-restored-landing">${heroBannerHtml()}<div class="es-landing-info">${content}</div></div>`;}
 function helpHtml(){return `<div class="es-static-page">
- <section class="es-static-intro"><span class="es-static-intro-icon">${icon('book',30)}</span><div><h1>Hướng dẫn sử dụng</h1><p>Epsilon Soft miễn phí, không yêu cầu tài khoản.</p></div></section>
+ <section class="es-static-intro"><span class="es-static-intro-icon">${icon('book',30)}</span><div><h1>Hướng dẫn sử dụng</h1><p>Chọn nhóm trên thanh điều hướng hoặc sidebar để mở công cụ và sổ tay kỹ thuật.</p></div></section>
  <div class="es-portable-guide">
   <section class="tool-box es-help-install-card" aria-labelledby="es-help-install-title">
    <h2 class="tool-box-heading" id="es-help-install-title">${icon('app-plus')} Cài APP trên điện thoại, máy tính bảng và Windows</h2>
-   <p class="es-help-install-intro">Nhấn nút Cài APP ở cuối trang hoặc bên dưới để thêm Epsilon Soft vào thiết bị như một ứng dụng.</p>
+   <p class="es-help-install-intro">Nhấn nút Cài APP ở cuối trang hoặc bên dưới để thêm Epsilon Blue Soft vào thiết bị như một ứng dụng.</p>
    <div class="es-help-install-devices">
     <div class="es-help-install-device"><h3>${icon('monitor',20)} Windows (Chrome / Edge)</h3><p>Nhấn Cài APP và xác nhận Cài đặt khi trình duyệt hỏi. Nếu không hiện hộp thoại, mở menu Chrome/Edge hoặc biểu tượng cài đặt trên thanh địa chỉ.</p></div>
     <div class="es-help-install-device"><h3>${icon('smartphone',20)} Android (Chrome)</h3><p>Mở trang bằng Chrome, nhấn Cài APP. Nếu không thấy hộp thoại cài đặt, chọn menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.</p></div>
     <div class="es-help-install-device"><h3>${icon('tablet',20)} iPhone / iPad (Safari)</h3><p>Mở trang bằng Safari, chọn Chia sẻ → Thêm vào Màn hình chính. Nút Cài APP trên trang sẽ hiện hướng dẫn nếu Safari không hỗ trợ hộp thoại cài đặt.</p></div>
    </div>
    <div class="es-help-install-bottom">
-    <button type="button" class="button es-help-install-button" data-es-install aria-label="Cài APP Epsilon Soft lên thiết bị">${icon('app-plus',19)} Cài APP</button>
-    <p class="es-help-install-note">Đây là Web App, không phải file EXE Portable. Cần trình duyệt hỗ trợ và website HTTPS; một số thiết bị chỉ tạo lối tắt, và một số công cụ vẫn cần Internet.</p>
+    <button type="button" class="button es-help-install-button" data-es-install aria-label="Cài APP Epsilon Blue Soft lên thiết bị">${icon('app-plus',19)} Cài APP</button>
+    <p class="es-help-install-note">Đây là Web App được cài từ trình duyệt. Cần trình duyệt hỗ trợ và website HTTPS; một số thiết bị chỉ tạo lối tắt, và một số công cụ vẫn cần Internet.</p>
    </div>
   </section>
-  <article class="tool-box"><h2 class="tool-box-heading">${icon('star')} MY TOOLS</h2><p>Nhấn ngôi sao ⭐ trên công cụ để ghim. Chỉ công cụ đã ghim mới xuất hiện trong MY TOOLS. Dữ liệu này được lưu trên trình duyệt hiện tại.</p></article>
+  <article class="tool-box"><h2 class="tool-box-heading">${icon('star')} My tools</h2><p>Nhấn ngôi sao ⭐ trên công cụ để ghim. Chỉ công cụ đã ghim mới xuất hiện trong My tools. Dữ liệu này được lưu trên trình duyệt hiện tại.</p></article>
   <article class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Danh mục và tìm kiếm</h2><p>Chọn chủ đề trên trang chủ hoặc trong sidebar khi đang dùng công cụ. Gõ tên công cụ trong ô tìm kiếm; phím / giúp mở ô tìm kiếm nhanh.</p></article>
   <article class="tool-box"><h2 class="tool-box-heading">${icon('shield')} Dữ liệu và quyền riêng tư</h2><p>Các công cụ ưu tiên xử lý dữ liệu ngay tại trình duyệt. Một số module có thể tải thư viện từ nguồn ngoài; hãy xem giới hạn và hướng dẫn ngay trong module.</p></article>
   <article class="tool-box"><h2 class="tool-box-heading">${icon('info')} Kết quả kỹ thuật</h2><p>Đối chiếu đơn vị đo, đầu vào và tiêu chuẩn áp dụng trước khi sử dụng số liệu trong công việc thực tế.</p></article>
  </div></div>`;}
+function settingsHtml(){
+ return `<div class="es-static-page es-preferences-page">
+ <section class="es-static-intro"><span class="es-static-intro-icon">${icon('settings',30)}</span><div><h1>Cài đặt</h1><p>Tùy chọn hiển thị trên thiết bị này.</p></div></section>
+ <section class="tool-box es-preferences-card"><h2 class="tool-box-heading">${icon('settings',20)} Ngôn ngữ giao diện</h2>
+  <p>Chuyển đổi giữa tiếng Việt và tiếng Anh.</p>${esLanguagePickerHtml()}
+  <p class="es-settings-note">Tùy chọn ngôn ngữ được lưu trên trình duyệt này.</p>
+ </section>
+ <section class="tool-box"><h2 class="tool-box-heading">${icon('shield',20)} Dữ liệu cá nhân</h2><p>My tools và tùy chọn ngôn ngữ hiện được lưu trong trình duyệt. Chưa có đồng bộ tài khoản hoặc Google Drive.</p></section>
+ </div>`;
+}
+function accountHtml(){
+ return `<div class="es-static-page"><section class="es-static-intro"><span class="es-static-intro-icon">${icon('user',30)}</span><div><h1>Tài khoản</h1><p>Hệ thống tài khoản đang được phát triển.</p></div></section>
+ <section class="tool-box es-preferences-card"><h2 class="tool-box-heading">${icon('info',20)} Chưa triển khai</h2>
+ <p>Chưa có hệ thống tài khoản hoặc thu phí. Văn phòng và Kỹ thuật vẫn miễn phí; nhóm Cơ khí là định hướng chuyên ngành dự kiến trả phí sau khi hệ thống xác thực và phân quyền thực tế được triển khai.</p>
+ </section></div>`;
+}
 function ecosystemLoadingHtml(groupId=''){
- const group=groupId==='edu'||groupId==='lab';
- const heading=group?(groupId==='edu'?'Epsilon Edu':'Epsilon Lab'):'';
+ const group=groupId==='edu';
+ const heading=group?'Epsilon Blue Edu':'';
  return `<div class="es-static-page">
  <section class="es-static-intro es-hub-intro">
-  <span class="es-static-intro-icon ${group?'es-hub-group-icon':'es-hub-logo'}">${group?icon(groupId==='edu'?'book':'gear',34):'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="">'}</span>
-  <div>${group?`<h1 id="es-hub-group-heading">${heading}</h1><p id="es-hub-group-sub">${esLanguage==='en'?'Browse products by category':'Khám phá các sản phẩm trong nhóm'}</p>`:`<h1 class="es-hub-wordmark"><span>EPSILON</span><strong>HUB</strong></h1><p>Kết nối các sản phẩm và ứng dụng thuộc hệ sinh thái Epsilon.</p>`}</div>
+  <span class="es-static-intro-icon ${group?'es-hub-group-icon':'es-hub-logo'}">${group?icon('book',34):'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="">'}</span>
+  <div>${group?`<h1 id="es-hub-group-heading">${heading}</h1><p id="es-hub-group-sub">${esLanguage==='en'?'Browse products by category':'Khám phá các sản phẩm trong nhóm'}</p>`:`<h1 class="es-hub-wordmark"><span>EPSILON BLUE</span><strong>HUB</strong></h1><p>Kết nối các sản phẩm và ứng dụng thuộc hệ sinh thái Epsilon.</p>`}</div>
  </section>
  <div id="es-system-products" role="region" aria-label="${esLanguage==='en'?'Epsilon ecosystem':'Danh mục sản phẩm Epsilon'}"><div class="tool-box" role="status">${esLanguage==='en'?'Loading products...':'Đang tải danh sách sản phẩm...'}</div></div>
  </div>`;
@@ -2825,43 +2983,38 @@ async function populateEcosystem(token){
   const match=location.hash.match(/^#\/ecosystem\/([a-z0-9-]+)$/);
   const group=match?groups.find(g=>g.id===match[1]):null;
   if(match && !group){
-   target.innerHTML=`<div class="es-hub-empty">${esLanguage==='en'?'Category not found.':'Không tìm thấy nhóm sản phẩm.'} <a href="#/ecosystem">${esLanguage==='en'?'Back to Hub':'Về Epsilon Hub'}</a></div>`;
+   target.innerHTML=`<div class="es-hub-empty">${esLanguage==='en'?'Category not found.':'Không tìm thấy nhóm sản phẩm.'} <a href="#/ecosystem">${esLanguage==='en'?'Back to Hub':'Về Epsilon Blue Hub'}</a></div>`;
    return;
   }
   if(!group){
-   target.innerHTML=`<div class="es-hub-families">${groups.map(hubFamilyHtml).join('')}</div>`;
+   target.innerHTML=`<div class="es-hub-families${groups.length===1?' is-single':''}">${groups.map(hubFamilyHtml).join('')}</div>`;
   }else{
    const header=main.querySelector('#es-hub-group-heading');if(header)header.textContent=hubText(group,'name');
    const sub=main.querySelector('#es-hub-group-sub');if(sub)sub.textContent=hubText(group,'description');
-   target.innerHTML=`<nav class="es-hub-breadcrumb" aria-label="Breadcrumb"><a href="#/ecosystem">${esLanguage==='en'?'Epsilon Hub':'Epsilon Hub'}</a> ${icon('arrow',16)} <span>${escapeHTML(hubText(group,'name'))}</span></nav>
+   target.innerHTML=`<nav class="es-hub-breadcrumb" aria-label="Breadcrumb"><a href="#/ecosystem">${esLanguage==='en'?'Epsilon Blue Hub':'Epsilon Blue Hub'}</a> ${icon('arrow',16)} <span>${escapeHTML(hubText(group,'name'))}</span></nav>
     <div class="es-hub-section-title"><h2>${esLanguage==='en'?'Applications':'Danh sách ứng dụng'}</h2><span class="es-hub-section-total">${group.products.length}</span></div>
     ${group.products.length?`<div class="es-hub-products">${group.products.map(hubProductHtml).join('')}</div>`:`<div class="es-hub-empty">${esLanguage==='en'?'The product list is being updated. Add an item in assets/data/ecosystem.json.':'Danh sách sản phẩm đang được cập nhật. Anh thêm sản phẩm vào assets/data/ecosystem.json.'}</div>`}`;
   }
  }catch(error){
   if(token!==currentRoute||!target.isConnected)return;
-  console.warn('Epsilon Hub data:',error);
+  console.warn('Epsilon Blue Hub data:',error);
   target.innerHTML=`<div class="tool-box"><p>${esLanguage==='en'?'Cannot load ecosystem.json.':'Không tải được danh sách sản phẩm từ'} <code>assets/data/ecosystem.json</code>.</p><button type="button" class="button button-outline" data-retry-system>${esLanguage==='en'?'Retry':'Thử tải lại'}</button></div>`;
  }finally{if(target.isConnected)esTranslateRegion(target);}
 }
-function portableHtml(){return `<div class="es-static-page"><section class="es-static-intro"><span class="es-static-intro-icon">${icon('windows',30)}</span><div><h1>Windows Portable</h1><p>Thông tin, lợi ích và hướng dẫn sử dụng. Liên kết tải nằm trong từng công cụ Web.</p></div></section><div class="es-portable-guide"><article class="tool-box"><h2 class="tool-box-heading">${icon('info')} Portable là gì?</h2><p>Phiên bản Windows chạy trực tiếp, thường không cần trình cài đặt. Hữu ích khi làm việc offline hoặc cần một tiện ích chuyên dụng trên máy tính.</p><p><strong>Web App vẫn là nền tảng ưu tiên:</strong> sử dụng ngay không cần tải xuống.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('download')} Cách tải từ từng công cụ</h2><ul><li>Mở công cụ Web cần sử dụng.</li><li>Nhấn nút <strong>Portable</strong> cạnh MY TOOLS.</li><li>Nếu có bản công khai, liên kết Google Drive sẽ mở trong tab mới.</li><li>Nếu chưa có, hệ thống thông báo để bạn có thể liên hệ quản trị viên.</li></ul></article><article class="tool-box"><h2 class="tool-box-heading">${icon('shield')} Cảnh báo Windows SmartScreen</h2><p>Windows có thể cảnh báo với file EXE ít phổ biến hoặc chưa được ký số. Hãy xác minh nguồn tải, tên file, phiên bản và quét bằng Windows Security trước khi chạy. Không bỏ qua cảnh báo nếu không chắc chắn file đáng tin cậy.</p></article><article class="tool-box"><h2 class="tool-box-heading">${icon('windows')} Sử dụng và lưu ý</h2><ul><li>Tải EXE về thư mục có quyền ghi phù hợp, mở trực tiếp trên Windows tương thích.</li><li>Kiểm tra hướng dẫn đi kèm từng bản phát hành.</li><li>Không dùng bản đang test nội bộ như bản phát hành công khai.</li><li>ES TOOLKIT V1.0 hiện vẫn trong giai đoạn thử nghiệm nội bộ.</li></ul></article></div><div class="callout warning">Trang này chỉ cung cấp hướng dẫn, không chứa nút hoặc liên kết tải EXE.</div></div>`;}
 function relatedHtml(toolId){return `<section class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Công cụ liên quan</h2><div class="related-tools">${DEFINITIONS.filter(t=>!t.planned&&t.id!==toolId).slice(0,4).map(t=>`<a href="#/tool/${t.id}"><span class="tool-tile ${t.tone}">${icon(t.icon,21)}</span><span class="related-tool-name">${t.name}</span>${icon('arrow',16)}</a>`).join('')}</div></section>`;}
-function toolHtml(t){return `<div class="tool-page"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/explore">Công cụ</a><span>›</span><span>${t.name}</span></nav><div class="tool-heading"><div class="tool-heading-icon ${t.tone}">${icon(t.icon,37)}</div><div><h1>${t.name}</h1><p>${t.sub} · Miễn phí · Xử lý tại trình duyệt</p></div><div class="es-tool-actions"><span id="tool-portable-slot"><button type="button" class="button es-portable-button is-loading" disabled>${icon('windows',19)} Đang kiểm tra...</button></span><button type="button" class="button button-outline" data-pin="${t.id}" aria-pressed="${isPinned(t.id)}">${icon('star')} ${isPinned(t.id)?'Đã thêm vào MY TOOLS':'Thêm vào MY TOOLS'}</button></div></div><div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div><div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div></div>`;}
-async function showPortableAction(toolId,token){
- const slot=main.querySelector('#tool-portable-slot');if(!slot)return;
- let link='',version='';
- try{
-  const data=await readStaticJson(PORTABLE_JSON);
-  const item=(data&&typeof data.tools==='object'&&!Array.isArray(data.tools))?data.tools[toolId]:null;
-  if(item&&item.status==='published')link=safeExternalUrl(item.url,true);
-  if(item&&typeof item.version==='string')version=item.version.slice(0,40);
- }catch(err){console.warn('Portable downloads data:',err);}
- if(token!==currentRoute||!slot.isConnected)return;
- if(link){slot.innerHTML=`<a class="button es-portable-button" href="${escapeHTML(link)}" target="_blank" rel="noopener noreferrer" title="Tải bản Portable${version?' '+escapeHTML(version):''}">${icon('windows',19)} Portable ${icon('external-link',17)}</a>`;}
- else{slot.innerHTML=`<button type="button" class="button es-portable-button" data-portable-unavailable="${escapeHTML(toolId)}" title="Kiểm tra bản Windows Portable">${icon('windows',19)} Portable</button>`;}
+function toolHtml(t){
+ const g=GROUPS.find(g=>g.id===t.group);
+ if(t.group==='office'||t.group==='technical'||t.group==='handbook'){
+  // These tool groups use a compact host row; the module owns its visible heading.
+  return `<div class="tool-page es-free-tool"><div class="es-free-topline"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/category/${t.group}">${escapeHTML(g?.name||'Công cụ')}</a><span>›</span><span>${escapeHTML(t.name)}</span></nav><div class="es-tool-actions"><button type="button" class="button button-outline" data-pin="${t.id}" aria-pressed="${isPinned(t.id)}">${icon('star')} ${isPinned(t.id)?'Đã thêm vào My tools':'Thêm vào My tools'}</button></div></div><h1 class="es-free-sr-only">${escapeHTML(t.name)}</h1>${t.group==='office'?'<p class="es-free-desc">'+escapeHTML(t.sub)+'</p>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div>${t.group==='handbook'?'':`<div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div>`}</div>`;
+ }
+ return `<div class="tool-page"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/category/${t.group}">${escapeHTML(g?.name||'Công cụ')}</a><span>›</span><span>${t.name}</span></nav><div class="tool-heading"><div class="tool-heading-icon ${t.tone}">${icon(t.icon,37)}</div><div>${t.guide?`<div class="es-tool-title"><h1>${t.name}</h1><button type="button" class="es-guide-btn" data-tool-guide aria-expanded="false" aria-controls="es-tool-guide" hidden>${icon('book',18)} Hướng dẫn sử dụng</button></div>`:`<h1>${t.name}</h1><p>${escapeHTML(t.sub)}</p>`}</div><div class="es-tool-actions"><button type="button" class="button button-outline" data-pin="${t.id}" aria-pressed="${isPinned(t.id)}">${icon('star')} ${isPinned(t.id)?'Đã thêm vào My tools':'Thêm vào My tools'}</button></div></div>${t.guide?'<section class="tool-box es-tool-guide" id="es-tool-guide" hidden aria-label="Hướng dẫn sử dụng"></section>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div><div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div></div>`;
 }
 function navActive(active){
  closeHeaderMyTools();
+ closeHeaderCategoryMenus();
  document.querySelectorAll('.nav-link').forEach(link=>link.classList.toggle('is-active',link.dataset.nav===active));
+ document.querySelectorAll('.es-header-category').forEach(area=>area.classList.toggle('is-active',area.dataset.headerCategory===active));
  document.getElementById('main-nav')?.classList.remove('open');
  renderSidebar();closeMobileSidebar();
 }
@@ -2882,28 +3035,46 @@ async function navigate(){
  setSidebarCollapsed(isTool);
  closeMainMenu();
  if(isTool){
-  const id=route.slice(7);if(id==='qr'){location.hash='#/tool/vietqr';return;}
+  const id=route.slice(7);if(LEGACY_TOOL_IDS[id]){location.hash='#/tool/'+LEGACY_TOOL_IDS[id];return;}
   const t=map.get(id);if(!t||t.planned||!t.file){location.hash='#/home';return;}
-  navActive('explore');main.innerHTML=toolHtml(t);renderSidebar();
+  navActive(t.group);main.innerHTML=toolHtml(t);renderSidebar();
   favorites.opens[id]=Math.min(1000000,(favorites.opens[id]||0)+1);savePreferences();
   window.scrollTo({top:0,behavior:'auto'});
-  // Portable availability is read directly from JSON; no tool JS is modified.
-  void showPortableAction(id,token);
   try{
-   const imported=await import(`./tools/${t.file}`);if(token!==currentRoute)return;
+   const imported=await import(`./${t.dir||GROUP_DIRECTORIES[t.group]||'tools'}/${t.file}`);
+   if(token!==currentRoute)return;
    const workspace=main.querySelector('#tool-workspace'),abort=new AbortController();
-   const context={icon,showToast,number:v=>new Intl.NumberFormat('en-US',{maximumFractionDigits:4}).format(v),signal:abort.signal};
+   // Tool có hướng dẫn (t.guide + module export GUIDE): tab "Hướng dẫn sử dụng" cạnh tên tool, thay cho dòng mô tả
+   const guideBtn=t.guide&&typeof imported.GUIDE==='string'?main.querySelector('[data-tool-guide]'):null,guidePanel=main.querySelector('#es-tool-guide');
+   if(guideBtn&&guidePanel){
+    guidePanel.innerHTML=imported.GUIDE;guideBtn.hidden=false;
+    guideBtn.addEventListener('click',()=>{const open=guideBtn.getAttribute('aria-expanded')!=='true';guideBtn.setAttribute('aria-expanded',String(open));guidePanel.hidden=!open;},{signal:abort.signal});
+   }
+   const context={icon,showToast,number:v=>new Intl.NumberFormat('en-US',{maximumFractionDigits:4}).format(v),signal:abort.signal,hostGuide:!!guideBtn};
    const cleanup=await imported.mount(workspace,context);
    if(token!==currentRoute){abort.abort();if(typeof cleanup==='function')cleanup();return;}
    currentModuleCleanup=()=>{abort.abort();if(typeof cleanup==='function')cleanup();};
   }catch(err){if(token===currentRoute)renderToolFailure(t,err);}
   return;
  }
+ // Preserve historical links without recreating the removed All Tools page.
+ if(route==='#/explore'){location.hash='#/home';return;}
+ const redirects={calc:'technical',utility:'office',engineering:'mechanical'};
+ if(route.startsWith('#/category/') && redirects[route.slice(11)]){
+  location.hash='#/category/'+redirects[route.slice(11)];return;
+ }
+ if(route==='#/settings'){
+  navActive('settings');main.innerHTML=landingInfoHtml(settingsHtml());syncMobileInformationOrder();esUpdateLanguageButtons();window.scrollTo({top:0,behavior:'auto'});return;
+ }
+ if(route==='#/account'){
+  navActive('account');main.innerHTML=landingInfoHtml(accountHtml());syncMobileInformationOrder();window.scrollTo({top:0,behavior:'auto'});return;
+ }
  if(route==='#/help'){
   navActive('help');main.innerHTML=landingInfoHtml(helpHtml());syncMobileInformationOrder();window.scrollTo({top:0,behavior:'auto'});return;
  }
  if(route==='#/portable'){
-  navActive('portable');main.innerHTML=landingInfoHtml(portableHtml());syncMobileInformationOrder();window.scrollTo({top:0,behavior:'auto'});return;
+  // Redirect legacy bookmarks; the Portable page is no longer public.
+  location.hash='#/home';return;
  }
  if(route==='#/ecosystem'||/^#\/ecosystem\/[a-z0-9-]+$/.test(route)){
   navActive('hub');main.innerHTML=landingInfoHtml(ecosystemLoadingHtml(route.split('/')[2]||''));syncMobileInformationOrder();renderSidebar();window.scrollTo({top:0,behavior:'auto'});
@@ -2913,7 +3084,7 @@ async function navigate(){
  else if(route.startsWith('#/category/')){
   const group=route.slice('#/category/'.length);activeCatalog=GROUPS.some(g=>g.id===group)?group:'all';
  }else activeCatalog='all';
- navActive(route==='#/mytools'?'mytools':route==='#/home'?'home':'explore');
+ navActive(route==='#/mytools'?'mytools':GROUPS.some(g=>'#/category/'+g.id===route)?activeCatalog:'home');
  main.innerHTML=catalogHtml();
  syncMobileInformationOrder();
  renderGroupCards();
@@ -2922,11 +3093,11 @@ async function navigate(){
 async function safeNavigate(){
  try{await navigate();esTranslateRegion(document.body);}
  catch(error){
-  console.error('Epsilon Soft navigation error:',error);
+  console.error('Epsilon Blue Soft navigation error:',error);
   main.innerHTML='<section class="startup-panel" role="alert"><h1>Không thể hiển thị trang</h1><p>Vui lòng kiểm tra assets/js/app.js và các tệp trong assets/data/, sau đó tải lại trang.</p></section>';
  }
 }
-readPreferences();hydrateIcons();enhanceHeaderNavigation();buildHeaderMyTools();esBuildLanguagePicker();buildSidebarShell();buildAppDialog();mountFooterActions();esUpdateLanguageButtons();esTranslateRegion(document.body);
+readPreferences();hydrateIcons();prepareHeaderNavigation();buildHeaderMyTools();buildHeaderCategoryMenus();buildSidebarShell();buildAppDialog();mountFooterActions();esUpdateLanguageButtons();esTranslateRegion(document.body);
 function esUpdatePortraitLayout(){
  const portrait=window.innerWidth < window.innerHeight;
  const previous=document.body.classList.contains('es-portrait-layout');
@@ -2934,6 +3105,7 @@ function esUpdatePortraitLayout(){
  if(previous!==portrait){
   setToolRailOpen(false);
   closeHeaderMyTools();
+  closeHeaderCategoryMenus();
   sidebarOpenSection=null;
   syncMobileInformationOrder();
   renderSidebar();
@@ -2964,23 +3136,32 @@ document.addEventListener('click',event=>{
  if(headerToggle){
   event.preventDefault();
   const area=document.getElementById('es-header-mytools');const menu=area?.querySelector('#es-header-mytools-menu');
-  if(menu){const willOpen=menu.hidden;closeHeaderAllTools();menu.hidden=!willOpen;headerToggle.setAttribute('aria-expanded',String(willOpen));}
+  if(menu){
+   const willOpen=menu.hidden;
+   closeHeaderCategoryMenus();
+   if(willOpen && sidebarOpenSection!==null){sidebarOpenSection=null;renderSidebar();}
+   menu.hidden=!willOpen;headerToggle.setAttribute('aria-expanded',String(willOpen));
+  }
   return;
  }
- const allToggle=event.target.closest('[data-header-alltools-toggle]');
- if(allToggle){
+ const categoryToggle=event.target.closest('[data-header-category-toggle]');
+ if(categoryToggle){
   event.preventDefault();
-  const menu=document.getElementById('es-header-alltools-menu');
-  if(menu){const willOpen=menu.hidden;
-   // chỉ mở một menu tại một thời điểm
-   const my=document.getElementById('es-header-mytools-menu');if(my&&!my.hidden){my.hidden=true;document.querySelector('[data-header-mytools-toggle]')?.setAttribute('aria-expanded','false');}
-   menu.hidden=!willOpen;allToggle.setAttribute('aria-expanded',String(willOpen));}
+  const area=categoryToggle.closest('.es-header-category');
+  const menu=area?.querySelector('.es-header-category-menu');
+  if(menu){
+   const willOpen=menu.hidden;
+   closeHeaderMyTools();closeHeaderCategoryMenus();
+   if(willOpen && sidebarOpenSection!==null){sidebarOpenSection=null;renderSidebar();}
+   menu.hidden=!willOpen;
+   categoryToggle.setAttribute('aria-expanded',String(willOpen));
+  }
   return;
  }
- if(event.target.closest('#es-header-alltools-menu a,#es-header-alltools-link'))closeHeaderAllTools();
- else if(!event.target.closest('#es-header-alltools'))closeHeaderAllTools();
  if(event.target.closest('#es-header-mytools-menu a,#es-header-mytools-link'))closeHeaderMyTools();
  else if(!event.target.closest('#es-header-mytools'))closeHeaderMyTools();
+ if(event.target.closest('.es-header-category-menu a,.es-header-category-link'))closeHeaderCategoryMenus();
+ else if(!event.target.closest('.es-header-category'))closeHeaderCategoryMenus();
  const lang=event.target.closest('[data-es-lang]');if(lang){esSetLanguage(lang.dataset.esLang);return;}
  const install=event.target.closest('[data-es-install]');if(install){event.preventDefault();void esInstallWebApp(install);return;}
  const about=event.target.closest('[data-es-about]');if(about){event.preventDefault();esOpenHeroDialog('about');return;}
@@ -2993,6 +3174,7 @@ document.addEventListener('click',event=>{
   event.preventDefault();
   const id=mobileFolder.dataset.mobileFolder;
   sidebarOpenSection=sidebarOpenSection===id?null:id;
+  closeHeaderMyTools();closeHeaderCategoryMenus();
   renderSidebar();
   document.querySelector(`[data-mobile-folder="${id}"]`)?.focus();
   if(sidebarOpenSection==='ecosystem')void loadSidebarHubProducts();
@@ -3013,6 +3195,7 @@ document.addEventListener('click',event=>{
   event.preventDefault();
   const id=sideExpand.dataset.sideExpand;
   sidebarOpenSection=sidebarOpenSection===id?null:id;
+  closeHeaderMyTools();closeHeaderCategoryMenus();
   renderSidebar();
   document.querySelector(`[data-side-expand="${id}"]`)?.focus();
   if(sidebarOpenSection==='ecosystem')void loadSidebarHubProducts();
@@ -3027,10 +3210,6 @@ document.addEventListener('click',event=>{
   main.querySelector('#tool-columns')?.classList.toggle('es-view-list',displayMode==='list');
   main.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===displayMode));return;
  }
- const unavailable=event.target.closest('[data-portable-unavailable]');if(unavailable){
-  const t=map.get(unavailable.dataset.portableUnavailable);
-  showAppDialog(esLanguage==='en'?'No Windows Portable release yet':'Chưa có bản Windows Portable',esLanguage==='en'?`No public Windows Portable version is available for ${t?(ES_EN_TEXT[normalize(t.name)]||t.name):'this tool'}. Please contact the Epsilon Soft administrator if you need one.`:`Hiện tại ${t?t.name:'công cụ này'} chưa có phiên bản Windows Portable phát hành công khai. Nếu bạn có nhu cầu, hãy liên hệ quản trị viên Epsilon Soft để trao đổi.`);return;
- }
  if(event.target.closest('[data-retry-system]')){void populateEcosystem(currentRoute);return;}
 });
 document.addEventListener('input',event=>{
@@ -3039,7 +3218,7 @@ document.addEventListener('input',event=>{
 document.addEventListener('keydown',event=>{
  if(event.key==='Escape'){
   if(document.body.classList.contains('es-tool-rail-open')){event.preventDefault();setToolRailOpen(false);document.getElementById('es-tool-rail-toggle')?.focus({preventScroll:true});return;}
-  closeHeaderMyTools(true);esCloseHeroDialog();closeAppDialog();closeMobileSidebar();closeMainMenu();return;
+  closeHeaderMyTools(true);closeHeaderCategoryMenus(true);esCloseHeroDialog();closeAppDialog();closeMobileSidebar();closeMainMenu();return;
  }
  const heroLayer=document.getElementById('es-hero-dialog-layer');
  if(event.key==='Tab' && heroLayer && !heroLayer.hidden){
