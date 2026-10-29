@@ -26,6 +26,8 @@
  *  - Bán thành phẩm (BTP, chỉ thép tấm): thư viện tối đa 5 mã mỗi chiều dày (mác dùng lẫn); thợ tích mã được ghép (thứ tự trong
  *    master data chỉ để hiển thị – mã đứng đầu thường được tích nhất); lấp phần dư mép tờ để tấm lẻ về 0;
  *    hao phí tính BTP như một chi tiết trong đơn hàng; giới hạn số lượng theo tồn kho BTP.
+ *  - Tròn nhiều cỡ (sửa 29/10/2026 – ca 10 × D556 + 10 × D409): ngoài khối lưới từng cỡ, thử thêm XẾP XEN KẼ từng chiếc vào
+ *    vị trí tiếp xúc sát trái (phôi nhỏ chèn khe giữa phôi lớn, như thợ) → sơ đồ ngắn hơn, tấm lẻ to hơn.
  *  - Chặt sấn: chỉ chữ nhật, mọi sơ đồ phải tách được bằng nhát chặt chạy suốt (kiểm tra độc lập).
  *  - Laser/plasma: chữ nhật + tròn, được xếp không chặt suốt (xoay vòng, so le, xếp tự do).
  * Bản quyền © Epsilon Soft.
@@ -49,6 +51,7 @@ const DEFAULTS = Object.freeze({
   proposalMs: 7000,         // giới hạn tổng thời gian (từ lúc bắt đầu) dành cho các đề xuất khi "cận"           // phương án giảm kích thước cắt: mỗi chi tiết giảm 0,5 mm (dài / rộng / đường kính) – người dùng duyệt
   tailMs: 2500,             // thời gian tìm phương án dồn dư về tờ cuối (mỗi khổ)
   semiMax: 5,               // BTP: tối đa 5 mã mỗi chiều dày (anh chốt 28/10/2026 – nhiều mã thì quản lý BTP phức tạp)
+  circleStripMs: 600,       // tờ cuối toàn phôi tròn nhiều cỡ: thời gian tìm sơ đồ xen kẽ ngắn nhất
   altWithin: 1.0,           // phương án thay thế chỉ hiện khi hao phí kém phương án tốt nhất ≤ 1 điểm % VÀ khác biệt thật
 });
 
@@ -1142,6 +1145,111 @@ function gapFill(C, cand, rem, budgetMax = 6e5) {
 }
 
 /* ======================================================================= */
+/* 5c. DẢI PHÔI TRÒN NHIỀU CỠ (laser/plasma) – ĐẶT TỪNG CHIẾC SÁT TRÁI     */
+/* Ca 29/10/2026 (10 × D556 + 10 × D409 trên 6000 × 2000): máy xếp hai khối */
+/* lưới riêng (khối D556 trên, khối D409 dưới, dài 2797) trong khi thợ xếp */
+/* XEN KẼ: phôi lớn so le, phôi nhỏ chèn vào khe và dọc mép → ngắn hơn,    */
+/* tấm lẻ to hơn. Cách làm giống thợ: lần lượt đặt từng phôi vào vị trí    */
+/* TIẾP XÚC (sát 2 phôi / phôi + mép / góc) có mép phải nhỏ nhất – tức dồn */
+/* hết về bên trái. Thử nhiều thứ tự (lớn trước, nhỏ trước, xen kẽ, đảo    */
+/* ngẫu nhiên có hạt giống cố định – chạy lại ra đúng kết quả cũ), giữ sơ  */
+/* đồ đủ chiếc mà ngắn nhất. Chỉ dùng khi các chi tiết còn lại đều tròn.  */
+/* ======================================================================= */
+const CIRCLE_STRIP_MAX = 160;          // số phôi tối đa cho cách đặt từng chiếc (nhiều hơn: lưới khối đã đủ tốt)
+/** Thứ tự đặt cơ bản: danh sách loại theo từng chiếc. */
+function circleOrders(C, rem) {
+  const live = C.types.filter(T => T.circle && !T.ring && rem[T.t] > 0);
+  const seq = (list) => list.flatMap(T => Array(rem[T.t]).fill(T));
+  const big = live.slice().sort((a, b) => b.cw - a.cw), small = big.slice().reverse();
+  const inter = [];                                             // xen kẽ theo tỉ lệ số lượng (lớn trước trong mỗi nhịp)
+  const left = rem.slice(), tot = sum(big.map(T => rem[T.t]));
+  for (let n = 0; n < tot; n++) {
+    let pick = null, val = -Infinity;
+    for (const T of big) if (left[T.t] > 0) { const v = left[T.t] / rem[T.t]; if (v > val + 1e-9) { val = v; pick = T; } }
+    inter.push(pick); left[pick.t]--;
+  }
+  return [seq(big), seq(small), inter];
+}
+/**
+ * Đặt lần lượt các phôi tròn theo thứ tự order vào vùng (đã đặt C.W/C.H theo vùng – gọi trong withRegion).
+ * lean: hệ số ưu tiên theo chiều đứng (0 = chỉ xét mép phải; > 0 = hơi ưu tiên vị trí thấp → xếp theo cột gọn).
+ * Trả ứng viên sơ đồ, hoặc null nếu có phôi không đặt được.
+ */
+function circleStripRun(C, order, lean) {
+  const idx = makeIndex(Math.max(100, ...C.types.map(T => Math.max(T.cw, T.ch))) + C.k);
+  const items = [], counts = C.types.map(() => 0);
+  // vị trí tiếp xúc theo từng cỡ: thêm dần quanh chiếc vừa đặt; vị trí đã vướng thì vướng mãi (chỉ có thêm vật cản) → bỏ
+  const spots = new Map();
+  for (const T of order) if (!spots.has(T.cw)) spots.set(T.cw, circleSpots(C, [], idx, T.cw / 2, true));
+  for (const T of order) {
+    const r = T.cw / 2, list = spots.get(T.cw);
+    let best = null, bv = Infinity, w = 0;
+    for (let n = 0; n < list.length; n++) {
+      const [x, y] = list[n];
+      const q = { x: x - r, y: y - r, w: T.cw, h: T.cw, circle: true };
+      if (!freeAt(C, idx, q)) continue;
+      list[w++] = list[n];
+      const v = x + r + lean * y;
+      if (v < bv - 1e-9) { best = q; bv = v; }
+    }
+    list.length = w;
+    if (!best) return null;
+    const it = tag(T, best); items.push(it); idx.add(it); counts[T.t]++;
+    for (const [d, l] of spots) for (const sp of circleSpots(C, [it], idx, d / 2, false)) l.push(sp);
+  }
+  return { items, counts, cuts: [], blocks: 1, strategy: 'circle-strip' };
+}
+const stripLen = c => c.items.reduce((m, p) => Math.max(m, p.x + p.w), 0);
+/**
+ * Sơ đồ dải ngắn nhất cho toàn bộ rem (chỉ phôi tròn) trong vùng region, tìm trong hạn ms.
+ * Trả ứng viên có đủ chiếc, hoặc null.
+ */
+function circleStrip(C, rem, region, ms) {
+  const total = sum(rem);
+  if (C.shear || !total || total > CIRCLE_STRIP_MAX) return null;
+  if (C.types.some(T => rem[T.t] > 0 && (!T.circle || T.ring))) return null;
+  if (C.types.filter(T => rem[T.t] > 0).length < 2) return null;     // một cỡ: lưới thẳng / so le của bản Free đã tối ưu
+  // ghi nhớ: đặt sát trái KHÔNG phụ thuộc chiều dài vùng (vị trí sát mép phải không bao giờ được chọn trước vị trí bên trái)
+  // → với vùng bắt đầu từ góc tờ, chỉ cần tính một lần trên cả chiều dài tờ rồi so mép phải với chiều dài vùng.
+  // Các bước dồn tờ cuối (chia đôi chiều dài) / phối tờ gọi lại rất nhiều lần cùng số lượng.
+  const memo = C._circleStrip ??= new Map();
+  const corner = Math.abs(region.x - C.e) < 1e-9 && Math.abs(region.y - C.e) < 1e-9;
+  if (corner && region.w < C.WW - 1e-9) {
+    const whole = circleStrip(C, rem, { ...region, w: C.WW }, ms);
+    return whole && stripLen(whole) <= region.x + region.w - C.k + 1e-6 ? whole : null;
+  }
+  const key = `${rem.join(',')}|${r6(region.x)},${r6(region.y)},${r6(region.w)},${r6(region.h)}|${ms}`;
+  if (memo.has(key)) return memo.get(key);
+  const out = withRegion(C, region, () => {
+    const end = Date.now() + ms;
+    let best = null;
+    const tryOrder = (order, lean) => {
+      const c = circleStripRun(C, order, lean);
+      if (c && (!best || stripLen(c) < stripLen(best) - 1e-6)) best = c;
+      return c;
+    };
+    const base = circleOrders(C, rem);
+    for (const lean of [0, 0.02, 0.15]) for (const o of base) tryOrder(o, lean);
+    // cải tiến cục bộ: đổi chỗ hai chiếc khác cỡ trong thứ tự (hạt giống cố định → chạy lại ra đúng kết quả)
+    let seed = 20261029;
+    const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+    let cur = base[0].slice(), curLen = Infinity, lean = 0;
+    { const c = circleStripRun(C, cur, lean); if (c) curLen = stripLen(c); }
+    for (let it = 0, last = 0; Date.now() < end && it < 4000 && it - last < 1500; it++) {   // 1500 lượt không tiến → dừng sớm
+      const o = cur.slice();
+      const a = Math.floor(rnd() * o.length), b = Math.floor(rnd() * o.length);
+      if (o[a] === o[b]) continue;
+      [o[a], o[b]] = [o[b], o[a]];
+      const c = tryOrder(o, lean);
+      if (c && stripLen(c) <= curLen + 1e-6) { if (stripLen(c) < curLen - 1e-6) last = it; cur = o; curLen = stripLen(c); }
+    }
+    return best;
+  });
+  memo.set(key, out);
+  return out;
+}
+
+/* ======================================================================= */
 /* 6. MỘT TỜ: THỬ NHIỀU CÁCH, CHỌN CÁCH TỐT NHẤT                            */
 /* ======================================================================= */
 const BLOCK_OPTS = [];
@@ -1192,6 +1300,8 @@ function packSheet(C, rem, region, { mode = 'area', needAll = false, full = true
     }
   }
   if (!C.shear && !tidy && !quota && total <= (needAll ? 150 : DEFAULTS.maxRectsPieces)) for (const o of FREE_OPTS) cands.push(maxRectsPack(C, rem, region, o));
+  // phôi tròn nhiều cỡ: đặt từng chiếc sát trái (xen kẽ lớn/nhỏ như thợ) – chỉ thứ tự cơ bản, không tìm sâu
+  if (!quota) { const cs = circleStrip(C, rem, region, 0); if (cs) cands.push(cs); }   // (có ghi nhớ – gọi lặp không tốn thêm)
   const rank = (a, b) => sheetScore(C, b, mode) - sheetScore(C, a, mode) || a.blocks - b.blocks;
   let pool = cands.filter(c => !must || c.counts.every((v, t) => v >= must[t])).sort(rank);
   // CHỪA KHE ĐỂ CHÈN (28/10/2026 – ca tròn D365 ×25 + thanh 510×68 trên 3000×1500): tờ còn thiếu vài chiếc thì thử xếp khối
@@ -1381,6 +1491,12 @@ function compactLast(C, groups, remnantMin, mode) {
     const tidyNow = !/^free/.test(best.sheet.strategy), tidyNew = !/^free/.test(found.strategy);
     if (a > bestArea + 1e-6 && (tidyNew || !tidyNow || a > bestArea + DEFAULTS.tidyTolerance * other)) { best = { sheet: found, rem: r }; bestArea = a; }
     else if (tidyNew && !tidyNow && a >= bestArea - DEFAULTS.tidyTolerance * other - 1e-6) { best = { sheet: found, rem: r }; bestArea = a; }
+  }
+  // phôi tròn nhiều cỡ: tìm sâu sơ đồ dải ngắn nhất cho tờ cuối (đặt từng chiếc xen kẽ, đổi thứ tự)
+  {
+    const cs = circleStrip(C, need, C.full, DEFAULTS.circleStripMs);
+    const r = cs && remnantOf(C, cs.items, remnantMin).remnant, a = r ? r.score : 0;
+    if (cs && a > bestArea + 1e-6) { best = { sheet: cs, rem: r }; bestArea = a; }
   }
   if (best.sheet === g.sheet) return groups;
   const out = groups.slice(0, -1);
@@ -3236,6 +3352,7 @@ const sheetRange = (res, gi) => {
 const STRATEGY = {
   'pure-grid': 'Một loại – lưới thẳng', 'pure-guillotine': 'Một loại – chia vùng nhiều cấp', 'pure-rotary': 'Một loại – bố trí xoay vòng',
   'pure-staggered': 'Một loại – tròn so le', 'pure-interlock': 'Một loại – xếp răng lược (hàng xen kẽ xoay 180°)', block: 'Ghép khối chặt suốt', free: 'Ghép tự do từng chiếc',
+  'circle-strip': 'Tròn nhiều cỡ – xếp xen kẽ, dồn trái',
 };
 const strategyText = s => (STRATEGY[s.replace(/\+(fill|hole|btp|pocket)/g, '')] || s) + (s.includes('+fill') ? ' + chèn khe' : '') + (s.includes('+pocket') ? ' + điền ô kẹt' : '') + (s.includes('+hole') ? ' + chèn lỗ vành khuyên' : '') + (s.includes('+btp') ? ' + lấp bán thành phẩm' : '');
 
