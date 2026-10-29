@@ -3327,7 +3327,7 @@ const CSS = `
 .np .np-materials>strong{font-weight:800;margin-right:4px}
 .np .np-materials button,.np .np-toggle button{border:1px solid #dfd3fc;border-radius:11px;background:#fff;color:#2e1b70;min-height:40px;padding:7px 12px;font-weight:750;font-size:16px;white-space:nowrap}
 .np .np-materials button.is-active,.np .np-toggle button.is-active{color:#fff;border-color:transparent;background:linear-gradient(120deg,#aa42f9,#7732e9)}
-.np .np-material-list{background:#fff;min-height:40px;max-width:198px;min-width:145px;font-size:16px;font-weight:650;color:#5324b4;border:1px solid #dac6fb;border-radius:11px;padding:6px 9px}
+.np .np-material-list{background:#fff;min-height:40px;width:120px;max-width:100%;min-width:0;font-size:16px;font-weight:650;color:#5324b4;border:1px solid #dac6fb;border-radius:11px;padding:6px 9px}
 .np .np-warn{font-size:16px;color:#aa3c3c;margin:0 0 8px}
 .np .np-grid{display:grid;grid-template-columns:minmax(420px,min(37%,540px)) minmax(0,1fr);gap:12px;align-items:start}
 .np .np-panel{background:#fff;border:1px solid #e4d3ff;border-radius:16px;padding:14px 15px;min-width:0}
@@ -3504,7 +3504,7 @@ const CSS = `
 @media(max-width:680px){.np .np-stock,.np .np-stock-head{grid-template-columns:1fr 1fr 1fr}.np .np-stock-head{display:none}}
 @media(max-width:1260px){.np .np-grid{grid-template-columns:minmax(0,1fr)}.np .np-materials{justify-content:flex-start;margin-left:0}}
 @media(max-width:820px){.np .np-results{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:680px){.np .np-row.three,.np .np-row.p1{grid-template-columns:repeat(2,minmax(0,1fr))}.np .np-row.p1 label:first-child{grid-column:1/-1}.np label span{white-space:normal}.np .np-material-list{max-width:100%;width:100%}}
+@media(max-width:680px){.np .np-row.three,.np .np-row.p1{grid-template-columns:repeat(2,minmax(0,1fr))}.np .np-row.p1 label:first-child{grid-column:1/-1}.np label span{white-space:normal}}
 .np .np-auto{display:inline-flex;align-items:center;gap:6px;font-size:16px;font-weight:800;color:#1f7a55;cursor:pointer;margin-left:auto;margin-right:14px}
 .np .np-auto input{width:17px;height:17px;accent-color:#169a70}
 .np .np-guide-btn{border:1px solid #cdb8fb;background:#fff;color:#5c29bf;border-radius:10px;padding:6px 14px;font-size:16px;font-weight:800;cursor:pointer}
