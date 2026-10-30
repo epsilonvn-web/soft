@@ -1,3 +1,4 @@
+import { icon as epsilonIcon } from '../ui-icons.js';
 /**
  * EPSILON SOFT / DOi DON VI DO - Web edition, 2026-10-23.
  * Baseline: ES TOOLKIT V1.0 Portable (core/converter.go, ui_windows.go:drawConverter,
@@ -119,22 +120,9 @@ function inputGrouping(el){
 
 const state={cat:0,from:2,to:0,input:'1'};
 const esc=(s)=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const glyph=(id)=>{
- const attrs='fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
- const paths=[
-  '<path d="M3 12h26M3 12l6-5M3 12l6 5M29 12l-6-5M29 12l-6 5"/>',
-  '<rect x="4" y="5" width="24" height="22" rx="2"/><path d="m11 20 10-10"/>',
-  '<path d="m4 10 12-7 12 7-12 7-12-7Zm0 0v14l12 7 12-7V10m-12 7v14"/>',
-  '<path d="M16 4v25M5 10h22M7 10 2 20h10L7 10Zm18 0-5 10h10l-5-10ZM10 29h12"/>',
-  '<path d="M13 8V5a3 3 0 0 1 6 0v16a7 7 0 1 1-6 0V8Zm3 5v13"/>',
-  '<path d="M7 26a13 13 0 1 1 18 0M16 19l8-8M6 26h20"/>',
-  '<circle cx="16" cy="16" r="13"/><path d="M16 7v9l7 5"/>',
-  '<circle cx="16" cy="15" r="12"/><path d="m16 15 7-8M5 28h22M12 23h8"/>'
- ];
- return `<svg viewBox="0 0 32 32" width="27" height="27" aria-hidden="true" ${attrs}>${paths[id]||paths[0]}</svg>`;
-};
-const swapIcon=`<svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16h34m-8-8 8 8-8 8M41 32H7m8-8-8 8 8 8"/></svg>`;
-const copyIcon=`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>`;
+const glyph=id=>epsilonIcon(['length','area','volume','weight','temperature','speed','clock','pressure'][id]||'length',27);
+const swapIcon=epsilonIcon('swap',30);
+const copyIcon=epsilonIcon('copy',20);
 
 const CSS = `
 .esconv{--ec-ink:#161c82;--ec-purple:#7128e7;--ec-border:#ddd2ff;--ec-light:#f4edff;color:var(--ec-ink);font-size:16px;width:100%;min-width:0}

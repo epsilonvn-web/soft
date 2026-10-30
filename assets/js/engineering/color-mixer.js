@@ -1,3 +1,4 @@
+import { icon as epsilonIcon } from '../ui-icons.js';
 /**
  * Epsilon Soft - Color Mixer (RGB / CMYK)
  * Runs entirely in the browser. No remote requests or user-data uploads.
@@ -94,18 +95,7 @@ function ratioFor(rgb, other) {
 function makeSource(hex) { const rgb = hexToRgb(hex); return { rgb, cmyk: rgbToCmyk(rgb) }; }
 function formatRgb(values) { return 'RGB ' + values.map(v => Math.round(v)).join(', '); }
 function formatCmyk(values) { return 'CMYK ' + values.map(v => `${round(v, 1)}%`).join(' · '); }
-function safeSvg(name, size = 19) {
-  const paths = {
-    copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H5a2 2 0 0 0-2 2v11h5"/>',
-    swap: '<path d="M4 8h16m-5-5 5 5-5 5M20 16H4m5-5-5 5 5 5"/>',
-    download: '<path d="M12 3v13m-5-5 5 5 5-5M4 17v4h16v-4"/>',
-    palette: '<path d="M12 3a9 9 0 0 0 0 18h2a2 2 0 0 0 1.2-3.6 2 2 0 0 1 1.2-3.6H18A3 3 0 0 0 21 11a9 9 0 0 0-9-8Z"/><circle cx="6.8" cy="12" r="1"/><circle cx="9" cy="7.6" r="1"/><circle cx="14.6" cy="7.6" r="1"/>',
-    check: '<path d="m4 12 5 5L20 6"/>',
-    reset: '<path d="M3 12a9 9 0 1 0 3-7M3 4v6h6"/>',
-    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7v.2"/>',
-  };
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.palette}</svg>`;
-}
+function safeSvg(name, size = 19) {return epsilonIcon(name,size);}
 
 const STYLES = `
 .epsilon-colorlab {--cl-ink:#111f66;--cl-muted:#60729d;--cl-purple:#6930de;--cl-border:#dfe5fa;color:var(--cl-ink);font-size:15px;max-width:1600px;margin:0 auto}
