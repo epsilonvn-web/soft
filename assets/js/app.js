@@ -2466,7 +2466,7 @@ function refreshHeaderCategoryMenus(){
   const title=esLanguage==='en'?`${label} · ${tools.length} tools`:`${label} · ${tools.length} công cụ`;
   menu.innerHTML=`<div class="es-header-mytools-menu-title">${navigationIcon(group.id,group.icon,24)} <span>${escapeHTML(title)}</span></div><div class="es-header-mytools-items">${tools.map(t=>{
    const name=esLanguage==='en'?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
-   return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(name)}">${icon(t.icon,19)}<span>${escapeHTML(name)}</span></a>`;
+   return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(name)}">${toolIcon(t,19)}<span>${escapeHTML(name)}</span></a>`;
   }).join('') || `<p class="es-header-mytools-empty">${esLanguage==='en'?'Handbook entries will be added soon.':'Nội dung Sổ tay đang được cập nhật.'}</p>`}</div>`;
  }
 }
@@ -2503,10 +2503,29 @@ function refreshHeaderMyTools(){
  const heading=esLanguage==='en'?'My tools · Pinned tools':'My tools · Công cụ đã ghim';
  const list=pinned.length?pinned.map(t=>{
   const title=esLanguage==='en'?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
-  return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(title)}">${icon(t.icon,19)}<span>${escapeHTML(title)}</span></a>`;
+  return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(title)}">${toolIcon(t,19)}<span>${escapeHTML(title)}</span></a>`;
  }).join(''):`<div class="es-header-mytools-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào My tools.'}<a href="#/category/office">${esLanguage==='en'?'Explore tools':'Khám phá công cụ'}</a></div>`;
  menu.innerHTML=`<div class="es-header-mytools-menu-title">${navigationIcon('mytools','star',24)} <span>${heading}</span></div><div class="es-header-mytools-items">${list}</div>`;
 }
+
+// Approved office-tool artwork. Fixed tool identities; action glyphs and other groups stay independent.
+const TECHNICAL_TOOL_PHOTOS=Object.freeze({"calculator":"calculator","area":"area","mass":"mass","converter":"converter","container":"container","materials":"materials","color-mixer":"color-mixer"});
+const OFFICE_TOOL_PHOTOS=Object.freeze({'interest':'interest','pdf':'pdf','calendar':'calendar','vietqr':'vietqr','barcode':'barcode','image-studio':'image-studio','money-words':'money-words','notes':'notes'});
+function toolIcon(tool,size=22){
+ const id=tool?.id;
+ if(Object.hasOwn(TECHNICAL_TOOL_PHOTOS,id)){
+  const px=Number.isFinite(size)?Math.min(48,Math.max(16,size)):22;
+  const src=new URL('./assets/images/icon/technical-3d-'+TECHNICAL_TOOL_PHOTOS[id]+'.webp?v=20261030-01',document.baseURI).href;
+  return `<img class="es-technical-photo" data-technical-photo="${id}" src="${src}" width="${px}" height="${px}" alt="" aria-hidden="true" decoding="async" draggable="false">`;
+ }
+
+ if(!Object.hasOwn(OFFICE_TOOL_PHOTOS,id))return icon(tool?.icon||'grid',size);
+ const px=Number.isFinite(size)?Math.min(48,Math.max(16,size)):22;
+ const src=new URL('./assets/images/icon/office-3d-'+OFFICE_TOOL_PHOTOS[id]+'.webp?v=20261030-01',document.baseURI).href;
+ return `<img class="es-office-photo" data-office-photo="${id}" src="${src}" width="${px}" height="${px}" alt="" aria-hidden="true" decoding="async" draggable="false">`;
+}
+function catalogGroupIcon(group,size=22){return ['office','technical'].includes(group.id)?navigationIcon(group.id,group.icon,Math.max(28,size)):icon(group.icon,size);}
+
 function toolCard(t){
  const translated=esLanguage==='en';
  const name=escapeHTML(translated?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name);
@@ -2514,8 +2533,8 @@ function toolCard(t){
  const openLabel=translated?'Open ':'Mở ';
  const pinLabel=translated?(isPinned(t.id)?'Unpin ':'Pin '):(isPinned(t.id)?'Bỏ ghim ':'Ghim ');
  const pinTitle=translated?(isPinned(t.id)?'Unpin':'Add to My tools'):(isPinned(t.id)?'Bỏ ghim':'Thêm vào My tools');
- const action=t.planned?`<div class="tool-link"><div class="tool-tile ${t.tone}">${icon(t.icon,27)}</div><div class="tool-names"><b>${name}</b><small title="${sub}">${sub}</small><span class="soon-label">${translated?'In development':'Đang phát triển'}</span></div></div>`:
- `<a class="tool-link" href="#/tool/${t.id}" aria-label="${openLabel}${name}"><span class="tool-tile ${t.tone}">${icon(t.icon,27)}</span><span class="tool-names"><b>${name}</b><small title="${sub}">${sub}</small></span></a>`;
+ const action=t.planned?`<div class="tool-link"><div class="tool-tile ${t.tone}">${toolIcon(t,27)}</div><div class="tool-names"><b>${name}</b><small title="${sub}">${sub}</small><span class="soon-label">${translated?'In development':'Đang phát triển'}</span></div></div>`:
+ `<a class="tool-link" href="#/tool/${t.id}" aria-label="${openLabel}${name}"><span class="tool-tile ${t.tone}">${toolIcon(t,27)}</span><span class="tool-names"><b>${name}</b><small title="${sub}">${sub}</small></span></a>`;
  return `<article class="tool-card ${t.planned?'is-planned':'is-ready'}" data-card="${t.id}" data-search="${escapeHTML(normalize([t.name,t.sub,ES_EN_TEXT[normalize(t.name)]||'',ES_EN_TEXT[normalize(t.sub)]||''].join(' ')))}">${action}${t.planned?'':`<button class="star-btn" type="button" data-pin="${t.id}" aria-label="${pinLabel}${name}" aria-pressed="${isPinned(t.id)}" title="${pinTitle}">${icon('star')}</button>`}</article>`;
 }
 // Web-first navigation. All tools keep their existing IDs and mount(root, ctx) APIs.
@@ -2643,7 +2662,7 @@ function sidebarChildrenHtml(id){
  }
  return items.map(t=>{
   const selected=location.hash==='#/tool/'+t.id;
-  return `<a class="es-side-child" href="#/tool/${t.id}" ${selected?'aria-current="page"':''} title="${escapeHTML(t.name)}">${icon(t.icon,17)}<span>${escapeHTML(t.name)}</span></a>`;
+  return `<a class="es-side-child" href="#/tool/${t.id}" ${selected?'aria-current="page"':''} title="${escapeHTML(t.name)}">${toolIcon(t,17)}<span>${escapeHTML(t.name)}</span></a>`;
  }).join('');
 }
 function makeSidebarExpandable(id,href,label,iconName,count){
@@ -2988,7 +3007,7 @@ function renderGroupCards(){
  const count=main.querySelector('#catalog-count');if(count)count.textContent=String(matches.length);
  const title=main.querySelector('#catalog-title');if(title)title.textContent=data.name;
  const sub=main.querySelector('#catalog-sub');if(sub)sub.textContent=data.sub;
- const em=main.querySelector('#catalog-icon');if(em)em.innerHTML=icon(data.icon,23);
+ const em=main.querySelector('#catalog-icon');if(em)em.innerHTML=['office','technical'].includes(activeCatalog)?navigationIcon(activeCatalog,data.icon,36):icon(data.icon,23);
  grid.classList.toggle('es-view-list',displayMode==='list');
  if(!data.tools.length && activeCatalog==='mytools'){
   grid.innerHTML=`<div class="mytools-empty"><div class="empty-icon">${icon('star',30)}</div><strong>Chưa có công cụ nào</strong><p>Nhấn ⭐ tại một công cụ để thêm vào My tools.</p></div>`;
@@ -3001,9 +3020,9 @@ function renderGroupCards(){
    const tools=matches.filter(t=>t.group===g.id);
    if(!tools.length){
     if(g.id!=='handbook'||query)return '';
-    return `<div class="es-home-group-title"><a href="#/category/handbook">${icon(g.icon,22)}<span>${escapeHTML(g.name)}</span></a><small>0</small></div><div class="es-no-matches" style="grid-column:1/-1">${esLanguage==='en'?'Handbook entries are coming soon.':'Nội dung Sổ tay đang được cập nhật.'}</div>`;
+    return `<div class="es-home-group-title"><a href="#/category/handbook">${catalogGroupIcon(g,22)}<span>${escapeHTML(g.name)}</span></a><small>0</small></div><div class="es-no-matches" style="grid-column:1/-1">${esLanguage==='en'?'Handbook entries are coming soon.':'Nội dung Sổ tay đang được cập nhật.'}</div>`;
    }
-   return `<div class="es-home-group-title"><a href="#/category/${g.id}">${icon(g.icon,22)}<span>${escapeHTML(g.name)}</span></a><small>${tools.length}</small></div>`+tools.map(toolCard).join('');
+   return `<div class="es-home-group-title"><a href="#/category/${g.id}">${catalogGroupIcon(g,22)}<span>${escapeHTML(g.name)}</span></a><small>${tools.length}</small></div>`+tools.map(toolCard).join('');
   }).join('');
  }else grid.innerHTML=matches.map(toolCard).join('');
  renderSidebar();
@@ -3157,7 +3176,7 @@ async function populateEcosystem(token){
   target.innerHTML=`<div class="tool-box"><p>${esLanguage==='en'?'Cannot load ecosystem.json.':'Không tải được danh sách sản phẩm từ'} <code>assets/data/ecosystem.json</code>.</p><button type="button" class="button button-outline" data-retry-system>${esLanguage==='en'?'Retry':'Thử tải lại'}</button></div>`;
  }finally{if(target.isConnected)esTranslateRegion(target);}
 }
-function relatedHtml(toolId){return `<section class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Công cụ liên quan</h2><div class="related-tools">${DEFINITIONS.filter(t=>!t.planned&&t.id!==toolId).slice(0,4).map(t=>`<a href="#/tool/${t.id}"><span class="tool-tile ${t.tone}">${icon(t.icon,21)}</span><span class="related-tool-name">${t.name}</span>${icon('arrow',16)}</a>`).join('')}</div></section>`;}
+function relatedHtml(toolId){return `<section class="tool-box"><h2 class="tool-box-heading">${icon('grid')} Công cụ liên quan</h2><div class="related-tools">${DEFINITIONS.filter(t=>!t.planned&&t.id!==toolId).slice(0,4).map(t=>`<a href="#/tool/${t.id}"><span class="tool-tile ${t.tone}">${toolIcon(t,21)}</span><span class="related-tool-name">${t.name}</span>${icon('arrow',16)}</a>`).join('')}</div></section>`;}
 function toolHtml(t){
  const g=GROUPS.find(g=>g.id===t.group);
  const topline=`<div class="es-tool-topline"><nav class="breadcrumbs" aria-label="Đường dẫn"><a href="#/home">${icon('home',18)} Trang chủ</a><span>›</span><a href="#/category/${t.group}">${escapeHTML(g?.name||'Công cụ')}</a><span>›</span><span>${escapeHTML(t.name)}</span></nav><label class="es-tool-pin"><input type="checkbox" data-tool-pin="${t.id}"${isPinned(t.id)?' checked':''}><span>My tools</span></label></div>`;
@@ -3165,7 +3184,7 @@ function toolHtml(t){
   // These tool groups use a compact host row; the module owns its visible heading.
   return `<div class="tool-page es-free-tool">${topline}<h1 class="es-free-sr-only">${escapeHTML(t.name)}</h1>${t.group==='office'?'<p class="es-free-desc">'+escapeHTML(t.sub)+'</p>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div>${t.group==='handbook'?'':`<div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div>`}</div>`;
  }
- return `<div class="tool-page">${topline}<div class="tool-heading"><div class="tool-heading-icon ${t.tone}">${icon(t.icon,37)}</div><div>${t.guide?`<div class="es-tool-title"><h1>${t.name}</h1><button type="button" class="es-guide-btn" data-tool-guide aria-expanded="false" aria-controls="es-tool-guide" hidden>${icon('book',18)} Hướng dẫn sử dụng</button></div>`:`<h1>${t.name}</h1><p>${escapeHTML(t.sub)}</p>`}</div></div>${t.guide?'<section class="tool-box es-tool-guide" id="es-tool-guide" hidden aria-label="Hướng dẫn sử dụng"></section>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div><div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div></div>`;
+ return `<div class="tool-page">${topline}<div class="tool-heading"><div class="tool-heading-icon ${t.tone}">${toolIcon(t,37)}</div><div>${t.guide?`<div class="es-tool-title"><h1>${t.name}</h1><button type="button" class="es-guide-btn" data-tool-guide aria-expanded="false" aria-controls="es-tool-guide" hidden>${icon('book',18)} Hướng dẫn sử dụng</button></div>`:`<h1>${t.name}</h1><p>${escapeHTML(t.sub)}</p>`}</div></div>${t.guide?'<section class="tool-box es-tool-guide" id="es-tool-guide" hidden aria-label="Hướng dẫn sử dụng"></section>':''}<div class="tool-surface" id="tool-workspace"><div class="tool-box">Đang mở công cụ...</div></div><div id="related-root" style="margin-top:15px">${relatedHtml(t.id)}</div></div>`;
 }
 function navActive(active){
  closeHeaderMyTools();
@@ -3413,3 +3432,7 @@ themeSheet.textContent += "\n/* Original SVG collection; dimensions and host lay
 themeSheet.textContent += "\n/* Approved raster icons apply only to main navigation, preserving all tool and material glyphs. */\n.es-nav-photo{display:block;object-fit:contain;flex-shrink:0;max-width:none;filter:none;vertical-align:middle;pointer-events:none}\n.site-header .nav-link .es-nav-photo{width:28px;height:28px;flex:0 0 28px}\n.site-header .main-nav>a.nav-link>[data-icon]:has(.es-nav-photo),.site-header .es-header-category-link>[data-icon]:has(.es-nav-photo){width:28px;height:28px;flex:0 0 28px;display:inline-flex;align-items:center;justify-content:center}\n.es-side-link .es-side-icon:has(.es-nav-photo){background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible}\n.es-side-link .es-side-icon .es-nav-photo{width:36px;height:36px}\n.es-mobile-folder-icon .es-nav-photo{width:32px;height:32px}\n.es-mobile-folder-icon:has(.es-nav-photo){background:transparent!important;box-shadow:none!important}\n.es-header-mytools-menu-title .es-nav-photo{width:24px;height:24px;flex:0 0 24px}\n";
 
 themeSheet.textContent += "\n/* My tools link and disclosure share the selected navigation colour. */\n.site-header #es-header-mytools.is-active{background:#fff;color:#5522cd;border-color:#fff;box-shadow:0 4px 14px rgba(22,14,101,.18)}\n.site-header #es-header-mytools.is-active>.es-header-mytools-link{background:transparent;color:#5522cd;box-shadow:none}\n.site-header #es-header-mytools.is-active>.es-header-mytools-toggle{border-left-color:#e3dcf7;color:#5522cd}\n.site-header #es-header-mytools.is-active>.es-header-mytools-link:hover{background:#f2edff}\n";
+
+themeSheet.textContent += "\n/* Office feature icons, distinct from operational controls. */\n.es-office-photo{display:block;object-fit:contain;flex-shrink:0;max-width:none;pointer-events:none;vertical-align:middle}\n.tool-tile:has(.es-office-photo),.tool-heading-icon:has(.es-office-photo){background:transparent!important;box-shadow:none!important}\n.tool-card .es-office-photo{width:38px;height:38px}\n.tool-heading-icon .es-office-photo{width:42px;height:42px}\n.es-header-mytools-item .es-office-photo{width:26px;height:26px;flex:0 0 26px}\n.es-side-child .es-office-photo{width:23px;height:23px;flex:0 0 23px}\n.related-tools .es-office-photo{width:30px;height:30px}\n#catalog-icon:has(.es-nav-photo){background:transparent!important;box-shadow:none!important}\n#catalog-icon .es-nav-photo{width:36px;height:36px}\n.es-home-group-title .es-nav-photo{width:28px;height:28px;flex:0 0 28px}\n";
+
+themeSheet.textContent += "\n/* Technical tool artwork follows the approved image family without changing any calculators. */\n.es-technical-photo{display:block;object-fit:contain;flex-shrink:0;max-width:none;pointer-events:none;vertical-align:middle}\n.tool-tile:has(.es-technical-photo),.tool-heading-icon:has(.es-technical-photo){background:transparent!important;box-shadow:none!important}\n.tool-card .es-technical-photo{width:38px;height:38px}\n.tool-heading-icon .es-technical-photo{width:42px;height:42px}\n.es-header-mytools-item .es-technical-photo{width:26px;height:26px;flex:0 0 26px}\n.es-side-child .es-technical-photo{width:23px;height:23px;flex:0 0 23px}\n.related-tools .es-technical-photo{width:30px;height:30px}\n";
