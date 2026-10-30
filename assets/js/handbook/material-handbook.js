@@ -509,7 +509,7 @@ const CSS = SEARCH_CSS + `
 function rangeLabel(c, dimensionLabel) {
   if (!c || !c.from && !c.to) return 'Giá trị tham khảo';
   const start = num(c.from), end = num(c.to);
-  const mark = dimensionLabel === 'Đường kính d' ? 'd' : 't';
+  const mark = dimensionLabel === 'Tiết diện khống chế Tc' ? 'Tc' : dimensionLabel === 'Đường kính d' ? 'd' : 't';
   if (mark === 'd' && c.from === 0 && !c.fromInclusive) return `0 < d ${c.toInclusive ? '≤' : '<'} ${end} mm`;
   return `${start} ${c.fromInclusive ? '≤' : '<'} ${mark} ${c.toInclusive ? '≤' : '<'} ${end} mm`;
 }
@@ -576,7 +576,7 @@ const VALUE_KIND_LABEL = Object.freeze({
   manufacturer_indicative:'Giá trị tham khảo của hãng', typical_generic:'Giá trị điển hình chung',
   manufacturer_reference_20c:'Số liệu hãng ở 20 °C', heat_analysis_limits:'Giới hạn phân tích mẻ nấu',
   typical_manufacturer_composition:'Thành phần điển hình của hãng', manufacturer_catalogue_limit:'Giới hạn theo catalogue hãng',
-  grade_requirement:'Yêu cầu của cấp mác', manufacturer_datasheet_reference_to_standard:'Bảng hãng dẫn theo tiêu chuẩn',
+  standard_table_reference:'Bảng tham chiếu tiêu chuẩn', grade_requirement:'Yêu cầu của cấp mác', manufacturer_datasheet_reference_to_standard:'Bảng hãng dẫn theo tiêu chuẩn',
   alternative_standard_reference:'Bảng theo tiêu chuẩn khác', heat_analysis_max_combined:'Giới hạn tổng (phân tích mẻ)',
   supplier_reference_minimum_by_relevant_diameter:'Số liệu nhà cung cấp theo đường kính',
   historical_standard_value_as_tabulated_in_ASTM_DS67B_2004:'Giá trị tiêu chuẩn cũ (sách 2004)',
@@ -606,7 +606,7 @@ const ENV_LABEL = Object.freeze({indoor_dry:'Trong nhà, khô', outdoor_atmosphe
 const SUIT_LABEL = Object.freeze({suitable:'Phù hợp', conditional:'Có điều kiện', not_recommended:'Không khuyến cáo'});
 const rangeC = t => htTemperature(t);
 const HT_PROCESS_LABEL = Object.freeze({
-  normalizing:'Thường hóa', soft_annealing:'Ủ mềm', full_annealing:'Ủ hoàn toàn', annealing:'Ủ', hardening:'Tôi', tempering:'Ram',
+  normalizing_and_tempering:'Thường hóa + ram', normalizing:'Thường hóa', soft_annealing:'Ủ mềm', full_annealing:'Ủ hoàn toàn', annealing:'Ủ', hardening:'Tôi', tempering:'Ram',
   quench_and_temper:'Tôi + ram', shearability_treatment:'Cải thiện khả năng cắt (+S)', induction_hardening:'Tôi cao tần', flame_hardening:'Tôi ngọn lửa', carburizing:'Thấm carbon',
   nitriding:'Thấm nitơ', solution_annealing:'Ủ dung dịch', stress_relieving:'Khử ứng suất', precipitation_hardening:'Hóa bền tiết pha'
 });
@@ -630,7 +630,7 @@ const PHYSICAL_LABELS = Object.freeze({
   electricalResistivity20C_OhmMm2PerM:['Điện trở suất (20 °C)','Ω·mm²/m'], magnetizable:['Nhiễm từ','']
 });
 const gaugeText = g => g === '5.65sqrtS0' ? 'L₀ = 5,65√S₀' : txt(g);
-const dimMark = dim => dim?.kind === 'diameter' ? 'd' : 't';
+const dimMark = dim => dim?.kind === 'controlling_section' ? 'Tc' : dim?.kind === 'diameter' ? 'd' : 't';
 /** Value of a limit/reference object for display; reference values are marked with ≈. */
 function cellValue(obj) {
   if (!obj || typeof obj !== 'object') return '—';
