@@ -1,3 +1,4 @@
+import { icon as epsilonIcon } from '../ui-icons.js';
 /**
  * Epsilon Soft - CUTTING PLAN PLATE (thép tấm) – Ghép nhiều chi tiết trên nhiều tờ (Web) – BẢN TEST NỘI BỘ
  * Đổi tên 28/10/2026: trước là "Trải phôi 2D PRO" (nesting_pro.js).
@@ -38,6 +39,7 @@ const MAX_TYPES = 200, MAX_PIECES = 20000, MAX_SHEETS = 5000;
 const DEFAULTS = Object.freeze({
   remnantMin: 200,
   remnantMinLong: 500,      // tấm lẻ phải dài tối thiểu 500 mm (cạnh dài) mới thu hồi – đã chốt (chuẩn: tận dụng được cho chi tiết cỡ 400 × 190)
+  stripRankFactor: 0.5,     // xếp hạng: tấm lẻ KHÔNG giữ đủ khổ rộng tờ (laser) / dải ngang hẹp (chặt sấn) chỉ tính 50 % diện tích
   longStripMin: 300,        // chặt sấn: ƯU TIÊN dải dài 2440 × h khi h ≥ 300 mm (chỉ để chọn phương án, không phải ngưỡng thu hồi)
   dpCostFull: 6e7,          // khối lượng phép tính tối đa cho bảng quy hoạch động đầy đủ / 1 loại
   dpCostPure: 3e8,          // khi vượt -> bảng thu gọn (chỉ bội số thuần)
@@ -1661,7 +1663,7 @@ function remnantOf(C, items, remnantMin) {
   //    chặt sấn: dải dài 2440 × h đẹp khi h ≥ 300 (tùy chỉnh); hẹp hơn thì ưu tiên dải ngang kiểu 1220 × 400.
   //    Cùng diện tích thì MỘT tấm liền tốt hơn hai tấm rời.
   const longMin = C.longStripMin ?? DEFAULTS.longStripMin;
-  const factor = o => C.shear ? (o.side === 'bottom' && o.h < longMin - EPS ? 0.5 : 1) : (o.side === 'right' ? 1 : 0.5);
+  const factor = o => remShapeFactor(C, o, C.H);
   const score = list => list.reduce((s2, o) => s2 + o.w * o.h * factor(o), 0) * (list.length > 1 ? 0.999 : 1);
   const pick = score(B) > score(A) + 1e-6 ? B : A;
   const remnants = pick.map(o => ({ ...o }));
@@ -3122,8 +3124,11 @@ function evaluate(ctxs, groups, remnantMin) {
   const tpArea = gs.reduce((s, g) => s + g.n * g.counts.reduce((s2, c, t) => s2 + c * ctxs[g.si].types[t].tpArea, 0), 0);
   const remCount = gs.reduce((s, g) => s + g.n * g.remnants.length, 0);
   const maxRem = Math.max(0, ...gs.flatMap(g => g.remnants.map(o => o.w * o.h)));
-  // xếp hạng: mỗi tờ chỉ tính MỘT tấm lẻ – tấm to nhất của tờ đó (tấm lẻ thứ hai cùng tờ coi như phế)
-  const oneRemArea = gs.reduce((s, g) => s + g.n * Math.max(0, ...g.remnants.map(o => o.w * o.h)), 0);
+  // xếp hạng: mỗi tờ chỉ tính MỘT tấm lẻ – tấm to nhất của tờ đó (tấm lẻ thứ hai cùng tờ coi như phế),
+  // theo DIỆN TÍCH QUY ĐỔI có xét HÌNH DẠNG tấm lẻ (anh chốt 30/10/2026): laser/plasma ưu tiên tấm lẻ giữ ĐỦ khổ
+  // rộng tờ (L × 2000) – dải chạy dọc chiều dài (6000 × 1520…) chỉ tính một phần diện tích → được chọn phương án
+  // hao phí cao hơn chút nhưng tấm lẻ dễ dùng hơn. Chặt sấn: dải ngang hẹp hơn longStripMin tính một phần.
+  const oneRemArea = gs.reduce((s, g) => s + g.n * Math.max(0, ...g.remnants.map(o => o.w * o.h * remShapeFactor(ctxs[g.si], o, g.Hn))), 0);
   return { groups: gs, totalSheets, issuedArea, recoveredArea, blocks, lastFree, tpArea, remCount, maxRem, oneRemArea };
 }
 /** Hao phí / TP (%) của một phương án (đã trừ tấm lẻ thu hồi; thành phẩm gồm cả bán thành phẩm). */
@@ -3139,6 +3144,12 @@ const wasteOfPlan = p => 100 * (p.issuedArea - p.recoveredArea - p.tpArea) / p.t
  * Chỉ dùng để XẾP HẠNG; hao phí báo cáo vẫn trừ đủ mọi tấm lẻ thu hồi theo công thức đã chốt.
  */
 const scrapOfPlan = p => p.issuedArea - p.tpArea - p.oneRemArea;
+/** Hệ số hình dạng tấm lẻ khi XẾP HẠNG (không đổi hao phí báo cáo): 1 = dạng ưu tiên, stripRankFactor = dạng kém. */
+function remShapeFactor(C, o, H) {
+  const f = C.stripRankFactor ?? DEFAULTS.stripRankFactor;
+  if (C.shear) return o.side === 'bottom' && o.h < (C.longStripMin ?? DEFAULTS.longStripMin) - EPS ? f : 1;
+  return o.h >= H - 1 ? 1 : f;                    // laser / plasma: đủ khổ rộng tờ mới là tấm lẻ "đẹp"
+}
 const RANK_TOL = 1e4;   // dung sai so phế liệu: 10.000 mm² (0,01 m²) – chỉ khử sai số số học, không phải thông số kỹ thuật
 /**
  * Thứ tự chọn phương án (anh chốt 28/10/2026, sửa 29/10/2026):
@@ -3999,8 +4010,8 @@ export function mount(root, ctx = {}) {
   <div class="np-grid">
    <section class="np-panel"><h2 class="np-title">TẤM PHÔI &amp; THÔNG SỐ</h2>
     <div class="np-import" role="group" aria-label="Nhập dữ liệu"><b>Nhập dữ liệu</b>
-     <button type="button" class="np-export" id="np-imp-xlsx" title="Form cutting plan 3 sheet: 1_BOM, 2_Kho_phoi, 3_Thong_so_cat">📄 Nhập Excel</button>
-     <button type="button" class="np-export" id="np-imp-dxf" title="Bản vẽ chi tiết: lấy đường bao chữ nhật, tròn, vành khuyên">📐 Nhập DXF</button>
+     <button type="button" class="np-export" id="np-imp-xlsx" title="Form cutting plan 3 sheet: 1_BOM, 2_Kho_phoi, 3_Thong_so_cat">${epsilonIcon('upload',18)} Nhập Excel</button>
+     <button type="button" class="np-export" id="np-imp-dxf" title="Bản vẽ chi tiết: lấy đường bao chữ nhật, tròn, vành khuyên">${epsilonIcon('ruler',18)} Nhập DXF</button>
      <small>hoặc nhập tay bên dưới</small>
      <input type="file" id="np-file-xlsx" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
      <input type="file" id="np-file-dxf" accept=".dxf" hidden></div>
@@ -4013,7 +4024,7 @@ export function mount(root, ctx = {}) {
      <span class="np-rb-input"><input name="remnantMin" value="${esc(st.remnantMin)}" inputmode="decimal" autocomplete="off" aria-label="Ngưỡng thu hồi tấm lẻ (mm)"><small>mm</small></span></label>
     <div class="np-strip-rule" id="np-strip-rule">
      <label class="np-cap" title="Tấm lẻ đủ rộng nhưng quá ngắn (vd. mẩu ở góc khi dư dạng chữ L) khó tận dụng – tính vào hao phí"><span>Tấm lẻ phải dài (cạnh dài) ≥</span><input name="remnantMinLong" value="${esc(st.remnantMinLong)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
-     <p class="np-hint" id="np-strip-laser">Laser / plasma: khi chọn phương án, ưu tiên tấm lẻ giữ nguyên khổ rộng tờ (vd. 1800 × 2000) thay vì dải dọc kiểu 6000 × 500. Dải nào ≥ ngưỡng vẫn thu hồi.</p>
+     <p class="np-hint" id="np-strip-laser">Laser / plasma: khi chọn phương án, ưu tiên tấm lẻ giữ nguyên khổ rộng tờ (vd. 1800 × 2000) thay vì dải dọc kiểu 6000 × 500 – kể cả khi hao phí cao hơn một chút (dải dọc chỉ tính 50 % diện tích khi so phương án). Dải nào ≥ ngưỡng vẫn thu hồi.</p>
      <label class="np-cap" id="np-strip-shear" title="Chỉ để chọn phương án, không phải ngưỡng thu hồi"><span>Chặt sấn: ưu tiên dải dài 2440 × h khi h ≥</span><input name="longStripMin" value="${esc(st.longStripMin)}" inputmode="decimal" autocomplete="off"><small>mm</small></label>
     </div>
     <details class="np-tol-box np-fold">
