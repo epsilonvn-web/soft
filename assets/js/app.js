@@ -1,3 +1,4 @@
+import { icon as epsilonIcon } from './ui-icons.js';
 /**
  * EPSILON SOFT - flat distribution (2026-10-23)
  *  - All shared UI/engineering helpers live in app.js.
@@ -1510,77 +1511,19 @@ themeSheet.textContent += `
 
 // Former assets/js/lib/ui.js (bundled, not reimplemented)
 /** Small, dependency-free UI toolkit. Icon IDs are fixed and never sourced from user input. */
-const path = {
- home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
- grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
- download:'<path d="M12 3v12m-5-5 5 5 5-5M3 17v4h18v-4"/>',
- book:'<path d="M12 6c-3-2-6-2-10-2v15c4 0 7 0 10 2 3-2 6-2 10-2V4c-4 0-7 0-10 2zm0 0v15"/>',
- star:'<path d="m12 2.6 3 6 6.6 1-4.8 4.7 1.2 6.7L12 17.8l-6 3.2 1.2-6.7L2.4 9.6l6.6-1z"/>',
- calculator:'<rect x="4" y="2" width="16" height="20" rx="3"/><rect x="7" y="5" width="10" height="4" rx="1"/><path d="M8 13h1m3 0h1m3 0h1M8 17h1m3 0h1m3 0h1"/>',
- area:'<path d="M4 20 20 4v16zM8 16h5v-5"/>',
- box:'<path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5m-9 5v10"/>',
- swap:'<path d="M4 7h16m-5-5 5 5-5 5M20 17H4m5-5-5 5 5 5"/>',
- percent:'<path d="M19 5 5 19"/><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/>',
- nesting:'<rect x="3" y="4" width="18" height="16" rx="2"/><rect x="6" y="7" width="7" height="5" rx=".4"/><rect x="14" y="7" width="4" height="5" rx=".4"/><rect x="6" y="13" width="12" height="4" rx=".4"/>',
- database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 4 18 4 18 0V5M3 12c0 4 18 4 18 0"/>',
- beam:'<path d="M2 20h20M5 6h14M7 6v11m10-11v11M4 17h6l-3 3zM14 17h6l-3 3z"/>',
- paint:'<rect x="3" y="4" width="15" height="8" rx="2"/><path d="M18 8h3v5h-9v4m0 0v5"/>',
- pdf:'<path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm9 0v5h5M8 12h8M8 16h8"/>',
- calendar:'<rect x="3" y="5" width="18" height="17" rx="2"/><path d="M7 2v6m10-6v6M3 10h18m-13 5h3m3 0h3m-9 4h3"/>',
- qr:'<path d="M3 3h7v7H3zM5 5h3v3H5zM14 3h7v7h-7zM16 5h3v3h-3zM3 14h7v7H3zM5 16h3v3H5zM14 14h3v3h-3zm5 0h2m-7 6h2m3-2v3m2-3v3"/>',
- barcode:'<path d="M3 4v16m3-16v16m4-16v16m2-16v16m4-16v16m2-16v16m3-16v16"/>',
- notes:'<path d="M5 3h11l4 4v14H5zM16 3v5h4M8 12h9M8 16h9"/>',
- search:'<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',
- arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',
- windows:'<path d="M3 5 11 4v7H3zm10-1 8-1v8h-8zM3 13h8v7l-8-1zm10 0h8v8l-8-1z"/>',
- check:'<path d="m4 12 5 5L20 6"/>',
- info:'<circle cx="12" cy="12" r="10"/><path d="M12 11v5m0-9v.2"/>',
- menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',
- list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.2M3 12h.2M3 18h.2"/>',
- close:'<path d="M5 5 19 19M19 5 5 19"/>',
- refresh:'<path d="M20 10a8 8 0 1 0 1 4M20 3v7h-7"/>',
- copy:'<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H5a2 2 0 0 0-2 2v11h5"/>',
- trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7m4-7v7"/>',
- ruler:'<path d="m3 16 13-13 5 5L8 21zM9 10l2 2m2-6 2 2M6 13l2 2"/>',
- weight:'<path d="M6 9h12l2 12H4zm3 0a3 3 0 0 1 6 0"/>',
- chart:'<path d="M3 21h18M6 18V9m6 9V4m6 14v-7"/>',
- clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
- shield:'<path d="m12 2 9 4v6c0 6-4 9-9 10-5-1-9-4-9-10V6z"/>',
- lightbulb:'<path d="M9 18h6M10 21h4M8 14a7 7 0 1 1 8 0l-1 3H9z"/>',
- heart:'<path d="M20 5c-3-3-7-1-8 1-1-2-5-4-8-1-5 5 3 12 8 16 5-4 13-11 8-16z"/>',
- pen:'<path d="M12 20h9M16 3l5 5L8 21l-5 1 1-5zM14 5l5 5"/>',
- file:'<path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm9 0v5h5"/>',
- files:'<rect x="7" y="7" width="14" height="14" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/>',
- rotate:'<path d="M20 6v6h-6M4 18v-6h6M5 10a8 8 0 0 1 13-4l2 6M4 12l2 6a8 8 0 0 0 13-3"/>',
- image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5-11 11"/>',
- user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2c0-5 16-5 16 0v2"/>',
- settings:'<path d="M4 7h16m-10-4v8M4 17h16m-6-4v8"/>',
- scissors:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m8.1 8.1 13 13M14 10l7-7M8 15.9l5-5"/>',
- stamp:'<path d="M4 18h16v4H4zM12 2a4 4 0 0 1 4 4l-1 4 4 5H5l4-5-1-4a4 4 0 0 1 4-4z"/>',
- upload:'<path d="M12 17V3m-5 5 5-5 5 5M3 17v4h18v-4"/>'
-};
-Object.assign(path, {
- lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
- 'chevron-down':'<path d="m6 9 6 6 6-6"/>',
- gear:'<path d="M10.1 2h3.8l.6 2.3c.6.2 1.2.4 1.7.7l2.1-1.2 2.7 2.7-1.2 2.1c.3.5.5 1.1.7 1.7l2.3.6v3.8l-2.3.6c-.2.6-.4 1.2-.7 1.7l1.2 2.1-2.7 2.7-2.1-1.2c-.5.3-1.1.5-1.7.7l-.6 2.3h-3.8l-.6-2.3c-.6-.2-1.2-.4-1.7-.7l-2.1 1.2-2.7-2.7 1.2-2.1c-.3-.5-.5-1.1-.7-1.7L2 13.9v-3.8l2.3-.6c.2-.6.4-1.2.7-1.7L3.8 5.7l2.7-2.7 2.1 1.2c.5-.3 1.1-.5 1.7-.7Z"/><circle cx="12" cy="12" r="3.2"/>',
- 'panel-left-open':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-11 3 3-3 3"/>',
- 'panel-left-close':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m9-11-3 3 3 3"/>',
- orbit:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M4 16c3-9 11-13 17-8M3 9c6 6 11 8 18 7"/>',
- 'external-link':'<path d="M13 5h6v6M11 13l8-8M19 13v6H5V5h6"/>',
- mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 6 9 7 9-7"/>',
- phone:'<path d="M6 2h4l2 5-3 2c1 3 4 6 7 7l2-3 5 2v4c0 2-2 3-4 3C9 21 3 15 2 6c0-2 2-4 4-4Z"/>',
- 'message-circle':'<path d="M20 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l1.8-4.7A8.5 8.5 0 1 1 20 11.5Z"/>',
- 'app-plus':'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 8h18M12 11v7m-3.5-3.5h7"/>',
- palette:'<path d="M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 1.2-3.6 2 2 0 0 1 1.2-3.6H18a3 3 0 0 0 3-3 9 9 0 0 0-9-9Z"/><circle cx="7" cy="12" r="1"/><circle cx="9" cy="8" r="1"/><circle cx="14" cy="8" r="1"/>',
- 'contact-card':'<rect x="2.5" y="4" width="19" height="16" rx="3"/><circle cx="8" cy="10" r="2"/><path d="M5.5 16c.7-2.5 4.3-2.5 5 0M14 10h5M14 14h4"/>',
- monitor:'<rect x="2" y="3" width="20" height="15" rx="2"/><path d="M8 22h8m-4-4v4"/>',
- smartphone:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
- tablet:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/>'
-});
-function icon(key,size=22){
- return `<svg class="svg-icon" width="${Math.min(40,Math.max(12,size))}" height="${Math.min(40,Math.max(12,size))}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path[key]||path.grid}</svg>`;
+function icon(key,size=22){return epsilonIcon(key,size);}
+
+// Approved 3D navigation artwork. Fixed local filenames; tool and material icons are independent.
+const NAVIGATION_PHOTOS=Object.freeze({home:'home',mytools:'mytools',office:'office',technical:'technical',mechanical:'mechanical',handbook:'handbook',help:'help',settings:'settings',account:'account'});
+function navigationIcon(id,fallback='grid',size=32){
+ const file=Object.hasOwn(NAVIGATION_PHOTOS,id)?NAVIGATION_PHOTOS[id]:null;
+ if(!file)return icon(fallback,size);
+ const px=Number.isFinite(size)?Math.min(48,Math.max(16,size)):32;
+ const src=new URL('./assets/images/icon/nav-3d-'+file+'.webp?v=20261030-01',document.baseURI).href;
+ return `<img class="es-nav-photo" data-nav-photo="${file}" src="${src}" width="${px}" height="${px}" alt="" aria-hidden="true" decoding="async" draggable="false">`;
 }
-function hydrateIcons(node=document){node.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon,20);});}
+
+function hydrateIcons(node=document){for(const id of ['office','technical','mechanical','handbook']){const el=node.querySelector('[data-nav="'+id+'"] [data-icon]');if(el)el.dataset.icon=id;}node.querySelectorAll('[data-icon]').forEach(el=>{const nav=el.closest('.site-header [data-nav]');el.innerHTML=nav?navigationIcon(nav.dataset.nav,el.dataset.icon,28):icon(el.dataset.icon,20);});}
 function number(value,maxFractionDigits=4){return Number.isFinite(value)?new Intl.NumberFormat('en-US',{maximumFractionDigits:maxFractionDigits}).format(value):'—';}
 function numeric(raw,name='Giá trị',{positive=false,nonNegative=false,max=1e15,integer=false}={}){
  const s=String(raw??'').trim().replace(/\s/g,'');
@@ -2128,13 +2071,13 @@ themeSheet.textContent += `
 const DEFINITIONS = Object.freeze([
  {id:'calculator',name:'Máy tính khoa học',sub:'Phép tính và hàm toán học',group:'technical',dir:'engineering',icon:'calculator',tone:'tone-blue',file:'calculator.js'},
  {id:'area',name:'Diện tích hình học',sub:'Tính diện tích nhiều hình',group:'technical',dir:'engineering',icon:'area',tone:'tone-mint',file:'area.js'},
- {id:'mass',name:'Khối lượng vật liệu',sub:'Tính nhanh theo kích thước',group:'technical',dir:'engineering',icon:'box',tone:'tone-orange',file:'mass.js'},
+ {id:'mass',name:'Khối lượng vật liệu',sub:'Tính nhanh theo kích thước',group:'technical',dir:'engineering',icon:'mass',tone:'tone-orange',file:'mass.js'},
  {id:'converter',name:'Đổi đơn vị',sub:'Chuyển đổi đơn vị đa dạng',group:'technical',dir:'engineering',icon:'swap',tone:'tone-violet',file:'converter.js'},
- {id:'container',name:'Tra cứu Container',sub:'Kích thước, Tare, Gross, Net và tải trọng các hãng tàu',group:'technical',dir:'engineering',icon:'box',tone:'tone-mint',file:'container.js'},
+ {id:'container',name:'Tra cứu Container',sub:'Kích thước, Tare, Gross, Net và tải trọng các hãng tàu',group:'technical',dir:'engineering',icon:'container',tone:'tone-mint',file:'container.js'},
  {id:'interest',name:'Tính lãi suất',sub:'Lãi suất tiền gửi và khoản vay',group:'office',dir:'office',icon:'percent',tone:'tone-blue',file:'interest.js'},
 {id:'cutting-plan-plate',name:'Cutting Plan Plate',sub:'Thép tấm · định mức, sơ đồ cắt, tấm lẻ, xuất DXF · thử nghiệm nội bộ',group:'mechanical',icon:'nesting',tone:'tone-orange',dir:'mechanical',file:'cutting-plan-plate.js',guide:true},
-{id:'cutting-plan-section',name:'Cutting Plan Section',sub:'Thép hình · định mức, sơ đồ cắt, cây lẻ, đề xuất nối cột · thử nghiệm nội bộ',group:'mechanical',icon:'scissors',tone:'tone-orange',dir:'mechanical',file:'cutting-plan-section.js',guide:true},
- {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'technical',dir:'engineering',icon:'database',tone:'tone-violet',file:'density.js'},
+{id:'cutting-plan-section',name:'Cutting Plan Section',sub:'Thép hình · định mức, sơ đồ cắt, cây lẻ, đề xuất nối cột · thử nghiệm nội bộ',group:'mechanical',icon:'section-cut',tone:'tone-orange',dir:'mechanical',file:'cutting-plan-section.js',guide:true},
+ {id:'materials',name:'Khối lượng riêng',sub:'Tra cứu khối lượng riêng (kg/m³)',group:'technical',dir:'engineering',icon:'density',tone:'tone-violet',file:'density.js'},
  {id:'beam-check',name:'Beam Check',sub:'Tính bền dầm · thử nghiệm nội bộ',group:'mechanical',icon:'beam',tone:'tone-blue',dir:'mechanical',file:'beam-check.js'},
  {id:'coating-plan',name:'Coating Plan',sub:'Sơn epoxy, PU kết cấu thép · lượng sơn · WFT/DFT · diện tích',group:'mechanical',icon:'paint',tone:'tone-mint',dir:'mechanical',file:'coating-plan.js'},
  {id:'color-mixer',name:'Phối màu RGB & CMYK',sub:'Pha màu, chuyển mã và tạo bảng phối hài hòa',group:'technical',dir:'engineering',icon:'palette',tone:'tone-violet',file:'color-mixer.js'},
@@ -2143,18 +2086,18 @@ const DEFINITIONS = Object.freeze([
  {id:'vietqr',name:'VietQR',sub:'Tạo mã QR chuyển khoản',group:'office',dir:'office',icon:'qr',tone:'tone-violet',file:'vietqr.js'},
  {id:'barcode',name:'Tạo và đọc mã vạch',sub:'Tạo và đọc mã vạch',group:'office',dir:'office',icon:'barcode',tone:'tone-blue',file:'barcode.js'},
  {id:'image-studio',name:'Image Studio',sub:'Chỉnh sửa ảnh và chữ ký',group:'office',dir:'office',icon:'image',tone:'tone-mint',file:'image-studio.js'},
- {id:'money-words',name:'Đọc số tiền bằng chữ',sub:'Đọc số tiền Việt – Anh',group:'office',dir:'office',icon:'file',tone:'tone-blue',file:'money-words.js'},
+ {id:'money-words',name:'Đọc số tiền bằng chữ',sub:'Đọc số tiền Việt – Anh',group:'office',dir:'office',icon:'money-words',tone:'tone-blue',file:'money-words.js'},
  {id:'notes',name:'Ghi chú nhanh',sub:'Ghi và lưu ghi chú nhanh',group:'office',dir:'office',icon:'notes',tone:'tone-orange',file:'notes.js'},
- {id:'material-handbook',name:'Vật liệu kỹ thuật',sub:'Tra cứu đặc tính, ứng dụng và tiêu chuẩn vật liệu kỹ thuật',group:'handbook',dir:'handbook',icon:'database',tone:'tone-mint',file:'material-handbook.js'},
- {id:'bearing-handbook',name:'Ổ đỡ',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'gear',tone:'tone-blue',file:'bearing-handbook.js'},
- {id:'bolt-handbook',name:'Bu lông',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'settings',tone:'tone-orange',file:'bolt-handbook.js'},
- {id:'tolerance-handbook',name:'Dung sai',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'ruler',tone:'tone-violet',file:'tolerance-handbook.js'}
+ {id:'material-handbook',name:'Vật liệu kỹ thuật',sub:'Tra cứu đặc tính, ứng dụng và tiêu chuẩn vật liệu kỹ thuật',group:'handbook',dir:'handbook',icon:'material-handbook',tone:'tone-mint',file:'material-handbook.js'},
+ {id:'bearing-handbook',name:'Ổ đỡ',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'bearing',tone:'tone-blue',file:'bearing-handbook.js'},
+ {id:'bolt-handbook',name:'Bu lông',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'bolt',tone:'tone-orange',file:'bolt-handbook.js'},
+ {id:'tolerance-handbook',name:'Dung sai',sub:'Đang phát triển',group:'handbook',dir:'handbook',icon:'tolerance',tone:'tone-violet',file:'tolerance-handbook.js'}
 ]);
 const GROUPS=Object.freeze([
- {id:'office',name:'Văn phòng',description:'Tài liệu và tiện ích văn phòng',icon:'file',cls:'category-utility',access:'free'},
- {id:'technical',name:'Kỹ thuật',description:'Tính toán, đo lường và tra cứu kỹ thuật',icon:'calculator',cls:'category-calc',access:'free'},
- {id:'mechanical',name:'Cơ khí',description:'Công cụ cơ khí chuyên ngành',icon:'gear',cls:'category-engineering',access:'specialist'},
- {id:'handbook',name:'Sổ tay',description:'Sổ tay kỹ thuật chuyên ngành',icon:'book',cls:'category-engineering',access:'specialist'}
+ {id:'office',name:'Văn phòng',description:'Tài liệu và tiện ích văn phòng',icon:'office',cls:'category-utility',access:'free'},
+ {id:'technical',name:'Kỹ thuật',description:'Tính toán, đo lường và tra cứu kỹ thuật',icon:'technical',cls:'category-calc',access:'free'},
+ {id:'mechanical',name:'Cơ khí',description:'Công cụ cơ khí chuyên ngành',icon:'mechanical',cls:'category-engineering',access:'specialist'},
+ {id:'handbook',name:'Sổ tay',description:'Sổ tay kỹ thuật chuyên ngành',icon:'handbook',cls:'category-engineering',access:'specialist'}
 ]);
 // Directory for each group; handbook modules can be added in assets/js/handbook/.
 const GROUP_DIRECTORIES=Object.freeze({office:'office',technical:'engineering',mechanical:'mechanical',handbook:'handbook'});
@@ -2459,7 +2402,7 @@ function prepareHeaderNavigation(){
   link.className='nav-link';
   link.href='#/category/handbook';
   link.dataset.nav='handbook';
-  link.innerHTML=`${icon('book',20)}<span>Sổ tay</span>`;
+  link.innerHTML=`${navigationIcon('handbook','book',28)}<span>Sổ tay</span>`;
   if(help)help.before(link);else nav.append(link);
  }
  help?.remove();
@@ -2468,7 +2411,7 @@ function buildHeaderMyTools(){
  const nav=document.getElementById('main-nav');
  if(!nav || nav.querySelector('#es-header-mytools'))return;
  const area=document.createElement('div');area.id='es-header-mytools';area.className='es-header-mytools';
- area.innerHTML=`<a class="nav-link es-header-mytools-link" id="es-header-mytools-link" data-nav="mytools" href="#/mytools" aria-label="My tools">${icon('star',18)}<span>My tools</span><span class="es-header-mytools-count" id="es-header-mytools-count">0</span></a>
+ area.innerHTML=`<a class="nav-link es-header-mytools-link" id="es-header-mytools-link" data-nav="mytools" href="#/mytools" aria-label="My tools">${navigationIcon('mytools','star',28)}<span>My tools</span><span class="es-header-mytools-count" id="es-header-mytools-count">0</span></a>
   <button type="button" class="es-header-mytools-toggle" data-header-mytools-toggle aria-expanded="false" aria-controls="es-header-mytools-menu" aria-label="Xổ danh sách My tools" title="Xổ danh sách My tools">${icon('chevron-down',20)}</button>
   <div class="es-header-mytools-menu" id="es-header-mytools-menu" aria-label="Danh sách công cụ đã ghim" hidden></div>`;
  nav.insertBefore(area,nav.querySelector('[data-nav="office"]'));
@@ -2521,7 +2464,7 @@ function refreshHeaderCategoryMenus(){
   menu.setAttribute('aria-label',esLanguage==='en'?`${label} tools`:`Công cụ ${label}`);
   const tools=DEFINITIONS.filter(t=>t.group===group.id&&!t.planned);
   const title=esLanguage==='en'?`${label} · ${tools.length} tools`:`${label} · ${tools.length} công cụ`;
-  menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon(group.icon,18)} <span>${escapeHTML(title)}</span></div><div class="es-header-mytools-items">${tools.map(t=>{
+  menu.innerHTML=`<div class="es-header-mytools-menu-title">${navigationIcon(group.id,group.icon,24)} <span>${escapeHTML(title)}</span></div><div class="es-header-mytools-items">${tools.map(t=>{
    const name=esLanguage==='en'?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
    return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(name)}">${icon(t.icon,19)}<span>${escapeHTML(name)}</span></a>`;
   }).join('') || `<p class="es-header-mytools-empty">${esLanguage==='en'?'Handbook entries will be added soon.':'Nội dung Sổ tay đang được cập nhật.'}</p>`}</div>`;
@@ -2553,6 +2496,7 @@ function refreshHeaderMyTools(){
  if(count)count.textContent=String(pinned.length);
  const link=area.querySelector('#es-header-mytools-link');
  if(link)link.classList.toggle('is-active',location.hash==='#/mytools');
+ area.classList.toggle('is-active',location.hash==='#/mytools');
  const toggle=area.querySelector('[data-header-mytools-toggle]');
  if(toggle){const label=esLanguage==='en'?'Show pinned tools':'Xổ danh sách My tools';toggle.setAttribute('aria-label',label);toggle.title=label;}
  const menu=area.querySelector('#es-header-mytools-menu');if(!menu)return;
@@ -2561,7 +2505,7 @@ function refreshHeaderMyTools(){
   const title=esLanguage==='en'?(ES_EN_TEXT[normalize(t.name)]||t.name):t.name;
   return `<a class="es-header-mytools-item" href="#/tool/${encodeURIComponent(t.id)}" title="${escapeHTML(title)}">${icon(t.icon,19)}<span>${escapeHTML(title)}</span></a>`;
  }).join(''):`<div class="es-header-mytools-empty">${esLanguage==='en'?'No pinned tools yet. Use the star on a tool to add it.':'Chưa có công cụ đã ghim. Nhấn ngôi sao trên công cụ để thêm vào My tools.'}<a href="#/category/office">${esLanguage==='en'?'Explore tools':'Khám phá công cụ'}</a></div>`;
- menu.innerHTML=`<div class="es-header-mytools-menu-title">${icon('star',18)} <span>${heading}</span></div><div class="es-header-mytools-items">${list}</div>`;
+ menu.innerHTML=`<div class="es-header-mytools-menu-title">${navigationIcon('mytools','star',24)} <span>${heading}</span></div><div class="es-header-mytools-items">${list}</div>`;
 }
 function toolCard(t){
  const translated=esLanguage==='en';
@@ -2672,7 +2616,7 @@ function makeSidebarLink(id, href, label, iconName, count) {
   (id === 'ecosystem' && location.hash.startsWith('#/ecosystem')) ||
   (id === 'help' && location.hash === '#/help') ||
   location.hash === '#/category/' + id;
- return `<a class="es-side-link" data-side="${id}" data-label="${escapeHTML(label)}" href="${href}" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}" ${selected?'aria-current="page"':''}><span class="es-side-icon">${icon(iconName,21)}</span><span class="es-side-name">${escapeHTML(label)}</span>${typeof count === 'number'?`<span class="es-side-count">${count}</span>`:''}</a>`;
+ return `<a class="es-side-link" data-side="${id}" data-label="${escapeHTML(label)}" href="${href}" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}" ${selected?'aria-current="page"':''}><span class="es-side-icon">${navigationIcon(id,iconName,36)}</span><span class="es-side-name">${escapeHTML(label)}</span>${typeof count === 'number'?`<span class="es-side-count">${count}</span>`:''}</a>`;
 }
 // Keep one submenu open at a time. No persistent storage or new backend is required.
 let sidebarOpenSection = null;
@@ -2711,7 +2655,7 @@ function makeSidebarExpandable(id,href,label,iconName,count){
   (id==='ecosystem'&&route.startsWith('#/ecosystem'))||
   route==='#/category/'+id||Boolean(activeTool && id===activeTool.group);
  const escapedLabel=escapeHTML(label);
- const logo=id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" loading="lazy" decoding="async">':icon(iconName,22);
+ const logo=id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" loading="lazy" decoding="async">':navigationIcon(id,iconName,36);
  const specialistLock=id==='mechanical'||id==='handbook'?` <span class="es-specialist-lock" aria-hidden="true">${icon('lock',14)}</span>`:'';
  const actionLabel=esLanguage==='en'?(open?'Collapse':'Expand'):(open?'Thu gọn':'Mở rộng');
  return `<section class="es-side-section" data-side-section="${id}">
@@ -2764,7 +2708,7 @@ function mobileRailFolderHtml(entry){
  const opened=sidebarOpenSection===entry.id;
  const current=mobileRailIsActive(entry);
  const label=escapeHTML(entry.label);
- const graphic=entry.id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" width="32" height="32" decoding="async">':icon(entry.iconName,22);
+ const graphic=entry.id==='ecosystem'?'<img src="./assets/images/epsilon-mark.png?v=20261025-brand-mark" alt="" width="32" height="32" decoding="async">':navigationIcon(entry.id,entry.iconName,32);
  const ariaLabel=entry.label;
  return `<div class="es-mobile-folder ${current?'is-active':''}" data-mobile-section="${entry.id}">
    <a href="${entry.href}" class="es-mobile-folder-link" title="${escapeHTML(ariaLabel)}" aria-label="${escapeHTML(ariaLabel)}" ${current?'aria-current="page"':''}>
@@ -3463,3 +3407,9 @@ safeNavigate();
 if('serviceWorker' in navigator && location.protocol==='https:'){
  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'}).catch(err=>console.warn('Không đăng ký được offline cache:',err)));
 }
+
+themeSheet.textContent += "\n/* Original SVG collection; dimensions and host layout are preserved. */\n.svg-icon.es-custom-icon{display:inline-block;vertical-align:middle;flex-shrink:0;overflow:visible;--es-icon-accent:currentColor}\n.tool-tile,.tool-heading-icon{color:#254bcc;background:linear-gradient(140deg,#edf5ff,#e8ddff);--es-icon-accent:#7836db}\n.tool-tile .es-custom-icon,.tool-heading-icon .es-custom-icon{--es-icon-accent:#7836db}\n.site-header .es-custom-icon{--es-icon-accent:#ffe35d}\n.site-header .is-active .es-custom-icon{--es-icon-accent:#7836db}\n.star-btn[aria-pressed=\"true\"] .es-custom-icon{color:#a86e03;--es-icon-accent:#a86e03}\n.star-btn[aria-pressed=\"true\"] .es-custom-icon use{fill:#ffe951}\n.mh-group-tab .mh-group-icon{color:#254bcc;background:linear-gradient(140deg,#edf5ff,#e8ddff)}\n.mh-group-tab .es-custom-icon{--es-icon-accent:#7836db}\n.mh-group-tab[aria-selected=\"true\"] .mh-group-icon,.mh-side-title .mh-group-icon{color:white;background:#ffffff22}\n.mh-group-tab[aria-selected=\"true\"] .es-custom-icon,.mh-side-title .es-custom-icon{--es-icon-accent:#ffe35d}\n";
+
+themeSheet.textContent += "\n/* Approved raster icons apply only to main navigation, preserving all tool and material glyphs. */\n.es-nav-photo{display:block;object-fit:contain;flex-shrink:0;max-width:none;filter:none;vertical-align:middle;pointer-events:none}\n.site-header .nav-link .es-nav-photo{width:28px;height:28px;flex:0 0 28px}\n.site-header .main-nav>a.nav-link>[data-icon]:has(.es-nav-photo),.site-header .es-header-category-link>[data-icon]:has(.es-nav-photo){width:28px;height:28px;flex:0 0 28px;display:inline-flex;align-items:center;justify-content:center}\n.es-side-link .es-side-icon:has(.es-nav-photo){background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible}\n.es-side-link .es-side-icon .es-nav-photo{width:36px;height:36px}\n.es-mobile-folder-icon .es-nav-photo{width:32px;height:32px}\n.es-mobile-folder-icon:has(.es-nav-photo){background:transparent!important;box-shadow:none!important}\n.es-header-mytools-menu-title .es-nav-photo{width:24px;height:24px;flex:0 0 24px}\n";
+
+themeSheet.textContent += "\n/* My tools link and disclosure share the selected navigation colour. */\n.site-header #es-header-mytools.is-active{background:#fff;color:#5522cd;border-color:#fff;box-shadow:0 4px 14px rgba(22,14,101,.18)}\n.site-header #es-header-mytools.is-active>.es-header-mytools-link{background:transparent;color:#5522cd;box-shadow:none}\n.site-header #es-header-mytools.is-active>.es-header-mytools-toggle{border-left-color:#e3dcf7;color:#5522cd}\n.site-header #es-header-mytools.is-active>.es-header-mytools-link:hover{background:#f2edff}\n";
