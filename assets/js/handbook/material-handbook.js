@@ -11,7 +11,7 @@ import { SEARCH_CSS, createIndex, searchIndex, highlight, snippets } from './han
 
 const DATABASE_URL = new URL('../../data/handbook/material-handbook.json', import.meta.url);
 const FAMILY_LABEL = Object.freeze({
-  all: 'Tất cả nhóm', structural: 'Thép kết cấu', machinery: 'Thép cơ khí', stainless: 'Thép không gỉ'
+  all: 'Tất cả nhóm', structural: 'Thép kết cấu', machinery: 'Thép cơ khí', stainless: 'Thép không gỉ', forming: 'Thép tấm tạo hình', coated: 'Thép tấm mạ', reinforcement: 'Thép cốt bê tông'
 });
 const MATERIAL_GROUPS = Object.freeze([
   {id:'steel', label:'Thép', title:'Thép'},
@@ -29,7 +29,7 @@ const GROUP_TABS = Object.freeze([
 ]);
 // Navigation folders, not material specifications. Empty folders remain visible for review.
 const CATEGORY_FOLDERS = Object.freeze({
-  steel:[['structural','Thép kết cấu'],['machinery','Thép chế tạo máy'],['tool','Thép dụng cụ và khuôn'],['spring','Thép lò xo'],['bearing','Thép ổ lăn'],['stainless','Thép không gỉ'],['heat-pressure','Thép chịu nhiệt và áp lực'],['wear','Thép chống mài mòn']],
+  steel:[['structural','Thép kết cấu'],['reinforcement','Thép cốt bê tông'],['machinery','Thép chế tạo máy'],['forming','Thép tấm tạo hình'],['coated','Thép tấm mạ'],['tool','Thép dụng cụ và khuôn'],['spring','Thép lò xo'],['bearing','Thép ổ lăn'],['stainless','Thép không gỉ'],['heat-pressure','Thép chịu nhiệt và áp lực'],['wear','Thép chống mài mòn']],
   'cast-iron':[['grey','Gang xám'],['ductile','Gang cầu'],['malleable','Gang dẻo'],['alloy','Gang hợp kim']],
   nonferrous:[['aluminium','Nhôm và hợp kim'],['copper','Đồng và hợp kim'],['zinc','Kẽm và hợp kim'],['magnesium','Magiê và hợp kim'],['titanium','Titan và hợp kim'],['nickel','Niken và hợp kim']],
   polymer:[['thermoplastic','Nhựa nhiệt dẻo'],['thermoset','Nhựa nhiệt rắn']],
@@ -66,6 +66,19 @@ const esc = (v) => txt(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':
 const num = v => (Number.isFinite(v) ? FMT.format(v) : '—');
 const arr = v => Array.isArray(v) ? v : [];
 
+// Catalogue order: primary standard system A-Z, then natural grade order.
+const MATERIAL_ORDER = new Intl.Collator('en', {numeric:true, sensitivity:'base'});
+function materialOrderSystem(material) {
+  const system=txt(material.primaryStandardSystem || material.system || material.standard).trim().toUpperCase();
+  return system.match(/^(ASTM|AASHTO|EN|JIS|GB\/T|GB|TCVN)\b/)?.[1] || system;
+}
+function compareMaterialOrder(a,b) {
+  return MATERIAL_ORDER.compare(materialOrderSystem(a),materialOrderSystem(b))
+    || MATERIAL_ORDER.compare(txt(a.grade),txt(b.grade))
+    || MATERIAL_ORDER.compare(txt(a.standard),txt(b.standard))
+    || MATERIAL_ORDER.compare(txt(a.id),txt(b.id));
+}
+
 function makeCatalogue(materials) {
   const nodes = new Map(), roots = [], ancestors = new Map();
   function node(parent, id, label, groupId) {
@@ -80,7 +93,7 @@ function makeCatalogue(materials) {
     const root = node(null,group.id,group.label,group.id);
     for (const [id,label] of CATEGORY_FOLDERS[group.id] || []) node(root,id,label,group.id);
   }
-  for (const material of materials) {
+  for (const material of [...materials].sort(compareMaterialOrder)) {
     const groupId = materialGroup(material), root = nodes.get(groupId);
     if (!root) throw new Error('Vật liệu chưa được gán vào một trong tám nhóm: '+material.id);
     // Optional categoryPath supports deeper folders without changing the current database.
@@ -215,6 +228,7 @@ export function matchSmartMaterial(material,filters={},selectedDimensions={},sel
     if (!Number.isFinite(v)) return {pass:false,details:[]};
     if (def.kind==='mechanical') {
       // Manufacturer *indicative* values (reference) are not limiting values.
+      if (material.mechanical?.noAutoAcceptance) return {pass:false,details:[]};
       const value=band?.[def.field];
       if (!value || Number.isFinite(value.reference) || !smartCompare(value.min,value.max,op,v)) return {pass:false,details:[]};
       details.push((key==='re'?(material.mechanical?.yieldSymbol||'Re'):(key==='rm'?'Rm':'A'))+' '+valueText(value)+' '+def.unit);
@@ -576,7 +590,7 @@ const VALUE_KIND_LABEL = Object.freeze({
   manufacturer_indicative:'Giá trị tham khảo của hãng', typical_generic:'Giá trị điển hình chung',
   manufacturer_reference_20c:'Số liệu hãng ở 20 °C', heat_analysis_limits:'Giới hạn phân tích mẻ nấu',
   typical_manufacturer_composition:'Thành phần điển hình của hãng', manufacturer_catalogue_limit:'Giới hạn theo catalogue hãng',
-  standard_table_reference:'Bảng tham chiếu tiêu chuẩn', grade_requirement:'Yêu cầu của cấp mác', manufacturer_datasheet_reference_to_standard:'Bảng hãng dẫn theo tiêu chuẩn',
+  grade_properties_not_specified:'Không quy định cơ tính theo mác', standard_table_reference:'Bảng tham chiếu tiêu chuẩn', grade_requirement:'Yêu cầu của cấp mác', manufacturer_datasheet_reference_to_standard:'Bảng hãng dẫn theo tiêu chuẩn',
   alternative_standard_reference:'Bảng theo tiêu chuẩn khác', heat_analysis_max_combined:'Giới hạn tổng (phân tích mẻ)',
   supplier_reference_minimum_by_relevant_diameter:'Số liệu nhà cung cấp theo đường kính',
   historical_standard_value_as_tabulated_in_ASTM_DS67B_2004:'Giá trị tiêu chuẩn cũ (sách 2004)',
@@ -685,7 +699,7 @@ function materialFields(m, sources) {
   for (const row of arr(mech.cases)) fields.push({label:'Cơ tính',text:[
     mech.dimension ? rangeLabel(row,mech.dimension.label) : 'Theo tài liệu hãng',
     'Giới hạn chảy '+(mech.yieldSymbol || 'Re')+' '+valueText(row.yieldMpa)+' MPa',
-    'Độ bền kéo Rm '+valueText(row.tensileMpa)+' MPa', 'Độ giãn dài A '+valueText(row.elongationPct)+' %'
+    'Độ bền kéo Rm '+valueText(row.tensileMpa)+' MPa', 'Độ giãn dài '+(mech.elongationSymbol || 'A')+' '+valueText(row.elongationPct)+' %'
   ].join(' · ')});
   if (mech.impact) fields.push({label:'Va đập',text:'KV ≥ '+num(mech.impact.minJ)+' J tại '+num(mech.impact.temperatureC)+' °C · '+txt(mech.impact.note)});
   fields.push({label:'Thành phần hóa học',text:arr(chem.rows).map(row => row.element+' '+(row.mode === 'typical' ? num(row.value) : valueText(row))+' % '+txt(row.applicability)).join(' · ')});
@@ -716,7 +730,7 @@ export async function mount(root, ctx = {}) {
   root.innerHTML = `<style>${CSS}</style><div class="mh hbs"><div class="mh-topbar"><header class="mh-heading"><h2>Sổ tay vật liệu kỹ thuật</h2><p>Tra cứu đặc tính, ứng dụng và tiêu chuẩn vật liệu kỹ thuật.</p></header>${toolbar}</div><section class="mh-smart-panel" id="mh-smart-panel" data-mh-smart-panel hidden><div class="mh-smart-head"><strong>Chọn hashtag tiêu chí kỹ thuật</strong><small>Chọn nhiều thẻ để kết hợp điều kiện (AND)</small></div><div class="mh-smart-tags" data-mh-smart-tags></div><div class="mh-smart-editor-wrap" data-mh-smart-editors></div></section><nav class="mh-group-tabs" role="tablist" aria-label="Phạm vi vật liệu kỹ thuật">${GROUP_TABS.map(group=>`<button type="button" class="mh-group-tab" id="mh-group-${esc(group.id)}" data-mh-group="${esc(group.id)}" role="tab" aria-controls="mh-group-panel" aria-selected="${group.id===state.group}" tabindex="${group.id===state.group?'0':'-1'}" title="${esc(group.title)}" disabled>${groupIcon(group.id)}<span>${esc(group.label)}</span></button>`).join('')}</nav><section class="mh-analysis-panel" data-mh-analysis-panel hidden><h3>Tư vấn & phân tích vật liệu</h3><p>Các công cụ phân tích sử dụng cơ sở dữ liệu và quy tắc kỹ thuật có nguồn, tách biệt chức năng tra cứu.</p><div class="mh-analysis-cards">${analysisCards.map(([name,description],i)=>`<section class="mh-analysis-card"><h4>${String(i+1).padStart(2,'0')}. ${esc(name)}</h4><p>${esc(description)}</p><span class="mh-analysis-status">Chưa triển khai thuật toán phân tích</span></section>`).join('')}</div><div class="mh-analysis-notice">${esc(SMART_NOTICE)} Các quy tắc phân tích chưa được phê duyệt, không tự tạo kết luận kỹ thuật.</div></section><div data-mh-content id="mh-group-panel" role="tabpanel" aria-labelledby="mh-group-steel" class="mh-load-error" style="background:#f6f8ff;border-color:#dce4fa;color:#52648d">Đang nạp dữ liệu vật liệu…</div></div>`;
   const $ = sel => root.querySelector(sel);
   // One source of scope for search, selected records and future handbook functions.
-  const tabMaterials = () => arr(state.db?.materials).filter(material=>state.group==='all' || materialGroup(material)===state.group);
+  const tabMaterials = () => arr(state.db?.materials).filter(material=>state.group==='all' || materialGroup(material)===state.group).sort(compareMaterialOrder);
   const scopeMaterials = () => tabMaterials().filter(material=>state.filterKey==='all' || (state.catalogue?.ancestors.get(material.id)||[]).includes(state.filterKey));
   const selected = () => scopeMaterials().find(m=>m.id===state.selectedId);
   const dimension = (m) => state.dimensions[m.id] ?? m.mechanical?.dimension?.default ?? 0;
@@ -823,7 +837,7 @@ export async function mount(root, ctx = {}) {
     if (state.smartEnabled && selectedCriteria().length) {
       found=found.filter(material=>matchSmartMaterial(shown(material),state.smartCriteria,state.dimensions,state.forms).pass);
     }
-    return found;
+    return found.sort(compareMaterialOrder);
   }
   function updateClearButton() {
     $('[data-hbs-clear]').hidden=!$('[data-hbs-input]').value.trim() && !(state.smartEnabled && Object.keys(state.smartCriteria).length);
@@ -909,7 +923,7 @@ export async function mount(root, ctx = {}) {
       const compareSlot=state.compareOpen ? state.compareIds.indexOf(m.id)+1 : 0;
       const isSelected=state.compareOpen ? compareSlot>0 : m.id===selected()?.id;
       const selectionBadge=compareSlot ? `<span class="mh-compare-leaf-tag" data-slot="${compareSlot}">VL${compareSlot}</span>` : '';
-      return `<button type="button" class="mh-item mh-tree-leaf" data-mh-id="${esc(m.id)}" aria-pressed="${isSelected}"><span><span class="mh-item-name">${highlight(m.grade,state.query)}</span><span class="mh-item-sub">${highlight(m.materialNumber||m.standard,state.query)}</span>${query?snippets(state.index.find(item=>item.record.id===m.id),state.query,1):''}${smartNote?`<span class="mh-smart-match-preview">${esc(smartNote)}</span>`:''}</span><span class="mh-item-end">${selectionBadge}<span class="mh-item-arrow" aria-hidden="true">›</span></span></button>`;
+      return `<button type="button" class="mh-item mh-tree-leaf" data-mh-id="${esc(m.id)}" aria-pressed="${isSelected}"><span><span class="mh-item-name">${highlight(m.grade,state.query)}</span><span class="mh-item-sub">${highlight(m.standard||m.materialNumber,state.query)}</span>${query?snippets(state.index.find(item=>item.record.id===m.id),state.query,1):''}${smartNote?`<span class="mh-smart-match-preview">${esc(smartNote)}</span>`:''}</span><span class="mh-item-end">${selectionBadge}<span class="mh-item-arrow" aria-hidden="true">›</span></span></button>`;
     }
     function branch(node,rootLevel=false) {
       const amount=count(node),children=node.children.filter(child=>!query||count(child)>0),ids=node.materialIds.filter(id=>matched.has(id));
@@ -933,6 +947,7 @@ export async function mount(root, ctx = {}) {
     const choices=arr(m.conditions);
     const stateSelect=choices.length ? `<label class="mh-state-field">Trạng thái vật liệu<select data-mh-material-condition aria-label="Chọn trạng thái cho ${esc(m.grade)}">${choices.map(c=>`<option value="${esc(c.code)}"${selectedConditionCode(m)===c.code?' selected':''}>${esc(c.code)} — ${esc(c.label)}</option>`).join('')}</select></label>` : '';
     const dim = m.mechanical?.dimension;
+    if (m.mechanical?.status === 'grade_properties_not_specified') return `<div class="mh-condbar">${stateSelect}<span>${esc(m.mechanical.note)}</span></div>`;
     if (!dim) {
       const forms=enProductForms(m);
       if (forms.length) {
@@ -940,7 +955,7 @@ export async function mount(root, ctx = {}) {
         const choices=forms.map(f=>`<option value="${esc(f.code)}"${f.code===selected?' selected':''}>${esc(FORM_LABEL[f.productForm] || f.productForm)} (${esc(f.code)})</option>`).join('');
         return `<div class="mh-condbar">${stateSelect}<label>Dạng sản phẩm (EN)<select data-mh-product-form aria-label="Chọn dạng sản phẩm của ${esc(m.grade)}">${choices}</select></label><span>Thẻ số liệu và bảng cơ tính theo dạng ${esc(selected)} từ dữ liệu Outokumpu. Bảng ASTM được trình bày riêng.</span></div>`;
       }
-      return `<div class="mh-condbar">${stateSelect}<span>Bản ghi không chia theo kích thước: số liệu là giá trị tham khảo theo dạng sản phẩm nêu trong nguồn.</span></div>`;
+      return `<div class="mh-condbar">${stateSelect}<span>${esc(m.mechanical?.viewingNote || 'Bản ghi không chia theo kích thước: số liệu là giá trị tham khảo theo dạng sản phẩm nêu trong nguồn.')}</span></div>`;
     }
     const rows = arr(m.mechanical.cases).filter(r => Number.isFinite(r.from) && Number.isFinite(r.to));
     const lo = rows.length ? Math.min(...rows.map(r => r.from)) : null;
@@ -950,9 +965,23 @@ export async function mount(root, ctx = {}) {
     const dataNote=onlyHardness ? `Trạng thái ${m.selectedConditionCode}: dữ liệu độ cứng HBW tối đa; không có bộ Re/Rm/A tương ứng.` : rows.length ? (dim.kind==='thickness' ? `Cơ tính theo chiều dày từ ${num(lo)} đến ${num(hi)} mm.` : dim.kind==='diameter' ? `Cơ tính theo đường kính ${lo===0?'d > 0':'từ '+num(lo)} đến ${num(hi)} mm.` : `Cơ tính theo kích thước từ ${num(lo)} đến ${num(hi)} mm.`) : 'Chưa có cơ tính theo kích thước cho trạng thái này; không dùng số liệu của trạng thái khác.';
     return `<div class="mh-condbar${stateSelect?' mh-has-state':''}">${stateSelect}<label>${esc(dim.label)} (${esc(dim.unit || 'mm')})<input type="number" data-mh-dimension min="0" step="any" inputmode="decimal" value="${Number.isFinite(value) ? esc(value) : ''}" aria-describedby="mh-condbar-note"></label><span id="mh-condbar-note">${esc(dataNote)}</span>${rows.length && !activeCase(m) ? '<strong class="mh-condbar-warn" role="alert">Ngoài vùng dữ liệu của trạng thái đã chọn.</strong>' : ''}</div>`;
   }
+  /** Coating composition is separate from substrate alloy chemistry. */
+  function drawCoating(m) {
+    const coating = m.coating;
+    if (!coating) return '';
+    const facts = [
+      ['Loại lớp mạ', coating.label || '—'],
+      ['Cấp thép nền', coating.substrateGrade || 'Chưa chọn cấp thép nền'],
+      ['Ký hiệu lớp mạ', coating.designation || 'Theo đơn hàng / chứng chỉ'],
+      ['Khối lượng mạ tổng hai mặt', Number.isFinite(coating.totalMassGm2) ? num(coating.totalMassGm2) + ' g/m²' : 'Theo đơn hàng / chứng chỉ'],
+      ['Nguồn', sourceNames(coating.sourceIds)]
+    ];
+    const composition = arr(coating.composition).map(item => tr([item.element, item.percent ? cellValue(item.percent) + ' %' : item.description || '—']));
+    return `<section class="mh-coating"><h4 class="mh-subtitle">Lớp mạ và thông tin đặt hàng</h4>${mdTable(['Thông số','Nội dung'], facts.map(row=>tr(row)), 'Thông tin lớp mạ')}<h4 class="mh-subtitle">Thành phần lớp mạ</h4>${mdTable(['Nguyên tố','Giá trị / vai trò'], composition, 'Thành phần lớp mạ')}<p class="mh-note">${esc(coating.note || '')}</p></section>`;
+  }
   function drawOverview(m) {
     const names = arr(m.otherNames);
-    return `<div class="mh-info-grid"><section class="mh-info-card"><strong>Thông tin vật liệu</strong><p>${esc(m.description)}</p><ul><li><b>Tiêu chuẩn:</b> ${esc(m.standard)}</li><li><b>Dạng sản phẩm:</b> ${esc(m.productForm)}</li><li><b>Trạng thái:</b> ${esc(m.condition)}</li>${names.length ? `<li><b>Tên gọi khác:</b> ${esc(names.join(' · '))}</li>` : ''}</ul></section><section class="mh-info-card"><strong>Ứng dụng tham khảo</strong><ul>${arr(m.applications).map(t => `<li>${esc(t)}</li>`).join('')}</ul></section><section class="mh-info-card mh-info-wide"><strong>Lưu ý kỹ thuật</strong><ul>${arr(m.notes).map(t => `<li>${esc(t)}</li>`).join('') || '<li>Chưa có lưu ý.</li>'}</ul></section></div>`;
+    return `<div class="mh-info-grid"><section class="mh-info-card"><strong>Thông tin vật liệu</strong><p>${esc(m.description)}</p><ul><li><b>Tiêu chuẩn:</b> ${esc(m.standard)}</li><li><b>Dạng sản phẩm:</b> ${esc(m.productForm)}</li><li><b>Trạng thái:</b> ${esc(m.condition)}</li>${names.length ? `<li><b>Tên gọi khác:</b> ${esc(names.join(' · '))}</li>` : ''}</ul></section><section class="mh-info-card"><strong>Ứng dụng tham khảo</strong><ul>${arr(m.applications).map(t => `<li>${esc(t)}</li>`).join('')}</ul></section><section class="mh-info-card mh-info-wide"><strong>Lưu ý kỹ thuật</strong><ul>${arr(m.notes).map(t => `<li>${esc(t)}</li>`).join('') || '<li>Chưa có lưu ý.</li>'}</ul></section></div>${drawCoating(m)}`;
   }
   function stainlessFormsTable(m) {
     const lim = m.referenceData?.engineeringLimits || {};
@@ -975,12 +1004,12 @@ export async function mount(root, ctx = {}) {
     const hasHB = rows.some(r => r.hardnessHB);
     const sym = mech.yieldSymbol || 'Re';
     const body = rows.map(row => {
-      const cells = [dim ? rangeLabel(row, dim.label) : (row.formCode ? `${FORM_LABEL[row.productForm] || row.productForm} (${row.formCode})` : 'Giá trị tham khảo của hãng'), cellValue(row.yieldMpa), cellValue(row.tensileMpa), cellValue(row.elongationPct)];
+      const cells = [dim ? rangeLabel(row, dim.label) : (row.formCode ? `${FORM_LABEL[row.productForm] || row.productForm} (${row.formCode})` : (mech.referenceLabel || 'Giá trị tham khảo của hãng')), cellValue(row.yieldMpa), cellValue(row.tensileMpa), cellValue(row.elongationPct)];
       if (hasZ) cells.push(cellValue(row.reductionOfAreaPct));
       if (hasHB) cells.push(cellValue(row.hardnessHB));
       return tr(cells, dim && row === actual ? 'mh-selected-row' : '');
     });
-    const heads = [dim ? dim.label : 'Phạm vi', sym + ' (MPa)', 'Rm (MPa)', 'A (%)'].concat(hasZ ? ['Z (%)'] : [],hasHB ? ['Độ cứng HB'] : []);
+    const heads = [dim ? dim.label : 'Phạm vi', sym + ' (MPa)', 'Rm (MPa)', (mech.elongationSymbol || 'A')+' (%)'].concat(hasZ ? ['Z (%)'] : [],hasHB ? ['Độ cứng HB'] : []);
     const conds = [
       ['Loại số liệu', kindLabel(mech.status)],
       ['Nguồn', sourceNames(mech.sourceIds)],
@@ -996,7 +1025,7 @@ export async function mount(root, ctx = {}) {
     }
     const imp = mech.impact;
     const impact = imp ? mdTable(['Nhiệt độ thử','KV tối thiểu','Hướng mẫu','Loại số liệu','Ghi chú'], [tr([Number.isFinite(imp.temperatureC) ? num(imp.temperatureC) + ' °C' : '—', Number.isFinite(imp.minJ) ? '≥ ' + num(imp.minJ) + ' J' : '—', ORIENTATION_LABEL[imp.testDirection] || imp.testDirection || '—', kindLabel(imp.kind), imp.note || ''])], 'Yêu cầu thử va đập')
-      : '<p class="mh-note">Nguồn hiện có không nêu yêu cầu va đập cho bản ghi này.</p>';
+      : `<p class="mh-note">${esc(mech.impactNote || 'Nguồn hiện có không nêu yêu cầu va đập cho bản ghi này.')}</p>`;
     return `${rows.length ? mdTable(heads, body, 'Cơ tính theo vùng kích thước') : '<p class="mh-note">Trạng thái này chưa có dữ liệu Re/Rm/A theo kích thước. Không hiển thị cơ tính của trạng thái khác.</p>'}<p class="mh-note">“≥” là giới hạn tối thiểu, “x–y” là khoảng, “≈” là giá trị tham khảo của hãng.${dim ? ' Dòng tô màu là vùng đang áp dụng.' : ''}</p><h4 class="mh-subtitle">Thử va đập</h4>${impact}${stainlessFormsTable(m)}<h4 class="mh-subtitle">Điều kiện thử và nguồn</h4>${mdTable(['Mục','Nội dung'], conds, 'Điều kiện thử và nguồn cơ tính')}`;
   }
   function drawChemistry(m) {
@@ -1023,7 +1052,7 @@ export async function mount(root, ctx = {}) {
     const anyBand = rows.some(r => r.applicability) || Boolean(cev);
     const head = ['Nguyên tố', dim && anyBand ? `Tại ${dimMark(dim)} = ${Number.isFinite(dv) ? num(dv) : '—'} mm` : 'Giá trị'].concat(anyBand ? ['Theo vùng kích thước'] : ['Phạm vi']);
     const typical = chem.kind === 'typical_manufacturer_composition';
-    return `<p class="mh-fieldnote">${esc(kinds[chem.kind] || 'Thành phần hóa học')} · % khối lượng · nguồn: ${esc(sourceNames(chem.sourceIds))}${cev ? ' · CEV: ' + esc(sourceName(cev.sourceId)) : ''}.</p>${mdTable(head, body.length ? body : [tr(['—','Chưa có dữ liệu','—'])], 'Thành phần hóa học')}<p class="mh-note">${typical ? 'Không suy ra giới hạn từ giá trị điển hình. ' : ''}Nguyên tố không có trong bảng là chưa có dữ liệu trong nguồn, không có nghĩa bằng 0.</p>`;
+    return `${m.coating ? `<h4 class="mh-subtitle">Thành phần thép nền</h4><p class="mh-note">${esc(chem.note || "")}</p>` : ""}<p class="mh-fieldnote">${esc(kinds[chem.kind] || 'Thành phần hóa học')} · % khối lượng · nguồn: ${esc(sourceNames(chem.sourceIds))}${cev ? ' · CEV: ' + esc(sourceName(cev.sourceId)) : ''}.</p>${mdTable(head, body.length ? body : [tr(['—','Chưa có dữ liệu','—'])], 'Thành phần hóa học')}<p class="mh-note">${typical ? 'Không suy ra giới hạn từ giá trị điển hình. ' : ''}Nguyên tố không có trong bảng là chưa có dữ liệu trong nguồn, không có nghĩa bằng 0.</p>${drawCoating(m)}`;
   }
   /** Heat-treatment routes: shown as a template until values with sources are entered. */
   function drawHeatTreatment(m) {
@@ -1110,6 +1139,7 @@ export async function mount(root, ctx = {}) {
     const mech = m.mechanical || {}, chem = m.chemistry || {}, rd = m.referenceData || {}, lim = rd.engineeringLimits || {};
     const blocks = [
       ['Cơ tính', sourceNames(mech.sourceIds), kindLabel(mech.status)],
+      m.coating ? ['Lớp mạ', sourceNames(m.coating.sourceIds), 'Thông tin lớp mạ'] : null,
       mech.impact ? ['Va đập', sourceNames(mech.impact.testDirectionSourceId ? [mech.impact.testDirectionSourceId] : mech.sourceIds), kindLabel(mech.impact.kind)] : null,
       ['Thành phần', sourceNames(chem.sourceIds), kindLabel(chem.kind)],
       arr(m.heatTreatment?.routes).length ? ['Nhiệt luyện', sourceNames(arr(m.heatTreatment.routes).map(r => r.sourceId)), arr(m.heatTreatment.routes).some(htHasValues) ? 'Có dữ liệu tham khảo' : 'Chưa có số liệu'] : null,
@@ -1132,12 +1162,50 @@ export async function mount(root, ctx = {}) {
       ${historicalNames.length ? `<h4 class="mh-section-title">Ký hiệu trong tiêu chuẩn cũ</h4>${mdTable(['Mác','Số vật liệu','Phiên bản'], historicalNames.map(h => tr([h.grade, h.materialNumber || '—', h.standardEdition || '—'])), 'Ký hiệu trong tiêu chuẩn cũ')}<p class="mh-note">Các ký hiệu này dùng để tra cứu lịch sử, không mặc nhiên là mác thay thế trực tiếp.</p>` : ''}
       <h4 class="mh-section-title">Tài liệu tham khảo</h4><div class="mh-sources">${sources.map(s => `<article class="mh-source"><strong>${esc(s.publisher)} — ${esc(s.title)}</strong>${normalizeSourceLink(s)}</article>`).join('')}</div>`;
   }
-  // The demo database has no reviewed equivalent-grade relations. Suggest only
-  // candidates in the same material family; never label them as equivalent.
+  // Candidates require a declared cross-reference or an approved relation.
+  // Sharing a material family is never enough to imply a counterpart grade.
+  function equivalenceReferenceGroups(m) {
+    return arr(state.db?.engineeringExtension?.equivalence?.referenceGroups)
+      .filter(group => arr(group.memberIds).includes(m.id) && arr(group.sourceIds).length);
+  }
+  // Resolve declared references by exact designation and product standard.
+  // Historical grades and sibling quality levels are not counterpart links.
+  function isGradeCrossReference(entry) {
+    return Boolean(entry?.sourceId && arr(state.db?.sources).some(source => source.id === entry.sourceId)
+      && entry.relationship && !/^(same_standard_sibling|historical_)/.test(entry.relationship));
+  }
+  function referenceMatchesMaterial(entry, material) {
+    const normalize = value => txt(value).replace(/\s+/g,'').toUpperCase();
+    const standardKeys = value => [...normalize(value).matchAll(/ASTM[A-Z]\d+|EN\d+(?:-\d{1,3})?(?!\d)|JIS[A-Z]\d+|GB(?:\/T)?\d+|TCVN\d+(?:-\d{1,3})?(?!\d)/g)].map(hit => hit[0]);
+    const keys = standardKeys(entry.standard);
+    if (!keys.length || !standardKeys(material.standard).some(key => keys.includes(key))) return false;
+    const grade = normalize(entry.grade), ownGrade = normalize(material.grade);
+    // ASTM grade abbreviations are compared only after the product standard matches.
+    // Keep the type/class and full grade token so Type A never resolves to Type B.
+    const astm = keys.find(key => /^ASTMA\d+$/.test(key));
+    const astmGrade = value => normalize(value).replace(new RegExp('^'+astm.slice(4)), '')
+      .replace(/^(?:GRADE|GR\.?)/, '').replace(/[().-]/g, '');
+    const sameAstmGrade = Boolean(astm && grade && astmGrade(grade) && astmGrade(grade) === astmGrade(ownGrade));
+    return Boolean(grade && (grade === ownGrade || sameAstmGrade || (keys.includes('ASTMA240') && 'A240TYPE'+grade === ownGrade)))
+      || [entry.steelNumber,entry.uns].filter(Boolean).some(value => normalize(value) === normalize(material.materialNumber) || normalize(value) === normalize(material.unsNumber));
+  }
   function equivalentCandidates(m) {
-    return arr(state.db?.materials).filter(other => other.id !== m.id &&
+    const groups = equivalenceReferenceGroups(m);
+    const declared = new Set(groups.flatMap(group => arr(group.memberIds)));
+    // An explicit group remains authoritative (e.g. 304 must not gain 316/430).
+    if (!groups.length) for (const other of arr(state.db?.materials)) {
+      if (other.id === m.id || materialGroup(other) !== materialGroup(m) || other.family !== m.family) continue;
+      const pointsTo = (from,to) => arr(from.referenceData?.comparisonCandidates)
+        .some(entry => isGradeCrossReference(entry) && referenceMatchesMaterial(entry,to));
+      if (pointsTo(m,other) || pointsTo(other,m)) declared.add(other.id);
+    }
+    for (const relation of arr(state.db?.engineeringExtension?.equivalence?.approvedRelations)) {
+      if (relation.fromId === m.id) declared.add(relation.toId);
+      if (relation.toId === m.id) declared.add(relation.fromId);
+    }
+    return arr(state.db?.materials).filter(other => other.id !== m.id && declared.has(other.id) &&
       materialGroup(other) === materialGroup(m) && other.family === m.family)
-      .sort((a,b) => a.grade.localeCompare(b.grade,'vi'));
+      .sort(compareMaterialOrder);
   }
   function chemText(material,element) {
     const chemistry=material.chemistry||{};
@@ -1152,18 +1220,25 @@ export async function mount(root, ctx = {}) {
     const candidates = equivalentCandidates(m);
     const candidate = candidates.find(item => item.id === state.eqCandidateId) || null;
     const approved = arr(state.db?.engineeringExtension?.equivalence?.approvedRelations).filter(r => r.fromId === m.id || r.toId === m.id);
-    const intro = `<div class="mh-eq-intro"><h4>Đối chiếu vật liệu</h4><p>Mác gốc đứng đầu. Bên dưới tách riêng ba mức: tương đương đã duyệt, ứng viên trong cơ sở dữ liệu và danh sách mác đối chiếu tham khảo.</p></div>`;
+    const intro = `<div class="mh-eq-intro"><h4>Đối chiếu vật liệu</h4><p>Mác gốc đứng đầu. Chỉ liệt kê các mác có quan hệ đối chiếu được khai báo; cùng phân nhóm vật liệu không đủ để xác định mác tương ứng.</p></div>`;
     const caution = `<div class="mh-eq-caution" role="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5m0 4h.01"/></svg><span><b>HB chỉ cung cấp thông tin, phân tích và đề xuất tham khảo.</b> Quyết định lựa chọn, thay thế và sử dụng vật liệu cuối cùng thuộc về người dùng, sau khi xem xét tiêu chuẩn áp dụng và điều kiện sử dụng thực tế.</span></div>`;
     const original = `<div class="mh-eq-line mh-eq-origin"><span class="mh-eq-number">01</span><span class="mh-eq-ident"><strong>${esc(m.grade)} · ${esc(m.materialNumber || '—')}</strong><small>${esc(m.standard)} · ${esc(m.productForm)} · ${esc(m.condition)}</small></span><span class="mh-eq-tag">Vật liệu gốc</span></div>`;
     const approvedHtml = `<h5 class="mh-eq-subtitle">1. Tương đương đã duyệt</h5>${approved.length ? '' : '<p class="mh-note">Chưa có quan hệ tương đương được duyệt cho mác này.</p>'}`;
-    const choices = candidates.map((item, index) => `<button type="button" class="mh-eq-line mh-eq-candidate" data-mh-eq-candidate="${esc(item.id)}" aria-pressed="${item.id === candidate?.id}"><span class="mh-eq-number">${String(index + 2).padStart(2,'0')}</span><span class="mh-eq-ident"><strong>${esc(item.grade)} · ${esc(item.materialNumber || '—')}</strong><small>${esc(item.standard)} · ${esc(item.productForm)} · ${esc(item.condition)}</small></span><span class="mh-eq-tag">Cùng phân nhóm · chưa xác nhận</span></button>`).join('');
-    const dbHtml = `<h5 class="mh-eq-subtitle">2. Ứng viên trong cơ sở dữ liệu</h5>${candidates.length ? '<p class="mh-note">Chọn một mác để xem bảng đối chiếu số liệu.</p>' : '<p class="mh-note">Chưa có mác khác cùng phân nhóm trong cơ sở dữ liệu.</p>'}`;
-    const book = arr(m.referenceData?.comparisonCandidates);
-    const relText = r => r === 'same_standard_sibling_in_book_group' ? 'Cùng tiêu chuẩn, khác cấp' : 'Cùng nhóm tham khảo';
-    const bookHtml = `<h5 class="mh-eq-subtitle">3. Các mác đối chiếu tham khảo</h5>${book.length ? mdTable(['Tiêu chuẩn','Mác','Số VL / UNS','Quan hệ'], book.map(c => tr([c.standard, c.grade, c.steelNumber || c.uns || '—', relText(c.relationship)])), 'Danh sách cùng nhóm so sánh theo sách') + `<p class="mh-note">Danh sách giúp đối chiếu tên mác và hệ tiêu chuẩn; không mặc nhiên được phép thay thế.</p>` : '<p class="mh-note">Chưa có mác tham khảo đối chiếu cho vật liệu này.</p>'}`;
+    const choices = candidates.map((item, index) => `<button type="button" class="mh-eq-line mh-eq-candidate" data-mh-eq-candidate="${esc(item.id)}" aria-pressed="${item.id === candidate?.id}"><span class="mh-eq-number">${String(index + 2).padStart(2,'0')}</span><span class="mh-eq-ident"><strong>${esc(item.grade)} · ${esc(item.materialNumber || '—')}</strong><small>${esc(item.standard)} · ${esc(item.productForm)} · ${esc(item.condition)}</small></span><span class="mh-eq-tag">Đối chiếu tên mác · tham khảo</span></button>`).join('');
+    const dbHtml = `<h5 class="mh-eq-subtitle">2. Các mác đối chiếu theo hệ tiêu chuẩn</h5>${candidates.length ? '<p class="mh-note">Chọn một mác để xem bảng đối chiếu số liệu.</p>' : '<p class="mh-note">Chưa có quan hệ đối chiếu được khai báo cho mác này.</p>'}`;
+    const referenceGroups = equivalenceReferenceGroups(m);
+    const referenceInfo = referenceGroups.map(group => `<p class="mh-note">${esc(group.note || '')} ${arr(group.sourceIds).map(id => {
+      const source = arr(state.db?.sources).find(item => item.id === id);
+      return source ? normalizeSourceLink(source) : '';
+    }).join(' ')}</p>`).join('');
+    // Linked references appear once as actionable candidates above.
+    const book = referenceGroups.length ? [] : arr(m.referenceData?.comparisonCandidates)
+      .filter(isGradeCrossReference)
+      .filter(entry => !candidates.some(other => referenceMatchesMaterial(entry,other)));
+    const bookHtml = book.length ? `<h5 class="mh-eq-subtitle">3. Mác tham khảo chưa có dữ liệu trong HB</h5><p class="mh-note">Chưa tìm được bản ghi khớp mác và tiêu chuẩn tham chiếu. Danh sách giữ thông tin từ nguồn; không tự nối sang mác khác hoặc tiêu chuẩn khác.</p><div class="mh-eq-list">${book.map(entry => `<div class="mh-eq-line"><span class="mh-eq-ident"><strong>${esc(entry.grade)}</strong><small>${esc(entry.standard)}${entry.steelNumber || entry.uns ? ' · '+esc(entry.steelNumber || entry.uns) : ''}</small></span><span class="mh-eq-tag">Chưa có bản ghi phù hợp trong HB</span></div>`).join('')}</div>` : '';
     if (candidate && candidate.mechanical?.dimension?.kind && candidate.mechanical.dimension.kind === m.mechanical?.dimension?.kind && caseFor(candidate, dimension(m))) state.dimensions[candidate.id] = dimension(m);
     const table = candidate ? `<section class="mh-eq-comparison"><h4>Đối chiếu ${esc(m.grade)} ↔ ${esc(candidate.grade)}</h4>${drawComparisonTable(m, shown(candidate), ['Gốc','Ứng viên'])}</section>` : '';
-    return `<section class="mh-eq-panel" id="mh-equivalence-panel" aria-label="Đối chiếu vật liệu">${intro}${caution}<div class="mh-eq-list" aria-label="Danh sách đối chiếu">${original}</div>${approvedHtml}${dbHtml}<div class="mh-eq-list">${choices}</div>${table}${bookHtml}</section>`;
+    return `<section class="mh-eq-panel" id="mh-equivalence-panel" aria-label="Đối chiếu vật liệu">${intro}${caution}<div class="mh-eq-list" aria-label="Danh sách đối chiếu">${original}</div>${approvedHtml}${dbHtml}${referenceInfo}<div class="mh-eq-list">${choices}</div>${table}${bookHtml}</section>`;
   }
 
 
@@ -1372,7 +1447,7 @@ function drawComparison() {
         `<div class="mh-hardness-summary"><strong>Thông số của trạng thái ${esc(m.selectedConditionCode || '')}</strong><p>Re, Rm, A và KV chưa được công bố cho trạng thái này. Không lấy số liệu +QT hoặc +N để thay thế.</p></div>`
       : metric('Giới hạn chảy '+sym,withUnit(c?.yieldMpa,'MPa'),sizeNote)+
         metric('Độ bền kéo Rm',withUnit(c?.tensileMpa,'MPa'),sizeNote)+
-        metric('Độ giãn dài A',withUnit(c?.elongationPct,'%'),sizeNote+(mech.tensileTestOrientation?' · mẫu '+(ORIENTATION_SHORT[mech.tensileTestOrientation]||mech.tensileTestOrientation):''))+
+        metric('Độ giãn dài '+(mech.elongationSymbol || 'A'),withUnit(c?.elongationPct,'%'),sizeNote+(mech.tensileTestOrientation?' · mẫu '+(ORIENTATION_SHORT[mech.tensileTestOrientation]||mech.tensileTestOrientation):''))+
         metric('Va đập KV',impact&&Number.isFinite(impact.minJ)?`≥ ${num(impact.minJ)} J`:'—',impact&&Number.isFinite(impact.temperatureC)?`tại ${num(impact.temperatureC)} °C`+(impact.testDirection?' · mẫu '+(ORIENTATION_SHORT[impact.testDirection]||impact.testDirection):''):'Nguồn hiện có không nêu KV');
     const views={overview:drawOverview,mechanical:drawMechanical,chemistry:drawChemistry,usage:drawUsage,heat:drawHeatTreatment,welding:drawWelding,physical:drawPhysical,sources:drawSources};
     const eqIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h14m-4-4 4 4-4 4M17 17H3m4-4-4 4 4 4"/></svg>';
