@@ -11,7 +11,7 @@ import { SEARCH_CSS, createIndex, searchIndex, highlight, snippets } from './han
 
 const DATABASE_URL = new URL('../../data/handbook/material-handbook.json', import.meta.url);
 const FAMILY_LABEL = Object.freeze({
-  all: 'Tất cả nhóm', structural: 'Thép kết cấu', machinery: 'Thép cơ khí', stainless: 'Thép không gỉ', forming: 'Thép tấm tạo hình', coated: 'Thép tấm mạ', reinforcement: 'Thép cốt bê tông'
+  all: 'Tất cả nhóm', structural: 'Thép kết cấu', machinery: 'Thép cơ khí', stainless: 'Thép không gỉ', forming: 'Thép tấm tạo hình', coated: 'Thép tấm mạ', reinforcement: 'Thép cốt bê tông', grey: 'Gang xám', ductile: 'Gang cầu', aluminium: 'Nhôm và hợp kim', copper: 'Đồng và hợp kim'
 });
 const MATERIAL_GROUPS = Object.freeze([
   {id:'steel', label:'Thép', title:'Thép'},
@@ -1052,7 +1052,7 @@ export async function mount(root, ctx = {}) {
     const anyBand = rows.some(r => r.applicability) || Boolean(cev);
     const head = ['Nguyên tố', dim && anyBand ? `Tại ${dimMark(dim)} = ${Number.isFinite(dv) ? num(dv) : '—'} mm` : 'Giá trị'].concat(anyBand ? ['Theo vùng kích thước'] : ['Phạm vi']);
     const typical = chem.kind === 'typical_manufacturer_composition';
-    return `${m.coating ? `<h4 class="mh-subtitle">Thành phần thép nền</h4><p class="mh-note">${esc(chem.note || "")}</p>` : ""}<p class="mh-fieldnote">${esc(kinds[chem.kind] || 'Thành phần hóa học')} · % khối lượng · nguồn: ${esc(sourceNames(chem.sourceIds))}${cev ? ' · CEV: ' + esc(sourceName(cev.sourceId)) : ''}.</p>${mdTable(head, body.length ? body : [tr(['—','Chưa có dữ liệu','—'])], 'Thành phần hóa học')}<p class="mh-note">${typical ? 'Không suy ra giới hạn từ giá trị điển hình. ' : ''}Nguyên tố không có trong bảng là chưa có dữ liệu trong nguồn, không có nghĩa bằng 0.</p>${drawCoating(m)}`;
+    return `${m.coating ? `<h4 class="mh-subtitle">Thành phần thép nền</h4><p class="mh-note">${esc(chem.note || "")}</p>` : ((!rows.length || m.group === 'nonferrous') && chem.note ? `<p class="mh-note">${esc(chem.note)}</p>` : "")}<p class="mh-fieldnote">${esc(kinds[chem.kind] || 'Thành phần hóa học')} · % khối lượng · nguồn: ${esc(sourceNames(chem.sourceIds))}${cev ? ' · CEV: ' + esc(sourceName(cev.sourceId)) : ''}.</p>${mdTable(head, body.length ? body : [tr(['—','Chưa có dữ liệu','—'])], 'Thành phần hóa học')}<p class="mh-note">${typical ? 'Không suy ra giới hạn từ giá trị điển hình. ' : ''}Nguyên tố không có trong bảng là chưa có dữ liệu trong nguồn, không có nghĩa bằng 0.</p>${drawCoating(m)}`;
   }
   /** Heat-treatment routes: shown as a template until values with sources are entered. */
   function drawHeatTreatment(m) {
