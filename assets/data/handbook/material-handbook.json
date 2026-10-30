@@ -725,6 +725,109 @@
       "type": "association_reference",
       "url": "https://www.jssa.gr.jp/contents/products/standards/comparisons/",
       "note": "Bảng đối chiếu JIS / EN / UNS; JSSA không bảo đảm các mác có cùng mọi yêu cầu hoặc được thay thế trực tiếp."
+    },
+    {
+      "id": "horkos-cast-iron-materials",
+      "publisher": "HORKOS Corporation",
+      "title": "Casting technical information — Grey iron and spheroidal graphite iron",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.horkos.co.jp/product/cas/tech01.php",
+      "note": "Bảng cơ tính gang xám và gang cầu; độ cứng gang cầu được ghi là tham khảo."
+    },
+    {
+      "id": "toyo-jis5502-separately-cast",
+      "publisher": "Toyo B Co., Ltd.",
+      "title": "JIS G 5502 extract — Mechanical properties of separately cast test samples",
+      "type": "manufacturer_standard_extract",
+      "url": "https://www.toyo-b.co.jp/assets/images/theme/pdf/jis_10.pdf",
+      "note": "Bảng cho mẫu đúc rời, trang 2; không phải bảng mẫu đúc kèm hoặc mẫu lấy trực tiếp từ vật đúc. Phiên bản JIS không ghi rõ trong bản trích."
+    },
+    {
+      "id": "jis5501-1995-preview",
+      "publisher": "Japanese Standards Association / JIS",
+      "title": "JIS G 5501:1995 — Grey iron castings (preview)",
+      "type": "standard_preview",
+      "url": "https://www.normsplash.com/Samples/JIS/149924952/JIS-G-5501-1995-en.pdf",
+      "note": "Bản xem trước tiêu chuẩn, lưu trên Normsplash; không gán là toàn văn phiên bản hiện hành."
+    },
+    {
+      "id": "nonferrous-al1050",
+      "publisher": "Aalco",
+      "title": "1050A-H14 sheet",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.aalco.co.uk/datasheets/Aluminium-Alloy-1050A-H14-Sheet_57.ashx"
+    },
+    {
+      "id": "nonferrous-al5052",
+      "publisher": "Aalco",
+      "title": "5052-H32 sheet",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.aalco.co.uk/datasheets/Aluminium-Alloy-5052-H32-Sheet-and-Treadplate_138.ashx"
+    },
+    {
+      "id": "nonferrous-al6061",
+      "publisher": "Aalco",
+      "title": "6061-T6 extrusions",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.aalco.co.uk/datasheets/Aluminium-Alloy-6061-T6-Extrusions_145.ashx"
+    },
+    {
+      "id": "nonferrous-al6063",
+      "publisher": "Aalco",
+      "title": "6063-T6 extrusions",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.aalco.co.uk/datasheets/Aluminium-Alloy-6063-T6-Extrusions_158.ashx"
+    },
+    {
+      "id": "nonferrous-etp",
+      "publisher": "KME",
+      "title": "Cu-ETP / CW004A — rolled products, 2023",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.kme.com/fileadmin/DOWNLOADCENTER/COPPER%20DIVISON/4%20Industrial%20Rolled/3_Datasheets/01_2023_C11000_Cu-ETP_e.pdf"
+    },
+    {
+      "id": "nonferrous-dhp",
+      "publisher": "Aurubis",
+      "title": "Cu-DHP / CW024A — Material Datasheet, EN_2026_01",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.aurubis.com/dam/jcr:1c92bc25-e000-4851-a265-1ffe873aee8f/PNA%20219_Cu-DHP_C12200-E.N.pdf"
+    },
+    {
+      "id": "nonferrous-brass30",
+      "publisher": "KME",
+      "title": "CuZn30 / CW505L — rolled products, 2023",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.kme.com/fileadmin/DOWNLOADCENTER/COPPER%20DIVISON/4%20Industrial%20Rolled/3_Datasheets/10_2023_C26000_CuZn30_e.pdf"
+    },
+    {
+      "id": "nonferrous-brass30chem",
+      "publisher": "Aalco",
+      "title": "CW505L — chemistry limits",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.aalco.co.uk/datasheets/Copper-and-Copper-Alloys-CW505L-Sheet_296.ashx"
+    },
+    {
+      "id": "nonferrous-brass39",
+      "publisher": "Pireks",
+      "title": "CW614N — EN 12164:2024 rod properties",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.pireks.com/wp-content/uploads/2024/12/CW614N-EN-3.pdf"
+    },
+    {
+      "id": "mckechnie-6061-rev6-t5",
+      "publisher": "McKechnie Aluminium",
+      "title": "6061 — Properties and specifications, Revision 6, April 2023",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.mckechnie.co.nz/uploads/PDF/Technical-Specifications/Aluminium-Specifications/6061%20Revision%206.pdf",
+      "note": "Dùng cột mức tối thiểu của T5; không dùng cột điển hình. Chú thích 2 chỉ viện dẫn cơ tính AS/NZS 1866 cho T1, T4, T6."
+    },
+    {
+      "id": "bluescope-6063-t5",
+      "publisher": "BlueScope Distribution",
+      "title": "Aluminium 6063 Data Sheet — Extruded products",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.bluescopedistribution.com.au/products/aluminium/aluminium-6063-data-sheet/",
+      "note": "Bảng hãng viện dẫn AS/NZS 1866:1997, tái xác nhận 2020; phạm vi T5 ghi chiều dày < 12 mm."
     }
   ],
   "materials": [
@@ -14574,6 +14677,2593 @@
           {
             "textVi": "SUS316L theo bảng JIS có Ni 12,00–15,00%; Type 316L theo bảng ASTM A240 trong sổ tay có Ni 10,00–14,00%. Không tự coi SUS316L và Type 316L là cùng bộ giới hạn nghiệm thu.",
             "sourceId": "yieh-jis-sus-flat-products"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5501-fc200",
+      "grade": "FC200",
+      "title": "Gang xám FC200",
+      "family": "grey",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5501",
+      "materialNumber": "FC200",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FC 200",
+        "JIS FC200"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang xám đúc",
+      "condition": "Trạng thái vật đúc theo đơn hàng",
+      "description": "Gang xám graphit dạng tấm, mác FC200; mức bền kéo 200 MPa theo bảng tham khảo, thích hợp tra cứu vật liệu đúc.",
+      "applications": [
+        "Thân máy, vỏ hộp và thân bơm theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "tensileMpa": {
+              "min": 200
+            },
+            "hardnessHB": {
+              "max": 223
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+        "sourceIds": [
+          "horkos-cast-iron-materials",
+          "jis5501-1995-preview"
+        ],
+        "viewingNote": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành. Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm. Bảng tham khảo nêu độ cứng tối đa 223 HB; JIS G 5501:1995 áp dụng yêu cầu độ cứng khi người mua yêu cầu riêng. Cần thống nhất phép thử và vị trí đo; không coi đây là độ cứng cố định của mọi vật đúc."
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "horkos-cast-iron-materials",
+          "jis5501-1995-preview"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+        "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+        "Bảng tham khảo nêu độ cứng tối đa 223 HB; JIS G 5501:1995 áp dụng yêu cầu độ cứng khi người mua yêu cầu riêng. Cần thống nhất phép thử và vị trí đo; không coi đây là độ cứng cố định của mọi vật đúc.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "horkos-cast-iron-materials",
+        "jis5501-1995-preview"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5501 (manufacturer reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "horkos-cast-iron-materials"
+          },
+          {
+            "designation": "JIS G 5501:1995 (preview)",
+            "role": "historical_standard_reference",
+            "sourceId": "jis5501-1995-preview"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+            "sourceId": "jis5501-1995-preview"
+          },
+          {
+            "textVi": "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+            "sourceId": "horkos-cast-iron-materials"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5501-fc250",
+      "grade": "FC250",
+      "title": "Gang xám FC250",
+      "family": "grey",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5501",
+      "materialNumber": "FC250",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FC 250",
+        "JIS FC250"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang xám đúc",
+      "condition": "Trạng thái vật đúc theo đơn hàng",
+      "description": "Gang xám graphit dạng tấm, mác FC250; mức bền kéo 250 MPa theo bảng tham khảo, thích hợp tra cứu vật liệu đúc.",
+      "applications": [
+        "Thân máy, vỏ hộp và thân bơm theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "tensileMpa": {
+              "min": 250
+            },
+            "hardnessHB": {
+              "max": 241
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+        "sourceIds": [
+          "horkos-cast-iron-materials",
+          "jis5501-1995-preview"
+        ],
+        "viewingNote": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành. Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm. Bảng tham khảo nêu độ cứng tối đa 241 HB; JIS G 5501:1995 áp dụng yêu cầu độ cứng khi người mua yêu cầu riêng. Cần thống nhất phép thử và vị trí đo; không coi đây là độ cứng cố định của mọi vật đúc."
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "horkos-cast-iron-materials",
+          "jis5501-1995-preview"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+        "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+        "Bảng tham khảo nêu độ cứng tối đa 241 HB; JIS G 5501:1995 áp dụng yêu cầu độ cứng khi người mua yêu cầu riêng. Cần thống nhất phép thử và vị trí đo; không coi đây là độ cứng cố định của mọi vật đúc.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "horkos-cast-iron-materials",
+        "jis5501-1995-preview"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5501 (manufacturer reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "horkos-cast-iron-materials"
+          },
+          {
+            "designation": "JIS G 5501:1995 (preview)",
+            "role": "historical_standard_reference",
+            "sourceId": "jis5501-1995-preview"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+            "sourceId": "jis5501-1995-preview"
+          },
+          {
+            "textVi": "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+            "sourceId": "horkos-cast-iron-materials"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5501-fc300",
+      "grade": "FC300",
+      "title": "Gang xám FC300",
+      "family": "grey",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5501",
+      "materialNumber": "FC300",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FC 300",
+        "JIS FC300"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang xám đúc",
+      "condition": "Trạng thái vật đúc theo đơn hàng",
+      "description": "Gang xám graphit dạng tấm, mác FC300; mức bền kéo 300 MPa theo bảng tham khảo, thích hợp tra cứu vật liệu đúc.",
+      "applications": [
+        "Thân máy, vỏ hộp và thân bơm theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "tensileMpa": {
+              "min": 300
+            },
+            "hardnessHB": {
+              "max": 262
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+        "sourceIds": [
+          "horkos-cast-iron-materials",
+          "jis5501-1995-preview"
+        ],
+        "viewingNote": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành. Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm. Bảng tham khảo nêu độ cứng tối đa 262 HB; JIS G 5501:1995 áp dụng yêu cầu độ cứng khi người mua yêu cầu riêng. Cần thống nhất phép thử và vị trí đo; không coi đây là độ cứng cố định của mọi vật đúc."
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "horkos-cast-iron-materials",
+          "jis5501-1995-preview"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+        "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+        "Bảng tham khảo nêu độ cứng tối đa 262 HB; JIS G 5501:1995 áp dụng yêu cầu độ cứng khi người mua yêu cầu riêng. Cần thống nhất phép thử và vị trí đo; không coi đây là độ cứng cố định của mọi vật đúc.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "horkos-cast-iron-materials",
+        "jis5501-1995-preview"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5501 (manufacturer reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "horkos-cast-iron-materials"
+          },
+          {
+            "designation": "JIS G 5501:1995 (preview)",
+            "role": "historical_standard_reference",
+            "sourceId": "jis5501-1995-preview"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Rm theo mẫu đúc rời, Bảng 2 JIS G 5501:1995 trong nguồn tham khảo; không bảo đảm mọi vị trí của vật đúc có cùng Rm. Mẫu đúc kèm hoặc lấy từ thân vật đúc có bảng riêng; cần thống nhất loại mẫu và chiều dày thành.",
+            "sourceId": "jis5501-1995-preview"
+          },
+          {
+            "textVi": "Không có Re/Rp0,2, A hoặc KV trong bảng đang tham chiếu cho các mác FC này; không suy ra từ số FC hoặc từ Rm.",
+            "sourceId": "horkos-cast-iron-materials"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5502-fcd400-15",
+      "grade": "FCD400-15",
+      "title": "Gang cầu FCD400-15",
+      "family": "ductile",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5502",
+      "materialNumber": "FCD400-15",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FCD 400-15",
+        "JIS FCD400-15",
+        "FCD40015"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang graphit cầu đúc",
+      "condition": "Trạng thái chế tạo đạt cơ tính theo đơn hàng",
+      "description": "Gang graphit cầu FCD400-15; dữ liệu Re/Rm/A của mẫu đúc rời, khác gang xám FC và khác các cấp FCD cùng họ.",
+      "applications": [
+        "Chi tiết gang cầu chịu tải theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 250
+            },
+            "tensileMpa": {
+              "min": 400
+            },
+            "elongationPct": {
+              "min": 15
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "viewingNote": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu. Độ cứng 130–180 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB. Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+        "hardnessReferenceHB": {
+          "min": 130,
+          "max": 180,
+          "kind": "reference_only"
+        }
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Trong ký hiệu FCD400-15, 400 là mức bền kéo tối thiểu và 15 là độ giãn dài tối thiểu của cấp mác trên mẫu thử quy định.",
+        "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "Độ cứng 130–180 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+        "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "toyo-jis5502-separately-cast"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5502 (edition not stated in extract)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          },
+          {
+            "textVi": "Độ cứng 130–180 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5502-fcd450-10",
+      "grade": "FCD450-10",
+      "title": "Gang cầu FCD450-10",
+      "family": "ductile",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5502",
+      "materialNumber": "FCD450-10",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FCD 450-10",
+        "JIS FCD450-10",
+        "FCD45010"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang graphit cầu đúc",
+      "condition": "Trạng thái chế tạo đạt cơ tính theo đơn hàng",
+      "description": "Gang graphit cầu FCD450-10; dữ liệu Re/Rm/A của mẫu đúc rời, khác gang xám FC và khác các cấp FCD cùng họ.",
+      "applications": [
+        "Chi tiết gang cầu chịu tải theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 280
+            },
+            "tensileMpa": {
+              "min": 450
+            },
+            "elongationPct": {
+              "min": 10
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "viewingNote": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu. Độ cứng 140–210 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB. Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+        "hardnessReferenceHB": {
+          "min": 140,
+          "max": 210,
+          "kind": "reference_only"
+        }
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Trong ký hiệu FCD450-10, 450 là mức bền kéo tối thiểu và 10 là độ giãn dài tối thiểu của cấp mác trên mẫu thử quy định.",
+        "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "Độ cứng 140–210 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+        "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "toyo-jis5502-separately-cast"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5502 (edition not stated in extract)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          },
+          {
+            "textVi": "Độ cứng 140–210 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5502-fcd500-7",
+      "grade": "FCD500-7",
+      "title": "Gang cầu FCD500-7",
+      "family": "ductile",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5502",
+      "materialNumber": "FCD500-7",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FCD 500-7",
+        "JIS FCD500-7",
+        "FCD5007"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang graphit cầu đúc",
+      "condition": "Trạng thái chế tạo đạt cơ tính theo đơn hàng",
+      "description": "Gang graphit cầu FCD500-7; dữ liệu Re/Rm/A của mẫu đúc rời, khác gang xám FC và khác các cấp FCD cùng họ.",
+      "applications": [
+        "Chi tiết gang cầu chịu tải theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 320
+            },
+            "tensileMpa": {
+              "min": 500
+            },
+            "elongationPct": {
+              "min": 7
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "viewingNote": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu. Độ cứng 150–230 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB. Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+        "hardnessReferenceHB": {
+          "min": 150,
+          "max": 230,
+          "kind": "reference_only"
+        }
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Trong ký hiệu FCD500-7, 500 là mức bền kéo tối thiểu và 7 là độ giãn dài tối thiểu của cấp mác trên mẫu thử quy định.",
+        "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "Độ cứng 150–230 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+        "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "toyo-jis5502-separately-cast"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5502 (edition not stated in extract)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          },
+          {
+            "textVi": "Độ cứng 150–230 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5502-fcd600-3",
+      "grade": "FCD600-3",
+      "title": "Gang cầu FCD600-3",
+      "family": "ductile",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5502",
+      "materialNumber": "FCD600-3",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FCD 600-3",
+        "JIS FCD600-3",
+        "FCD6003"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang graphit cầu đúc",
+      "condition": "Trạng thái chế tạo đạt cơ tính theo đơn hàng",
+      "description": "Gang graphit cầu FCD600-3; dữ liệu Re/Rm/A của mẫu đúc rời, khác gang xám FC và khác các cấp FCD cùng họ.",
+      "applications": [
+        "Chi tiết gang cầu chịu tải theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 370
+            },
+            "tensileMpa": {
+              "min": 600
+            },
+            "elongationPct": {
+              "min": 3
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "viewingNote": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu. Độ cứng 170–270 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB. Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+        "hardnessReferenceHB": {
+          "min": 170,
+          "max": 270,
+          "kind": "reference_only"
+        }
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Trong ký hiệu FCD600-3, 600 là mức bền kéo tối thiểu và 3 là độ giãn dài tối thiểu của cấp mác trên mẫu thử quy định.",
+        "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "Độ cứng 170–270 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+        "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "toyo-jis5502-separately-cast"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5502 (edition not stated in extract)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          },
+          {
+            "textVi": "Độ cứng 170–270 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g5502-fcd700-2",
+      "grade": "FCD700-2",
+      "title": "Gang cầu FCD700-2",
+      "family": "ductile",
+      "group": "cast-iron",
+      "system": "JIS",
+      "standard": "JIS G 5502",
+      "materialNumber": "FCD700-2",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "FCD 700-2",
+        "JIS FCD700-2",
+        "FCD7002"
+      ],
+      "sourceEditionNote": "Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+      "productForm": "Chi tiết gang graphit cầu đúc",
+      "condition": "Trạng thái chế tạo đạt cơ tính theo đơn hàng",
+      "description": "Gang graphit cầu FCD700-2; dữ liệu Re/Rm/A của mẫu đúc rời, khác gang xám FC và khác các cấp FCD cùng họ.",
+      "applications": [
+        "Chi tiết gang cầu chịu tải theo thiết kế vật đúc"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 420
+            },
+            "tensileMpa": {
+              "min": 700
+            },
+            "elongationPct": {
+              "min": 2
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "impactNote": "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "viewingNote": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "referenceLabel": "Mẫu đúc rời",
+        "note": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu. Độ cứng 180–300 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB. Dữ liệu tham khảo theo bảng hãng dẫn JIS; phiên bản tiêu chuẩn, mẫu thử và điều kiện nghiệm thu phải đối chiếu theo đơn hàng.",
+        "hardnessReferenceHB": {
+          "min": 180,
+          "max": 300,
+          "kind": "reference_only"
+        }
+      },
+      "chemistry": {
+        "kind": "not_specified_in_reference",
+        "rows": [],
+        "sourceIds": [
+          "toyo-jis5502-separately-cast"
+        ],
+        "note": "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Trong ký hiệu FCD700-2, 700 là mức bền kéo tối thiểu và 2 là độ giãn dài tối thiểu của cấp mác trên mẫu thử quy định.",
+        "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+        "Độ cứng 180–300 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+        "Bảng không quy định Charpy cho cấp mác này. Không dùng yêu cầu va đập của các mác FCD có hậu tố L hoặc R để thay thế.",
+        "Nguồn đang dùng phân cấp theo cơ tính, không cung cấp bộ giới hạn thành phần để nghiệm thu từng mác. Không tự gán khoảng C, Si, Mn, P hoặc S; kiểm tra chứng chỉ mẻ nấu và yêu cầu đơn hàng.",
+        "Không tự coi mác gang FC/FCD khác cấp hoặc mác EN/ASTM có cùng số là tương đương; chỉ hiện liên kết khi có quan hệ đối chiếu được khai báo."
+      ],
+      "sourceIds": [
+        "toyo-jis5502-separately-cast"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 5502 (edition not stated in extract)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính theo mẫu đúc rời trong bảng trích JIS G 5502. Mẫu đúc kèm hoặc lấy từ thân vật đúc, chiều dày thành và trạng thái nhiệt luyện có thể cho yêu cầu khác; cần đối chiếu đúng loại mẫu.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          },
+          {
+            "textVi": "Độ cứng 180–300 HB là khoảng tham khảo trong bảng, không phải giới hạn nghiệm thu mặc định. Không suy ra Re/Rm/A từ HB.",
+            "sourceId": "toyo-jis5502-separately-cast"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "en-aw-1050a-h14",
+      "grade": "1050A-H14",
+      "title": "Nhôm 1050A-H14",
+      "family": "aluminium",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "EN AW-1050A",
+      "standard": "EN 485-2:2008",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "1050A",
+        "EN AW-1050A",
+        "1050A H14",
+        "1050AH14"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Tấm nhôm cán",
+      "condition": "H14 — biến cứng, bán cứng",
+      "description": "Hợp kim nhôm 1050A, trạng thái H14; số liệu theo dạng sản phẩm và vùng kích thước của nguồn.",
+      "applications": [
+        "Tấm, vỏ và chi tiết tạo hình theo thiết kế"
+      ],
+      "sourceIds": [
+        "nonferrous-al1050"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Bảng tham khảo cho tấm dày 0,2–6 mm. A phụ thuộc chiều dày và mẫu thử; không gán một trị số A cho toàn dải trong bản ghi này.",
+        "Độ cứng khoảng 34 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 485-2:2008",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-al1050"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-al1050"
+          }
+        ],
+        "notRecommended": []
+      },
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": {
+          "kind": "thickness",
+          "label": "Chiều dày tấm",
+          "unit": "mm",
+          "default": 2,
+          "technicalDefinition": "Bảng tham khảo cho tấm dày 0,2–6 mm. A phụ thuộc chiều dày và mẫu thử; không gán một trị số A cho toàn dải trong bản ghi này."
+        },
+        "cases": [
+          {
+            "from": 0.2,
+            "to": 6,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 105,
+              "max": 145
+            },
+            "yieldMpa": {
+              "min": 85
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-al1050"
+        ],
+        "note": "Bảng tham khảo cho tấm dày 0,2–6 mm. A phụ thuộc chiều dày và mẫu thử; không gán một trị số A cho toàn dải trong bản ghi này. Độ cứng khoảng 34 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "hardnessReferenceHB": 34
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "EN 573-3:2009 (Aalco reference)",
+        "rows": [
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.05
+          },
+          {
+            "element": "Fe",
+            "mode": "limit",
+            "max": 0.4
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.05
+          },
+          {
+            "element": "Mg",
+            "mode": "limit",
+            "max": 0.05
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.25
+          },
+          {
+            "element": "Zn",
+            "mode": "limit",
+            "max": 0.07
+          },
+          {
+            "element": "Ti",
+            "mode": "limit",
+            "max": 0.05
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-al1050"
+        ],
+        "note": "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 2710,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 71,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-al1050"
+        ]
+      }
+    },
+    {
+      "id": "en-aw-5052-h32",
+      "grade": "5052-H32",
+      "title": "Nhôm 5052-H32",
+      "family": "aluminium",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "EN AW-5052",
+      "standard": "EN 485-2:2008",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "5052",
+        "EN AW-5052",
+        "5052 H32",
+        "5052H32"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Tấm nhôm cán",
+      "condition": "H32 — biến cứng và ổn định hóa, 1/4 cứng",
+      "description": "Hợp kim nhôm 5052, trạng thái H32; số liệu theo dạng sản phẩm và vùng kích thước của nguồn.",
+      "applications": [
+        "Tấm, vỏ và chi tiết tạo hình theo thiết kế"
+      ],
+      "sourceIds": [
+        "nonferrous-al5052"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Bảng tham khảo cho tấm dày 0,2–6 mm. A phụ thuộc chiều dày và mẫu thử; không gán một trị số A cho toàn dải trong bản ghi này.",
+        "Độ cứng khoảng 61 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 485-2:2008",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-al5052"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-al5052"
+          }
+        ],
+        "notRecommended": []
+      },
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": {
+          "kind": "thickness",
+          "label": "Chiều dày tấm",
+          "unit": "mm",
+          "default": 2,
+          "technicalDefinition": "Bảng tham khảo cho tấm dày 0,2–6 mm. A phụ thuộc chiều dày và mẫu thử; không gán một trị số A cho toàn dải trong bản ghi này."
+        },
+        "cases": [
+          {
+            "from": 0.2,
+            "to": 6,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 210,
+              "max": 260
+            },
+            "yieldMpa": {
+              "min": 130
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-al5052"
+        ],
+        "note": "Bảng tham khảo cho tấm dày 0,2–6 mm. A phụ thuộc chiều dày và mẫu thử; không gán một trị số A cho toàn dải trong bản ghi này. Độ cứng khoảng 61 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "hardnessReferenceHB": 61
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "EN 573-3:2009 (Aalco reference)",
+        "rows": [
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Fe",
+            "mode": "limit",
+            "max": 0.4
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Mg",
+            "mode": "limit",
+            "min": 2.2,
+            "max": 2.8
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.25
+          },
+          {
+            "element": "Zn",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 0.15,
+            "max": 0.35
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-al5052"
+        ],
+        "note": "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 2680,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 70,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-al5052"
+        ]
+      }
+    },
+    {
+      "id": "en-aw-6061-t6",
+      "grade": "6061-T6",
+      "title": "Nhôm 6061-T6",
+      "family": "aluminium",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "EN AW-6061",
+      "standard": "EN 755-2:2008",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "6061",
+        "EN AW-6061",
+        "6061 T6",
+        "6061T6"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Thanh tròn nhôm ép đùn đặc",
+      "condition": "T6 — nhiệt luyện dung dịch và hóa già nhân tạo",
+      "description": "Hợp kim nhôm 6061, trạng thái T6; số liệu theo dạng sản phẩm và vùng kích thước của nguồn.",
+      "applications": [
+        "Khung và chi tiết nhôm ép đùn theo thiết kế"
+      ],
+      "sourceIds": [
+        "nonferrous-al6061"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Bản ghi chỉ cho thanh tròn đặc d ≤ 200 mm. Không dùng bảng này cho ống hoặc nhôm định hình có chiều dày thành khác.",
+        "Độ cứng khoảng 95 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 755-2:2008",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-al6061"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": [
+          {
+            "textVi": "Vùng ảnh hưởng nhiệt sau hàn có thể giảm bền; không giữ nguyên cơ tính T6 của vật liệu nền để nghiệm thu mối hàn.",
+            "sourceId": "nonferrous-al6061"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-al6061"
+          }
+        ],
+        "notRecommended": []
+      },
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 20,
+          "technicalDefinition": "Bản ghi chỉ cho thanh tròn đặc d ≤ 200 mm. Không dùng bảng này cho ống hoặc nhôm định hình có chiều dày thành khác."
+        },
+        "cases": [
+          {
+            "from": 0,
+            "to": 200,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 260
+            },
+            "yieldMpa": {
+              "min": 240
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-al6061"
+        ],
+        "note": "Bản ghi chỉ cho thanh tròn đặc d ≤ 200 mm. Không dùng bảng này cho ống hoặc nhôm định hình có chiều dày thành khác. Độ cứng khoảng 95 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "hardnessReferenceHB": 95
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "EN 573-3:2009 (Aalco reference)",
+        "rows": [
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.15
+          },
+          {
+            "element": "Fe",
+            "mode": "limit",
+            "max": 0.7
+          },
+          {
+            "element": "Mg",
+            "mode": "limit",
+            "min": 0.8,
+            "max": 1.2
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "min": 0.4,
+            "max": 0.8
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "min": 0.15,
+            "max": 0.4
+          },
+          {
+            "element": "Zn",
+            "mode": "limit",
+            "max": 0.25
+          },
+          {
+            "element": "Ti",
+            "mode": "limit",
+            "max": 0.15
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 0.04,
+            "max": 0.35
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-al6061"
+        ],
+        "note": "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 2700,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 70,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-al6061"
+        ]
+      }
+    },
+    {
+      "id": "en-aw-6063-t6",
+      "grade": "6063-T6",
+      "title": "Nhôm 6063-T6",
+      "family": "aluminium",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "EN AW-6063",
+      "standard": "EN 755-2:2008",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "6063",
+        "EN AW-6063",
+        "6063 T6",
+        "6063T6"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Thanh tròn nhôm ép đùn đặc",
+      "condition": "T6 — nhiệt luyện dung dịch và hóa già nhân tạo",
+      "description": "Hợp kim nhôm 6063, trạng thái T6; số liệu theo dạng sản phẩm và vùng kích thước của nguồn.",
+      "applications": [
+        "Khung và chi tiết nhôm ép đùn theo thiết kế"
+      ],
+      "sourceIds": [
+        "nonferrous-al6063"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Dùng cột A trong bảng thanh đặc: A ≥ 10%. Cột A50 ≥ 8% được nguồn nêu riêng cho thanh đến 150 mm; không gộp A và A50. 6063A là mác khác 6063.",
+        "Bản ghi chỉ cho thanh tròn đặc d ≤ 200 mm. Không dùng bảng này cho ống hoặc nhôm định hình có chiều dày thành khác.",
+        "Độ cứng khoảng 75 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 755-2:2008",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-al6063"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": [
+          {
+            "textVi": "Vùng ảnh hưởng nhiệt sau hàn có thể giảm bền; không giữ nguyên cơ tính T6 của vật liệu nền để nghiệm thu mối hàn.",
+            "sourceId": "nonferrous-al6063"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-al6063"
+          }
+        ],
+        "notRecommended": []
+      },
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 20,
+          "technicalDefinition": "Bản ghi chỉ cho thanh tròn đặc d ≤ 200 mm. Không dùng bảng này cho ống hoặc nhôm định hình có chiều dày thành khác."
+        },
+        "cases": [
+          {
+            "from": 0,
+            "to": 150,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 215
+            },
+            "yieldMpa": {
+              "min": 170
+            },
+            "elongationPct": {
+              "min": 10
+            }
+          },
+          {
+            "from": 150,
+            "to": 200,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 195
+            },
+            "yieldMpa": {
+              "min": 160
+            },
+            "elongationPct": {
+              "min": 10
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-al6063"
+        ],
+        "note": "Bản ghi chỉ cho thanh tròn đặc d ≤ 200 mm. Không dùng bảng này cho ống hoặc nhôm định hình có chiều dày thành khác. Độ cứng khoảng 75 HB là trị số tham khảo của hãng, không phải giới hạn HB tối thiểu hoặc tối đa.",
+        "hardnessReferenceHB": 75
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "EN 573-3:2009 (Aalco reference)",
+        "rows": [
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Fe",
+            "mode": "limit",
+            "max": 0.35
+          },
+          {
+            "element": "Mg",
+            "mode": "limit",
+            "min": 0.45,
+            "max": 0.9
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "min": 0.2,
+            "max": 0.6
+          },
+          {
+            "element": "Zn",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Ti",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.1
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-al6063"
+        ],
+        "note": "Al là phần còn lại; giới hạn nguyên tố theo EN 573-3:2009 được Aalco viện dẫn."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 2700,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 69.5,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-al6063"
+        ]
+      }
+    },
+    {
+      "id": "en-cw004a-rolled",
+      "grade": "Cu-ETP (CW004A)",
+      "title": "Đồng đỏ Cu-ETP",
+      "family": "copper",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "CW004A",
+      "standard": "EN 1652",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "Cu-ETP",
+        "CW004A",
+        "UNS C11000"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Tấm và dải cán",
+      "condition": "R220",
+      "description": "Đồng điện phân có oxy, độ dẫn điện cao; cần xét môi trường và phương pháp gia công.",
+      "applications": [
+        "Chi tiết dẫn điện hoặc truyền nhiệt theo yêu cầu thiết kế"
+      ],
+      "sourceIds": [
+        "nonferrous-etp"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+        "Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu.",
+        "Thành phần theo datasheet hãng; không tự đồng nhất các giới hạn EN, UNS và JIS dù nguồn có bảng đối chiếu tên mác.",
+        "Số liệu vật lý tham khảo ở 20 °C/trạng thái mềm theo nguồn; không suy ra độ dẫn điện của mọi trạng thái biến cứng."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 1652",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-etp"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-etp"
+          }
+        ],
+        "notRecommended": []
+      },
+      "conditions": [
+        {
+          "code": "R220",
+          "label": "Mềm, theo cấp bền R220",
+          "mechanical": {
+            "status": "manufacturer_datasheet_reference_to_standard",
+            "dimension": null,
+            "cases": [
+              {
+                "tensileMpa": {
+                  "min": 220,
+                  "max": 260
+                },
+                "elongationPct": {
+                  "min": 33
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "elongationSymbol": "A50",
+            "elongationGaugeLength": "L₀ = 50 mm",
+            "impact": null,
+            "sourceIds": [
+              "nonferrous-etp"
+            ],
+            "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+            "referenceLabel": "R220",
+            "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+          }
+        },
+        {
+          "code": "R290",
+          "label": "Biến cứng, theo cấp bền R290",
+          "mechanical": {
+            "status": "manufacturer_datasheet_reference_to_standard",
+            "dimension": null,
+            "cases": [
+              {
+                "tensileMpa": {
+                  "min": 290,
+                  "max": 360
+                },
+                "elongationPct": {
+                  "min": 4
+                },
+                "yieldMpa": {
+                  "min": 250
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "elongationSymbol": "A50",
+            "elongationGaugeLength": "L₀ = 50 mm",
+            "impact": null,
+            "sourceIds": [
+              "nonferrous-etp"
+            ],
+            "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+            "referenceLabel": "R290",
+            "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+          }
+        }
+      ],
+      "defaultConditionCode": "R220",
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "tensileMpa": {
+              "min": 220,
+              "max": 260
+            },
+            "elongationPct": {
+              "min": 33
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-etp"
+        ],
+        "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+        "referenceLabel": "R220",
+        "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "min": 99.9,
+            "max": 100
+          },
+          {
+            "element": "O",
+            "mode": "limit",
+            "max": 0.04
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-etp"
+        ],
+        "note": "Thành phần theo datasheet hãng; không tự đồng nhất các giới hạn EN, UNS và JIS dù nguồn có bảng đối chiếu tên mác."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 8920,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 130,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-etp"
+        ]
+      }
+    },
+    {
+      "id": "en-cw024a-rolled",
+      "grade": "Cu-DHP (CW024A)",
+      "title": "Đồng đỏ Cu-DHP",
+      "family": "copper",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "CW024A",
+      "standard": "EN 1652",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "Cu-DHP",
+        "CW024A",
+        "UNS C12200",
+        "C1220 (đối chiếu tên mác theo hãng)"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Tấm và dải cán",
+      "condition": "R220",
+      "description": "Đồng khử oxy bằng phosphor; khả năng dẫn điện khác đồng ETP và phụ thuộc trạng thái.",
+      "applications": [
+        "Chi tiết dẫn điện hoặc truyền nhiệt theo yêu cầu thiết kế"
+      ],
+      "sourceIds": [
+        "nonferrous-dhp"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+        "Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu.",
+        "Thành phần theo datasheet hãng; không tự đồng nhất các giới hạn EN, UNS và JIS dù nguồn có bảng đối chiếu tên mác.",
+        "Số liệu vật lý tham khảo ở 20 °C/trạng thái mềm theo nguồn; không suy ra độ dẫn điện của mọi trạng thái biến cứng."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 1652",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-dhp"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-dhp"
+          }
+        ],
+        "notRecommended": []
+      },
+      "conditions": [
+        {
+          "code": "R220",
+          "label": "Mềm, theo cấp bền R220",
+          "mechanical": {
+            "status": "manufacturer_datasheet_reference_to_standard",
+            "dimension": null,
+            "cases": [
+              {
+                "tensileMpa": {
+                  "min": 220,
+                  "max": 260
+                },
+                "elongationPct": {
+                  "min": 33
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "elongationSymbol": "A50",
+            "elongationGaugeLength": "L₀ = 50 mm",
+            "impact": null,
+            "sourceIds": [
+              "nonferrous-dhp"
+            ],
+            "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+            "referenceLabel": "R220",
+            "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+          }
+        },
+        {
+          "code": "R290",
+          "label": "Biến cứng, theo cấp bền R290",
+          "mechanical": {
+            "status": "manufacturer_datasheet_reference_to_standard",
+            "dimension": null,
+            "cases": [
+              {
+                "tensileMpa": {
+                  "min": 290,
+                  "max": 360
+                },
+                "elongationPct": {
+                  "min": 4
+                },
+                "yieldMpa": {
+                  "min": 250
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "elongationSymbol": "A50",
+            "elongationGaugeLength": "L₀ = 50 mm",
+            "impact": null,
+            "sourceIds": [
+              "nonferrous-dhp"
+            ],
+            "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+            "referenceLabel": "R290",
+            "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+          }
+        }
+      ],
+      "defaultConditionCode": "R220",
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "tensileMpa": {
+              "min": 220,
+              "max": 260
+            },
+            "elongationPct": {
+              "min": 33
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-dhp"
+        ],
+        "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+        "referenceLabel": "R220",
+        "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "min": 99.9,
+            "max": 100
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "min": 0.015,
+            "max": 0.04
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-dhp"
+        ],
+        "note": "Thành phần theo datasheet hãng; không tự đồng nhất các giới hạn EN, UNS và JIS dù nguồn có bảng đối chiếu tên mác."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 8900,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 132,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-dhp"
+        ]
+      }
+    },
+    {
+      "id": "en-cw505l-rolled",
+      "grade": "CuZn30 (CW505L)",
+      "title": "Đồng thau CuZn30",
+      "family": "copper",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "CW505L",
+      "standard": "EN 1652",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "CuZn30",
+        "CW505L",
+        "UNS C26000"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Tấm và dải cán",
+      "condition": "R270",
+      "description": "Đồng thau Cu–Zn, dùng cho tạo hình và dập vuốt; phân biệt trạng thái mềm và biến cứng.",
+      "applications": [
+        "Chi tiết dập, đầu nối và linh kiện điện theo thiết kế"
+      ],
+      "sourceIds": [
+        "nonferrous-brass30",
+        "nonferrous-brass30chem"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+        "Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu.",
+        "Zn là phần còn lại; giới hạn thành phần theo bảng Aalco, cơ tính theo bảng KME. Cu 70% trong KME là thành phần danh nghĩa, không thay giới hạn Cu 69–71%.",
+        "Số liệu vật lý tham khảo ở 20 °C/trạng thái mềm theo nguồn; không suy ra độ dẫn điện của mọi trạng thái biến cứng."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 1652",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-brass30"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-brass30"
+          }
+        ],
+        "notRecommended": []
+      },
+      "conditions": [
+        {
+          "code": "R270",
+          "label": "Mềm, theo cấp bền R270",
+          "mechanical": {
+            "status": "manufacturer_datasheet_reference_to_standard",
+            "dimension": null,
+            "cases": [
+              {
+                "tensileMpa": {
+                  "min": 270,
+                  "max": 350
+                },
+                "elongationPct": {
+                  "min": 40
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "elongationSymbol": "A50",
+            "elongationGaugeLength": "L₀ = 50 mm",
+            "impact": null,
+            "sourceIds": [
+              "nonferrous-brass30"
+            ],
+            "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+            "referenceLabel": "R270",
+            "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+          }
+        },
+        {
+          "code": "R350",
+          "label": "Biến cứng, theo cấp bền R350",
+          "mechanical": {
+            "status": "manufacturer_datasheet_reference_to_standard",
+            "dimension": null,
+            "cases": [
+              {
+                "tensileMpa": {
+                  "min": 350,
+                  "max": 430
+                },
+                "elongationPct": {
+                  "min": 21
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "elongationSymbol": "A50",
+            "elongationGaugeLength": "L₀ = 50 mm",
+            "impact": null,
+            "sourceIds": [
+              "nonferrous-brass30"
+            ],
+            "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+            "referenceLabel": "R350",
+            "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+          }
+        }
+      ],
+      "defaultConditionCode": "R270",
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "tensileMpa": {
+              "min": 270,
+              "max": 350
+            },
+            "elongationPct": {
+              "min": 40
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-brass30"
+        ],
+        "viewingNote": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng.",
+        "referenceLabel": "R270",
+        "note": "Số liệu tấm/dải theo trạng thái R trong bảng hãng. Không dùng cho thanh hoặc ống khác tiêu chuẩn. Dải kích thước áp dụng cần đối chiếu chứng chỉ và đơn hàng. Độ cứng HV chỉ tham khảo, không đổi sang HB. Các trị số Rp0,2 có dấu tham khảo trong nguồn không được coi là giới hạn nghiệm thu."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "min": 69,
+            "max": 71
+          },
+          {
+            "element": "Al",
+            "mode": "limit",
+            "max": 0.02
+          },
+          {
+            "element": "Pb",
+            "mode": "limit",
+            "max": 0.05
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "max": 0.3
+          },
+          {
+            "element": "Sn",
+            "mode": "limit",
+            "max": 0.1
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-brass30chem"
+        ],
+        "note": "Zn là phần còn lại; giới hạn thành phần theo bảng Aalco, cơ tính theo bảng KME. Cu 70% trong KME là thành phần danh nghĩa, không thay giới hạn Cu 69–71%."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 8530,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 115,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-brass30"
+        ]
+      }
+    },
+    {
+      "id": "en-cw614n-r430-rod",
+      "grade": "CuZn39Pb3 (CW614N)",
+      "title": "Đồng thau dễ gia công CuZn39Pb3",
+      "family": "copper",
+      "group": "nonferrous",
+      "system": "EN",
+      "materialNumber": "CW614N",
+      "standard": "EN 12164:2024",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "CuZn39Pb3",
+        "CW614N",
+        "CZ121 (đối chiếu tham khảo)"
+      ],
+      "sourceEditionNote": "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+      "productForm": "Thanh tròn đặc để gia công cắt gọt",
+      "condition": "R430",
+      "description": "Đồng thau chứa chì để cải thiện cắt gọt; bản ghi cho cấp bền R430 và thanh tròn đặc.",
+      "applications": [
+        "Chi tiết tiện, đầu nối và phụ kiện gia công cắt gọt"
+      ],
+      "sourceIds": [
+        "nonferrous-brass39"
+      ],
+      "notes": [
+        "Dữ liệu theo bảng hãng và phiên bản tiêu chuẩn được nguồn viện dẫn; không thay toàn văn tiêu chuẩn áp dụng cho đơn hàng. Kiểm tra trạng thái, dạng sản phẩm, kích thước và chứng chỉ.",
+        "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+        "Bảng Pireks dẫn EN 12164:2024 cho thanh tròn đặc R430: 3 < d ≤ 60 mm. Không dùng cho thanh rỗng, phôi rèn, trạng thái H110 hoặc mọi vật liệu mang tên đồng vàng.",
+        "Thành phần dùng cột CW614N thường của Pireks: Pb 2,20–3,50%. Không ghép với cột CW614N-DW hoặc giới hạn từ phiên bản khác; Zn là phần còn lại.",
+        "A ≥ 10% theo cột A; A100 ≥ 6% và A11,3 ≥ 8% là các cột khác. Không gộp các chiều dài mẫu. Không lấy HBW của H110 gán cho trạng thái R430."
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 12164:2024",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nonferrous-brass39"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Cơ tính chỉ áp dụng cho trạng thái và dạng sản phẩm đang xem; không dùng cho trạng thái mềm/cứng khác hoặc sản phẩm sau hàn mà chưa đánh giá.",
+            "sourceId": "nonferrous-brass39"
+          }
+        ],
+        "notRecommended": []
+      },
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 20,
+          "technicalDefinition": "Bảng Pireks dẫn EN 12164:2024 cho thanh tròn đặc R430: 3 < d ≤ 60 mm. Không dùng cho thanh rỗng, phôi rèn, trạng thái H110 hoặc mọi vật liệu mang tên đồng vàng."
+        },
+        "cases": [
+          {
+            "from": 3,
+            "to": 60,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 430
+            },
+            "yieldMpa": {
+              "min": 220
+            },
+            "elongationPct": {
+              "min": 10
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "nonferrous-brass39"
+        ],
+        "note": "Bảng Pireks dẫn EN 12164:2024 cho thanh tròn đặc R430: 3 < d ≤ 60 mm. Không dùng cho thanh rỗng, phôi rèn, trạng thái H110 hoặc mọi vật liệu mang tên đồng vàng."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "min": 57,
+            "max": 59
+          },
+          {
+            "element": "Pb",
+            "mode": "limit",
+            "min": 2.2,
+            "max": 3.5
+          },
+          {
+            "element": "Sn",
+            "mode": "limit",
+            "max": 0.3
+          },
+          {
+            "element": "Fe",
+            "mode": "limit",
+            "max": 0.3
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "max": 0.3
+          },
+          {
+            "element": "Al",
+            "mode": "limit",
+            "max": 0.05
+          }
+        ],
+        "sourceIds": [
+          "nonferrous-brass39"
+        ],
+        "note": "Thành phần dùng cột CW614N thường của Pireks: Pb 2,20–3,50%. Không ghép với cột CW614N-DW hoặc giới hạn từ phiên bản khác; Zn là phần còn lại."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 8460,
+          "kind": "manufacturer_reference"
+        },
+        "youngModulusGpa": {
+          "value": 105,
+          "kind": "manufacturer_reference"
+        },
+        "sourceIds": [
+          "nonferrous-brass39"
+        ]
+      }
+    },
+    {
+      "id": "manufacturer-6061-t5-extrusion",
+      "grade": "6061-T5",
+      "title": "Nhôm 6061-T5",
+      "family": "aluminium",
+      "group": "nonferrous",
+      "system": "AS/NZS",
+      "materialNumber": "6061-T5",
+      "standard": "McKechnie 6061-T5 — Rev.6 (2023)",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "6061 T5",
+        "6061T5",
+        "AA6061-T5"
+      ],
+      "sourceEditionNote": "6061-T5 dùng mức tối thiểu/rating của McKechnie. Nguồn chỉ xác nhận T1, T4, T6 theo AS/NZS 1866; không gán bộ cơ tính T5 này thành yêu cầu EN 755-2 hoặc ASTM B221.",
+      "productForm": "Sản phẩm nhôm ép đùn",
+      "condition": "T5 — làm nguội sau tạo hình nóng và hóa già nhân tạo",
+      "description": "Nhôm 6061 trạng thái T5; cơ tính được tách riêng theo nguồn hãng và kích thước chi phối.",
+      "applications": [
+        "Chi tiết và khung nhôm ép đùn theo thiết kế"
+      ],
+      "mechanical": {
+        "status": "supplier_reference",
+        "dimension": {
+          "kind": "controlling_section",
+          "label": "Tiết diện khống chế Tc",
+          "unit": "mm",
+          "default": 2,
+          "technicalDefinition": "Theo McKechnie: t là đường kính thanh đặc, chiều dày thành hoặc tiết diện đặc chi phối tương đương. Chỉ có dữ liệu T5 cho 0 < t ≤ 6 mm; không dùng đường kính ngoài của ống làm t."
+        },
+        "cases": [
+          {
+            "from": 0,
+            "to": 3,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 220
+            },
+            "tensileMpa": {
+              "min": 250
+            },
+            "elongationPct": {
+              "min": 8
+            }
+          },
+          {
+            "from": 3,
+            "to": 6,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 210
+            },
+            "tensileMpa": {
+              "min": 235
+            },
+            "elongationPct": {
+              "min": 8
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "impact": null,
+        "sourceIds": [
+          "mckechnie-6061-rev6-t5"
+        ],
+        "note": "Theo McKechnie: t là đường kính thanh đặc, chiều dày thành hoặc tiết diện đặc chi phối tương đương. Chỉ có dữ liệu T5 cho 0 < t ≤ 6 mm; không dùng đường kính ngoài của ống làm t. 6061-T5 dùng mức tối thiểu/rating của McKechnie. Nguồn chỉ xác nhận T1, T4, T6 theo AS/NZS 1866; không gán bộ cơ tính T5 này thành yêu cầu EN 755-2 hoặc ASTM B221."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "Si",
+            "mode": "limit",
+            "min": 0.4,
+            "max": 0.8
+          },
+          {
+            "element": "Fe",
+            "mode": "limit",
+            "max": 0.7
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "min": 0.15,
+            "max": 0.4
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.15
+          },
+          {
+            "element": "Mg",
+            "mode": "limit",
+            "min": 0.8,
+            "max": 1.2
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 0.04,
+            "max": 0.35
+          },
+          {
+            "element": "Zn",
+            "mode": "limit",
+            "max": 0.25
+          },
+          {
+            "element": "Ti",
+            "mode": "limit",
+            "max": 0.15
+          }
+        ],
+        "sourceIds": [
+          "mckechnie-6061-rev6-t5"
+        ],
+        "note": "Al là phần còn lại; nguyên tố khác: mỗi nguyên tố ≤ 0,05%, tổng ≤ 0,15% theo bảng nguồn. Thành phần cùng mác không làm cơ tính T5 bằng T6."
+      },
+      "physical": {},
+      "notes": [
+        "Theo McKechnie: t là đường kính thanh đặc, chiều dày thành hoặc tiết diện đặc chi phối tương đương. Chỉ có dữ liệu T5 cho 0 < t ≤ 6 mm; không dùng đường kính ngoài của ống làm t.",
+        "6061-T5 dùng mức tối thiểu/rating của McKechnie. Nguồn chỉ xác nhận T1, T4, T6 theo AS/NZS 1866; không gán bộ cơ tính T5 này thành yêu cầu EN 755-2 hoặc ASTM B221.",
+        "T5 và T6 khác quy trình nhiệt luyện. Không dùng lại cơ tính T6, không tự coi hai trạng thái là tương đương. Cơ tính sau hàn cần đánh giá riêng.",
+        "Al là phần còn lại; nguyên tố khác: mỗi nguyên tố ≤ 0,05%, tổng ≤ 0,15% theo bảng nguồn. Thành phần cùng mác không làm cơ tính T5 bằng T6.",
+        "Số liệu theo bảng hãng, không thay thế toàn văn tiêu chuẩn hoặc chứng chỉ lô hàng. Kiểm tra trạng thái, kích thước và yêu cầu nghiệm thu theo đơn hàng."
+      ],
+      "sourceIds": [
+        "mckechnie-6061-rev6-t5"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "McKechnie 6061 Revision 6, April 2023",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "mckechnie-6061-rev6-t5"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "specialNotes": [
+          {
+            "textVi": "T5 và T6 khác quy trình nhiệt luyện. Không dùng lại cơ tính T6, không tự coi hai trạng thái là tương đương. Cơ tính sau hàn cần đánh giá riêng.",
+            "sourceId": "mckechnie-6061-rev6-t5"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Theo McKechnie: t là đường kính thanh đặc, chiều dày thành hoặc tiết diện đặc chi phối tương đương. Chỉ có dữ liệu T5 cho 0 < t ≤ 6 mm; không dùng đường kính ngoài của ống làm t.",
+            "sourceId": "mckechnie-6061-rev6-t5"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "manufacturer-6063-t5-extrusion",
+      "grade": "6063-T5",
+      "title": "Nhôm 6063-T5",
+      "family": "aluminium",
+      "group": "nonferrous",
+      "system": "AS/NZS",
+      "materialNumber": "6063-T5",
+      "standard": "AS/NZS 1866:1997 (BlueScope)",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "6063 T5",
+        "6063T5",
+        "AA6063-T5"
+      ],
+      "sourceEditionNote": "Cơ tính theo BlueScope dẫn AS/NZS 1866:1997 (tái xác nhận 2020); không ghép với bảng EN của bản ghi 6063-T6 trong HB.",
+      "productForm": "Sản phẩm nhôm ép đùn",
+      "condition": "T5 — làm nguội sau tạo hình nóng và hóa già nhân tạo",
+      "description": "Nhôm 6063 trạng thái T5; cơ tính được tách riêng theo nguồn hãng và kích thước chi phối.",
+      "applications": [
+        "Chi tiết và khung nhôm ép đùn theo thiết kế"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": {
+          "kind": "thickness",
+          "label": "Chiều dày thành t",
+          "unit": "mm",
+          "default": 2,
+          "technicalDefinition": "Theo bảng BlueScope: sản phẩm ép đùn T5 có chiều dày t < 12 mm. Bản ghi giữ đúng dấu < của nguồn; từ 12 mm trở lên chưa gán cơ tính. Không dùng đường kính ngoài của ống làm chiều dày thành."
+        },
+        "cases": [
+          {
+            "from": 0,
+            "to": 12,
+            "fromInclusive": false,
+            "toInclusive": false,
+            "yieldMpa": {
+              "min": 110
+            },
+            "tensileMpa": {
+              "min": 150
+            },
+            "elongationPct": {
+              "min": 8
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "impact": null,
+        "sourceIds": [
+          "bluescope-6063-t5"
+        ],
+        "note": "Theo bảng BlueScope: sản phẩm ép đùn T5 có chiều dày t < 12 mm. Bản ghi giữ đúng dấu < của nguồn; từ 12 mm trở lên chưa gán cơ tính. Không dùng đường kính ngoài của ống làm chiều dày thành. Cơ tính theo BlueScope dẫn AS/NZS 1866:1997 (tái xác nhận 2020); không ghép với bảng EN của bản ghi 6063-T6 trong HB."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "rows": [
+          {
+            "element": "Si",
+            "mode": "limit",
+            "min": 0.2,
+            "max": 0.6
+          },
+          {
+            "element": "Fe",
+            "mode": "limit",
+            "max": 0.35
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Mg",
+            "mode": "limit",
+            "min": 0.45,
+            "max": 0.9
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Zn",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Ti",
+            "mode": "limit",
+            "max": 0.1
+          }
+        ],
+        "sourceIds": [
+          "bluescope-6063-t5"
+        ],
+        "note": "Al là phần còn lại; nguyên tố khác: mỗi nguyên tố ≤ 0,05%, tổng ≤ 0,15% theo bảng nguồn. Thành phần cùng mác không làm cơ tính T5 bằng T6."
+      },
+      "physical": {},
+      "notes": [
+        "Theo bảng BlueScope: sản phẩm ép đùn T5 có chiều dày t < 12 mm. Bản ghi giữ đúng dấu < của nguồn; từ 12 mm trở lên chưa gán cơ tính. Không dùng đường kính ngoài của ống làm chiều dày thành.",
+        "Cơ tính theo BlueScope dẫn AS/NZS 1866:1997 (tái xác nhận 2020); không ghép với bảng EN của bản ghi 6063-T6 trong HB.",
+        "T5 và T6 khác quy trình nhiệt luyện. Không dùng lại cơ tính T6, không tự coi hai trạng thái là tương đương. Cơ tính sau hàn cần đánh giá riêng.",
+        "Al là phần còn lại; nguyên tố khác: mỗi nguyên tố ≤ 0,05%, tổng ≤ 0,15% theo bảng nguồn. Thành phần cùng mác không làm cơ tính T5 bằng T6.",
+        "Số liệu theo bảng hãng, không thay thế toàn văn tiêu chuẩn hoặc chứng chỉ lô hàng. Kiểm tra trạng thái, kích thước và yêu cầu nghiệm thu theo đơn hàng."
+      ],
+      "sourceIds": [
+        "bluescope-6063-t5"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "AS/NZS 1866:1997 (BlueScope reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "bluescope-6063-t5"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "specialNotes": [
+          {
+            "textVi": "T5 và T6 khác quy trình nhiệt luyện. Không dùng lại cơ tính T6, không tự coi hai trạng thái là tương đương. Cơ tính sau hàn cần đánh giá riêng.",
+            "sourceId": "bluescope-6063-t5"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Theo bảng BlueScope: sản phẩm ép đùn T5 có chiều dày t < 12 mm. Bản ghi giữ đúng dấu < của nguồn; từ 12 mm trở lên chưa gán cơ tính. Không dùng đường kính ngoài của ống làm chiều dày thành.",
+            "sourceId": "bluescope-6063-t5"
           }
         ],
         "notRecommended": []
