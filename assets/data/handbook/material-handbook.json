@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "datasetId": "epsilon-blue-soft.material-handbook",
   "status": "demo_reference_only",
-  "updatedAt": "2026-10-29",
+  "updatedAt": "2026-10-30",
   "engineeringUse": "NOT_APPROVED_FOR_AUTOMATED_DESIGN",
   "notes": [
     "Sổ tay tra cứu vật liệu; xem tiêu chuẩn, trạng thái và điều kiện áp dụng của từng bảng."
@@ -528,6 +528,203 @@
       "type": "engineering_comparative_guide",
       "url": "https://www.hkcmsa.org/wp-content/uploads/2025/08/eqsteel_20211115.pdf",
       "note": "Bảng tổng hợp cơ tính và thành phần Q355 theo chiều dày, cấp chất lượng, điều kiện cán; dùng đối chiếu với bản gốc GB/T 1591-2018."
+    },
+    {
+      "id": "astm-a668-23-tables",
+      "publisher": "ASTM International",
+      "title": "ASTM A668/A668M-23 — Tables 1, 2; Sections 3, 6, 7 (public preview)",
+      "type": "standard_public_preview",
+      "url": "https://standards.iteh.ai/catalog/standards/astm/ffa07e42-126f-4bd4-a7fe-98513e6e79c7/astm-a668-a668m-23",
+      "note": "Bảng SI cho Class G và H; đối chiếu tiêu chuẩn và chứng chỉ của đơn hàng khi nghiệm thu."
+    },
+    {
+      "id": "tsubaki-s45c-strength",
+      "publisher": "Tsubakimoto Chain Co.",
+      "title": "Steel material strength reference — JIS G4051 S45C, normalized / quenched and tempered",
+      "type": "manufacturer_reference",
+      "url": "https://tt-net.tsubakimoto.co.jp/tecs/engd/kpl/engd_kpl_zai.asp",
+      "note": "Bảng tham khảo của Tsubaki; không công bố dải kích thước hoặc điều kiện mẫu cho từng trị số S45C."
+    },
+    {
+      "id": "jfs-s45c",
+      "publisher": "Ju Feng Special Steel (JFS Steel)",
+      "title": "S45C — Chemical composition, international comparison and applications",
+      "type": "supplier_datasheet",
+      "url": "https://www.jfs-steel.com/en/product/S45C/S45C.html",
+      "note": "Bảng đối chiếu của hãng là tham khảo; thành phần giữa các hệ tiêu chuẩn có khác biệt."
+    },
+    {
+      "id": "iwata-s45c-chemistry",
+      "publisher": "IWATA Specialty Steel Inc.",
+      "title": "S45C / S45CM chemical composition — Ni + Cr limit",
+      "type": "supplier_datasheet",
+      "url": "https://www.iwata-koutetsu.com/catalog/steelgroup/carbon-steels-for-machine-structural-use-045.html",
+      "note": "Giới hạn thành phần S45C theo bảng hãng, gồm Ni + Cr ≤ 0,35%."
+    },
+    {
+      "id": "nippon-spcc-u003en-2020",
+      "publisher": "Nippon Steel Corporation",
+      "title": "Cold-Rolled Steel Sheets and Coils — U003en (2020), pp.10,12–15",
+      "type": "manufacturer_catalogue",
+      "url": "https://www.nipponsteel.com/product/catalog_download/pdf/U003en.pdf",
+      "note": "SPCC: bảng thành phần và chú thích không mặc định bảo đảm thử kéo; không đồng nhất với SPCCT."
+    },
+    {
+      "id": "jfe-sphc-b1e001",
+      "publisher": "JFE Steel Corporation",
+      "title": "Hot Rolled Steel Sheet — JIS G 3131:2018 excerpt, p.24",
+      "type": "manufacturer_catalogue",
+      "url": "https://www.jfe-steel.co.jp/en/products/sheets/catalog/b1e-001.pdf",
+      "note": "SPHC: bảng hóa học và cơ tính theo chiều dày; bảng hãng viện dẫn bản JIS 2018."
+    },
+    {
+      "id": "conic-forming-sheet-range",
+      "publisher": "CONIC Co., Ltd.",
+      "title": "Technical Guide Vol.11 — Material Properties (Steel)",
+      "type": "manufacturer_reference",
+      "url": "https://www.conic.co.jp/en/tech/punch_press_tools/vol11.html",
+      "note": "Tham khảo phạm vi tấm SPHC 1,2–14 mm; không dùng bảng SPCC trong nguồn này làm bảo đảm thử kéo."
+    },
+    {
+      "id": "csc-sgcc-coated-2025",
+      "publisher": "China Steel Corporation",
+      "title": "Zn-coated Steel Product Manual (2025) — JIS G3302:2022, pp.15–16",
+      "type": "manufacturer_catalogue",
+      "url": "https://www.csc.com.tw/csc_c/pd/doc/spec_ct_e_2025.pdf",
+      "note": "SGCC: thành phần thép nền; trị số kéo trong ngoặc là tham khảo, cần thỏa thuận khi bảo đảm."
+    },
+    {
+      "id": "nippon-zam-faq",
+      "publisher": "Nippon Steel Corporation",
+      "title": "ZAM — Official FAQ: coating composition and substrate grades",
+      "type": "manufacturer_reference",
+      "url": "https://www.nipponsteel.com/product/zam/en/question/",
+      "note": "Thành phần điển hình của lớp mạ ZAM và thông tin các loại thép nền."
+    },
+    {
+      "id": "nippon-zam-jis-excerpt",
+      "publisher": "Nippon Steel Corporation",
+      "title": "ZAM — JIS G 3323 excerpt: grades, properties and coating designations",
+      "type": "manufacturer_catalogue",
+      "url": "https://www.nipponsteel.com/product/zam/assets/data/security_standard-jis.pdf",
+      "note": "Cơ tính phải theo cấp nền cụ thể, như SGMCC, SGMHC hoặc cấp cường độ SGMC/SGMH."
+    },
+    {
+      "id": "tcvn-1651-1-2018-plain-bars",
+      "publisher": "Bộ Khoa học và Công nghệ / TCVN",
+      "title": "TCVN 1651-1:2018 — Thép cốt bê tông, Phần 1: Thép thanh tròn trơn",
+      "type": "standard_reference",
+      "url": "https://file.hoaphat.com.vn/hoaphat-com-vn/2022/05/tcvn1651-1-2018.pdf",
+      "note": "Bản tiêu chuẩn công bố trên website Hòa Phát; xem Bảng 2, 3, 5, 6 và Điều 8."
+    },
+    {
+      "id": "vina-kyoei-cb240t-coil",
+      "publisher": "Vina Kyoei Steel",
+      "title": "Thép cuộn — CB240-T, TCVN 1651-1:2018",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.vinakyoeisteel.com.vn/thep-cuon-51",
+      "note": "Bảng hãng cho thép cuộn d6/d8: giới hạn chảy 240 MPa, bền kéo 380 MPa, giãn dài 20%."
+    },
+    {
+      "id": "tcvn-1651-2-2018-ribbed-bars",
+      "publisher": "Bộ Khoa học và Công nghệ / TCVN",
+      "title": "TCVN 1651-2:2018 — Thép cốt bê tông, Phần 2: Thép thanh vằn",
+      "type": "standard_reference",
+      "url": "https://vnce.vn/Uploads/files/TCVN1651-2_2018_m_917774.pdf",
+      "note": "Bản tiêu chuẩn lưu tại VNCE; xem Bảng 2, 4, 6, 7, 8 và Điều 8."
+    },
+    {
+      "id": "vina-kyoei-ribbed-bars-2018",
+      "publisher": "Vina Kyoei Steel",
+      "title": "Thép gân (vằn) — TCVN 1651-2:2018",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.vinakyoeisteel.com.vn/thep-gan-van-49",
+      "note": "Bảng cơ tính thép thanh vằn và đường kính gối uốn theo cỡ thanh."
+    },
+    {
+      "id": "gbt3077-2015-original",
+      "publisher": "SAC / GB/T",
+      "title": "GB/T 3077-2015 — Alloy structure steels",
+      "type": "standard_reference",
+      "url": "https://www.sanonpipe.com/uploads/GB_T-3077-2015-%E5%90%88%E9%87%91%E7%BB%93%E6%9E%84%E9%92%A2.pdf",
+      "note": "Bản gốc tiêu chuẩn do Sanon Pipe lưu trữ; Bảng 1–3 và Điều 6.3–6.4."
+    },
+    {
+      "id": "thyssenkrupp-14401-2017",
+      "publisher": "thyssenkrupp Materials (UK)",
+      "title": "Stainless Steel 1.4401 / 316 — Material Data Sheet, 11/2017",
+      "type": "manufacturer_datasheet",
+      "url": "https://ucpcdn.thyssenkrupp.com/_legacy/UCPthyssenkruppBAMXUK/assets.files/material-data-sheets/stainless-steel/stainless-steel-1.4401-316.pdf",
+      "note": "Giới hạn phân tích mẻ nấu 1.4401, trang 1; không gán đây là toàn văn tiêu chuẩn hiện hành."
+    },
+    {
+      "id": "outo-supra-316-2025",
+      "publisher": "Outokumpu",
+      "title": "Supra range datasheet — 316/4401, Tables 1, 5, 6, 7",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.outokumpu.com/-/media/files/products/supra/outokumpu-supra-range-datasheet.pdf?modified=20251117111951&revision=7a909396-d1f3-4d36-9c1c-99606be41fd2",
+      "note": "Cơ tính EN theo dạng C/H/P; bảng ASTM A240 riêng."
+    },
+    {
+      "id": "atlas-a240-flat-products",
+      "publisher": "Atlas Steels / worldstainless",
+      "title": "Stainless Steel Grade Datasheets — 304/304L/304H and 316/316L/316H",
+      "type": "manufacturer_datasheet",
+      "url": "https://worldstainless.org/wp-content/uploads/2025/02/stainless-steel-grade-sheets.pdf",
+      "note": "Tài liệu Atlas Steels, bản tổng hợp 2013: bảng thành phần, cơ tính ASTM A240/A240M cho sản phẩm cán phẳng. Không coi ngày tải lên là năm phiên bản tiêu chuẩn."
+    },
+    {
+      "id": "ati-a240-304",
+      "publisher": "ATI",
+      "title": "ATI 304 — UNS S30400, ASTM A240",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.atimaterials.com/Products/ati-304"
+    },
+    {
+      "id": "ati-a240-316-series",
+      "publisher": "ATI",
+      "title": "ATI 316 / 316L / 317 / 317L — Technical Data Sheet",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.atimaterials.com/Products/Documents/datasheets/stainless-specialty-steel/austenitic/ati_316_316l_317_317l_tds_en2_v1.pdf"
+    },
+    {
+      "id": "ati-a240-316l",
+      "publisher": "ATI",
+      "title": "ATI 316L — UNS S31603, ASTM A240",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.atimaterials.com/Products/ati-316l"
+    },
+    {
+      "id": "yieh-jis-sus-flat-products",
+      "publisher": "Yieh Corp.",
+      "title": "Product Information — JIS stainless flat products",
+      "type": "manufacturer_datasheet",
+      "url": "https://yieh.com/en/CustomerService/ProductInformation",
+      "note": "Bảng JIS G 4304 / G 4305 cho sản phẩm cán phẳng; không dùng bảng ASTM ở cùng trang thay cho JIS."
+    },
+    {
+      "id": "myodo-jis-sus-sheet",
+      "publisher": "Myodo Metal",
+      "title": "Myodo Spec — JIS G 4305(2012), solution-treated stainless sheet",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.myodo-metal.co.jp/products/spec.php",
+      "note": "Bảng thành phần và cơ tính trạng thái ủ dung dịch; bảng cơ tính dẫn JIS G 4305(2012)."
+    },
+    {
+      "id": "nas-kotai-jis-sus",
+      "publisher": "Nippon Yakin Kogyo Kôtai",
+      "title": "List of Available Steel Grades — NAS304 / NAS316 / NAS316L",
+      "type": "manufacturer_datasheet",
+      "url": "https://www.nas-kotai.co.jp/products/copper.html",
+      "note": "Bảng đối chiếu các mác SUS, cơ tính và các thang độ cứng HB, HRB, HV."
+    },
+    {
+      "id": "jssa-stainless-cross-reference",
+      "publisher": "Japan Stainless Steel Association (JSSA)",
+      "title": "Comparison of JIS and related foreign stainless steel grades",
+      "type": "association_reference",
+      "url": "https://www.jssa.gr.jp/contents/products/standards/comparisons/",
+      "note": "Bảng đối chiếu JIS / EN / UNS; JSSA không bảo đảm các mác có cùng mọi yêu cầu hoặc được thay thế trực tiếp."
     }
   ],
   "materials": [
@@ -9279,8 +9476,8 @@
         "UNS S30400",
         "X5CrNi18-10"
       ],
-      "standard": "Outokumpu Core 304/4301 / EN 10088 (theo sản phẩm)",
-      "sourceEditionNote": "Outokumpu: cơ tính theo dạng sản phẩm C/H/P.",
+      "standard": "EN 10088-2",
+      "sourceEditionNote": "Outokumpu: cơ tính theo dạng sản phẩm C/H/P. Outokumpu Core 304/4301 / EN 10088 (theo sản phẩm).",
       "productForm": "Tấm / cuộn cán nóng hoặc nguội",
       "condition": "Theo datasheet sản phẩm Outokumpu",
       "description": "Thép không gỉ Austenitic Cr–Ni, phổ biến trong thiết bị và chế tạo.",
@@ -9848,8 +10045,8 @@
         "UNS S31603",
         "X2CrNiMo17-12-2"
       ],
-      "standard": "Outokumpu Supra 316L/4404 / EN 10088 (theo sản phẩm)",
-      "sourceEditionNote": "Outokumpu: cơ tính theo dạng sản phẩm C/H/P.",
+      "standard": "EN 10088-2",
+      "sourceEditionNote": "Outokumpu: cơ tính theo dạng sản phẩm C/H/P. Outokumpu Supra 316L/4404 / EN 10088 (theo sản phẩm).",
       "productForm": "Tấm / cuộn cán nóng hoặc nguội",
       "condition": "Theo datasheet sản phẩm Outokumpu",
       "description": "Thép không gỉ Austenitic Cr–Ni–Mo hàm lượng carbon thấp, chống ăn mòn tốt hơn trong nhiều môi trường.",
@@ -10007,8 +10204,9 @@
         }
       },
       "notes": [
-        "Hóa học đang hiển thị là giá trị điển hình của hãng.",
-        "Cơ tính khác nhau theo dạng C/H/P; xem bảng Cơ tính."
+        "Cơ tính khác nhau theo dạng C/H/P; xem bảng Cơ tính.",
+        "316 (1.4401 / S31600) và 316L (1.4404 / S31603) là hai bản ghi riêng. Theo bảng EN đang tham chiếu, C tối đa lần lượt 0,07% và 0,03%; không tự thay thế hoặc coi là chứng nhận kép.",
+        "316L carbon thấp giúp giảm nguy cơ nhạy cảm ăn mòn liên hạt sau hàn; không có nghĩa 316L luôn bền hơn hoặc chống mọi dạng ăn mòn tốt hơn 316."
       ],
       "sourceIds": [
         "outo-316",
@@ -10422,7 +10620,8 @@
             "sourceId": "outo-supra"
           }
         ]
-      }
+      },
+      "localizeSearchSnippets": true
     },
     {
       "id": "jis-sus201-annealed-flat",
@@ -10436,8 +10635,8 @@
         "UNS S20100",
         "X12CrMnNiN17-7-5 (đối chiếu EN, không đồng nhất mọi tiêu chuẩn)"
       ],
-      "standard": "JIS G 4304 / JIS G 4305 (bảng tham khảo Yieh)",
-      "sourceEditionNote": "Cơ tính bảng tham khảo JIS trong catalogue Yieh; khác bộ cơ tính ATI 201 HP theo ASTM A240, không trộn.",
+      "standard": "JIS G 4304 / JIS G 4305",
+      "sourceEditionNote": "Cơ tính bảng tham khảo JIS trong catalogue Yieh; khác bộ cơ tính ATI 201 HP theo ASTM A240, không trộn. JIS G 4304 / JIS G 4305 (bảng tham khảo Yieh).",
       "productForm": "Tấm / cuộn inox cán nóng hoặc cán nguội",
       "condition": "Trạng thái ủ, không áp dụng cho cán nguội tăng bền",
       "description": "Inox austenitic hệ Cr–Mn–Ni, dùng Mn thay một phần Ni; hóa bền đáng kể khi gia công nguội.",
@@ -10704,8 +10903,8 @@
         "UNS S43000",
         "X6Cr17 (EN)"
       ],
-      "standard": "JIS G 4305 (bảng tham khảo SUS430, trạng thái ủ)",
-      "sourceEditionNote": "Cơ tính tra theo JIS SUS430 (Rm ≥ 420 MPa); không thay bằng giới hạn ASTM A240 (Rm ≥ 450 MPa).",
+      "standard": "JIS G 4305",
+      "sourceEditionNote": "Cơ tính tra theo JIS SUS430 (Rm ≥ 420 MPa); không thay bằng giới hạn ASTM A240 (Rm ≥ 450 MPa). JIS G 4305 (bảng tham khảo SUS430, trạng thái ủ).",
       "productForm": "Tấm / cuộn inox, ưu tiên sản phẩm cán nguội",
       "condition": "Ủ (annealed), không dùng cho trạng thái biến dạng nguội khác",
       "description": "Inox ferritic giàu Cr, ít Ni, có từ tính; chống ăn mòn phù hợp môi trường ít xâm thực.",
@@ -10964,11 +11163,3467 @@
           }
         ]
       }
+    },
+    {
+      "id": "astm-a668-class-g-alloy-forging",
+      "grade": "A668 Class G",
+      "localizeSearchSnippets": true,
+      "title": "Thép rèn hợp kim ASTM A668 Class G",
+      "family": "machinery",
+      "system": "ASTM",
+      "materialNumber": "ASTM A668/A668M Class G",
+      "otherNames": [
+        "ASTM A668 Class G",
+        "ASTM A668M Class G",
+        "A668 Cl.G"
+      ],
+      "standard": "ASTM A668/A668M-23",
+      "sourceEditionNote": "Tham chiếu bản 2023, Bảng 1 và 2 (SI).",
+      "productForm": "Vật rèn thép hợp kim cho công nghiệp",
+      "condition": "Ủ hoặc thường hóa hoặc thường hóa + ram",
+      "description": "Vật rèn thép hợp kim Class G; cơ tính theo tiết diện khống chế, trạng thái ủ hoặc thường hóa hoặc thường hóa + ram.",
+      "applications": [
+        "Vật rèn cho công nghiệp thông dụng"
+      ],
+      "mechanical": {
+        "status": "standard_table_reference",
+        "dimension": {
+          "kind": "controlling_section",
+          "label": "Tiết diện khống chế Tc",
+          "unit": "mm",
+          "default": 200,
+          "technicalDefinition": "Tc là đường kính quả cầu lớn nhất nội tiếp vật rèn tại nhiệt luyện; trường hợp lấy mẫu trên phần kéo dài Tp xem 7.1.4.2."
+        },
+        "cases": [
+          {
+            "from": 0,
+            "to": 300,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 550
+            },
+            "yieldMpa": {
+              "min": 345
+            },
+            "elongationPct": {
+              "min": 24
+            },
+            "reductionOfAreaPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "min": 163,
+              "max": 207
+            }
+          },
+          {
+            "from": 300,
+            "to": 500,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 550
+            },
+            "yieldMpa": {
+              "min": 345
+            },
+            "elongationPct": {
+              "min": 22
+            },
+            "reductionOfAreaPct": {
+              "min": 38
+            },
+            "hardnessHB": {
+              "min": 163,
+              "max": 207
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationGaugeLength": "50mm",
+        "impact": null,
+        "sourceIds": [
+          "astm-a668-23-tables"
+        ],
+        "note": "A theo chiều dài đo 50 mm; Z là độ thắt tỷ đối. Cơ tính gắn với vị trí lấy mẫu theo tiêu chuẩn; hướng mẫu phải ghi trên chứng chỉ."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "ASTM A668/A668M-23 Table 1 — Classes G to N",
+        "rows": [
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.04
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.025
+          }
+        ],
+        "note": "Chỉ khai báo giới hạn P và S. Thành phần hợp kim còn lại theo thỏa thuận/chứng chỉ; không suy ra một mác AISI cố định.",
+        "sourceIds": [
+          "astm-a668-23-tables"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Tc là đường kính quả cầu lớn nhất nội tiếp vật rèn tại nhiệt luyện; trường hợp lấy mẫu trên phần kéo dài Tp xem 7.1.4.2.",
+        "Bảng đang dùng hệ SI; không ghép giới hạn kích thước inch với trị số MPa trong bảng này.",
+        "Ngoài 500 mm: cần kiểm tra điều kiện áp dụng riêng; chương trình không tự ngoại suy cơ tính.",
+        "Class H là tên cấp thép; GH/HH có hậu tố H là phương án nghiệm thu chỉ bằng độ cứng, không thuộc hai bản ghi này.",
+        "Không áp dụng bản ghi này cho thanh cán nóng hoặc thanh gia công nguội."
+      ],
+      "sourceIds": [
+        "astm-a668-23-tables"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "ASTM A668/A668M-23",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "astm-a668-23-tables"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": [
+          {
+            "id": "a668-g-annealing",
+            "process": "annealing",
+            "purposeVi": "Phương án nhiệt luyện cho A668 Class G",
+            "sourceId": "astm-a668-23-tables",
+            "sourceClauseOrTable": "Table 2",
+            "note": "Chưa khai báo nhiệt độ và thời gian xử lý."
+          },
+          {
+            "id": "a668-g-normalizing",
+            "process": "normalizing",
+            "purposeVi": "Phương án nhiệt luyện cho A668 Class G",
+            "sourceId": "astm-a668-23-tables",
+            "sourceClauseOrTable": "Table 2",
+            "note": "Chưa khai báo nhiệt độ và thời gian xử lý."
+          },
+          {
+            "id": "a668-g-normalizing_and_tempering",
+            "process": "normalizing_and_tempering",
+            "purposeVi": "Phương án nhiệt luyện cho A668 Class G",
+            "sourceId": "astm-a668-23-tables",
+            "sourceClauseOrTable": "Table 2",
+            "note": "Chưa khai báo nhiệt độ và thời gian xử lý."
+          }
+        ],
+        "linkNoteVi": "Chọn phương án của Class theo đơn hàng."
+      },
+      "usage": {
+        "status": "reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Không áp dụng bản ghi này cho thanh cán nóng hoặc thanh gia công nguội.",
+            "sourceId": "astm-a668-23-tables",
+            "sourceClauseOrTable": "1.2"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "astm-a668-class-h-alloy-forging",
+      "grade": "A668 Class H",
+      "localizeSearchSnippets": true,
+      "title": "Thép rèn hợp kim ASTM A668 Class H",
+      "family": "machinery",
+      "system": "ASTM",
+      "materialNumber": "ASTM A668/A668M Class H",
+      "otherNames": [
+        "ASTM A668 Class H",
+        "ASTM A668M Class H",
+        "A668 Cl.H"
+      ],
+      "standard": "ASTM A668/A668M-23",
+      "sourceEditionNote": "Tham chiếu bản 2023, Bảng 1 và 2 (SI).",
+      "productForm": "Vật rèn thép hợp kim cho công nghiệp",
+      "condition": "Thường hóa + ram",
+      "description": "Vật rèn thép hợp kim Class H; cơ tính theo tiết diện khống chế, trạng thái thường hóa + ram.",
+      "applications": [
+        "Vật rèn cho công nghiệp thông dụng"
+      ],
+      "mechanical": {
+        "status": "standard_table_reference",
+        "dimension": {
+          "kind": "controlling_section",
+          "label": "Tiết diện khống chế Tc",
+          "unit": "mm",
+          "default": 200,
+          "technicalDefinition": "Tc là đường kính quả cầu lớn nhất nội tiếp vật rèn tại nhiệt luyện; trường hợp lấy mẫu trên phần kéo dài Tp xem 7.1.4.2."
+        },
+        "cases": [
+          {
+            "from": 0,
+            "to": 175,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 620
+            },
+            "yieldMpa": {
+              "min": 415
+            },
+            "elongationPct": {
+              "min": 22
+            },
+            "reductionOfAreaPct": {
+              "min": 44
+            },
+            "hardnessHB": {
+              "min": 187,
+              "max": 235
+            }
+          },
+          {
+            "from": 175,
+            "to": 250,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 620
+            },
+            "yieldMpa": {
+              "min": 400
+            },
+            "elongationPct": {
+              "min": 21
+            },
+            "reductionOfAreaPct": {
+              "min": 42
+            },
+            "hardnessHB": {
+              "min": 187,
+              "max": 235
+            }
+          },
+          {
+            "from": 250,
+            "to": 500,
+            "fromInclusive": false,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 620
+            },
+            "yieldMpa": {
+              "min": 400
+            },
+            "elongationPct": {
+              "min": 18
+            },
+            "reductionOfAreaPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "min": 187,
+              "max": 235
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationGaugeLength": "50mm",
+        "impact": null,
+        "sourceIds": [
+          "astm-a668-23-tables"
+        ],
+        "note": "A theo chiều dài đo 50 mm; Z là độ thắt tỷ đối. Cơ tính gắn với vị trí lấy mẫu theo tiêu chuẩn; hướng mẫu phải ghi trên chứng chỉ."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "ASTM A668/A668M-23 Table 1 — Classes G to N",
+        "rows": [
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.04
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.025
+          }
+        ],
+        "note": "Chỉ khai báo giới hạn P và S. Thành phần hợp kim còn lại theo thỏa thuận/chứng chỉ; không suy ra một mác AISI cố định.",
+        "sourceIds": [
+          "astm-a668-23-tables"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Rp0,2 tối thiểu: 415 MPa khi 0 < Tc ≤ 175 mm; 400 MPa khi 175 < Tc ≤ 500 mm.",
+        "Tc là đường kính quả cầu lớn nhất nội tiếp vật rèn tại nhiệt luyện; trường hợp lấy mẫu trên phần kéo dài Tp xem 7.1.4.2.",
+        "Bảng đang dùng hệ SI; không ghép giới hạn kích thước inch với trị số MPa trong bảng này.",
+        "Ngoài 500 mm: cần kiểm tra điều kiện áp dụng riêng; chương trình không tự ngoại suy cơ tính.",
+        "Class H là tên cấp thép; GH/HH có hậu tố H là phương án nghiệm thu chỉ bằng độ cứng, không thuộc hai bản ghi này.",
+        "Không áp dụng bản ghi này cho thanh cán nóng hoặc thanh gia công nguội."
+      ],
+      "sourceIds": [
+        "astm-a668-23-tables"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "ASTM A668/A668M-23",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "astm-a668-23-tables"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": [
+          {
+            "id": "a668-h-normalizing_and_tempering",
+            "process": "normalizing_and_tempering",
+            "purposeVi": "Phương án nhiệt luyện cho A668 Class H",
+            "sourceId": "astm-a668-23-tables",
+            "sourceClauseOrTable": "Table 2",
+            "note": "Chưa khai báo nhiệt độ và thời gian xử lý."
+          }
+        ],
+        "linkNoteVi": "Chọn phương án của Class theo đơn hàng."
+      },
+      "usage": {
+        "status": "reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Không áp dụng bản ghi này cho thanh cán nóng hoặc thanh gia công nguội.",
+            "sourceId": "astm-a668-23-tables",
+            "sourceClauseOrTable": "1.2"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g4051-s45c",
+      "grade": "S45C",
+      "title": "Thép cơ khí S45C",
+      "family": "machinery",
+      "system": "JIS",
+      "materialNumber": "S45C",
+      "standard": "JIS G 4051",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "JIS S45C",
+        "C45 / 1.0503 (đối chiếu tham khảo)"
+      ],
+      "sourceEditionNote": "Định danh JIS G 4051; dữ liệu từ bảng hãng, chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng.",
+      "productForm": "Thanh thép cho chế tạo máy",
+      "condition": "Thường hóa (+N)",
+      "defaultConditionCode": "+N",
+      "description": "Thép carbon trung bình khoảng 0,45% C, thường dùng cho trục và chi tiết máy; cơ tính thay đổi theo nhiệt luyện.",
+      "applications": [
+        "Trục và chi tiết truyền động",
+        "Bánh răng và chi tiết gia công cơ khí"
+      ],
+      "mechanical": {
+        "status": "manufacturer_indicative",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "reference": 345
+            },
+            "tensileMpa": {
+              "reference": 570
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "tsubaki-s45c-strength"
+        ],
+        "note": "Rp0,2 và Rm là trị số tham khảo của Tsubaki, không phải bộ giới hạn nghiệm thu theo đường kính. Nguồn không nêu A, Z, HB hoặc KV trong bảng này."
+      },
+      "conditions": [
+        {
+          "code": "+N",
+          "label": "Thường hóa",
+          "mechanical": {
+            "status": "manufacturer_indicative",
+            "dimension": null,
+            "cases": [
+              {
+                "yieldMpa": {
+                  "reference": 345
+                },
+                "tensileMpa": {
+                  "reference": 570
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "impact": null,
+            "sourceIds": [
+              "tsubaki-s45c-strength"
+            ],
+            "note": "Rp0,2 và Rm là trị số tham khảo của Tsubaki, không phải bộ giới hạn nghiệm thu theo đường kính. Nguồn không nêu A, Z, HB hoặc KV trong bảng này."
+          }
+        },
+        {
+          "code": "+QT",
+          "label": "Tôi và ram",
+          "mechanical": {
+            "status": "manufacturer_indicative",
+            "dimension": null,
+            "cases": [
+              {
+                "yieldMpa": {
+                  "reference": 490
+                },
+                "tensileMpa": {
+                  "reference": 690
+                }
+              }
+            ],
+            "yieldSymbol": "Rp0,2",
+            "impact": null,
+            "sourceIds": [
+              "tsubaki-s45c-strength"
+            ],
+            "note": "Rp0,2 và Rm là trị số tham khảo của Tsubaki, không phải bộ giới hạn nghiệm thu theo đường kính. Nguồn không nêu A, Z, HB hoặc KV trong bảng này."
+          }
+        }
+      ],
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "JIS G 4051 (supplier table)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "min": 0.42,
+            "max": 0.48
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "min": 0.15,
+            "max": 0.35
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "min": 0.6,
+            "max": 0.9
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.035
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.3
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "max": 0.2
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "max": 0.2
+          }
+        ],
+        "sourceIds": [
+          "jfs-s45c",
+          "iwata-s45c-chemistry"
+        ],
+        "note": "Giới hạn theo bảng hãng: Ni + Cr ≤ 0,35% ngoài các giới hạn riêng từng nguyên tố."
+      },
+      "physical": {},
+      "notes": [
+        "S45C và C45 là các mác đối chiếu tham khảo, không tự thay thế. Phải kiểm tra thành phần, nhiệt luyện, kích thước và yêu cầu trên bản vẽ/chứng chỉ.",
+        "Khác giới hạn thành phần so với C45 đang có trong HB: S45C có C 0,42–0,48% và Mn 0,60–0,90%; C45 có C 0,42–0,50% và Mn 0,50–0,80%.",
+        "Không dùng bảng cơ tính C45 (+QT) làm cơ tính của S45C; cũng không dùng trị số +QT cho trạng thái +N hoặc cán nóng.",
+        "Rp0,2 và Rm là trị số tham khảo của Tsubaki, không phải bộ giới hạn nghiệm thu theo đường kính. Nguồn không nêu A, Z, HB hoặc KV trong bảng này."
+      ],
+      "sourceIds": [
+        "tsubaki-s45c-strength",
+        "jfs-s45c",
+        "iwata-s45c-chemistry"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 4051",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "jfs-s45c",
+            "status": "not_compared_to_full_normative_text"
+          }
+        ],
+        "comparisonCandidates": [
+          {
+            "standard": "EN 10083-2",
+            "grade": "C45",
+            "steelNumber": "1.0503",
+            "relationship": "supplier_comparative_grade_not_automatic_equivalence",
+            "sourceId": "jfs-s45c",
+            "noteVi": "S45C và C45 là các mác đối chiếu tham khảo, không tự thay thế. Phải kiểm tra thành phần, nhiệt luyện, kích thước và yêu cầu trên bản vẽ/chứng chỉ."
+          }
+        ],
+        "engineeringLimits": {
+          "combinedAlloyLimit": {
+            "elements": [
+              "Ni",
+              "Cr"
+            ],
+            "max": 0.35,
+            "unit": "mass_percent",
+            "kind": "heat_analysis_max_combined",
+            "sourceId": "iwata-s45c-chemistry"
+          }
+        }
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": [
+          {
+            "id": "s45c-normalizing",
+            "process": "normalizing",
+            "resultCondition": "+N",
+            "sourceId": "tsubaki-s45c-strength",
+            "purposeVi": "Trạng thái thường hóa của bảng tham khảo",
+            "note": "Chỉ ghi nhận phương pháp; nhiệt độ và thời gian xử lý cần tài liệu áp dụng cho sản phẩm cụ thể."
+          },
+          {
+            "id": "s45c-quench-temper",
+            "process": "quench_and_temper",
+            "resultCondition": "+QT",
+            "sourceId": "tsubaki-s45c-strength",
+            "purposeVi": "Trạng thái tôi và ram của bảng tham khảo",
+            "note": "Chỉ ghi nhận phương pháp; nhiệt độ và thời gian xử lý cần tài liệu áp dụng cho sản phẩm cụ thể."
+          }
+        ],
+        "linkNoteVi": "Không dùng bảng cơ tính C45 (+QT) làm cơ tính của S45C; cũng không dùng trị số +QT cho trạng thái +N hoặc cán nóng."
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "overall": {
+          "rating": "limited",
+          "summaryVi": "JFS không khuyến cáo S45C cho ứng dụng hàn. Nếu bắt buộc hàn, cần đánh giá và phê duyệt quy trình cho chi tiết cụ thể.",
+          "sourceId": "jfs-s45c"
+        },
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Trục và chi tiết truyền động / Bánh răng và chi tiết gia công cơ khí",
+            "noteVi": "Chọn trạng thái và yêu cầu cơ tính theo thiết kế.",
+            "sourceId": "jfs-s45c"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "S45C và C45 là các mác đối chiếu tham khảo, không tự thay thế. Phải kiểm tra thành phần, nhiệt luyện, kích thước và yêu cầu trên bản vẽ/chứng chỉ.",
+            "sourceId": "jfs-s45c"
+          },
+          {
+            "textVi": "Không dùng bảng cơ tính C45 (+QT) làm cơ tính của S45C; cũng không dùng trị số +QT cho trạng thái +N hoặc cán nóng.",
+            "sourceId": "tsubaki-s45c-strength"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g3141-spcc-standard-temper",
+      "grade": "SPCC",
+      "title": "Thép tấm cán nguội SPCC",
+      "family": "forming",
+      "group": "steel",
+      "system": "JIS",
+      "materialNumber": "SPCC",
+      "standard": "JIS G 3141",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "JIS SPCC"
+      ],
+      "sourceEditionNote": "Thành phần theo Nippon Steel U003en (2020): Mn tối đa 1,00%; kiểm tra lại phiên bản tiêu chuẩn và chứng chỉ của đơn hàng.",
+      "productForm": "Thép tấm và cuộn cán nguội",
+      "condition": "Điều chất tiêu chuẩn (S); hoàn thiện bề mặt theo đơn hàng",
+      "description": "Thép carbon thấp cán nguội loại thông dụng, dùng cho chấn gấp và tạo hình đơn giản.",
+      "applications": [
+        "Vỏ tủ, tủ điện và chi tiết chấn gấp",
+        "Vỏ thiết bị gia dụng và chi tiết tạo hình đơn giản"
+      ],
+      "mechanical": {
+        "status": "grade_properties_not_specified",
+        "dimension": null,
+        "cases": [
+          {}
+        ],
+        "yieldSymbol": "Re",
+        "impact": null,
+        "sourceIds": [
+          "nippon-spcc-u003en-2020"
+        ],
+        "note": "SPCC thường không quy định Re/Rm/A; không mặc định gán Rm ≥ 270 MPa. Khi có thỏa thuận bảo đảm thử kéo và độ giãn dài, định danh là SPCCT."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "JIS G 3141 — Nippon Steel U003en (2020)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.15
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 1.0
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.035
+          }
+        ],
+        "sourceIds": [
+          "nippon-spcc-u003en-2020"
+        ],
+        "note": "Thành phần theo Nippon Steel U003en (2020): Mn tối đa 1,00%; kiểm tra lại phiên bản tiêu chuẩn và chứng chỉ của đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "SPCC thường không quy định Re/Rm/A; không mặc định gán Rm ≥ 270 MPa. Khi có thỏa thuận bảo đảm thử kéo và độ giãn dài, định danh là SPCCT.",
+        "Thành phần theo Nippon Steel U003en (2020): Mn tối đa 1,00%; kiểm tra lại phiên bản tiêu chuẩn và chứng chỉ của đơn hàng.",
+        "SPCC là loại thông dụng; yêu cầu dập vuốt cao hơn cần xem các cấp chuyên dụng và điều kiện đơn hàng.",
+        "SPCC và SPHC là hai mác khác nhau về quá trình cán và tiêu chuẩn; không tự thay thế chỉ dựa vào tên hoặc chiều dày."
+      ],
+      "sourceIds": [
+        "nippon-spcc-u003en-2020"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 3141 (U003en 2020 reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nippon-spcc-u003en-2020"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Vỏ tủ, tủ điện và chi tiết chấn gấp",
+            "noteVi": "SPCC là loại thông dụng; yêu cầu dập vuốt cao hơn cần xem các cấp chuyên dụng và điều kiện đơn hàng.",
+            "sourceId": "nippon-spcc-u003en-2020"
+          },
+          {
+            "productVi": "Vỏ thiết bị gia dụng và chi tiết tạo hình đơn giản",
+            "noteVi": "SPCC là loại thông dụng; yêu cầu dập vuốt cao hơn cần xem các cấp chuyên dụng và điều kiện đơn hàng.",
+            "sourceId": "nippon-spcc-u003en-2020"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "SPCC thường không quy định Re/Rm/A; không mặc định gán Rm ≥ 270 MPa. Khi có thỏa thuận bảo đảm thử kéo và độ giãn dài, định danh là SPCCT.",
+            "sourceId": "nippon-spcc-u003en-2020"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g3131-sphc-hot-rolled-sheet",
+      "grade": "SPHC",
+      "title": "Thép tấm cán nóng SPHC",
+      "family": "forming",
+      "group": "steel",
+      "system": "JIS",
+      "materialNumber": "SPHC",
+      "standard": "JIS G 3131",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "JIS SPHC"
+      ],
+      "sourceEditionNote": "Bảng JFE viện dẫn JIS G 3131:2018; cần đối chiếu phiên bản áp dụng của đơn hàng.",
+      "productForm": "Thép tấm và cuộn cán nóng",
+      "condition": "Cán nóng; bề mặt đen hoặc tẩy gỉ theo đơn hàng",
+      "description": "Thép mềm cán nóng loại thông dụng cho gia công tạo hình; cơ tính tra theo chiều dày, không phải cấp thép kết cấu có giới hạn chảy quy định.",
+      "applications": [
+        "Chi tiết thép tấm chấn, dập và tạo hình thông dụng"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": {
+          "kind": "thickness",
+          "label": "Chiều dày tấm",
+          "unit": "mm",
+          "default": 2.0,
+          "technicalDefinition": "Chiều dày danh nghĩa của tấm hoặc dải SPHC."
+        },
+        "cases": [
+          {
+            "from": 1.2,
+            "to": 1.6,
+            "fromInclusive": true,
+            "toInclusive": false,
+            "tensileMpa": {
+              "min": 270
+            },
+            "elongationPct": {
+              "min": 27
+            }
+          },
+          {
+            "from": 1.6,
+            "to": 2.0,
+            "fromInclusive": true,
+            "toInclusive": false,
+            "tensileMpa": {
+              "min": 270
+            },
+            "elongationPct": {
+              "min": 29
+            }
+          },
+          {
+            "from": 2.0,
+            "to": 2.5,
+            "fromInclusive": true,
+            "toInclusive": false,
+            "tensileMpa": {
+              "min": 270
+            },
+            "elongationPct": {
+              "min": 29
+            }
+          },
+          {
+            "from": 2.5,
+            "to": 3.2,
+            "fromInclusive": true,
+            "toInclusive": false,
+            "tensileMpa": {
+              "min": 270
+            },
+            "elongationPct": {
+              "min": 29
+            }
+          },
+          {
+            "from": 3.2,
+            "to": 4.0,
+            "fromInclusive": true,
+            "toInclusive": false,
+            "tensileMpa": {
+              "min": 270
+            },
+            "elongationPct": {
+              "min": 31
+            }
+          },
+          {
+            "from": 4.0,
+            "to": 14.0,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "tensileMpa": {
+              "min": 270
+            },
+            "elongationPct": {
+              "min": 31
+            }
+          }
+        ],
+        "yieldSymbol": "Re",
+        "impact": null,
+        "tensileTestOrientation": "L",
+        "testSpecimen": "JIS No.5",
+        "sourceIds": [
+          "jfe-sphc-b1e001",
+          "conic-forming-sheet-range"
+        ],
+        "note": "Bảng chỉ nêu Rm và A, không nêu giới hạn chảy hoặc KV. Mẫu kéo JIS No.5 dọc hướng cán; chỉ tra cứu trong 1,2–14 mm."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "JIS G 3131:2018 (JFE catalogue)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.12
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.6
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.035
+          }
+        ],
+        "sourceIds": [
+          "jfe-sphc-b1e001"
+        ],
+        "note": "Bảng JFE viện dẫn JIS G 3131:2018; cần đối chiếu phiên bản áp dụng của đơn hàng."
+      },
+      "physical": {},
+      "notes": [
+        "Bảng chỉ nêu Rm và A, không nêu giới hạn chảy hoặc KV. Mẫu kéo JIS No.5 dọc hướng cán; chỉ tra cứu trong 1,2–14 mm.",
+        "Rm tối đa 440 MPa chỉ áp dụng khi người mua và nhà cung cấp thỏa thuận; bản ghi không đặt giới hạn tối đa mặc định.",
+        "Bảng JFE viện dẫn JIS G 3131:2018; cần đối chiếu phiên bản áp dụng của đơn hàng.",
+        "SPCC và SPHC là hai mác khác nhau về quá trình cán và tiêu chuẩn; không tự thay thế chỉ dựa vào tên hoặc chiều dày."
+      ],
+      "sourceIds": [
+        "jfe-sphc-b1e001",
+        "conic-forming-sheet-range"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 3131:2018 (JFE catalogue)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "jfe-sphc-b1e001"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Chi tiết thép tấm chấn, dập và tạo hình thông dụng",
+            "noteVi": "Sử dụng cho tạo hình thông dụng theo yêu cầu chi tiết.",
+            "sourceId": "jfe-sphc-b1e001"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Bảng chỉ nêu Rm và A, không nêu giới hạn chảy hoặc KV. Mẫu kéo JIS No.5 dọc hướng cán; chỉ tra cứu trong 1,2–14 mm.",
+            "sourceId": "jfe-sphc-b1e001"
+          },
+          {
+            "textVi": "Rm tối đa 440 MPa chỉ áp dụng khi người mua và nhà cung cấp thỏa thuận; bản ghi không đặt giới hạn tối đa mặc định.",
+            "sourceId": "jfe-sphc-b1e001"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-g3302-sgcc",
+      "grade": "SGCC",
+      "title": "Thép tấm mạ kẽm nhúng nóng SGCC",
+      "family": "coated",
+      "group": "steel",
+      "system": "JIS",
+      "materialNumber": "SGCC",
+      "standard": "JIS G 3302",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "JIS SGCC",
+        "SGCC galvanized steel"
+      ],
+      "sourceEditionNote": "Dữ liệu theo catalogue CSC 2025 viện dẫn JIS G 3302:2022; kiểm tra phiên bản và điều kiện đơn hàng.",
+      "productForm": "Thép tấm và cuộn mạ kẽm, nền cán nguội",
+      "condition": "Mạ nhúng nóng; hoàn thiện bề mặt theo đơn hàng",
+      "description": "Thép tấm mạ kẽm nhúng nóng loại thông dụng; cấp SGCC và chỉ định lớp mạ cần được xác định riêng.",
+      "applications": [
+        "Chi tiết thép tấm gia công tạo hình thông dụng"
+      ],
+      "mechanical": {
+        "status": "manufacturer_indicative",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "reference": 205
+            },
+            "tensileMpa": {
+              "reference": 270
+            }
+          }
+        ],
+        "yieldSymbol": "Re",
+        "impact": null,
+        "sourceIds": [
+          "csc-sgcc-coated-2025"
+        ],
+        "note": "CSC nêu 205 MPa và 270 MPa trong ngoặc cho SGCC: chỉ tham khảo, không phải cơ tính bảo đảm mặc định; A và KV chưa có trong bản ghi."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "JIS G 3302:2022 (CSC 2025)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.15
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 0.8
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.05
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.05
+          }
+        ],
+        "sourceIds": [
+          "csc-sgcc-coated-2025"
+        ],
+        "note": "Giới hạn thành phần của thép nền SGCC; không phải thành phần lớp mạ kẽm."
+      },
+      "coating": {
+        "label": "Mạ kẽm nhúng nóng (Zn)",
+        "substrateGrade": "SGCC",
+        "designation": null,
+        "totalMassGm2": null,
+        "composition": [
+          {
+            "element": "Zn",
+            "description": "Thành phần chính"
+          }
+        ],
+        "sourceIds": [
+          "csc-sgcc-coated-2025"
+        ],
+        "note": "Thành phần dưới đây thuộc lớp mạ, không phải thành phần hợp kim của thép nền. Khối lượng mạ cần phân biệt tổng hai mặt và mỗi mặt."
+      },
+      "physical": {},
+      "notes": [
+        "CSC nêu 205 MPa và 270 MPa trong ngoặc cho SGCC: chỉ tham khảo, không phải cơ tính bảo đảm mặc định; A và KV chưa có trong bản ghi.",
+        "Ký hiệu và khối lượng lớp mạ theo đơn hàng/chứng chỉ; chưa chọn giá trị mặc định.",
+        "SGCC và ZAM không tự tương đương: cần đối chiếu cấp thép nền, lớp mạ, khối lượng mạ và điều kiện sử dụng."
+      ],
+      "sourceIds": [
+        "csc-sgcc-coated-2025"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 3302:2022 (CSC 2025)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "csc-sgcc-coated-2025"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Chi tiết thép tấm gia công tạo hình thông dụng",
+            "noteVi": "Ký hiệu và khối lượng lớp mạ theo đơn hàng/chứng chỉ; chưa chọn giá trị mặc định.",
+            "sourceId": "csc-sgcc-coated-2025"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "CSC nêu 205 MPa và 270 MPa trong ngoặc cho SGCC: chỉ tham khảo, không phải cơ tính bảo đảm mặc định; A và KV chưa có trong bản ghi.",
+            "sourceId": "csc-sgcc-coated-2025"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "nippon-zam-coated-product-family",
+      "grade": "ZAM",
+      "title": "Thép tấm mạ hợp kim Zn–Al–Mg ZAM",
+      "family": "coated",
+      "group": "steel",
+      "system": "JIS / Nippon Steel",
+      "materialNumber": "ZAM",
+      "standard": "JIS G 3323",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "ZAM®",
+        "ZAM Zn-Al-Mg coated steel"
+      ],
+      "sourceEditionNote": "JIS G 3323 được Nippon Steel viện dẫn cho các cấp sản phẩm; xác nhận cấp đầy đủ và chứng chỉ khi đặt hàng.",
+      "productForm": "Thép tấm và cuộn mạ hợp kim Zn–Al–Mg",
+      "condition": "Mạ nhúng nóng; cấp nền và xử lý bề mặt chưa chọn",
+      "description": "Dòng sản phẩm thép mạ hợp kim Zn–Al–Mg; thành phần mạ điển hình gồm Zn, khoảng 6% Al và 3% Mg. Cơ tính theo cấp nền cụ thể.",
+      "applications": [
+        "Chi tiết cho nhà lắp ghép và vật tư nông nghiệp",
+        "Phụ kiện điện và các cấu kiện thép tạo hình theo thiết kế"
+      ],
+      "mechanical": {
+        "status": "grade_properties_not_specified",
+        "dimension": null,
+        "cases": [
+          {}
+        ],
+        "yieldSymbol": "Re",
+        "impact": null,
+        "sourceIds": [
+          "nippon-zam-jis-excerpt"
+        ],
+        "note": "ZAM là thương hiệu sản phẩm mạ Zn–Al–Mg của Nippon Steel, không phải một mác thép có cơ tính duy nhất. Chưa chọn cấp nền nên không gán Re/Rm/A/KV chung."
+      },
+      "chemistry": {
+        "kind": "substrate_grade_not_selected",
+        "rows": [],
+        "sourceIds": [
+          "nippon-zam-jis-excerpt"
+        ],
+        "note": "Chưa chọn cấp thép nền; không đưa 6% Al và 3% Mg của lớp mạ vào bảng thành phần thép nền."
+      },
+      "coating": {
+        "label": "Mạ hợp kim Zn–Al–Mg (ZAM)",
+        "brand": "ZAM",
+        "substrateGrade": null,
+        "designation": null,
+        "totalMassGm2": null,
+        "composition": [
+          {
+            "element": "Zn",
+            "description": "Nền hợp kim lớp mạ"
+          },
+          {
+            "element": "Al",
+            "percent": {
+              "reference": 6
+            }
+          },
+          {
+            "element": "Mg",
+            "percent": {
+              "reference": 3
+            }
+          }
+        ],
+        "sourceIds": [
+          "nippon-zam-faq"
+        ],
+        "note": "Thành phần dưới đây thuộc lớp mạ, không phải thành phần hợp kim của thép nền. Khối lượng mạ cần phân biệt tổng hai mặt và mỗi mặt."
+      },
+      "physical": {},
+      "notes": [
+        "ZAM là thương hiệu sản phẩm mạ Zn–Al–Mg của Nippon Steel, không phải một mác thép có cơ tính duy nhất. Chưa chọn cấp nền nên không gán Re/Rm/A/KV chung.",
+        "Chưa chọn cấp thép nền; không đưa 6% Al và 3% Mg của lớp mạ vào bảng thành phần thép nền.",
+        "Ký hiệu và khối lượng lớp mạ theo đơn hàng/chứng chỉ; chưa chọn giá trị mặc định.",
+        "SGCC và ZAM không tự tương đương: cần đối chiếu cấp thép nền, lớp mạ, khối lượng mạ và điều kiện sử dụng."
+      ],
+      "sourceIds": [
+        "nippon-zam-faq",
+        "nippon-zam-jis-excerpt"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 3323 (Nippon Steel excerpt)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "nippon-zam-jis-excerpt"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Chi tiết cho nhà lắp ghép và vật tư nông nghiệp",
+            "noteVi": "Ký hiệu và khối lượng lớp mạ theo đơn hàng/chứng chỉ; chưa chọn giá trị mặc định.",
+            "sourceId": "nippon-zam-faq"
+          },
+          {
+            "productVi": "Phụ kiện điện và các cấu kiện thép tạo hình theo thiết kế",
+            "noteVi": "Ký hiệu và khối lượng lớp mạ theo đơn hàng/chứng chỉ; chưa chọn giá trị mặc định.",
+            "sourceId": "nippon-zam-faq"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "ZAM là thương hiệu sản phẩm mạ Zn–Al–Mg của Nippon Steel, không phải một mác thép có cơ tính duy nhất. Chưa chọn cấp nền nên không gán Re/Rm/A/KV chung.",
+            "sourceId": "nippon-zam-faq"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "tcvn-1651-1-cb240-t",
+      "grade": "CB240-T",
+      "title": "Thép cốt bê tông tròn trơn CB240-T",
+      "family": "reinforcement",
+      "group": "steel",
+      "system": "TCVN",
+      "materialNumber": "CB240-T",
+      "standard": "TCVN 1651-1:2018",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "CB240T",
+        "CB 240-T",
+        "CB 240 T"
+      ],
+      "sourceEditionNote": "Tham chiếu TCVN 1651-1:2018, Bảng 2, 3, 5, 6 và Điều 8; kiểm tra chứng chỉ của lô hàng.",
+      "productForm": "Thép thanh tròn trơn; dạng thanh hoặc cuộn",
+      "condition": "Trạng thái cung cấp theo nhà sản xuất và đơn hàng",
+      "description": "Mác thép cốt bê tông theo tiêu chuẩn Việt Nam, giới hạn chảy trên tối thiểu 240 MPa; ký hiệu đầy đủ là CB240-T.",
+      "applications": [
+        "Thép thanh tròn trơn làm cốt bê tông theo bản vẽ thiết kế"
+      ],
+      "mechanical": {
+        "status": "standard_table_reference",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 8,
+          "technicalDefinition": "d là đường kính danh nghĩa của thanh tròn trơn. Bảng 2 nêu các cỡ 6–40 mm; cỡ khác cần thỏa thuận giữa nhà sản xuất và người mua."
+        },
+        "cases": [
+          {
+            "from": 6,
+            "to": 40,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 240
+            },
+            "tensileMpa": {
+              "min": 380
+            },
+            "elongationPct": {
+              "min": 20
+            }
+          }
+        ],
+        "yieldSymbol": "ReH",
+        "elongationGaugeLength": "L₀ = 5d",
+        "elongationSymbol": "A5",
+        "totalElongationAtMaximumForcePct": {
+          "min": 2
+        },
+        "nominalDiametersMm": [
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          25,
+          28,
+          32,
+          36,
+          40
+        ],
+        "impact": null,
+        "sourceIds": [
+          "tcvn-1651-1-2018-plain-bars"
+        ],
+        "note": "A₅ ≥ 20% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 2% là giãn dài tổng tại lực lớn nhất. Không coi hai chỉ tiêu là cùng một phép đo. Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 240 MPa làm ứng suất thiết kế mặc định."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "TCVN 1651-1:2018 Table 3",
+        "rows": [
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.05
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.05
+          }
+        ],
+        "sourceIds": [
+          "tcvn-1651-1-2018-plain-bars",
+          "vina-kyoei-cb240t-coil"
+        ],
+        "note": "P và S là giới hạn phân tích mẻ nấu. Không tự đặt hàm lượng C, Si, Mn hoặc CEV khi bảng không quy định cho CB240-T."
+      },
+      "physical": {},
+      "notes": [
+        "CB là cốt bê tông; 240 chỉ giới hạn chảy trên quy định 240 MPa; T là thanh tròn trơn.",
+        "Áp dụng cho thép tròn trơn làm cốt bê tông dạng thanh thẳng, cuộn hoặc nắn thẳng; không phải thép thanh vằn CB…-V.",
+        "A₅ ≥ 20% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 2% là giãn dài tổng tại lực lớn nhất. Không coi hai chỉ tiêu là cùng một phép đo.",
+        "Thử uốn 160–180°, gối uốn đường kính 2d khi d ≤ 40 mm; sau thử không có gãy hoặc nứt ngang nhìn thấy được. Trường hợp khác cần thỏa thuận theo tiêu chuẩn.",
+        "Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 240 MPa làm ứng suất thiết kế mặc định.",
+        "d là đường kính danh nghĩa của thanh tròn trơn. Bảng 2 nêu các cỡ 6–40 mm; cỡ khác cần thỏa thuận giữa nhà sản xuất và người mua.",
+        "P và S là giới hạn phân tích mẻ nấu. Không tự đặt hàm lượng C, Si, Mn hoặc CEV khi bảng không quy định cho CB240-T."
+      ],
+      "sourceIds": [
+        "tcvn-1651-1-2018-plain-bars",
+        "vina-kyoei-cb240t-coil"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "TCVN 1651-1:2018",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "tcvn-1651-1-2018-plain-bars"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Thép thanh tròn trơn làm cốt bê tông theo bản vẽ thiết kế",
+            "noteVi": "Áp dụng cho thép tròn trơn làm cốt bê tông dạng thanh thẳng, cuộn hoặc nắn thẳng; không phải thép thanh vằn CB…-V.",
+            "sourceId": "tcvn-1651-1-2018-plain-bars"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Áp dụng cho thép tròn trơn làm cốt bê tông dạng thanh thẳng, cuộn hoặc nắn thẳng; không phải thép thanh vằn CB…-V.",
+            "sourceId": "tcvn-1651-1-2018-plain-bars"
+          },
+          {
+            "textVi": "Thử uốn 160–180°, gối uốn đường kính 2d khi d ≤ 40 mm; sau thử không có gãy hoặc nứt ngang nhìn thấy được. Trường hợp khác cần thỏa thuận theo tiêu chuẩn.",
+            "sourceId": "tcvn-1651-1-2018-plain-bars"
+          },
+          {
+            "textVi": "P và S là giới hạn phân tích mẻ nấu. Không tự đặt hàm lượng C, Si, Mn hoặc CEV khi bảng không quy định cho CB240-T.",
+            "sourceId": "tcvn-1651-1-2018-plain-bars"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "tcvn-1651-2-cb300-v",
+      "grade": "CB300-V",
+      "title": "Thép cốt bê tông thanh vằn CB300-V",
+      "family": "reinforcement",
+      "group": "steel",
+      "system": "TCVN",
+      "materialNumber": "CB300-V",
+      "standard": "TCVN 1651-2:2018",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "CB300V",
+        "CB 300-V",
+        "CB 300 V"
+      ],
+      "sourceEditionNote": "Tham chiếu TCVN 1651-2:2018, Bảng 2, 4, 5, 6, 7, 8 và Điều 8; kiểm tra chứng chỉ của lô hàng.",
+      "productForm": "Thép thanh vằn; dạng thanh, cuộn hoặc nắn thẳng",
+      "condition": "Trạng thái cung cấp theo nhà sản xuất và đơn hàng",
+      "description": "Mác thép thanh vằn cốt bê tông theo tiêu chuẩn Việt Nam, giới hạn chảy trên tối thiểu 300 MPa; ký hiệu đầy đủ là CB300-V.",
+      "applications": [
+        "Thép thanh vằn làm cốt bê tông theo bản vẽ thiết kế"
+      ],
+      "mechanical": {
+        "status": "standard_table_reference",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 16,
+          "technicalDefinition": "d là đường kính danh nghĩa của thanh vằn. Bảng 2 liệt kê 6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 32, 36, 40 và 50 mm; cỡ khác cần thỏa thuận."
+        },
+        "cases": [
+          {
+            "from": 6,
+            "to": 50,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 300
+            },
+            "tensileMpa": {
+              "min": 450
+            },
+            "elongationPct": {
+              "min": 16
+            }
+          }
+        ],
+        "yieldSymbol": "ReH",
+        "elongationSymbol": "A5",
+        "elongationGaugeLength": "L₀ = 5d",
+        "totalElongationAtMaximumForcePct": {
+          "min": 8
+        },
+        "nominalDiametersMm": [
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          25,
+          28,
+          32,
+          36,
+          40,
+          50
+        ],
+        "impact": null,
+        "sourceIds": [
+          "tcvn-1651-2-2018-ribbed-bars"
+        ],
+        "note": "A₅ ≥ 16% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định. Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 300 MPa làm ứng suất thiết kế mặc định."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "TCVN 1651-2:2018 Table 4",
+        "rows": [
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.05
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.05
+          }
+        ],
+        "sourceIds": [
+          "tcvn-1651-2-2018-ribbed-bars"
+        ],
+        "note": "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CB300-V không có giới hạn C, Si, Mn hoặc CEV trong Bảng 4."
+      },
+      "physical": {},
+      "notes": [
+        "CB là cốt bê tông; 300 chỉ giới hạn chảy trên quy định 300 MPa; V là thanh vằn.",
+        "Thép thanh vằn làm cốt bê tông, cung cấp dạng thẳng, cuộn hoặc nắn thẳng; lựa chọn theo bản vẽ và chứng chỉ lô hàng.",
+        "A₅ ≥ 16% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định.",
+        "Khi yêu cầu thử uốn: góc 160–180°, đường kính gối uốn 3d khi d ≤ 16 mm, 6d khi 16 < d ≤ 32 mm, 7d khi 32 < d ≤ 50 mm; không có gãy hoặc nứt ngang nhìn thấy được.",
+        "Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 300 MPa làm ứng suất thiết kế mặc định.",
+        "d là đường kính danh nghĩa của thanh vằn. Bảng 2 liệt kê 6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 32, 36, 40 và 50 mm; cỡ khác cần thỏa thuận.",
+        "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CB300-V không có giới hạn C, Si, Mn hoặc CEV trong Bảng 4.",
+        "Trạng thái thử kéo theo Bảng 7 phụ thuộc công nghệ và dạng cung cấp. Hóa già để chuẩn bị mẫu thử không phải chỉ dẫn nhiệt luyện sản phẩm.",
+        "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn."
+      ],
+      "sourceIds": [
+        "tcvn-1651-2-2018-ribbed-bars",
+        "vina-kyoei-ribbed-bars-2018"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "TCVN 1651-2:2018",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "carbonEquivalentRef": false,
+        "specialNotes": [
+          {
+            "textVi": "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Thép thanh vằn làm cốt bê tông theo bản vẽ thiết kế",
+            "noteVi": "Thép thanh vằn làm cốt bê tông, cung cấp dạng thẳng, cuộn hoặc nắn thẳng; lựa chọn theo bản vẽ và chứng chỉ lô hàng.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "A₅ ≥ 16% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          },
+          {
+            "textVi": "Khi yêu cầu thử uốn: góc 160–180°, đường kính gối uốn 3d khi d ≤ 16 mm, 6d khi 16 < d ≤ 32 mm, 7d khi 32 < d ≤ 50 mm; không có gãy hoặc nứt ngang nhìn thấy được.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          },
+          {
+            "textVi": "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "tcvn-1651-2-cb400-v",
+      "grade": "CB400-V",
+      "title": "Thép cốt bê tông thanh vằn CB400-V",
+      "family": "reinforcement",
+      "group": "steel",
+      "system": "TCVN",
+      "materialNumber": "CB400-V",
+      "standard": "TCVN 1651-2:2018",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "CB400V",
+        "CB 400-V",
+        "CB 400 V"
+      ],
+      "sourceEditionNote": "Tham chiếu TCVN 1651-2:2018, Bảng 2, 4, 5, 6, 7, 8 và Điều 8; kiểm tra chứng chỉ của lô hàng.",
+      "productForm": "Thép thanh vằn; dạng thanh, cuộn hoặc nắn thẳng",
+      "condition": "Trạng thái cung cấp theo nhà sản xuất và đơn hàng",
+      "description": "Mác thép thanh vằn cốt bê tông theo tiêu chuẩn Việt Nam, giới hạn chảy trên tối thiểu 400 MPa; ký hiệu đầy đủ là CB400-V.",
+      "applications": [
+        "Thép thanh vằn làm cốt bê tông theo bản vẽ thiết kế"
+      ],
+      "mechanical": {
+        "status": "standard_table_reference",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 16,
+          "technicalDefinition": "d là đường kính danh nghĩa của thanh vằn. Bảng 2 liệt kê 6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 32, 36, 40 và 50 mm; cỡ khác cần thỏa thuận."
+        },
+        "cases": [
+          {
+            "from": 6,
+            "to": 50,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 400
+            },
+            "tensileMpa": {
+              "min": 570
+            },
+            "elongationPct": {
+              "min": 14
+            }
+          }
+        ],
+        "yieldSymbol": "ReH",
+        "elongationSymbol": "A5",
+        "elongationGaugeLength": "L₀ = 5d",
+        "totalElongationAtMaximumForcePct": {
+          "min": 8
+        },
+        "nominalDiametersMm": [
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          25,
+          28,
+          32,
+          36,
+          40,
+          50
+        ],
+        "impact": null,
+        "sourceIds": [
+          "tcvn-1651-2-2018-ribbed-bars"
+        ],
+        "note": "A₅ ≥ 14% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định. Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 400 MPa làm ứng suất thiết kế mặc định."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "TCVN 1651-2:2018 Table 4",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.29
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.55
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 1.8
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.04
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.04
+          }
+        ],
+        "sourceIds": [
+          "tcvn-1651-2-2018-ribbed-bars"
+        ],
+        "note": "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CEV ≤ 0,56% theo công thức của tiêu chuẩn; giá trị hoặc công thức khác cần thỏa thuận."
+      },
+      "physical": {},
+      "notes": [
+        "CB là cốt bê tông; 400 chỉ giới hạn chảy trên quy định 400 MPa; V là thanh vằn.",
+        "Thép thanh vằn làm cốt bê tông, cung cấp dạng thẳng, cuộn hoặc nắn thẳng; lựa chọn theo bản vẽ và chứng chỉ lô hàng.",
+        "A₅ ≥ 14% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định.",
+        "Khi yêu cầu thử uốn: góc 160–180°, đường kính gối uốn 4d khi d ≤ 16 mm, 6d khi 16 < d ≤ 32 mm, 7d khi 32 < d ≤ 50 mm; không có gãy hoặc nứt ngang nhìn thấy được.",
+        "Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 400 MPa làm ứng suất thiết kế mặc định.",
+        "d là đường kính danh nghĩa của thanh vằn. Bảng 2 liệt kê 6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 32, 36, 40 và 50 mm; cỡ khác cần thỏa thuận.",
+        "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CEV ≤ 0,56% theo công thức của tiêu chuẩn; giá trị hoặc công thức khác cần thỏa thuận.",
+        "Trạng thái thử kéo theo Bảng 7 phụ thuộc công nghệ và dạng cung cấp. Hóa già để chuẩn bị mẫu thử không phải chỉ dẫn nhiệt luyện sản phẩm.",
+        "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn."
+      ],
+      "sourceIds": [
+        "tcvn-1651-2-2018-ribbed-bars",
+        "vina-kyoei-ribbed-bars-2018"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "TCVN 1651-2:2018",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {
+          "carbonEquivalent": {
+            "symbol": "CEV",
+            "method": "IIW",
+            "bands": [
+              {
+                "from": 6,
+                "to": 50,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "max": 0.56
+              }
+            ],
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars",
+            "sourceClauseOrTable": "Table 4",
+            "note": "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CEV ≤ 0,56% theo công thức của tiêu chuẩn; giá trị hoặc công thức khác cần thỏa thuận."
+          }
+        }
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "carbonEquivalentRef": true,
+        "specialNotes": [
+          {
+            "textVi": "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Thép thanh vằn làm cốt bê tông theo bản vẽ thiết kế",
+            "noteVi": "Thép thanh vằn làm cốt bê tông, cung cấp dạng thẳng, cuộn hoặc nắn thẳng; lựa chọn theo bản vẽ và chứng chỉ lô hàng.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "A₅ ≥ 14% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          },
+          {
+            "textVi": "Khi yêu cầu thử uốn: góc 160–180°, đường kính gối uốn 4d khi d ≤ 16 mm, 6d khi 16 < d ≤ 32 mm, 7d khi 32 < d ≤ 50 mm; không có gãy hoặc nứt ngang nhìn thấy được.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          },
+          {
+            "textVi": "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "tcvn-1651-2-cb500-v",
+      "grade": "CB500-V",
+      "title": "Thép cốt bê tông thanh vằn CB500-V",
+      "family": "reinforcement",
+      "group": "steel",
+      "system": "TCVN",
+      "materialNumber": "CB500-V",
+      "standard": "TCVN 1651-2:2018",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "CB500V",
+        "CB 500-V",
+        "CB 500 V"
+      ],
+      "sourceEditionNote": "Tham chiếu TCVN 1651-2:2018, Bảng 2, 4, 5, 6, 7, 8 và Điều 8; kiểm tra chứng chỉ của lô hàng.",
+      "productForm": "Thép thanh vằn; dạng thanh, cuộn hoặc nắn thẳng",
+      "condition": "Trạng thái cung cấp theo nhà sản xuất và đơn hàng",
+      "description": "Mác thép thanh vằn cốt bê tông theo tiêu chuẩn Việt Nam, giới hạn chảy trên tối thiểu 500 MPa; ký hiệu đầy đủ là CB500-V.",
+      "applications": [
+        "Thép thanh vằn làm cốt bê tông theo bản vẽ thiết kế"
+      ],
+      "mechanical": {
+        "status": "standard_table_reference",
+        "dimension": {
+          "kind": "diameter",
+          "label": "Đường kính d",
+          "unit": "mm",
+          "default": 16,
+          "technicalDefinition": "d là đường kính danh nghĩa của thanh vằn. Bảng 2 liệt kê 6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 32, 36, 40 và 50 mm; cỡ khác cần thỏa thuận."
+        },
+        "cases": [
+          {
+            "from": 6,
+            "to": 50,
+            "fromInclusive": true,
+            "toInclusive": true,
+            "yieldMpa": {
+              "min": 500
+            },
+            "tensileMpa": {
+              "min": 650
+            },
+            "elongationPct": {
+              "min": 14
+            }
+          }
+        ],
+        "yieldSymbol": "ReH",
+        "elongationSymbol": "A5",
+        "elongationGaugeLength": "L₀ = 5d",
+        "totalElongationAtMaximumForcePct": {
+          "min": 8
+        },
+        "nominalDiametersMm": [
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          25,
+          28,
+          32,
+          36,
+          40,
+          50
+        ],
+        "impact": null,
+        "sourceIds": [
+          "tcvn-1651-2-2018-ribbed-bars"
+        ],
+        "note": "A₅ ≥ 14% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định. Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 500 MPa làm ứng suất thiết kế mặc định."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "TCVN 1651-2:2018 Table 4",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.32
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.55
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 1.8
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.04
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.04
+          }
+        ],
+        "sourceIds": [
+          "tcvn-1651-2-2018-ribbed-bars"
+        ],
+        "note": "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CEV ≤ 0,61% theo công thức của tiêu chuẩn; giá trị hoặc công thức khác cần thỏa thuận."
+      },
+      "physical": {},
+      "notes": [
+        "CB là cốt bê tông; 500 chỉ giới hạn chảy trên quy định 500 MPa; V là thanh vằn.",
+        "Thép thanh vằn làm cốt bê tông, cung cấp dạng thẳng, cuộn hoặc nắn thẳng; lựa chọn theo bản vẽ và chứng chỉ lô hàng.",
+        "A₅ ≥ 14% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định.",
+        "Khi yêu cầu thử uốn: góc 160–180°, đường kính gối uốn 5d khi d ≤ 16 mm, 6d khi 16 < d ≤ 32 mm, 7d khi 32 < d ≤ 50 mm; không có gãy hoặc nứt ngang nhìn thấy được.",
+        "Giới hạn chảy dùng ReH; nếu không xuất hiện hiện tượng chảy thì xác định Rp0,2. Không dùng 500 MPa làm ứng suất thiết kế mặc định.",
+        "d là đường kính danh nghĩa của thanh vằn. Bảng 2 liệt kê 6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 32, 36, 40 và 50 mm; cỡ khác cần thỏa thuận.",
+        "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CEV ≤ 0,61% theo công thức của tiêu chuẩn; giá trị hoặc công thức khác cần thỏa thuận.",
+        "Trạng thái thử kéo theo Bảng 7 phụ thuộc công nghệ và dạng cung cấp. Hóa già để chuẩn bị mẫu thử không phải chỉ dẫn nhiệt luyện sản phẩm.",
+        "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn."
+      ],
+      "sourceIds": [
+        "tcvn-1651-2-2018-ribbed-bars",
+        "vina-kyoei-ribbed-bars-2018"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "TCVN 1651-2:2018",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {
+          "carbonEquivalent": {
+            "symbol": "CEV",
+            "method": "IIW",
+            "bands": [
+              {
+                "from": 6,
+                "to": 50,
+                "fromInclusive": true,
+                "toInclusive": true,
+                "max": 0.61
+              }
+            ],
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars",
+            "sourceClauseOrTable": "Table 4",
+            "note": "Giới hạn phân tích mẻ nấu theo Bảng 4; dung sai phân tích sản phẩm theo Bảng 5. CEV ≤ 0,61% theo công thức của tiêu chuẩn; giá trị hoặc công thức khác cần thỏa thuận."
+          }
+        }
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "carbonEquivalentRef": true,
+        "specialNotes": [
+          {
+            "textVi": "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [
+          {
+            "productVi": "Thép thanh vằn làm cốt bê tông theo bản vẽ thiết kế",
+            "noteVi": "Thép thanh vằn làm cốt bê tông, cung cấp dạng thẳng, cuộn hoặc nắn thẳng; lựa chọn theo bản vẽ và chứng chỉ lô hàng.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "A₅ ≥ 14% là giãn dài sau đứt với L₀ = 5d; Agt ≥ 8% là giãn dài tổng tại lực lớn nhất. Chọn A hoặc Agt theo thỏa thuận; nếu không quy định riêng, nên chọn Agt. Không coi cả hai là yêu cầu đồng thời mặc định.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          },
+          {
+            "textVi": "Khi yêu cầu thử uốn: góc 160–180°, đường kính gối uốn 5d khi d ≤ 16 mm, 6d khi 16 < d ≤ 32 mm, 7d khi 32 < d ≤ 50 mm; không có gãy hoặc nứt ngang nhìn thấy được.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          },
+          {
+            "textVi": "Khả năng hàn cần đánh giá theo thành phần thực tế của lô, CEV và quy trình hàn được phê duyệt; tên mác không tự xác nhận điều kiện hàn.",
+            "sourceId": "tcvn-1651-2-2018-ribbed-bars"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "family": "stainless",
+      "system": "EN / ASTM",
+      "mechanical": {
+        "status": "manufacturer_indicative",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 240
+            },
+            "tensileMpa": {
+              "min": 530,
+              "max": 680
+            },
+            "elongationPct": {
+              "min": 40
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "impact": null,
+        "sourceIds": [
+          "outo-supra-316-2025"
+        ],
+        "note": "Chọn dạng sản phẩm C/H/P ở phía trên để xem cơ tính theo bảng EN của Outokumpu. Bảng ASTM được trình bày riêng.",
+        "referenceFormCode": "C",
+        "referenceFormNote": "Mặc định C (cán nguội); người tra cứu có thể chọn H/P ở phía trên."
+      },
+      "physical": {
+        "densityKgM3": {
+          "value": 8000,
+          "kind": "manufacturer_reference_20c"
+        },
+        "youngModulusGpa": {
+          "value": 200,
+          "kind": "manufacturer_reference_20c"
+        },
+        "sourceIds": [
+          "outo-supra-316-2025"
+        ],
+        "linearThermalExpansion20To100C_10eMinus6PerK": {
+          "value": 16.0,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra-316-2025"
+        },
+        "thermalConductivity20C_WmK": {
+          "value": 15,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra-316-2025"
+        },
+        "specificHeat20C_JkgK": {
+          "value": 500,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra-316-2025"
+        },
+        "electricalResistivity20C_OhmMm2PerM": {
+          "value": 0.75,
+          "kind": "manufacturer_reference",
+          "sourceId": "outo-supra-316-2025"
+        },
+        "magnetizable": {
+          "value": false,
+          "kind": "manufacturer_reference_for_solution_annealed_austenitic_grade",
+          "sourceId": "outo-supra-316-2025"
+        }
+      },
+      "heatTreatment": {
+        "status": "sourced_reference_partial",
+        "routes": [
+          {
+            "id": "316-solution-annealing",
+            "precededBy": [],
+            "process": "solution_annealing",
+            "purposeVi": "Ủ dung dịch: hòa tan carbide, phục hồi khả năng chống ăn mòn và độ dẻo",
+            "temperatureC": {
+              "min": 1000,
+              "max": 1100
+            },
+            "holdingNote": null,
+            "cooling": "rapid",
+            "resultCondition": "+AT",
+            "resultHardness": {
+              "scale": null,
+              "min": null,
+              "max": null
+            },
+            "surfaceOnly": false,
+            "appliesTo": {
+              "productForm": null,
+              "dimension": null
+            },
+            "sourceId": "outo-supra-316-2025",
+            "sourceClauseOrTable": "Fabrication – Heat treatment",
+            "valueKind": "manufacturer_reference",
+            "verificationStatus": "sourced_reference",
+            "note": "Outokumpu yêu cầu làm nguội nhanh bằng nước hoặc không khí; điều kiện kích thước/chi tiết do sản phẩm và thiết bị quyết định. Austenitic không hóa bền bằng tôi–ram thông thường."
+          }
+        ],
+        "linkNoteVi": "Nhiệt luyện ủ dung dịch dùng để phục hồi trạng thái austenite/khả năng chống ăn mòn; không suy ra cơ tính của sản phẩm đã gia công nguội.",
+        "sourceIds": []
+      },
+      "id": "outokumpu-316-14401-flat-product",
+      "grade": "316",
+      "title": "Thép không gỉ 316",
+      "materialNumber": "1.4401",
+      "steelDesignation": "X5CrNiMo17-12-2",
+      "unsNumber": "S31600",
+      "group": "steel",
+      "standard": "EN 10088-2",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "EN 1.4401",
+        "UNS S31600",
+        "X5CrNiMo17-12-2",
+        "AISI 316",
+        "Inox 316"
+      ],
+      "sourceEditionNote": "Cơ tính theo Outokumpu Supra 316/4401; thành phần giới hạn theo thyssenkrupp 11/2017. Phiên bản tiêu chuẩn áp dụng cần đối chiếu đơn hàng.",
+      "productForm": "Tấm / cuộn cán nóng hoặc nguội",
+      "condition": "Ủ dung dịch (+AT), dữ liệu theo dạng sản phẩm",
+      "description": "Thép không gỉ austenite Cr–Ni–Mo, mác 316 / 1.4401; phân biệt với mác carbon thấp 316L / 1.4404.",
+      "applications": [
+        "Thiết bị hóa chất, thực phẩm và bồn chứa"
+      ],
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "thyssenkrupp 1.4401 material data sheet, 11/2017",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.07
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 1
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 2
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.015
+          },
+          {
+            "element": "N",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 16.5,
+            "max": 18.5
+          },
+          {
+            "element": "Mo",
+            "mode": "limit",
+            "min": 2,
+            "max": 2.5
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "min": 10,
+            "max": 13
+          }
+        ],
+        "sourceIds": [
+          "thyssenkrupp-14401-2017"
+        ]
+      },
+      "notes": [
+        "316 (1.4401 / S31600) và 316L (1.4404 / S31603) là hai bản ghi riêng. Theo bảng EN đang tham chiếu, C tối đa lần lượt 0,07% và 0,03%; không tự thay thế hoặc coi là chứng nhận kép.",
+        "316L carbon thấp giúp giảm nguy cơ nhạy cảm ăn mòn liên hạt sau hàn; không có nghĩa 316L luôn bền hơn hoặc chống mọi dạng ăn mòn tốt hơn 316.",
+        "Cơ tính EN phụ thuộc dạng C/H/P; bảng ASTM A240 được giữ riêng, không ghép các chỉ tiêu giữa hai hệ tiêu chuẩn."
+      ],
+      "sourceIds": [
+        "outo-supra-316-2025",
+        "thyssenkrupp-14401-2017"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "EN 10088-2 / ASTM A240 (manufacturer tables)",
+            "role": "manufacturer_mechanical_by_product_form",
+            "sourceId": "outo-supra-316-2025"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {
+          "mechanicalByFormEN10088_2": {
+            "sourceId": "outo-supra-316-2025",
+            "sourceClauseOrTable": "Table 5 – Mechanical properties at 20°C",
+            "temperatureC": 20,
+            "standardEdition": "EN 10088-2 referenced by Outokumpu (specific edition unconfirmed)",
+            "dataKind": "manufacturer_datasheet_reference_to_standard",
+            "noAutoAcceptance": true,
+            "forms": [
+              {
+                "code": "C",
+                "productForm": "cold_rolled_coil_sheet",
+                "yieldRp02Mpa": {
+                  "min": 240
+                },
+                "yieldRp10Mpa": {
+                  "min": 270
+                },
+                "tensileRmMpa": {
+                  "min": 530,
+                  "max": 680
+                },
+                "elongationA5Pct": {
+                  "min": 40
+                },
+                "elongationA80Pct": {
+                  "min": 40
+                }
+              },
+              {
+                "code": "H",
+                "productForm": "hot_rolled_coil_sheet",
+                "yieldRp02Mpa": {
+                  "min": 220
+                },
+                "yieldRp10Mpa": {
+                  "min": 260
+                },
+                "tensileRmMpa": {
+                  "min": 530,
+                  "max": 680
+                },
+                "elongationA5Pct": {
+                  "min": 40
+                },
+                "elongationA80Pct": {
+                  "min": 40
+                }
+              },
+              {
+                "code": "P",
+                "productForm": "quarto_plate",
+                "yieldRp02Mpa": {
+                  "min": 220
+                },
+                "yieldRp10Mpa": {
+                  "min": 260
+                },
+                "tensileRmMpa": {
+                  "min": 520,
+                  "max": 670
+                },
+                "elongationA5Pct": {
+                  "min": 45
+                },
+                "elongationA80Pct": {
+                  "min": 45
+                }
+              }
+            ]
+          },
+          "mechanicalByASTMA240": {
+            "sourceId": "outo-supra-316-2025",
+            "sourceClauseOrTable": "Table 6 – ASTM A240",
+            "productForms": [
+              "C",
+              "H",
+              "P"
+            ],
+            "yieldRp02Mpa": {
+              "min": 205
+            },
+            "tensileRmMpa": {
+              "min": 515
+            },
+            "elongationA50Pct": {
+              "min": 40
+            },
+            "dataKind": "alternative_standard_reference",
+            "noAutoAcceptance": true
+          }
+        }
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "overall": {
+          "rating": "good",
+          "summaryVi": "Có tính hàn tốt; với tiết diện dày, Outokumpu ưu tiên mác carbon thấp để hạn chế ăn mòn liên hạt.",
+          "sourceId": "outo-supra-316-2025"
+        },
+        "specialNotes": [
+          {
+            "textVi": "316L carbon thấp giúp giảm nguy cơ nhạy cảm ăn mòn liên hạt sau hàn; không có nghĩa 316L luôn bền hơn hoặc chống mọi dạng ăn mòn tốt hơn 316.",
+            "sourceId": "outo-supra-316-2025"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "316 (1.4401 / S31600) và 316L (1.4404 / S31603) là hai bản ghi riêng. Theo bảng EN đang tham chiếu, C tối đa lần lượt 0,07% và 0,03%; không tự thay thế hoặc coi là chứng nhận kép.",
+            "sourceId": "outo-supra-316-2025"
+          },
+          {
+            "textVi": "316L carbon thấp giúp giảm nguy cơ nhạy cảm ăn mòn liên hạt sau hàn; không có nghĩa 316L luôn bền hơn hoặc chống mọi dạng ăn mòn tốt hơn 316.",
+            "sourceId": "outo-supra-316-2025"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "gbt3077-40cr",
+      "grade": "40Cr",
+      "title": "Thép hợp kim cơ khí 40Cr",
+      "family": "machinery",
+      "group": "steel",
+      "system": "GB/T",
+      "standard": "GB/T 3077-2015",
+      "materialNumber": "A20402",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "GB 40Cr",
+        "GB/T 40Cr",
+        "40 Cr"
+      ],
+      "sourceEditionNote": "Đối chiếu trực tiếp GB/T 3077-2015, Bảng 1–3, Điều 6.3–6.4; điều kiện nghiệm thu theo hợp đồng.",
+      "productForm": "Thép thanh cán nóng hoặc rèn",
+      "condition": "Mẫu thử tôi và ram, phôi 25 mm (+QT)",
+      "defaultConditionCode": "+QT",
+      "description": "Thép hợp kim crom khoảng 0,40% carbon dùng cho chế tạo máy; phân biệt mẫu thử tôi–ram với trạng thái thanh giao hàng.",
+      "applications": [
+        "Trục, bánh răng và chi tiết máy theo thiết kế"
+      ],
+      "mechanical": {
+        "status": "standard_table_reference",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 785
+            },
+            "tensileMpa": {
+              "min": 980
+            },
+            "elongationPct": {
+              "min": 9
+            },
+            "reductionOfAreaPct": {
+              "min": 45
+            }
+          }
+        ],
+        "yieldSymbol": "ReL",
+        "impact": null,
+        "impactNote": "Bảng 3 quy định KU₂ ≥ 47 J (khía U), không phải KV khía V; sổ tay không chuyển đổi hai phép thử.",
+        "sourceIds": [
+          "gbt3077-2015-original"
+        ],
+        "note": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ.",
+        "viewingNote": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ.",
+        "referenceLabel": "Mẫu nhiệt luyện, phôi 25 mm",
+        "noAutoAcceptance": true
+      },
+      "conditions": [
+        {
+          "code": "+QT",
+          "label": "Mẫu thử tôi và ram, phôi 25 mm",
+          "mechanical": {
+            "status": "standard_table_reference",
+            "dimension": null,
+            "cases": [
+              {
+                "yieldMpa": {
+                  "min": 785
+                },
+                "tensileMpa": {
+                  "min": 980
+                },
+                "elongationPct": {
+                  "min": 9
+                },
+                "reductionOfAreaPct": {
+                  "min": 45
+                }
+              }
+            ],
+            "yieldSymbol": "ReL",
+            "impact": null,
+            "impactNote": "Bảng 3 quy định KU₂ ≥ 47 J (khía U), không phải KV khía V; sổ tay không chuyển đổi hai phép thử.",
+            "sourceIds": [
+              "gbt3077-2015-original"
+            ],
+            "note": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ.",
+            "viewingNote": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ.",
+            "referenceLabel": "Mẫu nhiệt luyện, phôi 25 mm",
+            "noAutoAcceptance": true
+          }
+        },
+        {
+          "code": "+A",
+          "label": "Giao hàng ủ hoặc ram cao",
+          "mechanical": {
+            "status": "standard_table_reference",
+            "dimension": null,
+            "cases": [
+              {
+                "hardnessHB": {
+                  "max": 207
+                }
+              }
+            ],
+            "impact": null,
+            "sourceIds": [
+              "gbt3077-2015-original"
+            ],
+            "note": "HBW ≤ 207 áp dụng khi giao hàng ở trạng thái ủ hoặc ram cao theo Điều 6.4.3 và Bảng 3; không ghép độ cứng này với bộ cơ tính mẫu tôi–ram.",
+            "viewingNote": "HBW ≤ 207 áp dụng khi giao hàng ở trạng thái ủ hoặc ram cao theo Điều 6.4.3 và Bảng 3; không ghép độ cứng này với bộ cơ tính mẫu tôi–ram."
+          }
+        }
+      ],
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "GB/T 3077-2015 Tables 1–2",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "min": 0.37,
+            "max": 0.44
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "min": 0.17,
+            "max": 0.37
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "min": 0.5,
+            "max": 0.8
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 0.8,
+            "max": 1.1
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "max": 0.3
+          },
+          {
+            "element": "Cu",
+            "mode": "limit",
+            "max": 0.3
+          },
+          {
+            "element": "Mo",
+            "mode": "limit",
+            "max": 0.1
+          }
+        ],
+        "sourceIds": [
+          "gbt3077-2015-original"
+        ],
+        "note": "Thành phần theo Bảng 1; P, S ≤ 0,030% cho cấp chất lượng thông thường ở Bảng 2. Cấp cao hơn có giới hạn riêng; Cu ≤ 0,20% nếu dùng gia công áp lực nóng."
+      },
+      "physical": {},
+      "notes": [
+        "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ.",
+        "HBW ≤ 207 áp dụng khi giao hàng ở trạng thái ủ hoặc ram cao theo Điều 6.4.3 và Bảng 3; không ghép độ cứng này với bộ cơ tính mẫu tôi–ram.",
+        "Bảng 3 quy định KU₂ ≥ 47 J (khía U), không phải KV khía V; sổ tay không chuyển đổi hai phép thử.",
+        "Thành phần theo Bảng 1; P, S ≤ 0,030% cho cấp chất lượng thông thường ở Bảng 2. Cấp cao hơn có giới hạn riêng; Cu ≤ 0,20% nếu dùng gia công áp lực nóng.",
+        "Bảng 3 và Điều 6.4 có quy định riêng về kích thước thanh và chuẩn bị mẫu; cần kiểm tra trước khi nghiệm thu chi tiết hoặc thanh kích thước lớn."
+      ],
+      "sourceIds": [
+        "gbt3077-2015-original"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "GB/T 3077-2015",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "gbt3077-2015-original"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "sourced_reference_partial",
+        "routes": [
+          {
+            "id": "40cr-sample-quench",
+            "process": "hardening",
+            "purposeVi": "Tôi phôi mẫu theo Bảng 3",
+            "temperatureC": {
+              "min": 850,
+              "max": 850
+            },
+            "cooling": "oil",
+            "sourceId": "gbt3077-2015-original",
+            "sourceClauseOrTable": "Table 3, row 31",
+            "note": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ."
+          },
+          {
+            "id": "40cr-sample-temper",
+            "precededBy": [
+              "40cr-sample-quench"
+            ],
+            "process": "tempering",
+            "purposeVi": "Ram phôi mẫu theo Bảng 3",
+            "temperatureC": {
+              "min": 520,
+              "max": 520
+            },
+            "cooling": "water_or_oil",
+            "resultCondition": "+QT",
+            "sourceId": "gbt3077-2015-original",
+            "sourceClauseOrTable": "Table 3, row 31",
+            "note": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ."
+          }
+        ],
+        "linkNoteVi": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ."
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Bảng 3: phôi mẫu 25 mm, tôi 850 °C trong dầu và ram 520 °C, nguội nước hoặc dầu. ReL ≥ 785 MPa, Rm ≥ 980 MPa, A ≥ 9%, Z ≥ 45% là yêu cầu trên mẫu nhiệt luyện; không mặc định là cơ tính thanh giao hàng hoặc chi tiết bất kỳ.",
+            "sourceId": "gbt3077-2015-original"
+          },
+          {
+            "textVi": "HBW ≤ 207 áp dụng khi giao hàng ở trạng thái ủ hoặc ram cao theo Điều 6.4.3 và Bảng 3; không ghép độ cứng này với bộ cơ tính mẫu tôi–ram.",
+            "sourceId": "gbt3077-2015-original"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "astm-a240-type-304",
+      "grade": "A240 Type 304",
+      "title": "Thép không gỉ ASTM A240 Type 304",
+      "family": "stainless",
+      "group": "steel",
+      "system": "ASTM",
+      "materialNumber": "S30400",
+      "unsNumber": "S30400",
+      "standard": "ASTM A240/A240M",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "ASTM A240 Type 304",
+        "A240 304",
+        "A240M 304",
+        "Type 304",
+        "UNS S30400",
+        "ASTM 240 304"
+      ],
+      "sourceEditionNote": "Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu.",
+      "productForm": "Tấm, lá và dải thép cán phẳng",
+      "condition": "Trạng thái ủ theo tiêu chuẩn sản phẩm",
+      "description": "Thép không gỉ austenite Type 304, UNS S30400, dữ liệu riêng theo ASTM A240/A240M cho sản phẩm cán phẳng.",
+      "applications": [
+        "Tấm, lá và dải inox cho thiết bị và kết cấu theo thiết kế"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 205
+            },
+            "tensileMpa": {
+              "min": 515
+            },
+            "elongationPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "max": 201
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "hardnessHRB": {
+          "max": 92
+        },
+        "impact": null,
+        "sourceIds": [
+          "atlas-a240-flat-products",
+          "ati-a240-304"
+        ],
+        "viewingNote": "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80.",
+        "referenceLabel": "Sản phẩm cán phẳng, trạng thái ủ",
+        "note": "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80. Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "ASTM A240/A240M (manufacturer reference; contract edition to verify)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.07
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 2
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.75
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 17.5,
+            "max": 19.5
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "min": 8,
+            "max": 10.5
+          },
+          {
+            "element": "N",
+            "mode": "limit",
+            "max": 0.1
+          }
+        ],
+        "sourceIds": [
+          "atlas-a240-flat-products",
+          "ati-a240-304"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Áp dụng cho tấm, lá và dải thép không gỉ cán phẳng theo ASTM A240/A240M, trạng thái ủ. Không dùng bản ghi này làm dữ liệu cho thanh ASTM A276 hoặc ống ASTM A312.",
+        "Đây là bản ghi ASTM riêng; không ghép cơ tính hoặc giới hạn hóa học với các bản ghi EN 10088-2 trong sổ tay.",
+        "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80.",
+        "Độ cứng tối đa theo bảng tham khảo: 201 HB hoặc 92 HRB; đây là hai thang thử, không cộng gộp và không tự quy đổi.",
+        "Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu."
+      ],
+      "sourceIds": [
+        "atlas-a240-flat-products",
+        "ati-a240-304"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "ASTM A240/A240M (manufacturer reference; edition not assigned)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "atlas-a240-flat-products",
+            "status": "not_compared_to_full_normative_text"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Áp dụng cho tấm, lá và dải thép không gỉ cán phẳng theo ASTM A240/A240M, trạng thái ủ. Không dùng bản ghi này làm dữ liệu cho thanh ASTM A276 hoặc ống ASTM A312.",
+            "sourceId": "atlas-a240-flat-products"
+          },
+          {
+            "textVi": "Đây là bản ghi ASTM riêng; không ghép cơ tính hoặc giới hạn hóa học với các bản ghi EN 10088-2 trong sổ tay.",
+            "sourceId": "atlas-a240-flat-products"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "astm-a240-type-316",
+      "grade": "A240 Type 316",
+      "title": "Thép không gỉ ASTM A240 Type 316",
+      "family": "stainless",
+      "group": "steel",
+      "system": "ASTM",
+      "materialNumber": "S31600",
+      "unsNumber": "S31600",
+      "standard": "ASTM A240/A240M",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "ASTM A240 Type 316",
+        "A240 316",
+        "A240M 316",
+        "Type 316",
+        "UNS S31600",
+        "ASTM 240 316"
+      ],
+      "sourceEditionNote": "Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu.",
+      "productForm": "Tấm, lá và dải thép cán phẳng",
+      "condition": "Trạng thái ủ theo tiêu chuẩn sản phẩm",
+      "description": "Thép không gỉ austenite Type 316, UNS S31600, dữ liệu riêng theo ASTM A240/A240M cho sản phẩm cán phẳng.",
+      "applications": [
+        "Tấm, lá và dải inox cho thiết bị và kết cấu theo thiết kế"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 205
+            },
+            "tensileMpa": {
+              "min": 515
+            },
+            "elongationPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "max": 217
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "hardnessHRB": {
+          "max": 95
+        },
+        "impact": null,
+        "sourceIds": [
+          "atlas-a240-flat-products",
+          "ati-a240-316-series"
+        ],
+        "viewingNote": "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80.",
+        "referenceLabel": "Sản phẩm cán phẳng, trạng thái ủ",
+        "note": "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80. Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "ASTM A240/A240M (manufacturer reference; contract edition to verify)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.08
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 2
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.75
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 16,
+            "max": 18
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "min": 10,
+            "max": 14
+          },
+          {
+            "element": "N",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Mo",
+            "mode": "limit",
+            "min": 2,
+            "max": 3
+          }
+        ],
+        "sourceIds": [
+          "atlas-a240-flat-products",
+          "ati-a240-316-series"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Áp dụng cho tấm, lá và dải thép không gỉ cán phẳng theo ASTM A240/A240M, trạng thái ủ. Không dùng bản ghi này làm dữ liệu cho thanh ASTM A276 hoặc ống ASTM A312.",
+        "Đây là bản ghi ASTM riêng; không ghép cơ tính hoặc giới hạn hóa học với các bản ghi EN 10088-2 trong sổ tay.",
+        "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80.",
+        "Độ cứng tối đa theo bảng tham khảo: 217 HB hoặc 95 HRB; đây là hai thang thử, không cộng gộp và không tự quy đổi.",
+        "Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu.",
+        "Theo bảng ASTM tham khảo: Type 316 có C ≤ 0,08%, Type 316L có C ≤ 0,030%. 316L carbon thấp giúp hạn chế nhạy cảm ăn mòn liên hạt sau hàn; không mặc định hai mác thay thế hoặc được chứng nhận kép."
+      ],
+      "sourceIds": [
+        "atlas-a240-flat-products",
+        "ati-a240-316-series"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "ASTM A240/A240M (manufacturer reference; edition not assigned)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "atlas-a240-flat-products",
+            "status": "not_compared_to_full_normative_text"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "specialNotes": [
+          {
+            "textVi": "Theo bảng ASTM tham khảo: Type 316 có C ≤ 0,08%, Type 316L có C ≤ 0,030%. 316L carbon thấp giúp hạn chế nhạy cảm ăn mòn liên hạt sau hàn; không mặc định hai mác thay thế hoặc được chứng nhận kép.",
+            "sourceId": "ati-a240-316-series"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Áp dụng cho tấm, lá và dải thép không gỉ cán phẳng theo ASTM A240/A240M, trạng thái ủ. Không dùng bản ghi này làm dữ liệu cho thanh ASTM A276 hoặc ống ASTM A312.",
+            "sourceId": "atlas-a240-flat-products"
+          },
+          {
+            "textVi": "Đây là bản ghi ASTM riêng; không ghép cơ tính hoặc giới hạn hóa học với các bản ghi EN 10088-2 trong sổ tay.",
+            "sourceId": "atlas-a240-flat-products"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "astm-a240-type-316l",
+      "grade": "A240 Type 316L",
+      "title": "Thép không gỉ ASTM A240 Type 316L",
+      "family": "stainless",
+      "group": "steel",
+      "system": "ASTM",
+      "materialNumber": "S31603",
+      "unsNumber": "S31603",
+      "standard": "ASTM A240/A240M",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "ASTM A240 Type 316L",
+        "A240 316L",
+        "A240M 316L",
+        "Type 316L",
+        "UNS S31603",
+        "ASTM 240 316L"
+      ],
+      "sourceEditionNote": "Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu.",
+      "productForm": "Tấm, lá và dải thép cán phẳng",
+      "condition": "Trạng thái ủ theo tiêu chuẩn sản phẩm",
+      "description": "Thép không gỉ austenite Type 316L, UNS S31603, dữ liệu riêng theo ASTM A240/A240M cho sản phẩm cán phẳng.",
+      "applications": [
+        "Tấm, lá và dải inox cho thiết bị và kết cấu theo thiết kế"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 170
+            },
+            "tensileMpa": {
+              "min": 485
+            },
+            "elongationPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "max": 217
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "elongationSymbol": "A50",
+        "elongationGaugeLength": "L₀ = 50 mm",
+        "hardnessHRB": {
+          "max": 95
+        },
+        "impact": null,
+        "sourceIds": [
+          "atlas-a240-flat-products",
+          "ati-a240-316-series",
+          "ati-a240-316l"
+        ],
+        "viewingNote": "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80.",
+        "referenceLabel": "Sản phẩm cán phẳng, trạng thái ủ",
+        "note": "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80. Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "ASTM A240/A240M (manufacturer reference; contract edition to verify)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 2
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 0.75
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 16,
+            "max": 18
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "min": 10,
+            "max": 14
+          },
+          {
+            "element": "N",
+            "mode": "limit",
+            "max": 0.1
+          },
+          {
+            "element": "Mo",
+            "mode": "limit",
+            "min": 2,
+            "max": 3
+          }
+        ],
+        "sourceIds": [
+          "atlas-a240-flat-products",
+          "ati-a240-316-series",
+          "ati-a240-316l"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Áp dụng cho tấm, lá và dải thép không gỉ cán phẳng theo ASTM A240/A240M, trạng thái ủ. Không dùng bản ghi này làm dữ liệu cho thanh ASTM A276 hoặc ống ASTM A312.",
+        "Đây là bản ghi ASTM riêng; không ghép cơ tính hoặc giới hạn hóa học với các bản ghi EN 10088-2 trong sổ tay.",
+        "Độ giãn dài A50 theo chiều dài đo 50 mm. Yêu cầu mẫu thử, chiều dày và các ngoại lệ phải kiểm tra theo phiên bản A240/A480 áp dụng; không đổi A50 thành A5 hoặc A80.",
+        "Độ cứng tối đa theo bảng tham khảo: 217 HB hoặc 95 HRB; đây là hai thang thử, không cộng gộp và không tự quy đổi.",
+        "Giới hạn tham khảo theo tài liệu hãng dẫn ASTM A240/A240M; chưa đối chiếu toàn văn phiên bản áp dụng của đơn hàng. Kiểm tra phiên bản, chiều dày, mẫu thử và chứng chỉ trước khi nghiệm thu.",
+        "Theo bảng ASTM tham khảo: Type 316 có C ≤ 0,08%, Type 316L có C ≤ 0,030%. 316L carbon thấp giúp hạn chế nhạy cảm ăn mòn liên hạt sau hàn; không mặc định hai mác thay thế hoặc được chứng nhận kép."
+      ],
+      "sourceIds": [
+        "atlas-a240-flat-products",
+        "ati-a240-316-series",
+        "ati-a240-316l"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "ASTM A240/A240M (manufacturer reference; edition not assigned)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "atlas-a240-flat-products",
+            "status": "not_compared_to_full_normative_text"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "sourced_reference_partial",
+        "specialNotes": [
+          {
+            "textVi": "Theo bảng ASTM tham khảo: Type 316 có C ≤ 0,08%, Type 316L có C ≤ 0,030%. 316L carbon thấp giúp hạn chế nhạy cảm ăn mòn liên hạt sau hàn; không mặc định hai mác thay thế hoặc được chứng nhận kép.",
+            "sourceId": "ati-a240-316-series"
+          }
+        ]
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Áp dụng cho tấm, lá và dải thép không gỉ cán phẳng theo ASTM A240/A240M, trạng thái ủ. Không dùng bản ghi này làm dữ liệu cho thanh ASTM A276 hoặc ống ASTM A312.",
+            "sourceId": "atlas-a240-flat-products"
+          },
+          {
+            "textVi": "Đây là bản ghi ASTM riêng; không ghép cơ tính hoặc giới hạn hóa học với các bản ghi EN 10088-2 trong sổ tay.",
+            "sourceId": "atlas-a240-flat-products"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-sus304-solution-treated-flat",
+      "grade": "SUS304",
+      "title": "Thép không gỉ SUS304 (JIS)",
+      "family": "stainless",
+      "group": "steel",
+      "system": "JIS",
+      "standard": "JIS G 4304 / JIS G 4305",
+      "materialNumber": "SUS304",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "SUS 304",
+        "JIS SUS304",
+        "SUS304 JIS"
+      ],
+      "sourceEditionNote": "Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng.",
+      "productForm": "Tấm, lá và dải cán nóng hoặc cán nguội",
+      "condition": "Ủ dung dịch",
+      "description": "Mác inox austenite SUS304 theo JIS; dữ liệu riêng cho sản phẩm cán phẳng ở trạng thái ủ dung dịch.",
+      "applications": [
+        "Tấm và chi tiết inox theo thiết kế và môi trường sử dụng"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 205
+            },
+            "tensileMpa": {
+              "min": 520
+            },
+            "elongationPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "max": 187
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "hardnessHRB": {
+          "max": 90
+        },
+        "hardnessHV": {
+          "max": 200
+        },
+        "impact": null,
+        "sourceIds": [
+          "myodo-jis-sus-sheet",
+          "nas-kotai-jis-sus"
+        ],
+        "viewingNote": "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN.",
+        "referenceLabel": "Sản phẩm cán phẳng, ủ dung dịch",
+        "note": "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN. Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "JIS G 4304 / G 4305 (manufacturer reference)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.08
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 1
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 2
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 18,
+            "max": 20
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "min": 8,
+            "max": 10.5
+          }
+        ],
+        "sourceIds": [
+          "yieh-jis-sus-flat-products",
+          "myodo-jis-sus-sheet"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Bản ghi JIS cho tấm, lá và dải inox: JIS G 4304 cán nóng, JIS G 4305 cán nguội, trạng thái ủ dung dịch. Thanh và ống cần tiêu chuẩn sản phẩm riêng.",
+        "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN.",
+        "Bảng hãng nêu tối đa 187 HB, 90 HRB hoặc 200 HV. Đây là các thang thử riêng, không phải ba phép quy đổi chính xác cho mọi lô thép.",
+        "Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng."
+      ],
+      "sourceIds": [
+        "yieh-jis-sus-flat-products",
+        "myodo-jis-sus-sheet",
+        "nas-kotai-jis-sus"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 4304 / JIS G 4305 (manufacturer reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "yieh-jis-sus-flat-products"
+          },
+          {
+            "designation": "JIS G 4305:2012",
+            "role": "manufacturer_mechanical_by_product_form",
+            "sourceId": "myodo-jis-sus-sheet"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Bản ghi JIS cho tấm, lá và dải inox: JIS G 4304 cán nóng, JIS G 4305 cán nguội, trạng thái ủ dung dịch. Thanh và ống cần tiêu chuẩn sản phẩm riêng.",
+            "sourceId": "yieh-jis-sus-flat-products"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-sus316-solution-treated-flat",
+      "grade": "SUS316",
+      "title": "Thép không gỉ SUS316 (JIS)",
+      "family": "stainless",
+      "group": "steel",
+      "system": "JIS",
+      "standard": "JIS G 4304 / JIS G 4305",
+      "materialNumber": "SUS316",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "SUS 316",
+        "JIS SUS316",
+        "SUS316 JIS"
+      ],
+      "sourceEditionNote": "Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng.",
+      "productForm": "Tấm, lá và dải cán nóng hoặc cán nguội",
+      "condition": "Ủ dung dịch",
+      "description": "Mác inox austenite SUS316 theo JIS; dữ liệu riêng cho sản phẩm cán phẳng ở trạng thái ủ dung dịch.",
+      "applications": [
+        "Tấm và chi tiết inox theo thiết kế và môi trường sử dụng"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 205
+            },
+            "tensileMpa": {
+              "min": 520
+            },
+            "elongationPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "max": 187
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "hardnessHRB": {
+          "max": 90
+        },
+        "hardnessHV": {
+          "max": 200
+        },
+        "impact": null,
+        "sourceIds": [
+          "myodo-jis-sus-sheet",
+          "nas-kotai-jis-sus"
+        ],
+        "viewingNote": "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN.",
+        "referenceLabel": "Sản phẩm cán phẳng, ủ dung dịch",
+        "note": "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN. Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "JIS G 4304 / G 4305 (manufacturer reference)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.08
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 1
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 2
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 16,
+            "max": 18
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "min": 10,
+            "max": 14
+          },
+          {
+            "element": "Mo",
+            "mode": "limit",
+            "min": 2,
+            "max": 3
+          }
+        ],
+        "sourceIds": [
+          "yieh-jis-sus-flat-products",
+          "myodo-jis-sus-sheet"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Bản ghi JIS cho tấm, lá và dải inox: JIS G 4304 cán nóng, JIS G 4305 cán nguội, trạng thái ủ dung dịch. Thanh và ống cần tiêu chuẩn sản phẩm riêng.",
+        "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN.",
+        "Bảng hãng nêu tối đa 187 HB, 90 HRB hoặc 200 HV. Đây là các thang thử riêng, không phải ba phép quy đổi chính xác cho mọi lô thép.",
+        "Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng."
+      ],
+      "sourceIds": [
+        "yieh-jis-sus-flat-products",
+        "myodo-jis-sus-sheet",
+        "nas-kotai-jis-sus"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 4304 / JIS G 4305 (manufacturer reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "yieh-jis-sus-flat-products"
+          },
+          {
+            "designation": "JIS G 4305:2012",
+            "role": "manufacturer_mechanical_by_product_form",
+            "sourceId": "myodo-jis-sus-sheet"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Bản ghi JIS cho tấm, lá và dải inox: JIS G 4304 cán nóng, JIS G 4305 cán nguội, trạng thái ủ dung dịch. Thanh và ống cần tiêu chuẩn sản phẩm riêng.",
+            "sourceId": "yieh-jis-sus-flat-products"
+          }
+        ],
+        "notRecommended": []
+      }
+    },
+    {
+      "id": "jis-sus316l-solution-treated-flat",
+      "grade": "SUS316L",
+      "title": "Thép không gỉ SUS316L (JIS)",
+      "family": "stainless",
+      "group": "steel",
+      "system": "JIS",
+      "standard": "JIS G 4304 / JIS G 4305",
+      "materialNumber": "SUS316L",
+      "localizeSearchSnippets": true,
+      "otherNames": [
+        "SUS 316L",
+        "JIS SUS316L",
+        "SUS316L JIS"
+      ],
+      "sourceEditionNote": "Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng.",
+      "productForm": "Tấm, lá và dải cán nóng hoặc cán nguội",
+      "condition": "Ủ dung dịch",
+      "description": "Mác inox austenite SUS316L theo JIS; dữ liệu riêng cho sản phẩm cán phẳng ở trạng thái ủ dung dịch.",
+      "applications": [
+        "Tấm và chi tiết inox theo thiết kế và môi trường sử dụng"
+      ],
+      "mechanical": {
+        "status": "manufacturer_datasheet_reference_to_standard",
+        "dimension": null,
+        "cases": [
+          {
+            "yieldMpa": {
+              "min": 175
+            },
+            "tensileMpa": {
+              "min": 480
+            },
+            "elongationPct": {
+              "min": 40
+            },
+            "hardnessHB": {
+              "max": 187
+            }
+          }
+        ],
+        "yieldSymbol": "Rp0,2",
+        "hardnessHRB": {
+          "max": 90
+        },
+        "hardnessHV": {
+          "max": 200
+        },
+        "impact": null,
+        "sourceIds": [
+          "myodo-jis-sus-sheet",
+          "nas-kotai-jis-sus"
+        ],
+        "viewingNote": "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN.",
+        "referenceLabel": "Sản phẩm cán phẳng, ủ dung dịch",
+        "note": "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN. Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng."
+      },
+      "chemistry": {
+        "kind": "heat_analysis_limits",
+        "standardEdition": "JIS G 4304 / G 4305 (manufacturer reference)",
+        "rows": [
+          {
+            "element": "C",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Si",
+            "mode": "limit",
+            "max": 1
+          },
+          {
+            "element": "Mn",
+            "mode": "limit",
+            "max": 2
+          },
+          {
+            "element": "P",
+            "mode": "limit",
+            "max": 0.045
+          },
+          {
+            "element": "S",
+            "mode": "limit",
+            "max": 0.03
+          },
+          {
+            "element": "Cr",
+            "mode": "limit",
+            "min": 16,
+            "max": 18
+          },
+          {
+            "element": "Ni",
+            "mode": "limit",
+            "min": 12,
+            "max": 15
+          },
+          {
+            "element": "Mo",
+            "mode": "limit",
+            "min": 2,
+            "max": 3
+          }
+        ],
+        "sourceIds": [
+          "yieh-jis-sus-flat-products",
+          "myodo-jis-sus-sheet"
+        ]
+      },
+      "physical": {},
+      "notes": [
+        "Bản ghi JIS cho tấm, lá và dải inox: JIS G 4304 cán nóng, JIS G 4305 cán nguội, trạng thái ủ dung dịch. Thanh và ống cần tiêu chuẩn sản phẩm riêng.",
+        "A ≥ 40% theo bảng JIS tham khảo; loại mẫu thử và chiều dài đo phụ thuộc tiêu chuẩn, chiều dày và dạng sản phẩm. Không mặc định đây là A50 của ASTM hoặc A5 của EN.",
+        "Bảng hãng nêu tối đa 187 HB, 90 HRB hoặc 200 HV. Đây là các thang thử riêng, không phải ba phép quy đổi chính xác cho mọi lô thép.",
+        "Số liệu tham khảo từ bảng hãng; bảng Myodo dẫn JIS G 4305(2012). Cần đối chiếu phiên bản tiêu chuẩn, chiều dày và chứng chỉ áp dụng cho đơn hàng.",
+        "SUS316L theo bảng JIS có Ni 12,00–15,00%; Type 316L theo bảng ASTM A240 trong sổ tay có Ni 10,00–14,00%. Không tự coi SUS316L và Type 316L là cùng bộ giới hạn nghiệm thu."
+      ],
+      "sourceIds": [
+        "yieh-jis-sus-flat-products",
+        "myodo-jis-sus-sheet",
+        "nas-kotai-jis-sus"
+      ],
+      "referenceData": {
+        "standardEditionRecords": [
+          {
+            "designation": "JIS G 4304 / JIS G 4305 (manufacturer reference)",
+            "role": "potential_current_standard_to_review",
+            "sourceId": "yieh-jis-sus-flat-products"
+          },
+          {
+            "designation": "JIS G 4305:2012",
+            "role": "manufacturer_mechanical_by_product_form",
+            "sourceId": "myodo-jis-sus-sheet"
+          }
+        ],
+        "comparisonCandidates": [],
+        "engineeringLimits": {}
+      },
+      "heatTreatment": {
+        "status": "reference_partial",
+        "routes": []
+      },
+      "welding": {
+        "status": "reference_partial",
+        "specialNotes": []
+      },
+      "usage": {
+        "status": "sourced_reference_partial",
+        "recommendedProducts": [],
+        "environments": [],
+        "limitations": [
+          {
+            "textVi": "Bản ghi JIS cho tấm, lá và dải inox: JIS G 4304 cán nóng, JIS G 4305 cán nguội, trạng thái ủ dung dịch. Thanh và ống cần tiêu chuẩn sản phẩm riêng.",
+            "sourceId": "yieh-jis-sus-flat-products"
+          },
+          {
+            "textVi": "SUS316L theo bảng JIS có Ni 12,00–15,00%; Type 316L theo bảng ASTM A240 trong sổ tay có Ni 10,00–14,00%. Không tự coi SUS316L và Type 316L là cùng bộ giới hạn nghiệm thu.",
+            "sourceId": "yieh-jis-sus-flat-products"
+          }
+        ],
+        "notRecommended": []
+      }
     }
   ],
   "engineeringExtension": {
     "equivalence": {
-      "approvedRelations": []
+      "approvedRelations": [],
+      "referenceGroups": [
+        {
+          "id": "stainless-304",
+          "memberIds": [
+            "outokumpu-304-14301-flat-product",
+            "astm-a240-type-304",
+            "jis-sus304-solution-treated-flat"
+          ],
+          "relationship": "cross_standard_designation_reference_not_approved_substitution",
+          "sourceIds": [
+            "jssa-stainless-cross-reference"
+          ],
+          "note": "Đối chiếu tên mác theo bảng JSSA. Cần kiểm tra thành phần, cơ tính, dạng sản phẩm và điều kiện sử dụng trước khi thay thế."
+        },
+        {
+          "id": "stainless-316",
+          "memberIds": [
+            "outokumpu-316-14401-flat-product",
+            "astm-a240-type-316",
+            "jis-sus316-solution-treated-flat"
+          ],
+          "relationship": "cross_standard_designation_reference_not_approved_substitution",
+          "sourceIds": [
+            "jssa-stainless-cross-reference"
+          ],
+          "note": "Đối chiếu tên mác theo bảng JSSA. Cần kiểm tra thành phần, cơ tính, dạng sản phẩm và điều kiện sử dụng trước khi thay thế."
+        },
+        {
+          "id": "stainless-316l",
+          "memberIds": [
+            "outokumpu-316l-14404-flat-product",
+            "astm-a240-type-316l",
+            "jis-sus316l-solution-treated-flat"
+          ],
+          "relationship": "cross_standard_designation_reference_not_approved_substitution",
+          "sourceIds": [
+            "jssa-stainless-cross-reference"
+          ],
+          "note": "Đối chiếu tên mác theo bảng JSSA. Cần kiểm tra thành phần, cơ tính, dạng sản phẩm và điều kiện sử dụng trước khi thay thế."
+        }
+      ]
     }
   }
 }
